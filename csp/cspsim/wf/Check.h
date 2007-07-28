@@ -18,64 +18,38 @@
 
 
 /**
- * @file CheckBox.h
+ * @file Check.h
  *
  **/
 
-#ifndef __CSPSIM_WF_CHECKBOX_H__
-#define __CSPSIM_WF_CHECKBOX_H__
+#ifndef __CSPSIM_WF_CHECK_H__
+#define __CSPSIM_WF_CHECK_H__
 
-#include <csp/csplib/util/Signal.h>
 #include <csp/cspsim/wf/SingleControlContainer.h>
 
 CSP_NAMESPACE
 
 namespace wf {
 
-class Label;
-
-/** A class that represents a CheckBox.
+/** A class that represents the check mark in a checkbox.
  *
- *  A CheckBox is a widget that can be pressed by the user with the mouse.
- *  The checked or unchecked state is displayed.
+ *  This class uses several states to display different content.
+ *  
  */
-class CSPSIM_EXPORT CheckBox : public SingleControlContainer {
+class CSPSIM_EXPORT Check : public Control {
 public:
-	CheckBox();
-	virtual ~CheckBox();
+	Check();
+	virtual ~Check();
 
 	virtual std::string getName() const;
 
 	virtual void buildGeometry();
-	virtual void layoutChildControls();
-
-	virtual const std::string getText() const;
-	virtual void setText(const std::string& text);
-
-	virtual bool getChecked() const;
-	virtual void setChecked(bool checked);
-
-	virtual Signal* getCheckedChangedSignal();
-	virtual void onClick(ClickEventArgs& event);
-
-	template<class Archive>
-	void serialize(Archive & ar) {
-		SingleControlContainer::serialize(ar);
-		ar & make_nvp("@Checked", m_Checked);
-		ar & make_nvp("@Text", m_Text);
-	}
 
 private:
-
-protected:
-	bool m_Checked;
-	std::string m_Text;
-
-	Ref<Signal> m_CheckedChanged;
 };
 
 } // namespace wf
 
 CSP_NAMESPACE_END
 
-#endif // __CSPSIM_WF_CHECKBOX_H__
+#endif // __CSPSIM_WF_CHECK_H__

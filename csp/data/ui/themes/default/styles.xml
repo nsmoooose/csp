@@ -46,6 +46,21 @@
 			<VerticalAlign>none</VerticalAlign>
 			<HorizontalAlign>none</HorizontalAlign>
 		</Style>
+		
+		<Style Name="Check">
+			<BackgroundColor>ffffffff</BackgroundColor>
+			<BackgroundImage>images/unchecked.png</BackgroundImage>
+		</Style>
+
+		<Style Name="Check:checked">
+			<BackgroundColor>ffffffff</BackgroundColor>
+			<BackgroundImage>images/checked.png</BackgroundImage>
+		</Style>
+
+		<Style Name="Check:checked:hover">
+			<BackgroundColor>ffffffff</BackgroundColor>
+			<BackgroundImage>images/checked_hover.png</BackgroundImage>
+		</Style>
 
 		<Style Name="CheckBox">
 			<FontFamily>prima_sans_bt.ttf</FontFamily>

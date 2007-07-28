@@ -125,9 +125,16 @@ in this document has the same inheritence as the cpp-classes.
     </xsd:complexContent>
   </xsd:complexType>
 
-  <xsd:complexType name="CheckBox_t">
+  <xsd:complexType name="Check_t">
     <xsd:complexContent>
       <xsd:extension base="Control_t">
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:complexType name="CheckBox_t">
+    <xsd:complexContent>
+      <xsd:extension base="SingleControlContainer_t">
         <xsd:attribute name="Text" type="xsd:string" />
         <xsd:attribute name="Checked" type="xsd:boolean" />
       </xsd:extension>
@@ -214,6 +221,7 @@ in this document has the same inheritence as the cpp-classes.
   <xsd:group name="SingleControl_t">
     <xsd:choice>
       <xsd:element name="Button" type="Button_t" />
+      <xsd:element name="Check" type="Check_t" />     
       <xsd:element name="CheckBox" type="CheckBox_t" />
       <xsd:element name="Label" type="Label_t" />
       <xsd:element name="Image" type="Image_t" />

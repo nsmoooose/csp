@@ -23,6 +23,7 @@
  **/
 
 #include <csp/cspsim/Animation.h>
+#include <csp/cspsim/wf/Check.h>
 #include <csp/cspsim/wf/CheckBox.h>
 #include <csp/cspsim/wf/ControlGeometryBuilder.h>
 #include <csp/cspsim/wf/Label.h>
@@ -36,9 +37,9 @@ CSP_NAMESPACE
 namespace wf {
 
 CheckBox::CheckBox() : m_Checked(false), m_CheckedChanged(new Signal) {
-}
-
-CheckBox::CheckBox(const std::string text) : m_Checked(false), m_Text(text), m_CheckedChanged(new Signal) {
+	Ref<Check> check = new Check;
+	check->setSize(Size(20,20));
+	setControl(check.get());
 }
 
 CheckBox::~CheckBox() {
@@ -50,12 +51,25 @@ std::string CheckBox::getName() const {
 
 void CheckBox::buildGeometry() {
 	// Make sure that all our child controls onInit() is called.
-	Control::buildGeometry();
+	SingleControlContainer::buildGeometry();
 
 	// Build our own button control and add it to the group.
 	ControlGeometryBuilder geometryBuilder;
 	osg::ref_ptr<osg::Group> checkBox = geometryBuilder.buildCheckBox(this);
 	getNode()->addChild(checkBox.get());
+}
+
+void CheckBox::layoutChildControls() {
+	// Override the layout of child control. The check control is placed
+	// to the left at position 0,0. The width and heigth of the check control
+	// is the same as the height of the checkbox control.
+	Control* childControl = getControl();
+	if(childControl != NULL) {
+		float height = getSize().height;
+		childControl->setLocation(Point(0,0));
+		childControl->setSize(Size(height, height));
+		childControl->setZPos(0.5f);
+	}
 }
 
 const std::string CheckBox::getText() const {
@@ -72,6 +86,20 @@ bool CheckBox::getChecked() const {
 }
 
 void CheckBox::setChecked(bool checked) {
+	// Test to see if there is a change in status.
+	if(m_Checked == checked) {
+		return;
+	}
+	Ref<Control> control = getControl();
+	if(control.valid())
+	{
+		if(checked) {
+			control->addState("checked");
+		}
+		else {
+			control->removeState("checked");
+		}
+	}
 	m_Checked = checked;
 	buildGeometry();
 

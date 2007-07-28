@@ -30,6 +30,7 @@
 #include <csp/csplib/xml/XmlParser.h>
 #include <csp/cspsim/Config.h>
 #include <csp/cspsim/wf/Button.h>
+#include <csp/cspsim/wf/Check.h>
 #include <csp/cspsim/wf/CheckBox.h>
 #include <csp/cspsim/wf/Image.h>
 #include <csp/cspsim/wf/Label.h>
@@ -262,6 +263,11 @@ Ref<Control> createControl(XMLNode& node) {
 	std::string name = node.getName();
 	if(name == "Button") {
 		Ref<Button> control = new Button();
+		archive.loadControl(control.get(), node);
+		return control;
+	}
+	else if(name == "Check") {
+		Ref<Check> control = new Check();
 		archive.loadControl(control.get(), node);
 		return control;
 	}

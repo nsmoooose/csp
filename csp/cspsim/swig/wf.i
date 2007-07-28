@@ -185,7 +185,6 @@ public:
 class CheckBox : public Control {
 public:
 	CheckBox();
-	CheckBox(const std::string text);
 	virtual ~CheckBox();
 
 	virtual const std::string getText() const;

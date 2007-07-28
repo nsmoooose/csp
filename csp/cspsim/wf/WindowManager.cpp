@@ -30,9 +30,12 @@
 #include <csp/cspsim/wf/StyleBuilder.h>
 #include <csp/cspsim/wf/WindowManager.h>
 
+#include <osg/AlphaFunc>
 #include <osg/BlendFunc>
 #include <osg/Group>
+#include <osg/LightModel>
 #include <osg/MatrixTransform>
+#include <osg/TexEnv>
 #include <osgUtil/SceneView>
 #include <osgUtil/IntersectVisitor>
 
@@ -83,7 +86,10 @@ WindowManager::WindowManager() : m_Group(new osg::Group) {
 		m_Group = scaledGroup.get();
 	}
 
-	osgUtil::SceneView *sv = new osgUtil::SceneView();
+	osg::ref_ptr<osg::DisplaySettings> displaySettings = new osg::DisplaySettings();
+	displaySettings->setDefaults();
+
+	osgUtil::SceneView *sv = new osgUtil::SceneView(displaySettings.get());
 	sv->setDefaults(osgUtil::SceneView::COMPILE_GLOBJECTS_AT_INIT);
 	sv->setViewport(0, 0, screenWidth, screenHeight);
 
@@ -94,7 +100,23 @@ WindowManager::WindowManager() : m_Group(new osg::Group) {
 	osg::ref_ptr<osg::StateSet> globalStateSet = new osg::StateSet;
 	globalStateSet->setGlobalDefaults();
 	globalStateSet->setMode(GL_DEPTH_TEST, osg::StateAttribute::ON);
+	globalStateSet->setMode(GL_LIGHTING, osg::StateAttribute::OFF);
 	globalStateSet->setRenderingHint(osg::StateSet::TRANSPARENT_BIN);
+
+	// create a light model to eliminate the default ambient light.
+	osg::ref_ptr<osg::LightModel> light_model = new osg::LightModel();
+	light_model->setAmbientIntensity(osg::Vec4(0.0, 0.0, 0.0, 1.0));
+	globalStateSet->setAttributeAndModes(light_model.get(), osg::StateAttribute::ON);
+
+	// set up an alphafunc by default to speed up blending operations.
+	osg::ref_ptr<osg::AlphaFunc> alphafunc = new osg::AlphaFunc;
+	alphafunc->setFunction(osg::AlphaFunc::GREATER, 0.0f);
+	globalStateSet->setAttributeAndModes(alphafunc.get(), osg::StateAttribute::ON);
+
+	// set up an texture environment by default to speed up blending operations.
+	osg::ref_ptr<osg::TexEnv> texenv = new osg::TexEnv;
+	texenv->setMode(osg::TexEnv::MODULATE);
+	globalStateSet->setTextureAttributeAndModes(0, texenv.get(), osg::StateAttribute::ON);
 
     osg::ref_ptr<osg::BlendFunc> blendFunction = new osg::BlendFunc;
     globalStateSet->setAttributeAndModes(blendFunction.get());

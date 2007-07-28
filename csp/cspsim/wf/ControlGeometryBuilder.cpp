@@ -26,6 +26,7 @@
 
 #include <csp/cspsim/Config.h>
 #include <csp/cspsim/wf/Button.h>
+#include <csp/cspsim/wf/Check.h>
 #include <csp/cspsim/wf/CheckBox.h>
 #include <csp/cspsim/wf/ControlGeometryBuilder.h>
 #include <csp/cspsim/wf/Image.h>
@@ -303,103 +304,6 @@ void ControlGeometryBuilder::buildControl(osg::Geode* geode, float& z, const Sty
 	}
 }
 
-osg::Geode* ControlGeometryBuilder::buildStar(float heightAndWidth, float z, osg::Vec4& color1, osg::Vec4& color2) const {
-	osg::ref_ptr<osg::Geode> geode = new osg::Geode;
-
-	const double halfHeight = heightAndWidth / 2;
-	const double thirdHeight = halfHeight / 6;
-
-	// Top arrow. Left triangle.
-	geode->addDrawable(
-		buildTriangle(
-			Point(0.0f, halfHeight), // Top
-			Point(0.0f - thirdHeight, thirdHeight), // Left
-			Point(0.0f, 0.0f), // bottom
-			z, color1, color1, color2));
-
-	// Left arrow. Top triangle.
-	geode->addDrawable(
-		buildTriangle(
-			Point(0.0f, 0.0f), // Right
-			Point(0.0f - halfHeight, 0.0f), // Left
-			Point(0.0f - thirdHeight, thirdHeight), // top
-			z, color2, color1, color1));
-
-	// Left arrow. Bottom triangle.
-	geode->addDrawable(
-		buildTriangle(
-			Point(0.0f, 0.0f), // Right
-			Point(0.0f - halfHeight, 0.0f), // Left
-			Point(0.0f - thirdHeight, 0.0f - thirdHeight), // bottom
-			z, color2, color1, color1));
-
-	// Bottom arrow. Left triangle.
-	geode->addDrawable(
-		buildTriangle(
-			Point(0.0f, 0.0f), // Right
-			Point(0.0f, 0.0f - halfHeight), // Left
-			Point(0.0f - thirdHeight, 0.0f - thirdHeight), // bottom
-			z, color2, color1, color1));
-
-	// Bottom arrow. Right triangle.
-	geode->addDrawable(
-		buildTriangle(
-			Point(0.0f, 0.0f), // Right
-			Point(0.0f, 0.0f - halfHeight), // Left
-			Point(thirdHeight, 0.0f - thirdHeight), // bottom
-			z, color2, color1, color1));
-
-	// Right arrow. Bottom triangle.
-	geode->addDrawable(
-		buildTriangle(
-			Point(0.0f, 0.0f), // Right
-			Point(halfHeight, 0.0f), // Left
-			Point(thirdHeight, 0.0f - thirdHeight), // bottom
-			z, color2, color1, color1));
-
-	// Right arrow. Top triangle.
-	geode->addDrawable(
-		buildTriangle(
-			Point(0.0f, 0.0f), // Right
-			Point(halfHeight, 0.0f), // Left
-			Point(thirdHeight, thirdHeight), // top
-			z, color2, color1, color1));
-
-	// Top arrow. Right triangle.
-	geode->addDrawable(
-		buildTriangle(
-			Point(0.0f, 0.0f), // Right
-			Point(0.0f, halfHeight), // Left
-			Point(thirdHeight, thirdHeight), // bottom
-			z, color2, color1, color1));
-
-	return geode.release();
-}
-
-osg::Geometry* ControlGeometryBuilder::buildTriangle(
-	const Point& p1, const Point& p2, const Point& p3, float z,
-	const osg::Vec4& c1, const osg::Vec4& c2, const osg::Vec4& c3) const {
-
-	osg::ref_ptr<osg::Geometry> geom = new osg::Geometry;
-
-	osg::ref_ptr<osg::Vec3Array> vertices = new osg::Vec3Array;
-	osg::ref_ptr<osg::Vec4Array> colors = new osg::Vec4Array;
-
-	vertices->push_back(osg::Vec3(p1.x, p1.y, z));
-	vertices->push_back(osg::Vec3(p2.x, p2.y, z));
-	vertices->push_back(osg::Vec3(p3.x, p3.y, z));
-	colors->push_back(c1);
-	colors->push_back(c2);
-	colors->push_back(c3);
-
-	geom->setVertexArray(vertices.get());
-	geom->setColorArray(colors.get());
-    geom->setColorBinding(osg::Geometry::BIND_PER_VERTEX);
-	geom->addPrimitiveSet(new osg::DrawArrays(GL_TRIANGLES, 0, 3));
-
-	return geom.release();
-}
-
 osg::Group* ControlGeometryBuilder::buildTab(const Tab* tab) const {
 	osg::ref_ptr<osg::Group> group = new osg::Group;
 
@@ -494,6 +398,25 @@ osg::Group* ControlGeometryBuilder::buildButton(const Button* button) const {
 	return group.release();
 }
 
+osg::Group* ControlGeometryBuilder::buildCheck(const Check* check) const {
+	Style style = StyleBuilder::buildStyle(check);
+
+	// Test if the control is visible or not.
+	if (style.visible && *style.visible == false) {
+		return NULL;
+	}
+
+	osg::ref_ptr<osg::Geode> geode = new osg::Geode;
+	float z = 0;
+
+	buildControl(geode.get(), z, style, check);
+
+	osg::ref_ptr<osg::Group> group = new osg::Group;
+	group->addChild(geode.get());
+
+	return group.release();
+}
+
 osg::Group* ControlGeometryBuilder::buildCheckBox(const CheckBox* checkBox) const {
 	Style style = StyleBuilder::buildStyle(checkBox);
 
@@ -511,18 +434,6 @@ osg::Group* ControlGeometryBuilder::buildCheckBox(const CheckBox* checkBox) cons
 	float z = 0;
 
 	buildControl(geode.get(), z, style, checkBox);
-
-	// Draw a border around the checkbox. In order to do this the color style
-	// must have been set. We draw the border with this color.
-	if (style.color) {
-		getNextLayer(z);
-		geode->addDrawable(buildRectangle(x1, y1, x1 + size.height, y1 + size.height, z, 2.0f, *style.color, *style.color, true, true, true, true));
-
-		// Draw an invisible object that can pick up mouse clicks.
-		getNextLayer(z);
-		osg::Vec4 invisibleColor(0.0f, 0.0f, 0.0f, 0.0f);
-		geode->addDrawable(buildRectangle(x1, y1, x1 + size.height, y1 + size.height, z, invisibleColor, invisibleColor, invisibleColor, invisibleColor));
-	}
 
 	// Draw the text of the checkbox if all needed styles exists.
 	if (style.fontSize && style.fontFamily && style.color) {
@@ -550,16 +461,6 @@ osg::Group* ControlGeometryBuilder::buildCheckBox(const CheckBox* checkBox) cons
 
 	osg::ref_ptr<osg::Group> group = new osg::Group;
 	group->addChild(geode.get());
-
-	if (checkBox->getChecked() && style.color) {
-		getNextLayer(z);
-		osg::ref_ptr<osg::MatrixTransform> transform = new osg::MatrixTransform;
-		transform->setMatrix(osg::Matrix::translate(x1 + (size.height / 2.0f), -0.2f, 0));
-		osg::Vec4 color2 = *style.color;
-		color2._v[3] = 0.0f;
-		transform->addChild(buildStar(size.height, z, color2, *style.color));
-		group->addChild(transform.get());
-	}
 	return group.release();
 }
 

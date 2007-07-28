@@ -49,6 +49,7 @@ struct Point;
 struct Size;
 struct Style;
 class Button;
+class Check;
 class CheckBox;
 class Control;
 class Image;
@@ -66,6 +67,7 @@ public:
 	virtual ~ControlGeometryBuilder();
 	
 	virtual void buildControl(osg::Geode* geode, float& z, const Style& style, const Control* control) const;
+	virtual osg::Group* buildCheck(const Check* check) const;
 	virtual osg::Group* buildCheckBox(const CheckBox* checkBox) const;
 	virtual osg::Group* buildLabel(const Label* label) const;
 	virtual osg::Group* buildImage(const Image* image) const;
@@ -91,12 +93,6 @@ private:
 		bool left=true, bool top=true, bool right=true, bool bottom=true) const;
 		
 	virtual osgText::Text* buildText(const std::string& text, const std::string& fontFamily, float fontSize, osg::Vec4& color) const;
-
-	virtual osg::Geode* buildStar(float heightAndWidth, float z, osg::Vec4& color1, osg::Vec4& color2) const;
-		
-	virtual osg::Geometry* buildTriangle(
-		const Point& p1, const Point& p2, const Point& p3, float z,
-		const osg::Vec4& c1, const osg::Vec4& c2, const osg::Vec4& c3) const;
 };
 
 } // namespace wf

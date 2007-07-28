@@ -382,6 +382,8 @@ build.SourceGroup(expenv,
 		
 		'wf/Button.cpp',
 		'wf/Button.h',
+		'wf/Check.cpp',
+		'wf/Check.h',
 		'wf/CheckBox.cpp',
 		'wf/CheckBox.h',
 		'wf/Container.cpp',

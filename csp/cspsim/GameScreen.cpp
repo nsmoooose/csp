@@ -243,12 +243,12 @@ wf::WindowManager* GameScreen::getWindowManager() {
 }
 
 wf::InputInterfaceManager* GameScreen::getInputInterfaceManager() {
-	if(m_InputInterfaceManager.valid()) {
+	if (m_InputInterfaceManager.valid()) {
 		return m_InputInterfaceManager.get();
 	}
-	
+
 	m_InputInterfaceManager = new wf::InputInterfaceManager(this);
-	return m_InputInterfaceManager.get(); 
+	return m_InputInterfaceManager.get();
 }
 
 void GameScreen::on_View1() {

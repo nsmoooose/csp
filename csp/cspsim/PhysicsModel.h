@@ -26,98 +26,125 @@
 #ifndef __CSPSIM_PHYSICSMODEL_H__
 #define __CSPSIM_PHYSICSMODEL_H__
 
-#include <csp/csplib/util/Namespace.h>
-#include <csp/csplib/util/Ref.h>
-
 #include <csp/csplib/data/Matrix3.h>
 #include <csp/csplib/data/Vector3.h>
 #include <csp/csplib/data/Quat.h>
+#include <csp/csplib/numeric/VectorField.h>
+#include <csp/csplib/util/Namespace.h>
+#include <csp/csplib/util/Ref.h>
 
 #include <csp/cspsim/System.h>
-#include <csp/cspsim/DynamicalSystem.h>
 
 CSP_NAMESPACE
 
 
 class BaseDynamics;
+namespace numeric { class NumericalMethod; }
 
 
 /**
- * class PhysicsModel - Base class for implementing classical mechanics
- * models.
- *
- * PhysicsModel classes contain multiple BaseDynamics instances, each
+ * PhysicsModel is a system that implements rigid body dynamics of
+ * an object.  It may contain multiple BaseDynamics instances, each
  * contributing to the total force and moment that act on the object.
  * The PhysicsModel integrates the equations of motion to solve for
- * the position and velocity of the object as functions of time.
- *
+ * the position, velocity, and attitude of the object as functions
+ * of time.
  */
-class PhysicsModel: public System, protected DynamicalSystem {
+class PhysicsModel: public System, protected numeric::VectorField {
 public:
-	PhysicsModel(size_type dimension);
+	CSP_DECLARE_OBJECT(PhysicsModel)
+
+	PhysicsModel();
 	virtual ~PhysicsModel();
 
 	/** Integrate the equations of motion over the specified time
 	 *  interval.
 	 */
-	virtual void doSimStep(double dt) = 0;
+	virtual void doSimStep(double dt);
 
 	/** Add a dynamics simulation component.  Each BaseDynamics class computes
 	 *  a part of the total force and moment that acts on the object.
 	 */
 	void addDynamics(Ref<BaseDynamics>);
 
+	/** By default, gravity is automatically included in the force calculations.
+	 *  This method can be used to disable gravity, primarily for testing.
+	 */
+	void enableGravity(bool enabled);
+
+	/** By default, the Coriolis and centrifugal psuedoforces are included in the
+	 *  dynamical calculations.  This method can be used to disable these forces,
+	 *  primarily for testing.
+	 */
+	void enablePseudoForces(bool enabled);
+
 protected:
-	// should it be a priority queue instead?
-	std::vector< Ref<BaseDynamics> > m_Dynamics;
-
-	double const m_Damping;
-
 	virtual void postCreate();
 
-	/** Extract kinematic variables from the vector field variable.
+	/** Solve the equations of motion from time t0 to t0 + dt, given initial
+	 *  conditions y0.  Returns false if the enhances solver failed and the
+	 *  less accurate quick solver was used.
 	 */
-	virtual void YToBody(numeric::Vectord const &y);
+	virtual bool flow(numeric::Vectord const& y0, numeric::Vectord &y, double t0, double dt);
 
-	/** Assemble the vector field variable from individual kinematic variables.
+	/** Convert from earth to body coordinates.
 	 */
-	virtual numeric::Vectord const &bodyToY(Vector3 const &p, Vector3 const &v, Vector3 const &w, Quat const &q);
+	Vector3 toBody(const Vector3& vec);
 
-	/** Convert from local (global) to body coordinates.
+	/** Convert from body to earth coordinates.
 	 */
-	Vector3 localToBody(const Vector3 & vec);
+	Vector3 fromBody(const Vector3& vec);
 
-	/** Convert from body to local (global) coordinates.
+	/** Compute the time derivative of the state vector y at time t relative
+	 *  to the start of the timestep.
 	 */
-	Vector3 bodyToLocal(const Vector3 & vec);
+	virtual void f(double t, numeric::Vectord const& y, numeric::Vectord& dydt);
 
-	/** Convert kinematic variables from body to local (global) coordinates.
+	/** Update the internal state variables from the specified state vector.
 	 */
-	void physicsBodyToLocal();
+	virtual void updateFromStateVector(numeric::Vectord const &y);
 
-	// internally: X = right, Y = nose, Z = up
-	// externally: X = nose, Y = right, Z = down (for XML input)
-	
-	double m_CollisionRadius;
+	/** Assemble the state vector from internal state variables.
+	 */
+	virtual void initializeStateVector(numeric::Vectord &y);
+
+	/** Load kinetic variables into a state vector.
+	 */
+	void setStateVector(Vector3 const& position_local, Vector3 const& velocity, Vector3 const& angular_momentum, Quat const& attitude, numeric::Vectord &y);
+
+	/** Get the numerical method used to integrate the equations of motion.
+	 */
+	numeric::NumericalMethod* method() { return m_NumericalMethod; }
+
+	/** Implement System interface to connect to the kinematic variables of
+	 *  the object via bus channels.
+	 */
+	virtual void registerChannels(Bus*);
+	virtual void importChannels(Bus*);
+
+	std::vector< Ref<BaseDynamics> > m_Dynamics;
 
 	Quat m_Attitude;                   // attitude in earth coordinates
 
 	Vector3 m_ForcesBody;              // total force in body coordinates
 	Vector3 m_MomentsBody;             // (L,M,N) total moment (torque) in body coordinates
 
-	Vector3 m_PositionBody;            // cm position after integration step in body coordinates
-	Vector3 m_PositionLocal;           // cm position in earth coordinates
-	Vector3 m_VelocityLocal;           // velocity in earth coordinates
+	Vector3 m_Position;                // cm position in earth coordinates
+	Vector3 m_PositionLocal;           // cm position in earth coordinates relative to the position at the start of the timestep
+	Vector3 m_Velocity;                // velocity in earth coordinates
 	Vector3 m_VelocityBody;            // (U,V,W) velocity in body coordinates
-	Vector3 m_AngularVelocityLocal;    // angular velocity in earth coordinates
+	Vector3 m_AngularVelocity;         // angular velocity in earth coordinates
 	Vector3 m_AngularVelocityBody;     // (P,Q,R) angular velocity in body coordinates
 	Vector3 m_AngularAccelBody;        // (Pdot, Qdot, Rdot)
 	Vector3 m_LinearAccelBody;         // (Udot, Vdot, Wdot)
-	Vector3 m_CenterOfMassOffsetLocal; // offset from the model position to the center of mass in local coordinates
 
-	double m_Gravity;
-	Vector3 m_WeightLocal, m_WeightBody;
+	// Other accelerations, in earth coordinates, computed at the start
+	// of each timestep and approximated as constant for the duriation.
+	// This includes gravity and pseudoforces related to the rotation
+	// of the earth coordinate frame.
+	Vector3 m_OtherAccelerations;
 
+	// State variables updated at the end of each timestep.
 	DataChannel<Vector3>::RefT b_Position;
 	DataChannel<Vector3>::RefT b_Velocity;
 	DataChannel<Vector3>::RefT b_AngularVelocity;
@@ -125,14 +152,20 @@ protected:
 	DataChannel<Vector3>::RefT b_AccelerationBody;
 	DataChannel<Quat>::RefT b_Attitude;
 
+	// Read only variables that are approximated as constant during
+	// each timestep.
 	DataChannel<double>::CRefT b_Mass;
 	DataChannel<Matrix3>::CRefT b_Inertia;
 	DataChannel<Matrix3>::CRefT b_InertiaInverse;
-	DataChannel<Vector3>::CRefT b_CenterOfMassOffset;
 
-	virtual void registerChannels(Bus*);
-	virtual void importChannels(Bus*);
-
+private:
+	static const unsigned cDimension = 13;
+	numeric::NumericalMethod* m_NumericalMethod;
+	numeric::Vectord m_StateVector0;
+	numeric::Vectord m_StateVector;
+	bool m_NeedsImpulse;
+	bool m_AddGravity;
+	bool m_AddPseudoForces;
 };
 
 CSP_NAMESPACE_END

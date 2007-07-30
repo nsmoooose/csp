@@ -7,7 +7,7 @@
 		<Path class="FlightControlSystem">fcs</Path>
 	</List>
 
-	<Object class="AircraftPhysicsModel" name="physics_model">
+	<Object class="PhysicsModel" name="physics_model">
 		<List name="subsystems">
 			<Object class="FlightDynamics">
 				<Path name="flight_model">fm</Path>

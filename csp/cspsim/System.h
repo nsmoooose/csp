@@ -154,7 +154,7 @@ public:
 	 *  multiple parents, and to force SystemsModels to be the root of
 	 *  the node tree.
 	 */
-	bool canBeAdded() const { return getNumParents() == 0; }
+	virtual bool canBeAdded() const { return getNumParents() == 0; }
 
 	/** Get the system identifier string (name).
 	 */

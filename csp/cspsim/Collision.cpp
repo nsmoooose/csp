@@ -45,7 +45,7 @@ GroundCollisionDynamics::GroundCollisionDynamics():
 	m_ContactSpring(1e+5),
 	m_SpringConstant(5e+6),
 	m_Friction(1.2),
-	m_ImpactDamping(1e+6),
+	m_ImpactDamping(1e+5),
 	m_ImpactSpeedTolerance(3.0),
 	m_NeedsImpulse(false),
 	m_HasContact(false)
@@ -71,6 +71,8 @@ void GroundCollisionDynamics::importChannels(Bus *bus) {
 	b_GroundN = bus->getChannel(Kinetics::GroundN);
 	b_GroundZ = bus->getChannel(Kinetics::GroundZ);
 	b_NearGround = bus->getChannel(Kinetics::NearGround);
+	b_CenterOfMassOffset = bus->getChannel(Kinetics::CenterOfMassOffset);
+	b_InertiaInverse = bus->getChannel(Kinetics::InertiaInverse);
 	DataChannel<Ref<ObjectModel> >::CRefT model = bus->getChannel("Internal.ObjectModel");
 	m_Contacts = model->value()->getContacts();
 	m_Forces.resize(m_Contacts.size());
@@ -78,6 +80,14 @@ void GroundCollisionDynamics::importChannels(Bus *bus) {
 }
 
 
+// WARNING: there is a lot of ad-hoc voodoo in this routine that has been
+// hand tuned to provide somewhat visually plausible impact behavior without
+// triggering numerical instabilities at low frame rates.  if you make changes,
+// be sure to test the behavior of objects of different mass (e.g., wing tanks
+// and aircraft) at low and high frame rates (20Hz to 100Hz).  in particular,
+// hard impact, sliding impact, and stationary support (upright and inverted)
+// should be checked.  perhaps a lot of the voodoo can go away once explosions
+// that mask the impact details are modeled/rendered! :)
 void GroundCollisionDynamics::computeForceAndMoment(double) {
 	m_HasContact = false;
 	m_NeedsImpulse = false;
@@ -86,7 +96,7 @@ void GroundCollisionDynamics::computeForceAndMoment(double) {
 
 	if (!b_NearGround->value()) return;
 
-	const Vector3 model_position = getModelPositionLocal();
+	const Vector3 model_position = getModelPosition();
 	const double height = model_position.z() - b_GroundZ->value();
 	Quat const &q = *m_Attitude;
 	Vector3 const &velocityBody = *m_VelocityBody;
@@ -94,6 +104,14 @@ void GroundCollisionDynamics::computeForceAndMoment(double) {
 	Vector3 const &normalGroundLocal = b_GroundN->value();
 	Vector3 normalGroundBody = q.invrotate(normalGroundLocal);
 	Vector3 origin(0.0, 0.0, height);
+
+	// adjust spring constant and damping in relation to vehicle mass
+	// so that the response is not too stiff for light objects.  this
+	// helps to reduce numerical instability.  the response is nominally
+	// overdamped, although this depends on the number and distribution
+	// of contact points.
+	m_SpringConstant = 100.0 * b_Mass->value();
+	m_ImpactDamping = 3.0 * sqrt(m_SpringConstant * b_Mass->value());
 
 	for (size_t i = 0; i < m_Contacts.size(); ++i) {
 		Vector3 forceBody = Vector3::ZERO;
@@ -104,13 +122,16 @@ void GroundCollisionDynamics::computeForceAndMoment(double) {
 			m_HasContact = true;
 			Vector3 contactVelocityBody = velocityBody + (angularVelocityBody^contactBody);
 			double impactSpeed = -dot(contactVelocityBody, normalGroundBody);
-			if (impactSpeed > m_ImpactSpeedTolerance) { // hard impact (not used)
-			}
+			// if the contact goes far below the surface, stiffen the response until the
+			// impact velocity is reversed.
+			double stiffening = (impactSpeed > 0) ? std::max(1.0, depth * 10.0) : 1.0;
 			// normal spring force plus damping
-			double normalForce = depth * m_SpringConstant + m_ImpactDamping * impactSpeed;
+			double normalForce = depth * m_SpringConstant * stiffening + m_ImpactDamping * impactSpeed;
 			// sanity check
 			normalForce = std::max(normalForce, 0.0);
+
 			forceBody += normalForce * normalGroundBody;
+
 			// sliding frictional force
 			Vector3 slidingVelocityBody = contactVelocityBody + impactSpeed * normalGroundBody;
 			double slidingSpeed = slidingVelocityBody.length();
@@ -139,7 +160,9 @@ void GroundCollisionDynamics::computeForceAndMoment(double) {
 				Vector3 slidingFriction = -friction * slidingVelocityBody;
 				forceBody += slidingFriction;
 			}
+
 			m_Force += forceBody;
+			m_Moment += contactBody ^ forceBody;
 		} else {
 			// release sliding spring tension
 			m_Extension[i] = Vector3::ZERO;
@@ -149,18 +172,27 @@ void GroundCollisionDynamics::computeForceAndMoment(double) {
 
 	if (m_HasContact) {
 		double acceleration = m_Force.length() / b_Mass->value();
-		double limit = 20.0 * 9.8; // 20 G limit for basic response
-		double scale = 1.0;
-		// extreme impact, supply addition reactive impulse
+		double impactSpeed = -dot(velocityBody, normalGroundBody);
+		double limit = std::max(5.0, (impactSpeed * 4)) * 9.8;
+		// hard impact; limit the force and moment as the impact speed is
+		// reduced to prevent big rebounds and reduce numerical instability.
+		// at high accelerations, have PhysicsModel directly dampen the
+		// velocity.
 		if (acceleration > limit) {
-			scale = limit / acceleration;
-			m_NeedsImpulse = true;
+			double scale = limit / acceleration;
+			m_Force *= scale;
+			m_Moment *= scale;
 		}
-		// compute normalized forces and moments
-		m_Force = Vector3::ZERO;
-		for (size_t i = 0; i < m_Contacts.size(); ++i) {
-			m_Force += m_Forces[i] * scale;
-			m_Moment += m_Contacts[i] ^ m_Forces[i] * scale;
+		// todo: consider making the impulse adjustable (effectively force
+		// v to zero if the acceleration is extreme, but just dampen it under
+		// more moderate impacts above ~20G.
+		if (acceleration > 20 * 9.8) m_NeedsImpulse = true;
+		// not sure if this is still needed, but it seemed to help stability
+		// when testing various ad-hoc tweaks to the reaction force at low
+		// frame rates.
+		acceleration = (b_InertiaInverse->value() * m_Moment).length();
+		if (acceleration > 50) {
+			m_Moment *= 50 / acceleration;
 		}
 	}
 }

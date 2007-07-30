@@ -58,8 +58,8 @@ class MainMenu(csp.cspsim.Window, SlotManager):
         vec = csp.csplib.Vector3
         m2k = "sim:vehicles.aircraft.m2k"
         f16dj = "sim:vehicles.aircraft.f16dj"
-        self.cspsim.createVehicle(f16dj, vec(-29495, -10530, 91.1), vec(0, 0, 0), vec(0.0, 0.0, 180.0)) 
-        self.cspsim.createVehicle(f16dj, vec(-29510, -10530, 91.1), vec(0, 0, 0), vec(0.0, 0.0, 180.0)) 
+        self.cspsim.createVehicle(f16dj, vec(-29495, -10530, 91.3), vec(0, 0, 0), vec(0.0, 0.0, 180.0)) 
+        self.cspsim.createVehicle(f16dj, vec(-29510, -10530, 91.3), vec(0, 0, 0), vec(0.0, 0.0, 180.0)) 
         
         gameScreenManager = GameScreenManager(self.cspsim)
                         

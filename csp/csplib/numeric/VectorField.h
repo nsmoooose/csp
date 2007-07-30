@@ -22,8 +22,8 @@
  *
  **/
 
-#ifndef __CSPSIM_VECTORFIELD_H__
-#define __CSPSIM_VECTORFIELD_H__
+#ifndef __CSPLIB_NUMERIC_VECTORFIELD_H__
+#define __CSPLIB_NUMERIC_VECTORFIELD_H__
 
 #include <csp/csplib/util/Export.h>
 #include <csp/csplib/util/Properties.h>
@@ -35,51 +35,27 @@ namespace numeric {
 
 class NumericalMethod;
 
-/**
- * A simple class to represent a multidimensional vector
- * field describing the kinetic parameters of a dynamical
- * system.
- */
+/// An interface to define ordinary differential equations that can be solved
+/// by NumericalMethod.  Subclasses must specify the dimension of the vector
+/// field and implement method f to compute dy/dx as a function of (x, y).
 class CSPLIB_EXPORT VectorField: NonCopyable {
-protected:
-	typedef size_t size_type;
-	size_type const m_Dimension;
-	Vectord m_dy; /// the current value of the vector field at (t,y_1,...,y_d)
 public:
-	/**
-	 * Construct a new vector field of the specified dimension.
-	 */
-	VectorField(size_type dimension):
-		m_Dimension(dimension),
-		m_dy(m_Dimension) {
-	}
+	virtual ~VectorField() {}
 
-	virtual ~VectorField(){}
+	/// Evaluate dy/dx at (x, y).
+	virtual void f(double x, Vectord const &y, Vectord &dydx) = 0;
 
-	/**
-	 * @return the dimension of the vector field.
-	 */
-	size_type getDimension() const {
-		return m_Dimension;
-	}
+	/// Return the dimension of the vector field.
+	unsigned dimension() const { return m_dimension; }
 
-	/**
-	 * @return the vector field at the specified point.
-	 */
-	virtual Vectord const &f(double t, Vectord &y) = 0;
-
-	/**
-	 * @return the numerical method, if any, used to solve
-	 * y' = f(t,y)
-	 */
-	virtual NumericalMethod const *getNumericalMethod() const {
-		return 0;
-	}
+protected:
+	VectorField(unsigned dimension): m_dimension(dimension) {}
+	unsigned m_dimension;
 };
 
 } // namespace numeric
 
 CSP_NAMESPACE_END
 
-#endif // __CSPSIM_VECTORFIELD_H__
+#endif // __CSPLIB_NUMERIC_VECTORFIELD_H__
 

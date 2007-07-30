@@ -324,6 +324,13 @@ protected:
 	virtual double onUpdate(double dt);
 
 private:
+	// Get the model position in global coordinates.  This is the physical
+	// location of the aircraft model origin, as opposed to m_Position which
+	// tracks the center of mass.
+	Vector3 getModelPosition() const {
+		return *m_Position - fromBody(b_CenterOfMassOffset->value());
+	}
+
 	void doComplexPhysics(double x);
 	void doSimplePhysics(double x);
 	void onGearCommand();

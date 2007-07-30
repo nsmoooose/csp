@@ -25,14 +25,13 @@
 #define __CSPSIM_BASEDYNAMICS_H__
 
 #include <csp/csplib/util/Namespace.h>
+#include <csp/csplib/data/Quat.h>
 #include <csp/csplib/data/Vector3.h>
 
 #include <csp/cspsim/System.h>
 
 CSP_NAMESPACE
 
-
-class Quat;
 
 /**
  * Abstract base class for all object dynamics (physics) modelling.
@@ -43,16 +42,6 @@ class Quat;
  * important details.
  */
 class BaseDynamics: public System {
-
-protected:
-	Vector3 m_Force, m_Moment;
-
-	Vector3 const *m_PositionLocal;
-	Vector3 const *m_VelocityBody;
-	Vector3 const *m_AngularVelocityBody;
-	Quat const *m_Attitude;
-	Vector3 const *m_CenterOfMassOffsetLocal;
-
 public:
 	typedef Ref<BaseDynamics> RefT;
 
@@ -121,13 +110,14 @@ public:
 	virtual bool needsImpulse() const { return false; }
 
 	/**
-	 * Get the model position in local coordinates.  This is the physical
-	 * location of the aircraft, as opposed to m_PositionLocal which tracks
-	 * the center of mass.
+	 * Convert a vector from global coordinates to body coordinates.
 	 */
-	inline Vector3 getModelPositionLocal() const {
-		return *m_PositionLocal - *m_CenterOfMassOffsetLocal;
-	}
+	Vector3 toBody(Vector3 const& v) const { return m_Attitude->invrotate(v); }
+
+	/**
+	 * Convert a vector from body coordinates to global coordinates.
+	 */
+	Vector3 fromBody(Vector3 const& v) const { return m_Attitude->rotate(v); }
 
 	/**
 	 * Bind object kinematic state variables.  These values can be
@@ -139,13 +129,18 @@ public:
 	 * @param angular_velocity_body the angular velocity of the object in
 	 *   body cooordinates
 	 * @param attitude the orientation of the object
-	 * @param center_of_mass_local the offset from the model position to the
-	 *   center of mass in local coordinates.
 	 */
-	void bindKinematics(Vector3 const &position_local, Vector3 const &velocity_body,
-	                    Vector3 const &angular_velocity_body, Quat const &attitude,
-	                    Vector3 const &center_of_mass_offset_local);
+	void bindKinematics(Vector3 const &position, Vector3 const &velocity_body,
+	                    Vector3 const &angular_velocity_body, Quat const &attitude);
 
+protected:
+	Vector3 m_Force;
+	Vector3 m_Moment;
+
+	Vector3 const *m_Position;
+	Vector3 const *m_VelocityBody;
+	Vector3 const *m_AngularVelocityBody;
+	Quat const *m_Attitude;
 };
 
 

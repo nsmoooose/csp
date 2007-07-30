@@ -54,7 +54,7 @@
 		<Path name="channel_mirror_set">channel_mirrors</Path>
 	</Object>
 
-	<Object class="AircraftPhysicsModel" name="physics_model">
+	<Object class="PhysicsModel" name="physics_model">
 		<List name="subsystems">
 			<Object class="FlightDynamics">
 				<Path name="flight_model">fm</Path>

@@ -99,6 +99,15 @@ CSP_NAMESPACE
 // one of the sims.  Using a global here just because we're lazy.
 bool g_DisableRender = false;
 
+// Minimum frame rate required for stability.  Whenever the actual frame rate
+// drops below this value, the game time will run slower than wall time.  If
+// this happens, the game time will catch up whenever the frame rate exceeds
+// this value.
+#define CSP_FRAME_RATE_LIMIT 20.0
+
+// Uncomment this line to teststability (physics models, ai, fcs, etc) at
+// low frame rates.
+//#define CSP_FIXED_FRAMERATE CSP_FRAME_RATE_LIMIT
 
 
 /**
@@ -718,15 +727,23 @@ void CSPSim::updateTime() {
 	m_ElapsedTime += m_FrameTime;
 	m_FrameTime += m_TimeLag;
 	assert(m_FrameTime > 0.0);
-	if (m_FrameTime > 0.1) {
-		m_TimeLag = m_FrameTime - 0.1;
-		m_FrameTime = 0.1;
+	static const double FrameLimit = (1.0 / CSP_FRAME_RATE_LIMIT);
+	if (m_FrameTime > FrameLimit) {
+		m_TimeLag = m_FrameTime - FrameLimit;
+		m_FrameTime = FrameLimit;
 	} else {
 		m_TimeLag = 0.0;
+#ifdef CSP_FIXED_FRAMERATE
+		const double delay = (1.0 / CSP_FIXED_FRAMERATE) - m_FrameTime;
+		m_FrameTime = (1.0 / CSP_FIXED_FRAMERATE);
+		Timer timer;
+		timer.start();
+		while (timer.elapsed() < delay);
+#endif // CSP_FIXED_FRAMERATE
 	}
 	if (m_FrameTime < 0.01) {
 		// todo: microsleep
-		m_FrameTime = 0.01;
+		//m_FrameTime = 0.01;
 	}
 	// smooth out the fluctuations a bit
 	m_AverageFrameTime = 0.95 * m_AverageFrameTime + 0.5 * m_FrameTime;

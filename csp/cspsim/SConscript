@@ -101,8 +101,6 @@ build.SourceGroup(expenv,
 
 		'AircraftObject.cpp',
 		'AircraftObject.h',
-		'AircraftPhysicsModel.cpp',
-		'AircraftPhysicsModel.h',
 		'Animation.cpp',
 		'Animation.h',
 		'AnimationSequence.cpp',
@@ -140,8 +138,6 @@ build.SourceGroup(expenv,
 		'DoubleChannelMirror.cpp',
 		'DynamicObject.cpp',
 		'DynamicObject.h',
-		'DynamicalSystem.cpp',
-		'DynamicalSystem.h',
 		'Engine.cpp',
 		'Engine.h',
 		'EventMapIndex.cpp',
@@ -482,3 +478,9 @@ build.Program(env,
 	],
 	deps = ['csplib', 'osg'],
 	aliases = 'skydemo')
+
+build.Test(env,
+	name = 'test_PhysicsModel',
+	sources = [ 'test/test_PhysicsModel.cpp' ],
+	deps = ['cspsim'])
+

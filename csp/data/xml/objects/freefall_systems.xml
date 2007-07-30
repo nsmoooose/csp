@@ -1,6 +1,6 @@
 <Object class="SystemsModel">
 	<!-- <List name="subsystems"> -->
-	<Object class="AircraftPhysicsModel" name="physics_model">
+	<Object class="PhysicsModel" name="physics_model">
 		<List name="subsystems">
 			<!--Object class="ProjectileDynamics">
 				<Path name="flight_model">freefall_fm</Path>

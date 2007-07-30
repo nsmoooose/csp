@@ -68,7 +68,7 @@ public:
 	 */
 	virtual void init(Ref<SystemsModel> other);
 
-	bool canBeAdded() const { return false; }
+	virtual bool canBeAdded() const { return false; }
 
 	Bus* getBus() const {
 		assert(m_Bus.valid());

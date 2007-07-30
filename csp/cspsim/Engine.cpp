@@ -213,7 +213,7 @@ void EngineDynamics::preSimulationStep(double dt) {
 	bool isPlaying;
 	if (!m_Engine.empty()) {
 		const double alpha = b_Alpha->value();
-		const double altitude = m_PositionLocal->z();
+		const double altitude = m_Position->z();
 		const double mach = b_Mach->value();
 		const double cas = b_CAS->value();
 		const double density = b_Density->value();

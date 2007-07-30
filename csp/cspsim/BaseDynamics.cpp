@@ -36,16 +36,14 @@ BaseDynamics::BaseDynamics():
 BaseDynamics::~BaseDynamics() {
 }
 
-void BaseDynamics::bindKinematics(Vector3 const &position_local,
+void BaseDynamics::bindKinematics(Vector3 const &position,
                                   Vector3 const &velocity_body,
                                   Vector3 const &angular_velocity_body,
-                                  Quat const &attitude,
-                                  Vector3 const &center_of_mass_offset_local) {
-	m_PositionLocal = &position_local;
+                                  Quat const &attitude) {
+	m_Position = &position;
 	m_VelocityBody = &velocity_body;
 	m_AngularVelocityBody = &angular_velocity_body;
 	m_Attitude = &attitude;
-	m_CenterOfMassOffsetLocal = &center_of_mass_offset_local;
 }
 
 void BaseDynamics::initializeSimulationStep(double /*dt*/) {

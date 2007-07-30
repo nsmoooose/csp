@@ -315,7 +315,7 @@ void LandingGear::updateSuspension(const double dt,
 			// overcompressed --- although eventually the gear should just break
 			// in this case).
 			double extra = clampTo(20.0 * (vCompression + 0.5), 0.0, 10.0);
-			compression += (compression - m_Compression) * extra;
+			compression += std::min(0.1, compression - m_CompressionLimit) * extra;
 			// TODO: break the gear if overcompression is too high (should
 			// actually be keyed by normalForce below).
 		} else {
@@ -336,6 +336,8 @@ void LandingGear::updateSuspension(const double dt,
 			m_Compression = std::max(old_compression - v_extend * dt, 0.0);
 		}
 		m_NormalForce += normalForce * normalGroundBody;
+		assert(!isNaN(normalForce));
+		assert(normalGroundBody.valid());
 	}
 }
 
@@ -453,6 +455,10 @@ void LandingGear::updateWheel(double dt,
 
 	b_AntilockBrakingActive->value() = m_ABSActiveTimer > 0.0;
 
+	// FIXME tire contact point not initialized until first call to
+	// postSimulationStep.
+	if (!updateContact && m_TireContactPoint.isZero()) return;
+
 	// not in contact
 	if (m_Compression <= 0.0) {
 		if (updateContact) {
@@ -464,6 +470,11 @@ void LandingGear::updateWheel(double dt,
 
 	// compute tire deformation and reaction
 	Vector3 tireDeformation = tirePositionLocal - m_TireContactPoint;
+
+	// TODO rethink how tire contact updates interact with rk substeps.
+	double deformation = tireDeformation.normalize();
+	tireDeformation *= std::min(deformation, 0.5);
+
 	Vector3 tireForce = - tireDeformation * m_TireK;
 
 	// switch to body coordinates
@@ -486,7 +497,7 @@ void LandingGear::updateWheel(double dt,
 
 	// check if brakes are slipping
 	double alignedForce = sqrt(tireForceWheel.y() * tireForceWheel.y() + tireForceWheel.z() * tireForceWheel.z());
-	bool brakeSlip = alignedForce >= brakeLimit;
+	bool brakeSlip = alignedForce > brakeLimit;
 	if (brakeSlip) {
 		if (updateContact) {
 			// slipping so use the slipping friction until slipping stops
@@ -539,7 +550,7 @@ void LandingGear::updateWheel(double dt,
 	// accurately.
 
 	// check if tire is skidding
-	bool skidding = totalTireForce >= skidLimit;
+	bool skidding = totalTireForce > skidLimit;
 	if (skidding) {
 		if (updateContact) {
 			m_SkidFlag = true;
@@ -555,8 +566,6 @@ void LandingGear::updateWheel(double dt,
 		}
 		// reduce total force (reevaluate skidLimit with skidding friction)
 		tireForceWheel *= m_TireFriction * normalForce / totalTireForce;
-		// convert back to body coordinates
-		tireForceBody = m_SteerTransform.invrotate(tireForceWheel);
 	} else {
 		// damp the oscillation of the tire rubber
 		Vector3 tireDampingWheel = - m_TireBeta * vGroundWheel;
@@ -572,14 +581,15 @@ void LandingGear::updateWheel(double dt,
 			tireDampingWheel *= (skidLimit / tireDampingForce);
 		}
 		tireForceWheel += tireDampingWheel;
-		// convert back to body coordinates
-		tireForceBody = m_SteerTransform.invrotate(tireForceWheel);
 		if (updateContact) {
 			m_Skidding = false;
 			// tire isn't skidding, so use static friction from now on
 			m_TireFriction = m_TireStaticFriction;
 		}
 	}
+
+	// convert back to body coordinates
+	tireForceBody = m_SteerTransform.invrotate(tireForceWheel);
 
 	if (updateContact) {
 		double rollingSpeed = sqrt(vGroundWheel.y()*vGroundWheel.y() + vGroundWheel.z()*vGroundWheel.z());
@@ -675,13 +685,22 @@ DEFINE_INPUT_INTERFACE(GearDynamics)
 
 void GearDynamics::doComplexPhysics(double) {
 	if (b_FullyRetracted->value() && !isGearExtendSelected()) return;
+
+	// testing updating these values during the step to see if holding
+	// them constant was responsible for discontinuities in the compression
+	// state between time steps.
+	const Vector3 model_origin_local = getModelPosition();
+	m_WindVelocityBody = toBody(b_WindVelocity->value());
+	m_GroundNormalBody = toBody(b_GroundN->value());
+	m_Height = model_origin_local.z() - b_GroundZ->value();
+
 	m_Force = m_Moment = Vector3::ZERO;
 	Vector3 airflow_body = m_WindVelocityBody - *m_VelocityBody;
 	const double airspeed = airflow_body.length();
 	Vector3 dynamic_pressure = 0.5 * (b_Density->value()) * airflow_body * airspeed;
 	b_FullyRetracted->value() = true;
 	const size_t n = m_Gear.size();
-	const Vector3 model_origin_local = getModelPositionLocal();
+
 	for (size_t i = 0; i < n; ++i) {
 		LandingGear &gear = *(m_Gear[i]);
 		if (gear.isFullyRetracted()) continue;
@@ -692,6 +711,7 @@ void GearDynamics::doComplexPhysics(double) {
 		// extension into account when computing forces, so really only effects wind drag.
 		// at least it _shouldn't_ be common to retract gear while touching the ground...
 		Vector3 R = extension * (gear.getPosition() - b_CenterOfMassOffset->value());  // body (cm) coordinates
+		assert(R.valid());
 		Vector3 F = Vector3::ZERO;
 		if (b_NearGround->value()) {
 			Vector3 vBody = *m_VelocityBody + (*m_AngularVelocityBody ^ R);
@@ -756,9 +776,9 @@ void GearDynamics::preSimulationStep(double dt) {
 	if (b_FullyRetracted->value()) return;
 	if (!b_NearGround->value()) return;
 
-	m_WindVelocityBody = m_Attitude->invrotate(b_WindVelocity->value());
-	m_GroundNormalBody = m_Attitude->invrotate(b_GroundN->value());
-	const Vector3 model_origin_local = getModelPositionLocal();
+	m_WindVelocityBody = toBody(b_WindVelocity->value());
+	m_GroundNormalBody = toBody(b_GroundN->value());
+	const Vector3 model_origin_local = getModelPosition();
 	m_Height = model_origin_local.z() - b_GroundZ->value();
 	size_t n =  m_Gear.size();
 	for (size_t i = 0; i < n; ++i) {
@@ -777,7 +797,7 @@ void GearDynamics::postSimulationStep(double dt) {
 		}
 		return;
 	}
-	const Vector3 model_origin_local = getModelPositionLocal();
+	const Vector3 model_origin_local = getModelPosition();
 	m_Height = model_origin_local.z() - b_GroundZ->value();
 	for (size_t i = 0; i < n; ++i) {
 		Vector3 R = m_Gear[i]->getPosition() - b_CenterOfMassOffset->value();  // body (cm) coordinates

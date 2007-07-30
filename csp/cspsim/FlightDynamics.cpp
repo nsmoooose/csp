@@ -104,7 +104,7 @@ void FlightDynamics::initializeSimulationStep(double dt) {
 
 void FlightDynamics::computeForceAndMoment(double x) {
 	updateAirflow(x);
-	double agl = m_PositionLocal->z() - b_GroundZ->value();
+	double agl = m_Position->z() - b_GroundZ->value();
 	m_FlightModel->setAirstream(m_Alpha, m_AlphaDot, m_Beta, b_Mach->value(), m_Airspeed, m_QBar);
 	m_FlightModel->setKinetics(b_CenterOfMassOffset->value(), *m_AngularVelocityBody, agl);
 	m_FlightModel->calculateForceAndMoment(m_Force, m_Moment);

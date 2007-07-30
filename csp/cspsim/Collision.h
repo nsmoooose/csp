@@ -55,6 +55,8 @@ class GroundCollisionDynamics: public BaseDynamics {
 	bool m_NeedsImpulse, m_HasContact;
 
 	DataChannel<double>::CRefT b_Mass;
+	DataChannel<Matrix3>::CRefT b_InertiaInverse;
+	DataChannel<Vector3>::CRefT b_CenterOfMassOffset;
 	DataChannel<Vector3>::CRefT b_GroundN;
 	DataChannel<double>::CRefT b_GroundZ;
 	DataChannel<bool>::CRefT b_NearGround;
@@ -100,6 +102,15 @@ public:
 	 * Returns true if any contact points are touching the ground.
 	 */
 	bool hasContact() const { return m_HasContact; }
+
+	/**
+	 * Get the model position in global coordinates.  This is the physical
+	 * location of the aircraft model origin, as opposed to m_Position which
+	 * tracks the center of mass.
+	 */
+	Vector3 getModelPosition() const {
+		return *m_Position - fromBody(b_CenterOfMassOffset->value());
+	}
 };
 
 CSP_NAMESPACE_END

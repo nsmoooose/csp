@@ -23,10 +23,6 @@ Combat Simulator Project - Test Runner
 import os
 import sys
 
-MODULES = [
-	'csplib/.bin/csplib_tests',
-]
-
 try:
 	import csp
 	os.environ.setdefault('CSPLOG_FILE', os.path.join(csp.dir, '.testlog'))
@@ -36,17 +32,7 @@ except ImportError:
 	print 'bootstrap module has been installed.  See README for details.'
 	sys.exit(0)
 
-
 def LoadOneModule(path):
-	# this code is not very portable (e.g., .sl on hpux); prefer 'scons runtests'
-	if sys.platform.startswith('win'):
-		pre = ''
-		ext = '.dll'
-	else:
-		pre = 'lib'
-		ext = '.so'
-	lib = pre + os.path.basename(path) + ext
-	path = os.path.join(csp.dir, os.path.dirname(path), lib)
 	if not csp.csplib.TestRegistry.loadTestModule(path):
 		print 'Unable to load test module "%s".  Check that it has been built.' % path
 		sys.exit(0)
@@ -55,15 +41,15 @@ def LoadModules(modules):
 	for module in modules:
 		LoadOneModule(module)
 
-def runall():
-	LoadModules(MODULES)
-	csp.csplib.TestRegistry.runAll()
-
 if __name__ == '__main__':
-	LoadModules(MODULES)
 	if len(sys.argv) > 1:
-		for path in sys.argv[1:]:
-			csp.csplib.TestRegistry.runOnePath(path)
-	else:
+		LoadModules(sys.argv[1:])
 		csp.csplib.TestRegistry.runAll()
+	else:
+		print 'A simple utility to run CSP test modules manually.'
+		print
+		print 'Note that scons is generally a better tool for running tests (e.g.,'
+		print 'use "scons runtests" to build and run all tests).'
+		print
+		print 'Usage: %s test_module [test_module ...]' % sys.argv[0]
 

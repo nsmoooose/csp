@@ -127,10 +127,11 @@ class _BuildRegistry:
 					self._dir_tests[target._path] = []
 				self._dir_tests[target._path].append(object)
 				run_alias = os.path.join(target._path, target._name) + '.run'
-				env.Command(run_alias, object, util.SilentAction(self._RunOneTest))
-		env.Command('runtests', self._tests, util.SilentAction(self._RunTests))
+				env.Alias(run_alias, env.Command(run_alias, object, util.SilentAction(self._RunOneTest)))
+		env.Alias('runtests', env.Command('runtests', self._tests, util.SilentAction(self._RunTests)))
 		for path, targets in self._dir_tests.items():
-			env.Command(path + '.runtests', targets, util.SilentAction(self._RunTests))
+			alias = path + '.runtests'
+			env.Alias(alias, env.Command(alias, targets, util.SilentAction(self._RunTests)))
 		# sample aliases for running tests:
 		#	$ scons runtests
 		#	$ scons cspsim.runtests

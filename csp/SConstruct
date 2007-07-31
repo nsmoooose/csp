@@ -109,12 +109,13 @@ class Environment(build.Environment):
 	"""
 	COMMON TARGETS:
 
-	  scons config        check for necessary headers and libraries
-	  scons all           build everything
-	  scons cspsim        build the main flight simulator client
-	  scons indexserver   build the master server needed for multiplayer
-	  scons dox           generate doxygen documentation
-	  scons runtests      build and run all unittests
+	  scons config           check for necessary headers and libraries
+	  scons all              build everything
+	  scons cspsim           build the main flight simulator client
+	  scons indexserver      build the master server needed for multiplayer
+	  scons dox              generate doxygen documentation
+	  scons runtests         build and run all unittests
+	  scons csplib.runtests  build and run all unittests in csplib
 	"""
 
 	INCLUDE = ['#/..', build.GetPythonInclude()]

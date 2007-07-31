@@ -91,12 +91,9 @@ void SharedSequence::setSequenceKey(double key) {
 	update();
 }
 
-void SharedSequence::update(bool force) {
-	const double value = b_SequenceKey->value();
-	if (force || (value >= m_InitialKey && value <= m_FinalKey)) {
-		if (b_NormalizedKey.valid()) b_NormalizedKey->value() = m_NormalizedKey;
-		b_SequenceKey->value() = m_SequenceKey;
-	}
+void SharedSequence::update() {
+	if (b_NormalizedKey.valid()) b_NormalizedKey->value() = m_NormalizedKey;
+	b_SequenceKey->value() = m_SequenceKey;
 }
 
 CSP_NAMESPACE_END

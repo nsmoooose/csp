@@ -97,7 +97,7 @@ public:
 	/** Activate this sequence.  All other sequences sharing the output
 	 *  channel will be disabled.
 	 */
-	virtual void enable() { update(true); }
+	virtual void enable() { update(); }
 
 protected:
 	typedef DataChannel<double>::RefT KeyChannel;
@@ -109,7 +109,7 @@ protected:
 	void setSequenceKey(double key);
 
 private:
-	void update(bool force=false);
+	void update();
 
 	std::string m_SequenceChannel;
 	std::string m_NormalizedChannel;

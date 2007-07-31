@@ -284,16 +284,13 @@ void LandingGear::updateSuspension(const double dt,
 	Vector3 max_position = getMaxPosition();
 	if (motionNormal > 0.0) {
 		compression = - (dot(max_position, normalGroundBody) + height) / motionNormal;
+		compression = std::max(compression, 0.0);
 	}
 
-	// at (or past) max extension?
-	if (compression <= 0.0) {
-		// limit travel and clear weight-on-wheels (WOW)
-		double v_extend = (m_K * m_Compression) / m_Beta;
-		m_Compression = std::max(0.0, m_Compression - v_extend * dt);
-		m_Position = max_position;
+	// at max extension and not in contact?
+	if (compression == 0.0 && m_Compression == 0.0) {
 		b_WOW->value() = false;
-		// no ground reaction force
+		m_Position = max_position;
 	} else {
 		// FIXME in computing vCompression, only the normal force is taken into
 		// account, but other components can matter if m_Motion isn't vertical.
@@ -322,22 +319,18 @@ void LandingGear::updateSuspension(const double dt,
 			m_Compression = compression;
 		}
 
-		// update wheel position
-		m_Position = max_position + m_Motion * m_Compression;
-
-		// determine reaction force
-
 		// ground support (in response to strut compression + damping)
 		double normalForce = (m_K * compression + m_Beta * vCompression) * motionNormal;
 
-		if (normalForce < 0.0) {
-			normalForce = 0.0; // wheel hop
-			double v_extend = (m_K * old_compression) / m_Beta;
+		if (normalForce > 0.0) {
+			m_NormalForce += normalForce * normalGroundBody;
+		} else {
+			double v_extend = std::max(0.5, (m_K * m_Compression) / m_Beta);
 			m_Compression = std::max(old_compression - v_extend * dt, 0.0);
 		}
-		m_NormalForce += normalForce * normalGroundBody;
-		assert(!isNaN(normalForce));
-		assert(normalGroundBody.valid());
+
+		// update wheel position
+		m_Position = max_position + m_Motion * m_Compression;
 	}
 }
 
@@ -396,7 +389,7 @@ void LandingGear::residualUpdate(double dt, double airspeed) {
 void LandingGear::updateAnimation(double dt) {
 	if (m_GearAnimation.valid()) {
 		m_GearAnimation->update(dt);
-		m_GearAnimation->setCompression(m_Compression / m_CompressionLimit);
+		if (m_Compression > 0.0) m_GearAnimation->setCompression(m_Compression / m_CompressionLimit);
 		m_GearAnimation->setTireRotation(fmod(m_TireRotation, 2.0*PI) - PI);
 		if (m_SteeringLimit > 0.0) {
 			m_GearAnimation->setSteeringAngle(toRadians(m_SteeringAngle));

@@ -50,7 +50,7 @@
 			<!-- 0.191 -->
 			<Float name="compression_limit">0.223</Float>
 			<Float name="K">350000.0</Float>
-			<Float name="beta">240000.0</Float>
+			<Float name="beta">320000.0</Float>
 			<Float name="brake_limit">50000.0</Float>
 			<Float name="brake_slip">0.8</Float>
 			<Float name="tire_radius">0.4</Float>
@@ -81,7 +81,7 @@
 			<Real name="damage_limit">80000.0:10000.0</Real>
 			<Float name="compression_limit">0.223</Float>
 			<Float name="K">350000.0</Float>
-			<Float name="beta">240000.0</Float>
+			<Float name="beta">320000.0</Float>
 			<Float name="brake_limit">50000.0</Float>
 			<Float name="brake_slip">0.8</Float>
 			<Float name="tire_radius">0.4</Float>

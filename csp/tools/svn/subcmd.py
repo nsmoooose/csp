@@ -430,7 +430,7 @@ class Workspace:
     if makeindex:
       diffindex = os.path.join(tmproot, 'index.html')
       index = open(diffindex, 'w')
-      index.write('<html><body><small>\n')
+      index.write('<html><head><meta http-equiv="Content-Type" content="text/html;charset=utf-8"/></head><body><small>\n')
       if cs:
         index.write('<h3>Changeset %s</h3>\n' % cs.name())
         index.write('<i>Created on: %s</i><p/>' % cs.date())
@@ -445,7 +445,8 @@ class Workspace:
         if info is not None:
           index.write('<p/><i>Submitted by: %s<br/>\n' % info.author)
           index.write('Submitted on: %s</i><p/>\n' % info.date)
-          index.write('%s\n' % str(info.msg).replace('\n', '<br/>\n'))
+          index.write(info.msg.text.replace('\n', '<br/>\n').encode('utf-8'))
+          index.write('\n')
       cleanup.append(diffindex)
       if revision:
         index.write('<b>diff to revision %s</b>' % revision)

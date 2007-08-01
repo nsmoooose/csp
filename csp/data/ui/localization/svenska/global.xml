@@ -17,6 +17,10 @@
 		<String key="multiplayer">Nätverk</String>
 		<String key="ok">OK</String>
 		<String key="options">Inställningar</String>
+		<String key="options_controls">Kontroller</String>
+		<String key="options_display">Grafik</String>
+		<String key="options_sound">Ljud</String>	
+		<String key="options_userinterface">Användargränssnitt</String>
 		<String key="pause">Paus</String>
 		<String key="quit">Avsluta</String>
 		<String key="restart_required">Omstart krävs fär att ändring skall gälla.</String>

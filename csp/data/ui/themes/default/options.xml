@@ -1,34 +1,98 @@
 <?xml version="1.0"?>
-<WindowDocument xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation='../../window_document.xsd'>
-  <Includes>
-    <!-- This include will set the default behaviour on all controls. -->
-    <StyleInclude>styles.xml</StyleInclude>
-    <StringTableInclude>global.xml</StringTableInclude>
-  </Includes>
-  <Window CssClass="window_default" SizeWidth="580" SizeHeight="420" LocationZ="30" >
-    <Control>
-      <MultiControlContainer>
-        <Controls>
-          <Button Id="close" CssClass="close_button" SizeHeight="32" SizeWidth="32"/>
-          <Label LocationX="10" LocationY="2" SizeWidth="569" SizeHeight="30" Text="${options}" />
-          <Label CssClass="stripe" LocationX="0" LocationY="35" SizeWidth="569" SizeHeight="10" />
+<WindowDocument xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation='../../window_document.xsd'>
+	<Includes>
+		<!-- This include will set the default behaviour on all controls. -->
+		<StyleInclude>styles.xml</StyleInclude>
+		<StringTableInclude>global.xml</StringTableInclude>
+	</Includes>
+	<Window CssClass="window_default" SizeWidth="580" SizeHeight="420"
+		LocationZ="30">
+		<Control>
+			<MultiControlContainer>
+				<Controls>
+					<Tab SizeWidth="549" SizeHeight="307"
+						LocationX="10" LocationY="55" LocationZ="10">
+						<Pages>
+							<Page Text="${options_display}">
+								<Control>
+									<MultiControlContainer>
+										<Controls>
+											<Label CssClass="stripe"
+												LocationX="0" LocationY="0" SizeWidth="548" SizeHeight="10" />
+											<Label
+												Text="${screen_resolution}:" LocationX="10" LocationY="10"
+												SizeHeight="25" />
+											<ListBox Id="resolution"
+												LocationX="20" LocationY="37" SizeWidth="145"
+												SizeHeight="230" />
 
-          <Label Text="${screen_resolution}:" LocationX="10" LocationY="55" SizeHeight="25" />
-          <ListBox Id="resolution" LocationX="20" LocationY="83" SizeWidth="145" SizeHeight="230" />
+											<CheckBox Id="fullscreen"
+												LocationX="185" LocationY="37" SizeWidth="150"
+												SizeHeight="30" Text="${full_screen_mode}" />
+										</Controls>
+									</MultiControlContainer>
+								</Control>
+							</Page>
+							<!-- 
+							<Page Text="${options_sound}">
+								<Control>
+									<MultiControlContainer>
+										<Controls>
+											<Label CssClass="stripe"
+												LocationX="0" LocationY="0" SizeWidth="548" SizeHeight="10" />
+											<Label LocationX="10" LocationY="10" SizeWidth="438" SizeHeight="25" Text="To be implemented (volume)" />
+										</Controls>
+									</MultiControlContainer>
+								</Control>
+							</Page>
+							<Page Text="${options_controls}">
+								<Control>
+									<MultiControlContainer>
+										<Controls>
+											<Label CssClass="stripe"
+												LocationX="0" LocationY="0" SizeWidth="548" SizeHeight="10" />
+											<Label LocationX="10" LocationY="10" SizeWidth="438" SizeHeight="25"  Text="To be implemented (key bindings, joystick)" />
+										</Controls>
+									</MultiControlContainer>
+								</Control>
+							</Page>
+							 -->
+							<Page Text="${options_userinterface}">
+								<Control>
+									<MultiControlContainer>
+										<Controls>
+											<Label CssClass="stripe"
+												LocationX="0" LocationY="0" SizeWidth="548" SizeHeight="10" />
+											<Label LocationX="10" LocationY="10"
+												SizeWidth="438" SizeHeight="25" Text="${ui_theme}:" />
+											<ListBox Id="theme" LocationX="20" LocationY="37"
+												SizeWidth="145" SizeHeight="230" />
+											<Label LocationX="175" LocationY="10"
+												SizeWidth="438" SizeHeight="25" Text="${ui_language}:" />
+											<ListBox Id="language" LocationX="185"
+												LocationY="37" SizeWidth="145" SizeHeight="230" />
+										</Controls>
+									</MultiControlContainer>
+								</Control>
+							</Page>
+						</Pages>
+					</Tab>
 
-          <CheckBox Id="fullscreen" LocationX="10" LocationY="330" SizeWidth="150" SizeHeight="30" Text="${full_screen_mode}" />
+					<Button Id="close" CssClass="close_button"
+						SizeHeight="32" SizeWidth="32" />
+					<Label LocationX="10" LocationY="2" SizeWidth="569"
+						SizeHeight="30" Text="${options}" />
+					<Label CssClass="stripe" LocationX="0"
+						LocationY="35" SizeWidth="569" SizeHeight="10" />
 
-          <Label LocationX="175" LocationY="55" SizeWidth="438" SizeHeight="25" Text="${ui_theme}:" />
-          <ListBox Id="theme" LocationX="185" LocationY="83" SizeWidth="170" SizeHeight="230" />
-
-          <Label LocationX="370" LocationY="55" SizeWidth="438" SizeHeight="25" Text="${ui_language}:" />
-          <ListBox Id="language" LocationX="380" LocationY="83" SizeWidth="165" SizeHeight="230" />
-
-          <!-- Buttons for ok and cancel actions. -->
-          <Button Id="ok" Text="${ok}" LocationX="310" LocationY="370" SizeWidth="120" SizeHeight="40" />
-          <Button Id="cancel" Text="${cancel}" LocationX="440" LocationY="370" SizeWidth="120" SizeHeight="40" />
-        </Controls>
-      </MultiControlContainer>
-    </Control>
-  </Window>
+					<!-- Buttons for ok and cancel actions. -->
+					<Button Id="ok" Text="${ok}" LocationX="310"
+						LocationY="370" SizeWidth="120" SizeHeight="40" />
+					<Button Id="cancel" Text="${cancel}" LocationX="440"
+						LocationY="370" SizeWidth="120" SizeHeight="40" />
+				</Controls>
+			</MultiControlContainer>
+		</Control>
+	</Window>
 </WindowDocument>

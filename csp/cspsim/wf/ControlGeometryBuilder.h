@@ -59,6 +59,7 @@ class ListBoxItem;
 class Model;
 class Tab;
 class TabPage;
+class TabHeader;
 class Window;
 
 class ControlGeometryBuilder {
@@ -67,18 +68,20 @@ public:
 	virtual ~ControlGeometryBuilder();
 	
 	virtual void buildControl(osg::Geode* geode, float& z, const Style& style, const Control* control) const;
+	virtual osg::Group* buildButton(const Button* button) const;
 	virtual osg::Group* buildCheck(const Check* check) const;
 	virtual osg::Group* buildCheckBox(const CheckBox* checkBox) const;
-	virtual osg::Group* buildLabel(const Label* label) const;
+	virtual osg::Group* buildGenericControl(const Control* control) const;
 	virtual osg::Group* buildImage(const Image* image) const;
+	virtual osg::Group* buildLabel(const Label* label) const;
 	virtual osg::Group* buildListBox(const ListBox* listBox) const;
-	virtual osg::Group* buildListBoxItem(const ListBox* listBox, const ListBoxItem* listBoxItem) const;
-	virtual osg::Group* buildButton(const Button* button) const;
+	virtual osg::Group* buildListBoxItem(const ListBoxItem* listBoxItem) const;
 	virtual osg::Group* buildModel(const Model* model) const;
 	virtual osg::Group* buildTab(const Tab* tab) const;
-	virtual osg::Group* buildTabButton(const Tab* tab, const TabPage* page) const;
+	virtual osg::Group* buildTabHeader(const TabHeader* header) const;
 	virtual osg::Group* buildTabPage(const TabPage* page) const;
 	virtual osg::Group* buildWindow(const Window* window) const;
+	virtual Size getSizeOfText(const std::string& text, const std::string& fontFamily, float fontSize) const;
 	
 private:
 	void getNextLayer(float& z) const;

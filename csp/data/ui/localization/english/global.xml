@@ -17,6 +17,10 @@
 		<String key="multiplayer">Multiplayer</String>
 		<String key="ok">OK</String>
 		<String key="options">Options</String>
+		<String key="options_controls">Controls</String>
+		<String key="options_display">Display</String>
+		<String key="options_sound">Sound</String>
+		<String key="options_userinterface">User interface</String>
 		<String key="pause">Pause</String>
 		<String key="quit">Quit</String>
 		<String key="resume">Resume</String>

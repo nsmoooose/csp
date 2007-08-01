@@ -25,16 +25,83 @@
 #ifndef __CSPSIM_WF_TAB_H__
 #define __CSPSIM_WF_TAB_H__
 
-#include <csp/cspsim/wf/Container.h>
-#include <csp/cspsim/wf/TabPage.h>
+#include <csp/cspsim/wf/SingleControlContainer.h>
 
 CSP_NAMESPACE
 
 namespace wf {
 
+class Tab;
+class TabPage;
+
+/** A class that represents the page header.
+ * The header of a tab control can be by styled using this class.
+ * Simply create a style named TabHeader for the unselected style.
+ * For a selected TabPage you must create a style named TabHeader:selected.
+ * 
+ */ 
+class CSPSIM_EXPORT TabHeader : public Control {
+public:
+	TabHeader();
+	virtual ~TabHeader();
+	
+	virtual std::string getName() const;
+	virtual void buildGeometry();
+	
+	// Returns the text that is displayed in header of a tab page.
+	virtual const std::string getText() const;
+	virtual void setText(const std::string& text);
+	
+	virtual void setPage(TabPage* page);
+	virtual Ref<TabPage> getPage();
+	
+	// Override the click behaviour in order to handle tab page change.
+	virtual void onClick(ClickEventArgs& event);
+
+private:
+	std::string m_Text;
+	Ref<TabPage> m_Page;
+};
+
+typedef std::vector<Ref<TabHeader> > TabHeaderVector;
+	
+
+/** A class that represents a page in a Tab control.
+ *
+ *  The page is the control that holds new child controls like
+ *  buttons, labels listbox etc. Each page is hidden or visible depending
+ *  on the currently selected page in the Tab control.
+ *  
+ */
+class CSPSIM_EXPORT TabPage : public SingleControlContainer {
+public:
+	TabPage();
+	virtual ~TabPage();
+
+	virtual std::string getName() const;
+	virtual void buildGeometry();
+	
+	// Returns the text that is displayed in header of a tab page.
+	virtual const std::string getText() const;
+	virtual void setText(const std::string& text);
+	
+	template<class Archive>
+	void serialize(Archive & ar) {
+		SingleControlContainer::serialize(ar);
+		ar & make_nvp("@Text", m_Text);
+	}
+private:
+	std::string m_Text;
+};
+
+typedef std::vector<Ref<TabPage> > TabPageVector;
+
+
 /** A class that represents a tab control.
  *
  *  This class contains a vector with one or more tab pages.
+ *  Each page can hold new controls that are hidden or displayed
+ *  depending on what the current selected page is.
  *  
  */
 class CSPSIM_EXPORT Tab : public Container {
@@ -51,8 +118,8 @@ public:
 	
 	virtual void addPage(TabPage* page);
 	
-	virtual TabPage* getCurrentPage() const;
-	virtual TabPage* getCurrentPage();
+	virtual Ref<TabPage> getCurrentPage() const;
+	virtual Ref<TabPage> getCurrentPage();
 	virtual void setCurrentPage(TabPage* page);
 
 	template<class Archive>
@@ -63,8 +130,11 @@ public:
 
 private:
 	TabPageVector m_Pages;
+	TabHeaderVector m_Headers;
 	
-	TabPage* m_CurrentPage;
+	Ref<TabPage> m_CurrentPage;
+	
+	void rebuildHeaders();
 
 protected:
 	class TabClickedCallback;

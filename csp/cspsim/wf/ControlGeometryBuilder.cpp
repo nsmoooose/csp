@@ -39,7 +39,6 @@
 #include <csp/cspsim/wf/Size.h>
 #include <csp/cspsim/wf/StyleBuilder.h>
 #include <csp/cspsim/wf/Tab.h>
-#include <csp/cspsim/wf/TabPage.h>
 #include <csp/cspsim/wf/Window.h>
 
 #include <osg/Depth>
@@ -305,63 +304,53 @@ void ControlGeometryBuilder::buildControl(osg::Geode* geode, float& z, const Sty
 }
 
 osg::Group* ControlGeometryBuilder::buildTab(const Tab* tab) const {
-	osg::ref_ptr<osg::Group> group = new osg::Group;
+	return buildGenericControl(tab);
+}
 
-	// Build up the background of the entire tab.
+osg::Group* ControlGeometryBuilder::buildTabHeader(const TabHeader* header) const {
+	Style style = StyleBuilder::buildStyle(header);
+
+	// Test if the control is visible or not.
+	if (style.visible && *style.visible == false) {
+		return NULL;
+	}
+
 	osg::ref_ptr<osg::Geode> geode = new osg::Geode;
-
-
-
-	/*
-
-		En tab kontrol består av ett flertal kontroller.
-
-		Hela kontrollen med allt innehåll Tab
-
-		Raden med flikar som kan vara horizontell eller vertikal. TabPageContainer
-
-		Själva sidan som varje flik motsvarar. TabPage. Detta är en container klass och går inte att byta ut.
-
-		Själva knappen som man klickar på för att komma till en sida. TabPageButton -> SingleControlContainer. Denna går att byta ut vid behov.
-
-
-		Problem?
-		Hur skall man kunna styla allt detta? Man kan sätta olika styles på Tab kontrollen? Eller på enskilda
-	*/
-
 	float z = 0;
 
-	Style style = StyleBuilder::buildStyle(tab);
-	buildControl(geode.get(), z, style, tab);
+	buildControl(geode.get(), z, style, header);
 
+	// Check for mandatory elements of font information.
+	if (style.fontSize && style.fontFamily && style.color) {
+		std::string labelText = header->getText();
+		std::string parsedText = labelText;
+		Ref<const Window> window = Window::getWindow(header);
+		if (window.valid()) {
+			Ref<const StringResourceManager> stringResources = window->getStringResourceManager();
+			parsedText = stringResources->parseAndReplace(labelText);
+		}
 
+		getNextLayer(z);
+		
+	    osg::ref_ptr<osgText::Text> button_text = buildText(parsedText, *style.fontFamily, *style.fontSize, *style.color);
+	    button_text->setMaximumWidth(header->getSize().width);
+	    button_text->setAlignment(osgText::Text::CENTER_CENTER);
+		button_text->setPosition(osg::Vec3(0, 0, z));
+	    geode->addDrawable(button_text.get());
+	}
+
+	osg::ref_ptr<osg::Group> group = new osg::Group;
 	group->addChild(geode.get());
 
 	return group.release();
 }
 
-osg::Group* ControlGeometryBuilder::buildTabButton(const Tab* /*tab*/, const TabPage* /*page*/) const {
-	osg::ref_ptr<osg::Group> group = new osg::Group;
-	return group.release();
-}
-
-osg::Group* ControlGeometryBuilder::buildTabPage(const TabPage* /*page*/) const {
-	osg::ref_ptr<osg::Group> group = new osg::Group;
-	return group.release();
+osg::Group* ControlGeometryBuilder::buildTabPage(const TabPage* page) const {
+	return buildGenericControl(page);
 }
 
 osg::Group* ControlGeometryBuilder::buildWindow(const Window* window) const {
-	osg::ref_ptr<osg::Geode> geode = new osg::Geode;
-
-	float z = 0;
-
-	Style style = StyleBuilder::buildStyle(window);
-	buildControl(geode.get(), z, style, window);
-
-	osg::ref_ptr<osg::Group> group = new osg::Group;
-	group->addChild(geode.get());
-
-	return group.release();
+	return buildGenericControl(window);
 }
 
 osg::Group* ControlGeometryBuilder::buildButton(const Button* button) const {
@@ -399,22 +388,7 @@ osg::Group* ControlGeometryBuilder::buildButton(const Button* button) const {
 }
 
 osg::Group* ControlGeometryBuilder::buildCheck(const Check* check) const {
-	Style style = StyleBuilder::buildStyle(check);
-
-	// Test if the control is visible or not.
-	if (style.visible && *style.visible == false) {
-		return NULL;
-	}
-
-	osg::ref_ptr<osg::Geode> geode = new osg::Geode;
-	float z = 0;
-
-	buildControl(geode.get(), z, style, check);
-
-	osg::ref_ptr<osg::Group> group = new osg::Group;
-	group->addChild(geode.get());
-
-	return group.release();
+	return buildGenericControl(check);
 }
 
 osg::Group* ControlGeometryBuilder::buildCheckBox(const CheckBox* checkBox) const {
@@ -428,7 +402,6 @@ osg::Group* ControlGeometryBuilder::buildCheckBox(const CheckBox* checkBox) cons
 	const Size& size = checkBox->getSize();
 
 	float x1 = 0 - (size.width/2);
-	float y1 = 0 - size.height/2;
 
 	osg::ref_ptr<osg::Geode> geode = new osg::Geode;
 	float z = 0;
@@ -519,8 +492,8 @@ osg::Group* ControlGeometryBuilder::buildLabel(const Label* label) const {
 	return group.release();
 }
 
-osg::Group* ControlGeometryBuilder::buildImage(const Image* image) const {
-	Style style = StyleBuilder::buildStyle(image);
+osg::Group* ControlGeometryBuilder::buildGenericControl(const Control* control) const {
+	Style style = StyleBuilder::buildStyle(control);
 
 	// Test if the control is visible or not.
 	if (style.visible && *style.visible == false) {
@@ -530,50 +503,24 @@ osg::Group* ControlGeometryBuilder::buildImage(const Image* image) const {
 	osg::ref_ptr<osg::Geode> geode = new osg::Geode;
 	float z = 0;
 
-	buildControl(geode.get(), z, style, image);
+	buildControl(geode.get(), z, style, control);
 
 	osg::ref_ptr<osg::Group> group = new osg::Group;
 	group->addChild(geode.get());
 
 	return group.release();
+}
+
+osg::Group* ControlGeometryBuilder::buildImage(const Image* image) const {
+	return buildGenericControl(image);
 }
 
 osg::Group* ControlGeometryBuilder::buildListBox(const ListBox* listBox) const {
-	Style style = StyleBuilder::buildStyle(listBox);
-
-	// Test if the control is visible or not.
-	if (style.visible && *style.visible == false) {
-		return NULL;
-	}
-
-	osg::ref_ptr<osg::Geode> geode = new osg::Geode;
-	float z = 0;
-
-	buildControl(geode.get(), z, style, listBox);
-
-	osg::ref_ptr<osg::Group> group = new osg::Group;
-	group->addChild(geode.get());
-
-	return group.release();
+	return buildGenericControl(listBox);
 }
 
-osg::Group* ControlGeometryBuilder::buildListBoxItem(const ListBox* /*listBox*/, const ListBoxItem* listBoxItem) const {
-	Style style = StyleBuilder::buildStyle(listBoxItem);
-
-	// Test if the control is visible or not.
-	if (style.visible && *style.visible == false) {
-		return NULL;
-	}
-
-	osg::ref_ptr<osg::Geode> geode = new osg::Geode;
-	float z = 0;
-
-	buildControl(geode.get(), z, style, listBoxItem);
-
-	osg::ref_ptr<osg::Group> group = new osg::Group;
-	group->addChild(geode.get());
-
-	return group.release();
+osg::Group* ControlGeometryBuilder::buildListBoxItem(const ListBoxItem* listBoxItem) const {
+	return buildGenericControl(listBoxItem);
 }
 
 osg::Group* ControlGeometryBuilder::buildModel(const Model* model) const {
@@ -614,6 +561,14 @@ osg::Group* ControlGeometryBuilder::buildModel(const Model* model) const {
 
 	return group.release();
 }
+
+Size ControlGeometryBuilder::getSizeOfText(const std::string& text, const std::string& fontFamily, float fontSize) const {
+	osg::Vec4 color(0.0f, 0.0f, 0.0f, 1.0f);
+	osg::ref_ptr<osgText::Text> textObject = buildText(text, fontFamily, fontSize, color);
+	osg::BoundingBox boundingBox = textObject->getBound();
+	return Size(boundingBox.xMax() - boundingBox.xMin(), boundingBox.yMax() - boundingBox.yMin());
+}
+
 
 } // namespace wf
 

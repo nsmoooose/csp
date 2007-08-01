@@ -66,22 +66,22 @@ SHIFT-m
 							<Cell>
 								<Label>
 									<Text>
-ELEVATOR
-AILERON
-RUDDER
-THROTTLE
-FLAPS_TOGGLE
-SMOKE_TOGGLE
-WHEEL_BRAKE
-MARKS_TOGGLE
-GEAR_TOGGLE
-AIRBRAKE_TOGGLE
-INC_AIRBRAKE
-DEC_AIRBRAKE
-NEXT_STEERPOINT
-PREV_STEERPOINT
-AIR_REFUEL_TOGGLE
-CANOPY_TOGGLE
+Elevator
+Aileron
+Rudder
+Throttle
+Flaps toggle
+Smoke toggle
+Wheel brake
+Marks toggle
+Gear toggle
+Airbrake toggle
+Inc airbrake
+Dec airbrake
+Next steerpoint
+Prev steerpoint
+Air refuel toggle
+Canopy toggle
 ICP_0
 ICP_1
 ICP_2

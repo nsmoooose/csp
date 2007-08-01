@@ -72,7 +72,7 @@ void ListBoxItem::buildGeometry() {
 	SingleControlContainer::buildGeometry();
 	
 	ControlGeometryBuilder geometryBuilder;
-	osg::ref_ptr<osg::Group> item = geometryBuilder.buildListBoxItem((ListBox*)getParent(), this);
+	osg::ref_ptr<osg::Group> item = geometryBuilder.buildListBoxItem(this);
 	getNode()->addChild(item.get());	
 }
 

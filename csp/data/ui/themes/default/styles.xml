@@ -113,13 +113,58 @@
 			<BorderWidth>0</BorderWidth>
 		</Style>
 
-		<Style Name="Tab"></Style>
-
-		<Style Name="TabPage">
+		<Style Name="Tab">
 			<FontFamily>prima_sans_bt.ttf</FontFamily>
 			<FontSize>20</FontSize>
 			<Color>000000ff</Color>
-			<BackgroundColor>00000000</BackgroundColor>
+		</Style>
+		
+		<Style Name="TabHeader">
+			<FontFamily>prima_sans_bt.ttf</FontFamily>
+			<FontSize>15</FontSize>
+			<Color>333333ff</Color>
+			<BackgroundColor>f0f0f0ff</BackgroundColor>
+			<BackgroundColorBottomLeft>80808088</BackgroundColorBottomLeft>
+			<BackgroundColorBottomRight>80808088</BackgroundColorBottomRight>
+			<BorderWidth>1</BorderWidth>
+			<BorderBottomWidth>0</BorderBottomWidth>
+			<BorderColor>80808088</BorderColor>
+		</Style>
+
+		<Style Name="TabHeader:hover">
+			<FontFamily>prima_sans_bt.ttf</FontFamily>
+			<FontSize>15</FontSize>
+			<Color>000000ff</Color>
+			<BackgroundColor>f0f0f0ff</BackgroundColor>
+			<BorderWidth>1</BorderWidth>
+			<BorderBottomWidth>0</BorderBottomWidth>
+			<BorderColor>7b8698ff</BorderColor>
+		</Style>
+
+		<Style Name="TabHeader:hover:selected">
+			<FontFamily>prima_sans_bt.ttf</FontFamily>
+			<FontSize>15</FontSize>
+			<Color>000000ff</Color>
+			<BackgroundColor>f0f0f0ff</BackgroundColor>
+			<BorderWidth>1</BorderWidth>
+			<BorderBottomWidth>0</BorderBottomWidth>
+			<BorderColor>7b8698ff</BorderColor>
+		</Style>
+
+		<Style Name="TabHeader:selected">
+			<FontFamily>prima_sans_bt.ttf</FontFamily>
+			<FontSize>15</FontSize>
+			<Color>000000ff</Color>
+			<BackgroundColor>f0f0f088</BackgroundColor>
+			<BorderWidth>1</BorderWidth>
+			<BorderBottomWidth>0</BorderBottomWidth>
+			<BorderColor>7b8698ff</BorderColor>
+		</Style>
+
+		<Style Name="TabPage">
+			<BackgroundColor>f0f0f088</BackgroundColor>
+			<BorderWidth>1</BorderWidth>
+			<BorderColor>7b8698ff</BorderColor>
 		</Style>
 
 		<Style Name="Window">

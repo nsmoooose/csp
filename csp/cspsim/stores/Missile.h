@@ -18,35 +18,46 @@
 
 
 /**
- * @file StoresDefinition.cpp
+ * @file Missile.h
  *
  **/
 
-#include <csp/cspsim/stores/Hardpoint.h>
-#include <csp/cspsim/stores/StoresDefinition.h>
+#ifndef __CSPSIM_STORES_MISSILE_H__
+#define __CSPSIM_STORES_MISSILE_H__
+
 #include <csp/cspsim/stores/Stores.h>
-#include <csp/csplib/data/ObjectInterface.h>
 
 CSP_NAMESPACE
 
-CSP_XML_BEGIN(StoresDefinition)
-	CSP_DEF("hardpoints", m_Hardpoints, true)
-CSP_XML_END
+/** Data for a missiles.
+ */
+class MissileData: public StoreData {
+public:
+	CSP_DECLARE_STATIC_OBJECT(MissileData)
 
-bool StoresDefinition::getHardpointIndex(std::string const &name, unsigned &index) const {
-	HardpointMap::const_iterator iter = m_HardpointMap.find(name);
-	if (iter == m_HardpointMap.end()) return false;
-	index = iter->second;
-	return true;
-}
+	MissileData(): StoreData(MISSILE) { }
 
-void StoresDefinition::postCreate() {
-	Object::postCreate();
-	for (unsigned i = 0; i < m_Hardpoints.size(); ++i) {
-		const bool duplicate = !m_HardpointMap.insert(HardpointMap::value_type(m_Hardpoints[i]->name(), i)).second;
-		assert(!duplicate);
-	}
-}
+	/** Create a Missile instance, returning a new pointer.
+	 */
+	virtual Store *createStore() const;
+};
+
+
+class Missile: public Store {
+friend class MissileData;
+public:
+	virtual Missile const *asMissile() const { return this; }
+	virtual Missile *asMissile() { return this; }
+
+	/** Get the static data for this missile.
+	 */
+	virtual StoreData const *data() const { return m_Data.get(); }
+
+private:
+	explicit Missile(MissileData const *data): m_Data(data) { assert(data); }
+	Ref<const MissileData> m_Data;
+};
 
 CSP_NAMESPACE_END
 
+#endif // __CSPSIM_STORES_MISSILE_H__

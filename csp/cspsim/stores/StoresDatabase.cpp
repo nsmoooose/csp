@@ -1,5 +1,5 @@
 // Combat Simulator Project
-// Copyright (C) 2005 The Combat Simulator Project
+// Copyright (C) 2007 The Combat Simulator Project
 // http://csp.sourceforge.net
 //
 // This program is free software; you can redistribute it and/or
@@ -22,10 +22,20 @@
  *
  **/
 
-
+#include <csp/cspsim/stores/Hardpoint.h>
 #include <csp/cspsim/stores/StoresDatabase.h>
 #include <csp/cspsim/stores/Stores.h>
+#include <csp/cspsim/stores/Rack.h>
 #include <csp/csplib/data/DataManager.h>
+
+
+#include <csp/csplib/data/Link.h>
+#include <csp/csplib/data/Matrix3.h>
+#include <csp/csplib/data/Object.h>
+#include <csp/csplib/data/Path.h>
+#include <csp/csplib/data/Quat.h>
+#include <csp/csplib/data/Real.h>
+#include <csp/csplib/data/Vector3.h>
 
 CSP_NAMESPACE
 

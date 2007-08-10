@@ -1,5 +1,5 @@
 // Combat Simulator Project
-// Copyright (C) 2005 The Combat Simulator Project
+// Copyright (C) 2007 The Combat Simulator Project
 // http://csp.sourceforge.net
 //
 // This program is free software; you can redistribute it and/or
@@ -31,6 +31,8 @@
 #include <csp/csplib/data/Key.h>
 #include <csp/csplib/data/Path.h>
 
+#include <csp/cspsim/stores/Hardpoint.h>
+
 #include <map>
 #include <set>
 #include <string>
@@ -39,8 +41,6 @@
 CSP_NAMESPACE
 
 class DataManager;
-class Hardpoint;
-class HardpointData;
 class RackData;
 class Store;
 class StoreData;

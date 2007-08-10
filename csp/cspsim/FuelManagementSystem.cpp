@@ -23,6 +23,7 @@
  **/
 
 #include <csp/cspsim/FuelManagementSystem.h>
+#include <csp/cspsim/stores/FuelTank.h>
 #include <csp/cspsim/stores/Stores.h>
 #include <csp/cspsim/stores/StoresManagementSystem.h>
 

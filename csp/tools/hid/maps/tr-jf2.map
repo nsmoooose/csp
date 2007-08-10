@@ -1,0 +1,33 @@
+#Tracer Jet Force V2 map
+#tested on gentoo linux 2007.0
+#only by author of this map ;)
+
+#buttons on stick
+
+define tr-jf2:FireA	0
+define tr-jf2:FireB	1
+define tr-jf2:FireC	2
+define tr-jf2:FireD	3
+define tr-jf2:FireE	4
+define tr-jf2:FireF	5
+
+#other buttons
+define tr-jf2:FireG	6
+define tr-jf2:FireH	7
+define tr-jf2:FireI	8
+define tr-jf2:FireJ	9
+define tr-jf2:FireK	10
+define tr-jf2:FireL	11
+
+#axes
+
+define tr-jf2:Stick_X	0
+define tr-jf2:Stick_Y	1
+define tr-jf2:Throttle	2
+define tr-jf2:Rudder	3
+
+#hat axes
+#define tr-jf2:Hat_Y	6
+#define tr-jf2:Hat_X	7
+
+

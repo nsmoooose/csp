@@ -1,3 +1,4 @@
+
 // Combat Simulator Project
 // Copyright (C) 2007 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -18,34 +19,26 @@
 
 
 /**
- * @file StoresDefinition.cpp
+ * @file Missile.cpp
  *
  **/
 
-#include <csp/cspsim/stores/Hardpoint.h>
-#include <csp/cspsim/stores/StoresDefinition.h>
+
+#include <csp/cspsim/CSPSim.h>
+#include <csp/cspsim/DynamicObject.h>
+#include <csp/cspsim/ObjectModel.h>
+#include <csp/cspsim/stores/Missile.h>
 #include <csp/cspsim/stores/Stores.h>
 #include <csp/csplib/data/ObjectInterface.h>
+#include <csp/csplib/data/DataManager.h>
 
 CSP_NAMESPACE
 
-CSP_XML_BEGIN(StoresDefinition)
-	CSP_DEF("hardpoints", m_Hardpoints, true)
+CSP_XML_BEGIN(MissileData)
 CSP_XML_END
 
-bool StoresDefinition::getHardpointIndex(std::string const &name, unsigned &index) const {
-	HardpointMap::const_iterator iter = m_HardpointMap.find(name);
-	if (iter == m_HardpointMap.end()) return false;
-	index = iter->second;
-	return true;
-}
-
-void StoresDefinition::postCreate() {
-	Object::postCreate();
-	for (unsigned i = 0; i < m_Hardpoints.size(); ++i) {
-		const bool duplicate = !m_HardpointMap.insert(HardpointMap::value_type(m_Hardpoints[i]->name(), i)).second;
-		assert(!duplicate);
-	}
+Store *MissileData::createStore() const {
+	return new Missile(this);
 }
 
 CSP_NAMESPACE_END

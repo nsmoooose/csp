@@ -1,5 +1,5 @@
 // Combat Simulator Project
-// Copyright (C) 2005 The Combat Simulator Project
+// Copyright (C) 2007 The Combat Simulator Project
 // http://csp.sourceforge.net
 //
 // This program is free software; you can redistribute it and/or
@@ -47,6 +47,7 @@
 #include <csp/cspsim/stores/StoresDatabase.h>
 #include <csp/cspsim/stores/StoresDefinition.h>
 #include <csp/cspsim/stores/StoresDynamics.h>
+#include <csp/cspsim/stores/Rack.h>
 #include <csp/cspsim/battlefield/LocalBattlefield.h>
 #include <csp/cspsim/CSPSim.h>  // XXX
 #include <csp/cspsim/DynamicObject.h>
@@ -428,13 +429,21 @@ void StoresManagementSystem::addTestLoadout() {
 	if (store) loadStores(getHardpointByName("HP5"), store->key(), 1);
 
 	store = db.getStoreData("tanks.f16.wing_370gal");
+//	if (store) loadStores(getHardpointByName("HP3"), store->key(), 1);
 	if (store) loadStores(getHardpointByName("HP4"), store->key(), 1);
 	if (store) loadStores(getHardpointByName("HP6"), store->key(), 1);
+//	if (store) loadStores(getHardpointByName("HP7"), store->key(), 1);
 
 	store = db.getStoreData("missiles.aim9");
 	if (store) loadStores(getHardpointByName("HP1"), store->key(), 1);
+//	if (store) loadStores(getHardpointByName("HP3"), store->key(), 1);
+//	if (store) loadStores(getHardpointByName("HP7"), store->key(), 1);
 	if (store) loadStores(getHardpointByName("HP9"), store->key(), 1);
 
+//	store = db.getStoreData("missiles.agm65a");
+//	if (store) loadStores(getHardpointByName("HP3"), store->key(), 1);
+//	if (store) loadStores(getHardpointByName("HP7"), store->key(), 1);
+	
 	setDirtyDynamics();
 	signalConfiguration();
 }

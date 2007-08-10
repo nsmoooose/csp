@@ -1,0 +1,35 @@
+<Object class="RackData">
+	<String name="name">LAU-129A/A Guided Missile Launcher</String>
+	<Float name="mass">40.8233</Float>
+	<Float name="drag_factor">0.05</Float>
+	<!--
+	unit inertia computed assuming that launcher is rectangular box with dimensions:
+	y=2,615692 m
+	x=0,091948 m
+	z=0,1524 m
+	mass = 40,8233133 kg
+	and cg right in the middle of the box
+	i highly doubt that i've computed it correctly, as i haven't done it for quite some time ;) - Kondzik
+	-->
+	<Matrix name="unit_inertia">23.354576 0 0 0 0.107774 0 0 0 23.304325</Matrix>
+	<Vector name="cg_offset">0 0 -0.0762</Vector>
+	<List name="mounts">
+		<Object class="RackMount">
+			<Vector name="offset">0 0 -0.0762</Vector>
+		</Object>
+	</List>
+	<Object class="StoreCompatibilityTable" name="default_compatibility">
+		<List name="stores" type="key">
+			missiles.aim9
+			missiles.agm65a
+		</List>
+	</Object>
+	<Object name="model" class="ObjectModel">
+		<External name="model_path">stores/f16/lau129.osg</External>
+<!--		<Vector name="axis_0">0 1 0</Vector>
+		<Vector name="axis_1">1 0 0</Vector> -->
+		<Vector name="offset">0 0 0.0762</Vector>
+		<Bool name="smooth">false</Bool>
+		<Enum name="effect">SpecularHighlights</Enum>
+	</Object>
+</Object>

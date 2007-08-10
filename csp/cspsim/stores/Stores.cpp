@@ -1,5 +1,5 @@
 // Combat Simulator Project
-// Copyright (C) 2005 The Combat Simulator Project
+// Copyright (C) 2007 The Combat Simulator Project
 // http://csp.sourceforge.net
 //
 // This program is free software; you can redistribute it and/or
@@ -22,47 +22,28 @@
  *
  **/
 
+#include <csp/cspsim/stores/Stores.h>
 
 #include <csp/cspsim/CSPSim.h>
 #include <csp/cspsim/DynamicObject.h>
 #include <csp/cspsim/ObjectModel.h>
-#include <csp/cspsim/stores/Stores.h>
+
 #include <csp/csplib/data/ObjectInterface.h>
 #include <csp/csplib/data/DataManager.h>
 
+#include <csp/cspsim/stores/StoresDynamics.h>
+
+#include <csp/csplib/data/Key.h>
+#include <csp/csplib/data/Matrix3.h>
+#include <csp/csplib/data/Path.h>
+#include <csp/csplib/data/Quat.h>
+#include <csp/csplib/data/Real.h>
+#include <csp/csplib/data/Vector3.h>
+#include <csp/csplib/util/osg.h>
+
+#include <osg/PositionAttitudeTransform>
+
 CSP_NAMESPACE
-
-CSP_XML_BEGIN(HardpointData)
-	CSP_DEF("name", m_Name, true)
-	CSP_DEF("external", m_External, true)
-	CSP_DEF("fixed_store", m_FixedStore, false)
-	CSP_DEF("compatibility", m_Compatibility, false)
-	CSP_DEF("mount_compatibility", m_MountCompatibility, false)
-	CSP_DEF("offset", m_Offset, false)
-	CSP_DEF("attitude", m_Attitude, false)
-	CSP_DEF("rack_preference", m_RackPreference, false)
-CSP_XML_END
-
-CSP_XML_BEGIN(MissileData)
-CSP_XML_END
-
-CSP_XML_BEGIN(FuelTankData)
-	CSP_DEF("capacity", m_Capacity, true)
-CSP_XML_END
-
-CSP_XML_BEGIN(RackData)
-	CSP_DEF("mounts", m_Mounts, true)
-	CSP_DEF("default_compatibility", m_DefaultCompatibility, false)
-CSP_XML_END
-
-CSP_XML_BEGIN(RackMount)
-	CSP_DEF("offset", m_Offset, true)
-	CSP_DEF("attitude", m_Attitude, false)
-	CSP_DEF("compatibility", m_Compatibility, false)
-	CSP_DEF("fixed", m_Fixed, false)
-	CSP_DEF("eject_velocity", m_EjectVelocity, false)
-	CSP_DEF("eject_angular_velocity", m_EjectAngularVelocity, false)
-CSP_XML_END
 
 CSP_XML_BEGIN(StoreData)
 	CSP_DEF("name", m_Name, true)
@@ -125,48 +106,13 @@ Ref<ObjectModel> StoreData::getModel() const {
 	return m_Model;
 }
 
-Store *FuelTankData::createStore() const {
-	return new FuelTank(this);
-}
-
-Store *MissileData::createStore() const {
-	return new Missile(this);
-}
-
-Hardpoint *HardpointData::createHardpoint(unsigned index) const {
-	return new Hardpoint(this, index);
-}
-
-
-Store *RackData::createStore() const {
-	return new Rack(this);
-}
-
-void Rack::sumDynamics(StoresDynamics &dynamics, Vector3 const &offset, Quat const &attitude, bool no_drag) const {
-	Store::sumDynamics(dynamics, offset, attitude, no_drag);
-	for (unsigned i = 0; i < m_Data->capacity(); ++i) {
-		if (m_Children[i].valid()) {
-			Vector3 child_offset = offset + attitude.rotate(m_Data->mount(i)->offset());
-			Quat child_attitude = attitude * m_Data->mount(i)->attitude();
-			m_Children[i]->sumDynamics(dynamics, child_offset, child_attitude, no_drag);
-		}
-	}
-}
-
-void Rack::addModel(osg::Group *group) const {
-	Store::addModel(group);
-	for (unsigned i = 0; i < m_Data->capacity(); ++i) {
-		if (m_Children[i].valid()) {
-			if (group) {
-				osg::PositionAttitudeTransform *mount = new osg::PositionAttitudeTransform;
-				mount->setPosition(toOSG(m_Data->mount(i)->offset()));
-				mount->setAttitude(toOSG(m_Data->mount(i)->attitude()));
-				m_Children[i]->addModel(mount);
-				group->addChild(mount);
-			} else {
-				m_Children[i]->addModel(group);
-			}
-		}
+void StoreData::sumDynamics(StoresDynamics &dynamics, Vector3 const &offset, Quat const &attitude, double extra_mass, bool no_drag) const {
+	const double mass = m_Mass + extra_mass;
+	const Vector3 cg = attitude.rotate(m_CgOffset) + offset;  // center of gravity in body coordinates
+	const Matrix3 i = attitude.getMatrix3() * m_UnitInertia;
+	dynamics.addMassAndInertia(mass, i, cg);
+	if (!no_drag) {
+		dynamics.addDrag(m_DragFactor, cg);  // should be front of store, but cg is probably close enough
 	}
 }
 

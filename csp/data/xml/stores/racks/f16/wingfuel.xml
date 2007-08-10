@@ -14,6 +14,7 @@
 	<Object class="StoreCompatibilityTable" name="default_compatibility">
 		<List name="stores" type="key">
 			tanks.f16.wing_370gal
+			racks.f16.lau129
 		</List>
 	</Object>
 	<Object name="model" class="ObjectModel">

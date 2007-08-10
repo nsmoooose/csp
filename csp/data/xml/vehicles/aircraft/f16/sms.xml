@@ -103,6 +103,33 @@
 				<Vector name="offset">-4.806 -1.387 0.261</Vector>
 				<Quat name="attitude">0 0.70711 0 0.70711</Quat>
 			</Object>
+			<!--
+			<Object class="HardpointData">
+				<String name="name">HP2</String>
+				<Bool name="external">true</Bool>
+			</Object>
+-->			
+			<Object class="HardpointData">
+				<String name="name">HP3</String>
+				<Bool name="external">true</Bool>
+				<Object name="compatibility" class="StoreCompatibilityTable">
+					<List name="stores" type="key">
+						tanks.f16.wing_370gal
+						racks.f16.wingfuel
+						racks.f16.lau129
+						missiles.aim9
+						missiles.agm65a
+					</List>
+				</Object>
+				<Object name="mount_compatibility" class="StoreCompatibilityTable">
+					<List name="stores" type="key">
+						racks.f16.wingfuel
+					</List>
+				</Object>
+				<Vector name="offset">-3.0 -0.798 0.2</Vector>
+			</Object>
+			
+
 			<Object class="HardpointData">
 				<String name="name">HP4</String>
 				<Bool name="external">true</Bool>
@@ -119,6 +146,12 @@
 				</Object>
 				<Vector name="offset">-1.775 -0.648 0.147</Vector>
 			</Object>
+			<!--
+			<Object class="HardpointData">
+				<String name="name">HP5L</String>
+				<Bool name="external">true</Bool>
+			</Object>
+			-->
 			<Object class="HardpointData">
 				<String name="name">HP5</String>
 				<Bool name="external">true</Bool>
@@ -135,6 +168,12 @@
 				</Object>
 				<Vector name="offset">0.0 -0.19 -0.59</Vector>
 			</Object>
+			<!--
+			<Object class="HardpointData">
+				<String name="name">HP5R</String>
+				<Bool name="external">true</Bool>
+			</Object>
+			-->
 			<Object class="HardpointData">
 				<String name="name">HP6</String>
 				<Bool name="external">true</Bool>
@@ -151,6 +190,33 @@
 				</Object>
 				<Vector name="offset">1.775 -0.648 0.147</Vector>
 			</Object>
+			
+			<Object class="HardpointData">
+				<String name="name">HP7</String>
+				<Bool name="external">true</Bool>
+				<Object name="compatibility" class="StoreCompatibilityTable">
+					<List name="stores" type="key">
+						tanks.f16.wing_370gal
+						racks.f16.wingfuel
+						racks.f16.lau129
+						missiles.aim9
+						missiles.agm65a
+					</List>
+				</Object>
+				<Object name="mount_compatibility" class="StoreCompatibilityTable">
+					<List name="stores" type="key">
+						racks.f16.wingfuel
+					</List>
+				</Object>
+				<Vector name="offset">3.0 -0.798 0.2</Vector>
+			</Object>
+			
+			<!--
+			<Object class="HardpointData">
+				<String name="name">HP8</String>
+				<Bool name="external">true</Bool>
+			</Object>
+			-->
 			<Object class="HardpointData">
 				<String name="name">HP9</String>
 				<Bool name="external">true</Bool>

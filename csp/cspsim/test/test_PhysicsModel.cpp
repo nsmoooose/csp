@@ -315,6 +315,49 @@ protected:
 		CSP_EXPECT_FEQ(0, vdiff(object->angularVelocity(), Vector3(1, 2, 3)));
 	}
 
+	CSP_TESTCASE(ForceFreeTop) {
+		// force free motion of a symmetric top, with I3 / I12 = sqrt(7) / 2.
+		object->setInertia(Matrix3(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.5 * sqrt(7)));
+		// w(0) is 30 degrees from z, in the x-z plane.
+		object->setAngularVelocity(Vector3(0.5, 0, 1) * sqrt(5));
+		// w should precess about z with angular frequency omega, and |w|
+		// should remain constant.
+		double omega = (0.5 * sqrt(7) - 1.0) * sqrt(5);
+
+		const double dt = 5.0 / 1000.0;
+		double t = 0.0;
+		for (int i = 0; i < 1000; ++i) {
+			physics->doSimStep(dt); t += dt;
+			Vector3 w = object->angularVelocityBody();
+			double phase = atan2(w.y(), w.x());
+			CSP_ENSURE_GT(0.00001, fabs(fmod(phase - omega * t, 2*PI)));
+			CSP_ENSURE_GT(0.00001, fabs(w.z() - sqrt(5)));
+		}
+	}
+
+	CSP_TESTCASE(ScratchSpin) {
+		object->setInertia(Matrix3(1, 0, 0, 0, 1, 0, 0, 0, 1));
+		object->setAngularVelocity(Vector3(0, 0, 1));
+
+		// force-free spin, with decreasing moment of inertia.  angular
+		// momentum should decrease as well, since PhysicsModel treats all
+		// inertia changes as external (i.e., as a result of shedding or
+		// gaining mass as opposed to internal reconfigurations of mass).  this
+		// is appropriate, for example, to the release of external stores, but
+		// not correct for mass reconfigurations such as fuel redistribution or
+		// geometry changes.  the latter are effects tend to be small compared
+		// to typical forces, and are thus neglected in the simulation.
+
+		const double dt = 5.0 / 1000.0;
+		double t = 0.0;
+		for (int i = 0; i < 1000; ++i) {
+			double Iz = 1.0 / (1.0 + t);  // Iz reduction over time.
+			object->setInertia(Matrix3(1, 0, 0, 0, 1, 0, 0, 0, Iz));
+			physics->doSimStep(dt); t += dt;
+			CSP_ENSURE_GT(0.00001, vdiff(object->angularVelocity(), Vector3(0, 0, 1)));
+		}
+	}
+
 private:
 	Ref<PhysicsModel> physics;
 	Ref<SystemsModel> systems;

@@ -1,0 +1,76 @@
+<?xml version="1.0"?>
+<WindowDocument xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation='../../window_document.xsd'>
+  <Includes>
+    <!-- This include will set the default behaviour on all controls. -->
+    <StyleInclude>styles.xml</StyleInclude>
+    <StyleInclude>css_help.xml</StyleInclude>
+    <StringTableInclude>global.xml</StringTableInclude>
+  </Includes>
+  <Window CssClass="help_tutorial" LocationZ="-20" SizeWidth="300" SizeHeight="700">
+ 	<Control>
+ 		<MultiControlContainer>
+ 			<Controls>
+		        <Label LocationX="10" LocationY="2" SizeWidth="278" SizeHeight="30" Text="${tutorials_takeoff}" />
+		        <Label CssClass="stripe" />
+
+ 				<Label LocationX="10" LocationY="60" SizeWidth="270" SizeHeight="100">
+ 					<Style>
+ 						<TextVerticalAlign>top</TextVerticalAlign>
+ 						<TextHorizontalAlign>left</TextHorizontalAlign>
+ 					</Style>
+ 					<Text>1. Increase throttle to full afterburner. 
+
+2. Pitch up the nose when you reach 150 kts.
+
+3. Raise landing gear when you are in the air.</Text>
+ 				</Label>
+ 				
+ 				<!-- Increase / decrease throttle -->
+ 				<Image LocationX="10" LocationY="190" SizeHeight="32" SizeWidth="32">
+ 					<Style>
+ 						<BackgroundColor>ffffffff</BackgroundColor>
+ 						<BackgroundImage>images/input-keyboard-button-equals.png</BackgroundImage>
+ 					</Style>
+ 				</Image>
+ 				<Label LocationX="50" LocationY="190" SizeHeight="32" SizeWidth="220" Text="Hold to increase throttle" />
+ 				<Image LocationX="10" LocationY="230" SizeHeight="32" SizeWidth="32">
+ 					<Style>
+ 						<BackgroundColor>ffffffff</BackgroundColor>
+ 						<BackgroundImage>images/input-keyboard-button-minus.png</BackgroundImage>
+ 					</Style>
+ 				</Image>
+ 				<Label LocationX="50" LocationY="230" SizeHeight="32" SizeWidth="220" Text="Hold to decrease throttle" />
+
+				<!-- Pitch up the nose. -->
+ 				<Image LocationX="10" LocationY="270" SizeHeight="32" SizeWidth="32">
+ 					<Style>
+ 						<BackgroundColor>ffffffff</BackgroundColor>
+ 						<BackgroundImage>images/input-keyboard-button-arrowup.png</BackgroundImage>
+ 					</Style>
+ 				</Image>
+ 				<Label LocationX="50" LocationY="270" SizeHeight="32" SizeWidth="220" Text="Pitch up the nose" />
+
+				<!-- Raise / lower landing gear. -->
+ 				<Image LocationX="10" LocationY="310" SizeHeight="32" SizeWidth="32">
+ 					<Style>
+ 						<BackgroundColor>ffffffff</BackgroundColor>
+ 						<BackgroundImage>images/input-keyboard-button-g.png</BackgroundImage>
+ 					</Style>
+ 				</Image>
+ 				<Label LocationX="50" LocationY="310" SizeHeight="32" SizeWidth="220" Text="Raise / lower landing gear" />
+
+				<!-- Airspeed indicator -->
+ 				<Label LocationX="10" LocationY="350" SizeHeight="32" SizeWidth="220" Text="Airspeed indicator on HUD" />
+ 				<Image LocationX="30" LocationY="380" SizeHeight="151" SizeWidth="151">
+ 					<Style>
+ 						<BackgroundColor>ffffffff</BackgroundColor>
+ 						<BackgroundImage>tutorials/takeoff/takeoff_speed.png</BackgroundImage>
+ 					</Style>
+ 				</Image>
+ 			</Controls>
+ 		</MultiControlContainer>
+  	</Control>
+	<Styles>
+	</Styles>
+  </Window>
+</WindowDocument>

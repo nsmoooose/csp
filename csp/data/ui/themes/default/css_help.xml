@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<StyleDocument xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="../../window_document.xsd">
+	<NamedStyles>
+		<Style Name="help">
+			<BorderLeftWidth>10</BorderLeftWidth>
+			<BorderLeftColor>7b8698ff</BorderLeftColor>
+			<VerticalAlign>middle</VerticalAlign>
+			<HorizontalAlign>center</HorizontalAlign>
+			<Height>650</Height>
+			<Width>900</Width>
+		</Style>
+		
+		<!-- The topics listbox -->
+		<Style Name="help_topics">
+			<Left>10</Left>
+			<Top>55</Top>
+			<Height>585</Height>
+			<Width>150</Width>
+		</Style>
+
+		<!-- This style is used from within the simulation to present the help window. -->
+		<Style Name="help_tutorial">
+			<BorderLeftWidth>10</BorderLeftWidth>
+			<BorderLeftColor>7b8698ff</BorderLeftColor>
+			<VerticalAlign>middle</VerticalAlign>
+	  		<HorizontalAlign>right</HorizontalAlign>
+		</Style>
+	</NamedStyles>
+</StyleDocument>

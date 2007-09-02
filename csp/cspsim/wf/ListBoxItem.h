@@ -31,10 +31,10 @@ CSP_NAMESPACE
 
 namespace wf {
 
-/** A class that represents a button.
- *
- *  A button is a widget that can be pressed by the user with the mouse.
- *  
+/** A Control that is display within the ListBox Control. This control
+ * can have the selected state. This means that you can have a different
+ * visual appearence when the item is selected. For example: different 
+ * background color.
  */
 class CSPSIM_EXPORT ListBoxItem : public SingleControlContainer {
 public:
@@ -49,7 +49,7 @@ public:
 	virtual const std::string getText() const;
 	virtual void setText(const std::string& text);
 		
-	virtual const Style& getSelectedStyle() const;
+	virtual const Ref<Style> getSelectedStyle() const;
 
 	virtual void onClick(ClickEventArgs& event);
 		
@@ -64,7 +64,7 @@ private:
 
 protected:
 	std::string m_Text;
-	Style m_SelectedStyle;
+	Ref<Style> m_SelectedStyle;
 };
 
 typedef std::vector<Ref<ListBoxItem> > ListBoxItemVector;

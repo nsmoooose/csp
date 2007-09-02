@@ -21,7 +21,7 @@
  * @file Control.cpp
  *
  **/
-
+#include <sstream>
 #include <csp/cspsim/wf/Control.h>
 #include <csp/cspsim/wf/ControlCallback.h>
 #include <csp/cspsim/wf/ControlGeometryBuilder.h>
@@ -38,7 +38,8 @@ CSP_NAMESPACE
 namespace wf {
 
 Control::Control() :
-	m_Enabled(true), m_TransformGroup(new osg::MatrixTransform), m_ZPos(1.0), m_ClickSignal(new Signal)
+	m_Enabled(true), m_TransformGroup(new osg::MatrixTransform), 
+	m_ZPos(1.0), m_Style(new Style), m_ClickSignal(new Signal)
 {
 	// Attach a control callback to the control. This makes it possible
 	// for the window manager to find out what control exists on a specific
@@ -75,38 +76,35 @@ void Control::buildGeometry() {
 		// Some containers will resize child controls. These containers
 		// will alignment don't work.
 
-		Point controlLocation = getLocation();
 		const Size controlSize = getSize();
 		const int parentWidth = static_cast<int>(m_Parent->getClientRect().width());
 		const int parentHeight = static_cast<int>(m_Parent->getClientRect().height());
 		 
-		Style controlStyle = StyleBuilder::buildStyle(this);
-		if(controlStyle.horizontalAlign) {
-			if(*controlStyle.horizontalAlign == "left") {
-				controlLocation.x = 0;
+		Ref<Style> controlStyle = StyleBuilder::buildStyle(this);
+		Ref<Style> style = getStyle();
+		if(controlStyle->getHorizontalAlign()) {
+			if(*controlStyle->getHorizontalAlign() == "left") {
+				style->setLeft(Style::UnitValue(Style::Pixels, 0));
 			}
-			else if(*controlStyle.horizontalAlign == "center") {
-				controlLocation.x = (parentWidth / 2) - (controlSize.width / 2);
+			else if(*controlStyle->horizontalAlign == "center") {
+				style->setLeft(Style::UnitValue(Style::Pixels, (parentWidth / 2) - (controlSize.width / 2)));
 			}
-			else if(*controlStyle.horizontalAlign == "right") {
-				controlLocation.x = parentWidth - controlSize.width;
+			else if(*controlStyle->horizontalAlign == "right") {
+				style->setLeft(Style::UnitValue(Style::Pixels, parentWidth - controlSize.width));
 			}
 		} 
-		if(controlStyle.verticalAlign) {
-			if(*controlStyle.verticalAlign == "top") {
-				controlLocation.y = 0;
+		if(controlStyle->verticalAlign) {
+			if(*controlStyle->verticalAlign == "top") {
+				style->setTop(Style::UnitValue(Style::Pixels, 0));
 			}
-			else if(*controlStyle.verticalAlign == "middle") {
-				controlLocation.y = (parentHeight / 2) - (controlSize.height / 2);
+			else if(*controlStyle->verticalAlign == "middle") {
+				style->setTop(Style::UnitValue(Style::Pixels, (parentHeight / 2) - (controlSize.height / 2)));
 			}
-			else if(*controlStyle.verticalAlign == "bottom") {
-				controlLocation.y = parentHeight - controlSize.height;
+			else if(*controlStyle->verticalAlign == "bottom") {
+				style->setTop(Style::UnitValue(Style::Pixels, parentHeight - controlSize.height));
 			}
 		}
-		setLocation(controlLocation);
 	}
-
-
 
 	m_TransformGroup->removeChild(0, m_TransformGroup->getNumChildren());
 	updateMatrix();
@@ -152,29 +150,23 @@ void Control::setZPos(float zPos) {
 	updateMatrix();
 }
 
-const Point& Control::getLocation() const {
-	return m_Point;
+const Point Control::getLocation() const {
+	Ref<Style> style = StyleBuilder::buildStyle(this);
+	ControlGeometryBuilder builder;
+	return builder.calculateLocation(this, style.get());
 }
 
-void Control::setLocation(const Point& point) {
-	m_Point = point;
-	updateMatrix();
+const Size Control::getSize() const {
+	Ref<Style> style = StyleBuilder::buildStyle(this);
+	ControlGeometryBuilder builder;
+	return builder.calculateSize(this, style.get());
 }
 
-const Size& Control::getSize() const {
-	return m_Size;
-}
-
-void Control::setSize(const Size& size) {
-	m_Size = size;
-	updateMatrix();
-}
-
-const Style& Control::getStyle() const {
+const Ref<Style> Control::getStyle() const {
 	return m_Style;
 }
 
-Style& Control::getStyle() {
+Ref<Style> Control::getStyle() {
 	return m_Style;
 }
 
@@ -229,13 +221,16 @@ std::string Control::getState() const {
 void Control::updateMatrix() {
 	double parentX = 0, parentY = 0;
 	if(m_Parent.valid()) {
-		parentX = m_Parent->m_Size.width / 2;
-		parentY = m_Parent->m_Size.height / 2;
+		Size parentSize = m_Parent->getSize();
+		parentX = parentSize.width / 2;
+		parentY = parentSize.height / 2;
 	}
 
 	// The control has been loaded. Lets reflect our properties with
 	// our osg object.
-	m_TransformGroup->setMatrix(osg::Matrix::translate(m_Point.x - parentX + (m_Size.width / 2), m_Point.y - parentY + (m_Size.height / 2), m_ZPos));
+	Size size = getSize();
+	Point location = getLocation();
+	m_TransformGroup->setMatrix(osg::Matrix::translate(location.x - parentX + (size.width / 2), location.y - parentY + (size.height / 2), m_ZPos));
 }
 
 Signal* Control::getClickSignal() {
@@ -269,6 +264,23 @@ void Control::onHover(HoverEventArgs& event) {
 			parent->onHover(event);
 		}
 	}
+}
+
+void Control::suspendLayout() {
+	// TODO: To be implemented...
+}
+
+void Control::resumeLayout() {
+	// TODO: To be implemented...
+}
+
+void Control::performLayout() {
+	// TODO: To be implemented...
+}
+
+bool Control::layoutSuspended() {
+	// TODO: To be implemented...
+	return true;
 }
 
 } // namespace wf

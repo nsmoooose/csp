@@ -73,20 +73,28 @@
 		<Style Name="Image">
 			<Color>000000ff</Color>
 			<BackgroundColor>00000000</BackgroundColor>
+			<VerticalAlign>none</VerticalAlign>
+			<HorizontalAlign>none</HorizontalAlign>
 		</Style>
 
 		<Style Name="Label">
 			<FontFamily>prima_sans_bt.ttf</FontFamily>
 			<FontSize>15</FontSize>
 			<Color>000000ff</Color>
+			<TextHorizontalAlign>left</TextHorizontalAlign>
 			<BackgroundColor>00000000</BackgroundColor>
+			<VerticalAlign>none</VerticalAlign>
+			<HorizontalAlign>none</HorizontalAlign>
 		</Style>
 
 		<Style Name="Label:disabled">
 			<FontFamily>prima_sans_bt.ttf</FontFamily>
 			<FontSize>15</FontSize>
 			<Color>666666ff</Color>
+			<TextHorizontalAlign>left</TextHorizontalAlign>
 			<BackgroundColor>00000000</BackgroundColor>
+			<VerticalAlign>none</VerticalAlign>
+			<HorizontalAlign>none</HorizontalAlign>
 		</Style>
 
 		<Style Name="ListBox">
@@ -97,6 +105,7 @@
 		<Style Name="ListBoxItem">
 			<BackgroundColor>ffffff55</BackgroundColor>
 			<BorderWidth>0</BorderWidth>
+			<Height>30</Height>
 		</Style>
 
 		<Style Name="ListBoxItem:selected">
@@ -136,6 +145,8 @@
 			<FontSize>15</FontSize>
 			<Color>000000ff</Color>
 			<BackgroundColor>f0f0f0ff</BackgroundColor>
+			<BackgroundColorBottomLeft>f0f0f0ff</BackgroundColorBottomLeft>
+			<BackgroundColorBottomRight>f0f0f0ff</BackgroundColorBottomRight>
 			<BorderWidth>1</BorderWidth>
 			<BorderBottomWidth>0</BorderBottomWidth>
 			<BorderColor>7b8698ff</BorderColor>
@@ -146,6 +157,8 @@
 			<FontSize>15</FontSize>
 			<Color>000000ff</Color>
 			<BackgroundColor>f0f0f0ff</BackgroundColor>
+			<BackgroundColorBottomLeft>f0f0f0ff</BackgroundColorBottomLeft>
+			<BackgroundColorBottomRight>f0f0f0ff</BackgroundColorBottomRight>
 			<BorderWidth>1</BorderWidth>
 			<BorderBottomWidth>0</BorderBottomWidth>
 			<BorderColor>7b8698ff</BorderColor>
@@ -156,6 +169,8 @@
 			<FontSize>15</FontSize>
 			<Color>000000ff</Color>
 			<BackgroundColor>f0f0f088</BackgroundColor>
+			<BackgroundColorBottomLeft>f0f0f0ff</BackgroundColorBottomLeft>
+			<BackgroundColorBottomRight>f0f0f0ff</BackgroundColorBottomRight>
 			<BorderWidth>1</BorderWidth>
 			<BorderBottomWidth>0</BorderBottomWidth>
 			<BorderColor>7b8698ff</BorderColor>
@@ -175,16 +190,27 @@
 
 		<!-- The following styles is specialized styles that can be applied to any
 			control. -->
+			
+		<Style Name="multiline">
+			<TextVerticalAlign>top</TextVerticalAlign>
+			<TextHorizontalAlign>left</TextHorizontalAlign>
+		</Style>
 
 		<Style Name="close_button">
 			<BackgroundImage>images/close_button.png</BackgroundImage>
 			<VerticalAlign>top</VerticalAlign>
 			<HorizontalAlign>right</HorizontalAlign>
+			<Height>32</Height>
+			<Width>32</Width>
 		</Style>
 
 		<Style Name="desktop">
 			<BackgroundColor>ffffffff</BackgroundColor>
 			<BorderWidth>0</BorderWidth>
+		</Style>
+		
+		<Style Name="heading">
+			<FontSize>30</FontSize>
 		</Style>
 
 		<Style Name="mainmenu">
@@ -203,6 +229,24 @@
 			<BorderBottomWidth>1</BorderBottomWidth>
 			<BorderTopColor>7b8698ff</BorderTopColor>
 			<BorderBottomColor>7b8698ff</BorderBottomColor>
+			<Left>0</Left>
+			<Top>35</Top>
+			<Height>10</Height>
+			<Width>100%</Width>
+		</Style>
+
+		<Style Name="tabpage_stripe">
+			<BackgroundColor>f0f0f0ff</BackgroundColor>
+			<BackgroundColorTopLeft>7b8698ff</BackgroundColorTopLeft>
+			<BackgroundColorBottomLeft>7b8698ff</BackgroundColorBottomLeft>
+			<BorderTopWidth>1</BorderTopWidth>
+			<BorderBottomWidth>1</BorderBottomWidth>
+			<BorderTopColor>7b8698ff</BorderTopColor>
+			<BorderBottomColor>7b8698ff</BorderBottomColor>
+			<Left>0</Left>
+			<Top>0</Top>
+			<Height>10</Height>
+			<Width>100%</Width>
 		</Style>
 
 		<Style Name="window_default">
@@ -211,18 +255,32 @@
 			<VerticalAlign>middle</VerticalAlign>
 			<HorizontalAlign>center</HorizontalAlign>
 		</Style>
-
-		<Style Name="help">
+		
+		<!-- This style should be used on a standard message box. -->
+		<Style Name="messagebox">
 			<BorderLeftWidth>10</BorderLeftWidth>
 			<BorderLeftColor>7b8698ff</BorderLeftColor>
 			<VerticalAlign>middle</VerticalAlign>
 			<HorizontalAlign>center</HorizontalAlign>
+			<Height>200</Height>
+			<Width>500</Width>
+		</Style>
+		
+		<!-- Use to place the message within a message box. -->
+		<Style Name="messagebox_message">
+			<Left>10</Left>
+			<Top>55</Top>
+			<Height>30</Height>
+			<Width>489</Width>
 		</Style>
 
-		<Style Name="topmenu">
-			<BackgroundColor>fdfdfdff</BackgroundColor>
-			<BorderBottomWidth>1</BorderBottomWidth>
-			<BorderLeftWidth>1</BorderLeftWidth>
+		<!-- This style is used on the label that represents the caption
+			 of a window. -->
+		<Style Name="window_caption">
+			<Left>10</Left>
+			<Top>2</Top>
+			<Height>30</Height>
+			<Width>98%</Width>
 		</Style>
 	</NamedStyles>
 </StyleDocument>

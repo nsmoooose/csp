@@ -47,7 +47,6 @@ namespace wf {
 
 struct Point;
 struct Size;
-struct Style;
 class Button;
 class Check;
 class CheckBox;
@@ -57,6 +56,7 @@ class Label;
 class ListBox;
 class ListBoxItem;
 class Model;
+class Style;
 class Tab;
 class TabPage;
 class TabHeader;
@@ -67,7 +67,7 @@ public:
 	ControlGeometryBuilder();
 	virtual ~ControlGeometryBuilder();
 	
-	virtual void buildControl(osg::Geode* geode, float& z, const Style& style, const Control* control) const;
+	virtual void buildControl(osg::Geode* geode, float& z, const Style* style, const Control* control) const;
 	virtual osg::Group* buildButton(const Button* button) const;
 	virtual osg::Group* buildCheck(const Check* check) const;
 	virtual osg::Group* buildCheckBox(const CheckBox* checkBox) const;
@@ -82,7 +82,8 @@ public:
 	virtual osg::Group* buildTabPage(const TabPage* page) const;
 	virtual osg::Group* buildWindow(const Window* window) const;
 	virtual Size getSizeOfText(const std::string& text, const std::string& fontFamily, float fontSize) const;
-	
+	virtual Size calculateSize(const Control* control, const Style* style) const;
+	virtual Point calculateLocation(const Control* control, const Style* style) const;
 private:
 	void getNextLayer(float& z) const;
 

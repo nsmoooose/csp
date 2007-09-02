@@ -33,10 +33,11 @@ CSP_NAMESPACE
 
 namespace wf {
 
-/** A class that represents a button.
- *
- *  A button is a widget that can be pressed by the user with the mouse.
- *  
+/** A Control that can display text. The text can be both single or multiline.
+ * Remember to set width since this controls when rowbreaks are created. Important
+ * properties to set on the Style object is fontFamily, fontSize, color, 
+ * textHorizontalAlign, textVerticalAlign. If these properties are missing the 
+ * text cannot be displayed.
  */
 class CSPSIM_EXPORT Label : public Control {
 public:
@@ -48,11 +49,14 @@ public:
 
 	virtual void buildGeometry();
 	
+	/** Returns the text set on this control. */
 	virtual const std::string& getText() const;
-	virtual void setText(const std::string& text);
 	
-	virtual osgText::Text::AlignmentType getAlignment() const;
-	virtual void setAlignment(osgText::Text::AlignmentType align);
+	/** Sets the new text to display. It is also possible to use ${resource_string}
+	 * in order to use localized strings. Do not forget to include the localized string
+	 * resource from the window xml file. 
+	 */ 
+	virtual void setText(const std::string& text);
 	
 	template<class Archive>
 	void serialize(Archive & ar) {
@@ -65,8 +69,6 @@ private:
 
 protected:
 	std::string m_Text;	
-	
-	osgText::Text::AlignmentType m_Alignment;
 };
 
 } // namespace wf

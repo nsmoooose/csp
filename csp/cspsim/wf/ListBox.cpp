@@ -75,18 +75,18 @@ void ListBox::layoutChildControls() {
 	double yPosition =  clientRect.y0;
 
 	ListBoxItemVector::iterator item = m_Items.begin();
-	for(int index=0;item != m_Items.end();++item, ++index) {
-		// Set the width of the list box item.	
-		Size size = (*item)->getSize();
-		size.width = clientRect.width();
-		(*item)->setSize(size);
+	for(int index=0;item != m_Items.end();++item, ++index) {	
+		// Set the width and location of the list box item.	
+		Ref<Style> style = (*item)->getStyle();
+		style->setWidth(Style::UnitValue(Style::Pixels, clientRect.width()));
+		style->setLeft(Style::UnitValue(Style::Pixels, clientRect.x0));
+		style->setTop(Style::UnitValue(Style::Pixels, yPosition));
+
 		(*item)->setZPos(2.0f);
 		(*item)->layoutChildControls();
 
-		// Set the location of the listbox item.
-		(*item)->setLocation(Point(clientRect.x0, yPosition));
-
 		// Prepare the position for the next listbox item.
+		Size size = (*item)->getSize();
 		yPosition += (size.height);
 	}
 }

@@ -32,10 +32,10 @@ CSP_NAMESPACE
 
 namespace wf {
 
-/** A class that represents a button.
- *
- *  A button is a widget that can be pressed by the user with the mouse.
- *  
+/** A Control that holds one or more ListBoxItem objects. The purpose with this 
+ * Control is to make it possible to display a list of texts that can be selected.
+ * For example a list of all availible missions. A text can then be selected
+ * using the mouse.
  */
 class CSPSIM_EXPORT ListBox : public Container {
 public:

@@ -3,22 +3,19 @@
   <Includes>
     <!-- This include will set the default behaviour on all controls. -->
     <StyleInclude>styles.xml</StyleInclude>
+    <StyleInclude>css_help.xml</StyleInclude>
     <StringTableInclude>global.xml</StringTableInclude>
   </Includes>
-  <Window LocationZ="10" CssClass="help" SizeWidth="900" SizeHeight="650">
+  <Window LocationZ="10" CssClass="help">
  	<Control>
  		<MultiControlContainer>
  			<Controls>
- 				<Button Id="close" CssClass="close_button" SizeHeight="32" SizeWidth="32" />
-		        <Label LocationX="10" LocationY="2" SizeWidth="569" SizeHeight="30" Text="${help}" />
-		        <Label CssClass="stripe" LocationX="0" LocationY="35" SizeWidth="889" SizeHeight="10" />
-				<ListBox Id="topics" LocationX="10" LocationY="55" SizeWidth="150" SizeHeight="585" />
-				<Label LocationX="170" LocationY="55" SizeWidth="709" SizeHeight="40" Text="Welcome">
-					<Style>
-						<FontSize>30</FontSize>
-					</Style>
-				</Label>
-				<Label LocationX="170" LocationY="95" SizeWidth="709" SizeHeight="545">
+ 				<Button Id="close" CssClass="close_button" />
+		        <Label CssClass="window_caption" Text="${help}" />
+		        <Label CssClass="stripe" />
+				<ListBox Id="topics" CssClass="help_topics" />
+				<Label LocationX="170" LocationY="55" SizeWidth="709" SizeHeight="40" Text="${help_welcome}" CssClass="heading" />
+				<Label LocationX="170" LocationY="95" SizeWidth="709" SizeHeight="545" CssClass="multiline">
 					<Text>
 About CSP
 The Combat Simulator Project (CSP) is a community united by the common interest in combat simulator development. We are developing standards, technologies, code libraries, tools and artwork that can be used to build a wide variety of real-time combat simulators. Our ultimate goal is to create free, cross-platform, multiplayer simulations of large scale combat scenarios.

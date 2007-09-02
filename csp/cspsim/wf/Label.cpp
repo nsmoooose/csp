@@ -30,10 +30,10 @@ CSP_NAMESPACE
 
 namespace wf {
 
-Label::Label() : m_Alignment(osgText::Text::LEFT_CENTER) {
+Label::Label() {
 }
 
-Label::Label(const std::string text) : m_Text(text), m_Alignment(osgText::Text::LEFT_CENTER) {
+Label::Label(const std::string text) : m_Text(text) {
 }
 
 Label::~Label() {
@@ -59,14 +59,6 @@ const std::string& Label::getText() const {
 void Label::setText(const std::string& text) {
 	m_Text = text;
 	buildGeometry();
-}
-
-osgText::Text::AlignmentType Label::getAlignment() const {
-	return m_Alignment;
-}
-
-void Label::setAlignment(osgText::Text::AlignmentType align) {
-	m_Alignment = align;
 }
 
 } // namespace wf

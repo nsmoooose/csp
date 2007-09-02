@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<StyleDocument xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="../../window_document.xsd">
+	<NamedStyles>
+  		<Style Name="top_icon_help">
+			<BackgroundImage>images/help_button.png</BackgroundImage>
+			<Left>10</Left>
+  			<Top>10</Top>
+  			<Height>64</Height>
+  			<Width>64</Width>
+  		</Style>
+
+  		<Style Name="top_icon_library">
+			<BackgroundImage>images/library_button.png</BackgroundImage>
+  			<Left>74</Left>
+  			<Top>10</Top>
+  			<Height>64</Height>
+  			<Width>64</Width>
+  		</Style>
+
+  		<Style Name="top_icon_options">
+  	   		<BackgroundImage>images/settings_button.png</BackgroundImage>
+  	   		<Left>138</Left>
+  			<Top>10</Top>
+  			<Height>64</Height>
+  			<Width>64</Width>
+  		</Style>
+
+  		<Style Name="top_icon_quit">
+       		<BackgroundImage>images/quit_button.png</BackgroundImage>
+       		<Left>202</Left>
+  			<Top>10</Top>
+  			<Height>64</Height>
+  			<Width>64</Width>
+  		</Style>
+
+		<Style Name="top_window">
+			<BackgroundColor>fdfdfdff</BackgroundColor>
+			<BorderBottomWidth>1</BorderBottomWidth>
+			<BorderLeftWidth>1</BorderLeftWidth>
+			<VerticalAlign>top</VerticalAlign>
+			<HorizontalAlign>right</HorizontalAlign>
+			<Height>84</Height>
+			<Width>276</Width>
+		</Style>
+	</NamedStyles>
+</StyleDocument>

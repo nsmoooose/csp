@@ -46,6 +46,8 @@ in this document has the same inheritence as the cpp-classes.
       <xsd:element name="FontFamily" type="xsd:string" minOccurs="0" />
       <xsd:element name="FontSize" type="xsd:double" minOccurs="0" />
       <xsd:element name="Color" type="xsd:string" minOccurs="0" />
+      <xsd:element name="TextVerticalAlign" minOccurs="0" type="VerticalAlignment_t" />
+      <xsd:element name="TextHorizontalAlign" minOccurs="0" type="HorizontalAlignment_t" />
       
       <xsd:element name="BackgroundColor" type="xsd:string" minOccurs="0" />
       <xsd:element name="BackgroundColorTopLeft" type="xsd:string" minOccurs="0" />
@@ -67,29 +69,15 @@ in this document has the same inheritence as the cpp-classes.
       <xsd:element name="BorderLeftColor" type="xsd:string" minOccurs="0" />
       <xsd:element name="BorderRightColor" type="xsd:string" minOccurs="0" />
 
-      <xsd:element name="VerticalAlign" minOccurs="0">
-      	<xsd:simpleType>
-      		<xsd:restriction base="xsd:string">
-      			<xsd:enumeration value="none" />
-      			<xsd:enumeration value="top" />
-      			<xsd:enumeration value="middle" />
-      			<xsd:enumeration value="bottom" />
-      		</xsd:restriction>
-      	</xsd:simpleType>
-      </xsd:element>
-      
-      <xsd:element name="HorizontalAlign" minOccurs="0">
-      	<xsd:simpleType>
-      		<xsd:restriction base="xsd:string">
-      			<xsd:enumeration value="none" />
-      			<xsd:enumeration value="left" />
-      			<xsd:enumeration value="center" />
-      			<xsd:enumeration value="right" />
-      		</xsd:restriction>
-      	</xsd:simpleType>
-      </xsd:element>
+      <xsd:element name="VerticalAlign" minOccurs="0" type="VerticalAlignment_t" />
+      <xsd:element name="HorizontalAlign" minOccurs="0" type="HorizontalAlignment_t" />
 
       <xsd:element name="Visible" type="xsd:boolean" minOccurs="0" />
+      
+      <xsd:element name="Left" type="xsd:string" minOccurs="0" />
+      <xsd:element name="Top" type="xsd:string" minOccurs="0" />
+      <xsd:element name="Height" type="xsd:string" minOccurs="0" />
+      <xsd:element name="Width" type="xsd:string" minOccurs="0" />
     </xsd:sequence>
   </xsd:complexType>
 
@@ -176,9 +164,7 @@ in this document has the same inheritence as the cpp-classes.
   
   <xsd:complexType name="Image_t">
     <xsd:complexContent>
-      <xsd:extension base="Control_t">
-        <xsd:attribute name="Text" type="xsd:string" />
-      </xsd:extension>
+      <xsd:extension base="Control_t" />
     </xsd:complexContent>
   </xsd:complexType>
 
@@ -356,4 +342,23 @@ in this document has the same inheritence as the cpp-classes.
       </xsd:extension>
     </xsd:complexContent>    
   </xsd:complexType>
+
+  <xsd:simpleType name="VerticalAlignment_t">
+  	<xsd:restriction base="xsd:string">
+  		<xsd:enumeration value="none" />
+  		<xsd:enumeration value="top" />
+  		<xsd:enumeration value="middle" />
+  		<xsd:enumeration value="bottom" />
+  	</xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="HorizontalAlignment_t">
+  	<xsd:restriction base="xsd:string">
+  		<xsd:enumeration value="none" />
+  		<xsd:enumeration value="left" />
+  		<xsd:enumeration value="center" />
+  		<xsd:enumeration value="right" />
+  	</xsd:restriction>
+  </xsd:simpleType>
+
 </xsd:schema>

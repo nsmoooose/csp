@@ -31,12 +31,12 @@ CSP_NAMESPACE
 namespace wf {
 
 template<class T>
-bool buildStyleFromCssClass(Style& styleToBuild, T& propertyToBuild, const Style& classStyle) {
+bool buildStyleFromCssClass(Style* styleToBuild, T& propertyToBuild, const Style* classStyle) {
 	// Calculate the offset to the member variable from the destination struct.	
 	// By using the offset we can safely check and fetch a value from actual style that
 	// exists on the control.
-	size_t offset = reinterpret_cast<const char*>(&propertyToBuild) - reinterpret_cast<const char*>(&styleToBuild);
-	const T* sourceProperty = reinterpret_cast<const T*>(reinterpret_cast<const char*>(&classStyle) + offset);
+	size_t offset = reinterpret_cast<const char*>(&propertyToBuild) - reinterpret_cast<const char*>(styleToBuild);
+	const T* sourceProperty = reinterpret_cast<const T*>(reinterpret_cast<const char*>(classStyle) + offset);
 	
 	// Are there any value set on the style struct?
 	if(sourceProperty->get_ptr() != NULL) {
@@ -48,10 +48,10 @@ bool buildStyleFromCssClass(Style& styleToBuild, T& propertyToBuild, const Style
 }
 
 template<class T>
-void buildInheritedValue(Style& styleToBuild, T& propertyToBuild, const Control* control) {
-	const Style& controlStyle = control->getStyle();
+void buildInheritedValue(Style* styleToBuild, T& propertyToBuild, const Control* control) {
+	const Ref<const Style> controlStyle = control->getStyle();
 
-	if(!buildStyleFromCssClass(styleToBuild, propertyToBuild, controlStyle)) {
+	if(!buildStyleFromCssClass(styleToBuild, propertyToBuild, controlStyle.get())) {
 		// No there was no value. Lets check the parent control to see if that control
 		// has any value.
 		const Control* parent = control->getParent();
@@ -62,7 +62,7 @@ void buildInheritedValue(Style& styleToBuild, T& propertyToBuild, const Control*
 }
 
 template<class T>
-void buildStyleForSinglePropertyWithState(Style& styleToBuild, T& propertyToBuild, 
+void buildStyleForSinglePropertyWithState(Style* styleToBuild, T& propertyToBuild, 
 	const Control* control, const std::string& stateName) {
 	if(propertyToBuild) {
 		// There was already a value on the style. This will override all
@@ -89,17 +89,18 @@ void buildStyleForSinglePropertyWithState(Style& styleToBuild, T& propertyToBuil
 	if(stateName.size() != 0) {
 	  	className += stateName;
 	}
-	optional<Style> cssStyle = window->getNamedStyle(className);
+	optional<Ref<Style> > cssStyle = window->getNamedStyle(className);
+	bool cssStyleWithStateSet = false;
 	if(cssStyle) {
-		buildStyleFromCssClass(styleToBuild, propertyToBuild, *cssStyle);
+		cssStyleWithStateSet = buildStyleFromCssClass(styleToBuild, propertyToBuild, cssStyle->get());
 	}
-	else {
+	if(!cssStyleWithStateSet) {
 		// No named style including the state was found. Lets try without the 
 		// state also...
 		className = control->getName();
 		cssStyle = window->getNamedStyle(className);
 		if(cssStyle) {
-			buildStyleFromCssClass(styleToBuild, propertyToBuild, *cssStyle);
+			buildStyleFromCssClass(styleToBuild, propertyToBuild, cssStyle->get());
 		}
 	}
 
@@ -111,9 +112,9 @@ void buildStyleForSinglePropertyWithState(Style& styleToBuild, T& propertyToBuil
 		if(stateName.size() != 0) {
 			*cssClassName += stateName;
 		}
-		optional<Style> cssStyle = window->getNamedStyle(*cssClassName);
+		optional<Ref<Style> > cssStyle = window->getNamedStyle(*cssClassName);
 		if(cssStyle) {
-			buildStyleFromCssClass(styleToBuild, propertyToBuild, *cssStyle);
+			buildStyleFromCssClass(styleToBuild, propertyToBuild, cssStyle->get());
 		}
 		else
 		{
@@ -122,56 +123,54 @@ void buildStyleForSinglePropertyWithState(Style& styleToBuild, T& propertyToBuil
 			cssClassName = control->getCssClass();
 			cssStyle = window->getNamedStyle(*cssClassName);
 			if(cssStyle) {
-				buildStyleFromCssClass(styleToBuild, propertyToBuild, *cssStyle);
+				buildStyleFromCssClass(styleToBuild, propertyToBuild, cssStyle->get());
 			}
 		}
 	}
 }
 
-Style StyleBuilder::buildStyle(const Control* control) {
+/** Class that is using the serialize template method to iterate all members
+ * within the Style object. Each member will be built using the
+ * buildStyleForSinglePropertyWithState method.
+ * 
+ * Declare an instance of this object and call serialize on the style object
+ * to build a new style object.
+ */ 
+struct SerializationStyleBuilder {
+	SerializationStyleBuilder(Style* style, const Control* control, const std::string& stateName) : 
+		m_Style(style), m_Control(control), m_StateName(stateName) {}
+	
+	template<class T>
+	SerializationStyleBuilder* operator &(std::pair<std::string, T*> nvp) {
+		buildStyleForSinglePropertyWithState(m_Style.get(), (*nvp.second), m_Control.get(), m_StateName);
+		return this;
+	}
+	
+	Ref<Style> m_Style;
+	Ref<const Control> m_Control;
+	std::string m_StateName;
+};
+
+Ref<Style> StyleBuilder::buildStyle(const Control* control) {
 	// This method will imitate CSS to some extent. Well the
 	// most important things is here anyway...
 	
 	// First we try to get any value set directly on the control.
-	Style style = control->getStyle();
+	Ref<Style> style = control->getStyle()->clone();
 	
 	// So lets call the build style method with all state found on the control.
 	// This method call will build the current controls style
 	// according to set values on the control, inherited values and CssClasses. 
-	buildStyle(style, control, control->getState());
+	buildStyle(style.get(), control, control->getState());
 	
 	// Return the style to the caller.
 	return style;
 }
 
-void StyleBuilder::buildStyle(Style& style, const Control* control, const std::string& stateName) {
-	buildStyleForSinglePropertyWithState(style, style.fontFamily, control, stateName);
-	buildStyleForSinglePropertyWithState(style, style.fontSize, control, stateName);
-	buildStyleForSinglePropertyWithState(style, style.color, control, stateName);
-	buildStyleForSinglePropertyWithState(style, style.backgroundColor, control, stateName);
-	buildStyleForSinglePropertyWithState(style, style.backgroundColorTopLeft, control, stateName);
-	buildStyleForSinglePropertyWithState(style, style.backgroundColorTopRight, control, stateName);
-	buildStyleForSinglePropertyWithState(style, style.backgroundColorBottomLeft, control, stateName);
-	buildStyleForSinglePropertyWithState(style, style.backgroundColorBottomRight, control, stateName);
-
-	buildStyleForSinglePropertyWithState(style, style.backgroundImage, control, stateName);
-
-	buildStyleForSinglePropertyWithState(style, style.borderWidth, control, stateName);
-	buildStyleForSinglePropertyWithState(style, style.borderTopWidth, control, stateName);
-	buildStyleForSinglePropertyWithState(style, style.borderBottomWidth, control, stateName);
-	buildStyleForSinglePropertyWithState(style, style.borderLeftWidth, control, stateName);
-	buildStyleForSinglePropertyWithState(style, style.borderRightWidth, control, stateName);
-	
-	buildStyleForSinglePropertyWithState(style, style.borderColor, control, stateName);
-	buildStyleForSinglePropertyWithState(style, style.borderTopColor, control, stateName);
-	buildStyleForSinglePropertyWithState(style, style.borderBottomColor, control, stateName);
-	buildStyleForSinglePropertyWithState(style, style.borderLeftColor, control, stateName);
-	buildStyleForSinglePropertyWithState(style, style.borderRightColor, control, stateName);
-
-	buildStyleForSinglePropertyWithState(style, style.verticalAlign, control, stateName);
-	buildStyleForSinglePropertyWithState(style, style.horizontalAlign, control, stateName);
-
-	buildStyleForSinglePropertyWithState(style, style.visible, control, stateName);
+void StyleBuilder::buildStyle(Style* style, const Control* control, const std::string& stateName) {
+	// Use the serialize method to iterate over all style object members.
+	SerializationStyleBuilder builder(style, control, stateName);
+	style->serialize(builder);
 }
 
 } // namespace wf

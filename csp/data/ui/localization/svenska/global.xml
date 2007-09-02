@@ -12,7 +12,7 @@
 		<String key="help_joystick">Joystick</String>
 		<String key="help_f16_first_steps">F16 Start</String>
 		<String key="help_keyboard_aircraft">Flygplans kontroller</String>
-		<String key="instant_action">Action</String>
+		<String key="instant_action">Spela direkt!</String>
 		<String key="main_menu">Huvudmeny</String>
 		<String key="multiplayer">Nätverk</String>
 		<String key="ok">OK</String>
@@ -23,11 +23,13 @@
 		<String key="options_userinterface">Användargränssnitt</String>
 		<String key="pause">Paus</String>
 		<String key="quit">Avsluta</String>
-		<String key="restart_required">Omstart krävs fär att ändring skall gälla.</String>
+		<String key="restart_required">Omstart krävs för att ändring skall gälla.</String>
 		<String key="resume">Återgå</String>
 		<String key="screen_resolution">Upplösning</String>
 		<String key="singleplayer">1 spelare</String>
+		<String key="start_simulation">Starta</String>
 		<String key="tutorials">Handledning</String>
+		<String key="tutorials_takeoff">Start (F16)</String>
 		<String key="ui_theme">Tema</String>
 		<String key="ui_language">Språk</String>
 	</Strings>

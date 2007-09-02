@@ -9,8 +9,8 @@
     <Control>
       <MultiControlContainer>
         <Controls>
-          <Label LocationX="10" LocationY="2" SizeWidth="328" SizeHeight="30" Text="Combat Simulator Project" />
-          <Label CssClass="stripe" LocationX="0" LocationY="30" SizeWidth="428" SizeHeight="10" />
+          <Label CssClass="window_caption" Text="Combat Simulator Project" />
+          <Label CssClass="stripe" />
 
 		  <Button LocationX="47" LocationY="60" SizeWidth="150" SizeHeight="40" Id="resume" Text="${resume}" />
 		  <Button LocationX="229" LocationY="60" SizeWidth="150" SizeHeight="40" Id="end_simulation" Text="${main_menu}" />

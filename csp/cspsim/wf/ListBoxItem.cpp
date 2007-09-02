@@ -36,18 +36,18 @@ namespace wf {
 
 ListBoxItem::ListBoxItem() {
 	Ref<Label> label = new Label();
-	label->setAlignment(osgText::Text::CENTER_CENTER);
+	Ref<Style> style = label->getStyle();
+	style->setTextHorizontalAlign(std::string("center"));
 	label->setZPos(-0.1f);
 	setControl(label.get());
-	setSize(Size(30.0f, 30.0f));
 }
 
 ListBoxItem::ListBoxItem(const std::string text) : m_Text(text) {
 	Ref<Label> label = new Label(text);
-	label->setAlignment(osgText::Text::CENTER_CENTER);
+	Ref<Style> style = label->getStyle();
+	style->setTextHorizontalAlign(std::string("center"));
 	label->setZPos(-0.1f);
 	setControl(label.get());
-	setSize(Size(30.0f, 30.0f));
 }
 
 ListBoxItem::~ListBoxItem() {
@@ -85,7 +85,7 @@ void ListBoxItem::setText(const std::string& text) {
 	buildGeometry();
 }
 
-const Style& ListBoxItem::getSelectedStyle() const {
+const Ref<Style> ListBoxItem::getSelectedStyle() const {
 	return m_SelectedStyle;
 }
 

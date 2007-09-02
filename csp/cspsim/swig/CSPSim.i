@@ -75,6 +75,7 @@ public:
 
 	SDL_Surface * getSDLScreen();
 	csp::SimDate & getCurrentTime();
+	void setCurrentTime(csp::SimDate& date);
 	csp::SimTime const & getFrameRate() const;
 	void setActiveObject(csp::Ref<csp::DynamicObject> object);
 	csp::Ref<csp::DynamicObject> const getActiveObject() const;

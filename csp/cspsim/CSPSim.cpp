@@ -413,11 +413,8 @@ void CSPSim::loadSimulation() {
 		m_CurrentScreen->onRender();
 	}
 
-	initTime(date);
+	setCurrentTime(date);
 	
-	m_Atmosphere->setDate(date);
-	m_Atmosphere->reset();
-
 	CSPLOG(DEBUG, APP) << "Initializing theater";
 	std::string theater = g_Config.getPath("Testing", "Theater", "sim:theater.balkan", false);
 	m_Theater = m_DataManager->getObject(theater.c_str());
@@ -708,14 +705,16 @@ void CSPSim::run() {
 }
 
 
-void CSPSim::initTime(SimDate const &date) {
+void CSPSim::setCurrentTime(SimDate const &date) {
 	m_CurrentTime = date;
 	m_CurrentTime.update();
 	m_ElapsedTime = 0.0;
 	m_TimeLag = 0.00001;
 	m_AverageFrameTime = 1.0;
+	
+	m_Atmosphere->setDate(date);
+	m_Atmosphere->reset();	
 }
-
 
 // update time from the current frame update and the previous one.
 // the timestep for updates is restricted to 1 second max.  greater

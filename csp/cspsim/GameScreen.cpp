@@ -158,7 +158,7 @@ GameScreen::GameScreen():
 	m_OnPlayerJoin(this, &GameScreen::onPlayerJoin),
 	m_OnPlayerQuit(this, &GameScreen::onPlayerQuit)
 {
-	initInterface();
+	initInterface();	
 }
 
 GameScreen::~GameScreen() {
@@ -172,6 +172,10 @@ void GameScreen::onInit() {
 	m_ScreenInfoManager = new ScreenInfoManager(ScreenWidth, ScreenHeight);
 	m_ScreenInfoManager->setName("ScreenInfoManager");
 	m_ScreenInfoManager->setStatus("RECORD", false);
+	
+	// Set general stats and object statistics to not visisble as default.
+	m_ScreenInfoManager->setStatus("GENERAL STATS", false);
+	m_ScreenInfoManager->setStatus("OBJECT STATS", false);
 
 	osg::Group *info = CSPSim::theSim->getScene()->getInfoGroup();
 	info->removeChild(0, info->getNumChildren());

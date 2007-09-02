@@ -5,14 +5,14 @@
     <StyleInclude>styles.xml</StyleInclude>
     <StringTableInclude>global.xml</StringTableInclude>
   </Includes>
-  <Window CssClass="window_default" SizeWidth="500" SizeHeight="200" LocationZ="50" >
+  <Window CssClass="messagebox" LocationZ="50" >
     <Control>
       <MultiControlContainer>
         <Controls>
-          <Label Id="caption" LocationX="10" LocationY="2" SizeWidth="489" SizeHeight="30" Text="Combat Simulator Project" />
-          <Label CssClass="stripe" LocationX="0" LocationY="30" SizeWidth="489" SizeHeight="10" />
+          <Label Id="caption" CssClass="window_caption" Text="${csp}" />
+          <Label CssClass="stripe" />
 
-          <Label Id="message" LocationX="10" LocationY="55" SizeWidth="489" SizeHeight="30" Text="Combat Simulator Project" />
+          <Label Id="message" CssClass="messagebox_message" Text="Place your text here" />
 
           <Button Id="ok" LocationX="170" LocationY="150" SizeWidth="120" SizeHeight="35" Text="OK" />
         </Controls>

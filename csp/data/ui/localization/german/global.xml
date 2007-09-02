@@ -27,7 +27,9 @@
 		<String key="restart_required">Neustart erforderlich</String>
 		<String key="singleplayer">Einzelspieler</String>
 		<String key="screen_resolution">Auflösung</String>
+		<String key="start_simulation">Starten</String>
 		<String key="tutorials">Tutorials</String>
+		<String key="tutorials_takeoff">Abheben (F16)</String>
 		<String key="ui_theme">Theme</String>
 		<String key="ui_language">Sprache</String>
 	</Strings>

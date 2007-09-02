@@ -6,7 +6,7 @@
 		<StyleInclude>styles.xml</StyleInclude>
 		<StringTableInclude>global.xml</StringTableInclude>
 	</Includes>
-	<Window CssClass="window_default" SizeWidth="580" SizeHeight="420"
+	<Window Id="optionsWindow" CssClass="window_default" SizeWidth="580" SizeHeight="420"
 		LocationZ="30">
 		<Control>
 			<MultiControlContainer>
@@ -18,8 +18,7 @@
 								<Control>
 									<MultiControlContainer>
 										<Controls>
-											<Label CssClass="stripe"
-												LocationX="0" LocationY="0" SizeWidth="548" SizeHeight="10" />
+											<Label CssClass="tabpage_stripe" />
 											<Label
 												Text="${screen_resolution}:" LocationX="10" LocationY="10"
 												SizeHeight="25" />
@@ -39,8 +38,7 @@
 								<Control>
 									<MultiControlContainer>
 										<Controls>
-											<Label CssClass="stripe"
-												LocationX="0" LocationY="0" SizeWidth="548" SizeHeight="10" />
+											<Label CssClass="tabpage_stripe" />
 											<Label LocationX="10" LocationY="10" SizeWidth="438" SizeHeight="25" Text="To be implemented (volume)" />
 										</Controls>
 									</MultiControlContainer>
@@ -50,8 +48,7 @@
 								<Control>
 									<MultiControlContainer>
 										<Controls>
-											<Label CssClass="stripe"
-												LocationX="0" LocationY="0" SizeWidth="548" SizeHeight="10" />
+											<Label CssClass="tabpage_stripe" />
 											<Label LocationX="10" LocationY="10" SizeWidth="438" SizeHeight="25"  Text="To be implemented (key bindings, joystick)" />
 										</Controls>
 									</MultiControlContainer>
@@ -62,8 +59,7 @@
 								<Control>
 									<MultiControlContainer>
 										<Controls>
-											<Label CssClass="stripe"
-												LocationX="0" LocationY="0" SizeWidth="548" SizeHeight="10" />
+											<Label CssClass="tabpage_stripe" />
 											<Label LocationX="10" LocationY="10"
 												SizeWidth="438" SizeHeight="25" Text="${ui_theme}:" />
 											<ListBox Id="theme" LocationX="20" LocationY="37"
@@ -79,10 +75,8 @@
 						</Pages>
 					</Tab>
 
-					<Button Id="close" CssClass="close_button"
-						SizeHeight="32" SizeWidth="32" />
-					<Label LocationX="10" LocationY="2" SizeWidth="569"
-						SizeHeight="30" Text="${options}" />
+					<Button Id="close" CssClass="close_button" />
+					<Label CssClass="window_caption" Text="${options}" />
 					<Label CssClass="stripe" LocationX="0"
 						LocationY="35" SizeWidth="569" SizeHeight="10" />
 

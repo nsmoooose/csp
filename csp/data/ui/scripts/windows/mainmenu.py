@@ -22,10 +22,11 @@
 Combat Simulator Project : Main menu script
 """
 
-import csp.cspsim
+import csp.csplib
 from csp.data.ui.scripts.gamescreenmanager import GameScreenManager
 from csp.data.ui.scripts.utils import SlotManager
 from csp.data.ui.scripts.windows.options import Options
+from csp.data.ui.scripts.windows.tutorials import Tutorials
 
 class MainMenu(csp.cspsim.Window, SlotManager):
     def __init__(self, cspsim):
@@ -45,6 +46,10 @@ class MainMenu(csp.cspsim.Window, SlotManager):
         optionsButton = self.getById('options')
         if optionsButton != None:
             self.connectToClickSignal(optionsButton, self.options_Click)
+            
+        tutorialsButton = self.getById('tutorials')
+        if tutorialsButton != None:
+            self.connectToClickSignal(tutorialsButton, self.tutorials_Click)
         
         quitButton = self.getById('quit')
         if quitButton != None:
@@ -62,6 +67,11 @@ class MainMenu(csp.cspsim.Window, SlotManager):
         self.cspsim.createVehicle(f16dj, vec(-29510, -10530, 91.3), vec(0, 0, 0), vec(0.0, 0.0, 180.0)) 
         
         gameScreenManager = GameScreenManager(self.cspsim)
+        
+    def tutorials_Click(self):
+        tutorials = Tutorials(self.cspsim)
+        tutorials.displayMission('index.xml')
+        self.getWindowManager().show(tutorials)
                         
     def options_Click(self):
         options = Options(self.cspsim)

@@ -56,7 +56,8 @@ void ToValue(XMLNode& node, const std::string& src, std::string* dst);
 void ToValue(XMLNode& node, const std::string& src, Ref<wf::Control>* dst);
 void ToValue(XMLNode& node, const std::string& src, ControlVector* dst);
 void ToValue(XMLNode& node, const std::string& src, ListBoxItemVector* dst);
-void ToValue(XMLNode& node, const std::string& src, Style* dst);
+void ToValue(XMLNode& node, const std::string& src, Ref<Style>* dst);
+void ToValue(XMLNode& node, const std::string& src, Style::UnitValue* dst);
 void ToValue(XMLNode& node, const std::string& src, NamedStyleMap* dst);
 void ToValue(XMLNode& node, const std::string& src, TabPageVector* dst);
 void ToValue(XMLNode& node, const std::string& src, TableControlContainer::ColumnVector* dst);
@@ -235,7 +236,7 @@ void Serialization::load(Window* window, const std::string& file) {
 	
 					NamedStyleMap::iterator style = styles.begin();
 					for(;style != styles.end();++style) {
-						window->addNamedStyle(style->first, style->second);
+						window->addNamedStyle(style->first, style->second.get());
 					}
 				}
 			}
@@ -401,16 +402,35 @@ void ToValue(XMLNode& node, const std::string& /* src */, ListBoxItemVector* dst
 	}
 }
 
-void ToValue(XMLNode& node, const std::string& /* src */, Style* dst) {
+void ToValue(XMLNode& node, const std::string& /* src */, Ref<Style>* dst) {
 	ReadingArchive archive;
-	archive.load(dst, node);
+	archive.load(dst->get(), node);
+}
+
+void ToValue(XMLNode& /*node*/, const std::string& src, Style::UnitValue* dst) {
+	/* The following formats is supported for the string.
+	 * 100.3   ==    out_unit = ePixels out_value = 100.3
+	 * 22%     ==    out_unit = ePercentage out_value = 22
+	 */
+	
+	// Default unit is pixels.
+	dst->unit = Style::Pixels;
+	
+	// Check if this is a percentage.
+	std::string::size_type pos = src.find("%");
+	if(pos != std::string::npos) {
+		dst->unit = Style::Percentage;
+	}
+	
+	// Do the conversion.
+	dst->value = (float)atof(src.substr(0, pos).c_str());
 }
 
 void ToValue(XMLNode& node, const std::string& /* src */, NamedStyleMap* dst) {
 	int childNodeCount = node.nChildNode();
 	for(int index = 0;index < childNodeCount;++index) {
 		XMLNode childNode = node.getChildNode(index);
-		Style style;
+		Ref<Style> style = new Style;
 		ToValue(childNode, "", &style);
 
 		CSP_XMLCSTR name = childNode.getAttribute("Name");

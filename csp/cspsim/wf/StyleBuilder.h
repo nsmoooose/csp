@@ -32,7 +32,7 @@ CSP_NAMESPACE
 namespace wf {
 
 class Control;
-struct Style;
+class Style;
 
 /** Class that is building up the style to use for a specific control.
  * It is acheived by checking inherited styles, styles set per control
@@ -40,14 +40,18 @@ struct Style;
  */
 class StyleBuilder {
 public:
-	static Style buildStyle(const Control* control);
+	/** Builds a style object for the control sent as a parameter. The entire
+	 * control hierchy is checked (style properties can be inherited from parent
+	 * control or a named class). 
+	 */
+	static Ref<Style> buildStyle(const Control* control);
 	
 	/** Method used to build a style with an object that is in a particilar state.
 	 * style = The original state style set on the control.
 	 * control = The control that we are building style from.
 	 * stateName = The name of the state. Eg: selected, disabled, hover etc
 	 */
-	static void buildStyle(Style& style, const Control* control, const std::string& stateName);
+	static void buildStyle(Style* style, const Control* control, const std::string& stateName);
 };
 
 } // namespace wf

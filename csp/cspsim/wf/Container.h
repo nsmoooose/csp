@@ -31,6 +31,11 @@ CSP_NAMESPACE
 
 namespace wf {
 
+/** Base class for all controls that can have new child controls.
+ * By inheriting from this class you can extend normal controls to have
+ * child controls. By implementing layoutChildControls you make it possible
+ * to control the positioning behaviour of your children.
+ */
 class CSPSIM_EXPORT Container : public Control {
 public:
 	Container();

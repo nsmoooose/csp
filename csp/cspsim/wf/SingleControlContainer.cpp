@@ -66,7 +66,12 @@ Control* SingleControlContainer::getControl() {
 
 void SingleControlContainer::layoutChildControls() {
 	if(m_Control.valid()) {
-		m_Control->setSize(getSize());
+		Ref<Style> style = m_Control->getStyle();
+		Size size = getSize();
+		style->setLeft(Style::UnitValue(Style::Pixels, 0));
+		style->setTop(Style::UnitValue(Style::Pixels, 0));
+		style->setHeight(Style::UnitValue(Style::Pixels, size.height));
+		style->setWidth(Style::UnitValue(Style::Pixels, size.width)); 
 		Container* container = dynamic_cast<Container*>(m_Control.get());
 		if(container != NULL) {
 			container->layoutChildControls();

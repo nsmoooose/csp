@@ -115,6 +115,8 @@ public:
 	SDL_Surface * getSDLScreen() {return m_SDLScreen;};
 
 	SimDate & getCurrentTime() { return m_CurrentTime; }
+	void setCurrentTime(SimDate const &);
+		
 	SimTime const & getFrameRate() const{ return m_FrameRate; }
 	SimTime const & getElapsedTime() const { return m_ElapsedTime; }
 	
@@ -169,7 +171,6 @@ private:
 	SimTime m_ElapsedTime;
 	SimTime m_TimeLag;
 
-	void initTime(SimDate const &);
 	void updateTime();
 
 	// The current input device interface

@@ -66,33 +66,33 @@ Control* Container::getById(const std::string& id) {
 }
 
 Rectangle Container::getClientRect() const {
-	Style style = StyleBuilder::buildStyle(this);
+	Ref<Style> style = StyleBuilder::buildStyle(this);
 		
 	Rectangle clientArea;
-	clientArea.x0 = style.borderWidth ? *style.borderWidth : 0;
-	if(style.borderLeftWidth) {
-		clientArea.x0 = *style.borderLeftWidth;
+	clientArea.x0 = style->getBorderWidth() ? *style->getBorderWidth() : 0;
+	if(style->getBorderLeftWidth()) {
+		clientArea.x0 = *style->getBorderLeftWidth();
 	}
 	
-	clientArea.y0 = style.borderWidth ? *style.borderWidth : 0;
-	if(style.borderTopWidth) {
-		clientArea.y0 = *style.borderTopWidth;
+	clientArea.y0 = style->getBorderWidth() ? *style->getBorderWidth() : 0;
+	if(style->getBorderTopWidth()) {
+		clientArea.y0 = *style->getBorderTopWidth();
 	}
 	
 	clientArea.x1 = getSize().width;
-	if(style.borderWidth && !style.borderRightWidth) {
-		clientArea.x1 -= *style.borderWidth;
+	if(style->getBorderWidth() && !style->getBorderRightWidth()) {
+		clientArea.x1 -= *style->getBorderWidth();
 	}
-	if(style.borderRightWidth) {
-		clientArea.x1 -= *style.borderRightWidth;
+	if(style->getBorderRightWidth()) {
+		clientArea.x1 -= *style->getBorderRightWidth();
 	}
 	
 	clientArea.y1 = getSize().height;
-	if(style.borderWidth && !style.borderBottomWidth) {
-		clientArea.y1 -= *style.borderWidth;
+	if(style->getBorderWidth() && !style->getBorderBottomWidth()) {
+		clientArea.y1 -= *style->getBorderWidth();
 	}
-	if(style.borderBottomWidth) {
-		clientArea.y1 -= *style.borderBottomWidth;
+	if(style->getBorderBottomWidth()) {
+		clientArea.y1 -= *style->getBorderBottomWidth();
 	}
 	
 	return clientArea;	

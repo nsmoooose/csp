@@ -38,9 +38,10 @@ class Window;
 
 typedef std::vector<std::string> StringVector;
 
-// Class that is responsible for finding resources
-// in the filesystem. A resource can be placed in different 
-// places in the data directory.
+/** Class that is responsible for finding resources
+ * in the filesystem. A resource can be placed in different
+ * places in the data directory.
+ */
 class ResourceLocator : public Referenced {
 public:
 	ResourceLocator(const StringVector& includeFolders);
@@ -53,7 +54,13 @@ private:
 	StringVector m_IncludeFolders;
 };
 
-// Method to create the default resource locator. 
+/** Creates a default resource locator. This instance is using the following 
+ * include locations to find files: 
+ * current theme folder, 
+ * current language folder, 
+ * data directory, 
+ * ui directory.
+ */ 
 ResourceLocator* createDefaultResourceLocator();
 
 } // namespace wf

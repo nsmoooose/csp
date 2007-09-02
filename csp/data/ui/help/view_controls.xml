@@ -3,21 +3,18 @@
   <Includes>
     <!-- This include will set the default behaviour on all controls. -->
     <StyleInclude>styles.xml</StyleInclude>
+    <StyleInclude>css_help.xml</StyleInclude>
     <StringTableInclude>global.xml</StringTableInclude>
   </Includes>
-  <Window LocationZ="10" CssClass="help" SizeWidth="900" SizeHeight="650">
+  <Window LocationZ="10" CssClass="help">
  	<Control>
  		<MultiControlContainer>
  			<Controls>
- 				<Button Id="close" CssClass="close_button" SizeHeight="32" SizeWidth="32" />
-		        <Label LocationX="10" LocationY="2" SizeWidth="569" SizeHeight="30" Text="${help}" />
-		        <Label CssClass="stripe" LocationX="0" LocationY="35" SizeWidth="889" SizeHeight="10" />
-				<ListBox Id="topics" LocationX="10" LocationY="55" SizeWidth="150" SizeHeight="585" />
-				<Label LocationX="170" LocationY="55" SizeWidth="709" SizeHeight="40" Text="View controls">
-					<Style>
-						<FontSize>30</FontSize>
-					</Style>
-				</Label>
+ 				<Button Id="close" CssClass="close_button" />
+		        <Label CssClass="window_caption" Text="${help}" />
+		        <Label CssClass="stripe" />
+				<ListBox Id="topics" CssClass="help_topics" />
+				<Label LocationX="170" LocationY="55" SizeWidth="709" SizeHeight="40" Text="${help_keyboard_view}" CssClass="heading" />
 				<TableControlContainer LocationX="170" LocationY="95" SizeWidth="709" SizeHeight="545">
 					<ColumnDefinitions>
 						<Column Width="0.15"/>
@@ -31,7 +28,7 @@
 					<Table>
 						<Row>
 							<Cell>
-								<Label>
+								<Label CssClass="multiline">
 									<Text>
 1
 2
@@ -59,7 +56,7 @@ SPACE
 								</Label>
 							</Cell>
 							<Cell>
-								<Label>
+								<Label CssClass="multiline">
 									<Text>
 Camera (internal)
 Camera (external body)
@@ -87,7 +84,7 @@ Change vehicle
 								</Label>
 							</Cell>
 							<Cell>
-								<Label>
+								<Label CssClass="multiline">
 									<Text>
 KP_PLUS
 KP_MINUS
@@ -109,7 +106,7 @@ SHIFT-DOWN
 								</Label>
 							</Cell>
 							<Cell>
-								<Label>
+								<Label CssClass="multiline">
 									<Text>
 Zoom camera in
 Zoom camera out

@@ -44,8 +44,14 @@ class Window;
 class WindowManager;
 
 typedef std::vector<Ref<Window> > WindowVector;
-typedef std::map<std::string, Style> NamedStyleMap;
+typedef std::map<std::string, Ref<Style> > NamedStyleMap;
 
+/** A Control that can be displayed using the WindowManager class. This class is the
+ * top level Control that holds all other child controls. This Control has no parent.
+ * 
+ * By default this class only supports a single child control that will take up all
+ * of the client area. 
+ */
 class CSPSIM_EXPORT Window : public SingleControlContainer {
 public:
 	Window();
@@ -53,21 +59,51 @@ public:
 
 	virtual std::string getName() const;
 
+	/** Sets the WindowManager that this Window belongs to. */
 	virtual void setWindowManager(WindowManager* manager);
+	
+	/** Retreives the WindowManager that this Window belongs to. */
 	virtual WindowManager* getWindowManager();
 	
 	virtual void buildGeometry();
 	virtual void layoutChildControls();
 	
+	/** Closes this window. All controls are removed and the window cannot
+	 * be reused or displayed again.
+	 */
 	virtual void close();
 	
+	/** Centers the window in the middle of the screen. 
+	 * Note that this setting also can be set using the Style object.
+	 */
 	virtual void centerWindow();
-	virtual void maximizeWindow();
 	
-	virtual optional<Style> getNamedStyle(const std::string& name) const;
-	virtual void addNamedStyle(const std::string& name, const Style& style);
+	/** Maximizes the window to take up the entire screen. 
+	 * Note that this setting also can be set using the Style object.
+	 */
+	virtual void maximizeWindow();
 
+	/** Returns the Style with the name. A window holds a map with all 
+	 * named style objects that has been declared within xml file for the
+	 * window. All included style files is also added to this map. These 
+	 * named style objects can then be used by any child control to this 
+	 * window.
+	 */	
+	virtual optional<Ref<Style> > getNamedStyle(const std::string& name) const;
+	
+	/** Adds a named style to the styles map. This named style can then be
+	 * used by any child control using the CssClass.
+	 */
+	virtual void addNamedStyle(const std::string& name, Style* style);
+
+	/** Returns the Window that the Control belongs to. If the control hasn't 
+	 * been assigned a window yet this method returns NULL.
+	 */
 	static Window* getWindow(Control* control);
+
+	/** Returns the Window that the Control belongs to. If the control hasn't 
+	 * been assigned a window yet this method returns NULL.
+	 */
 	static const Window* getWindow(const Control* control);
 
 	virtual void setTheme(const std::string& theme);

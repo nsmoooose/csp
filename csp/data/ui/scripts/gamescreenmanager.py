@@ -36,16 +36,28 @@ class GameScreenManager(SlotManager):
                
         self.connectToInputInterfaceAction(self.cspsim, 'QUIT', self.on_Quit)
         self.connectToInputInterfaceAction(self.cspsim, 'PAUSE', self.on_Pause)
+        
+    def closePausingWindows(self):
+        self.closeWindowById('topMenuWindow')
+        self.closeWindowById('resumeWindow')
+        self.closeWindowById('pauseWindow')
+        self.closeWindowById('optionsWindow')
+
+    def closeWindowById(self, id):
+        windowManager = self.cspsim.getCurrentScreen().getWindowManager()
+        window = windowManager.getById(id)
+        if window != None:
+            window.close()
                                 
     def on_Quit(self):
         topMenu = self.cspsim.getCurrentScreen().getWindowManager().getById('topMenuWindow')
         resumeWindow = self.cspsim.getCurrentScreen().getWindowManager().getById('resumeWindow')
         if topMenu != None:
-            self.cspsim.getCurrentScreen().getWindowManager().closeAll()
+            self.closePausingWindows()
             if self.cspsim.isPaused():
                 self.cspsim.togglePause()
         else:
-            self.cspsim.getCurrentScreen().getWindowManager().closeAll()
+            self.closePausingWindows()
             topMenu = TopMenu(self.cspsim)
             quitResume = QuitResume(self.cspsim)
             self.cspsim.getCurrentScreen().getWindowManager().show(quitResume)
@@ -54,9 +66,9 @@ class GameScreenManager(SlotManager):
     def on_Pause(self):
         if self.cspsim.isPaused():
             self.cspsim.togglePause()
-            self.cspsim.getCurrentScreen().getWindowManager().closeAll()
+            self.closePausingWindows()
         else:
-            self.cspsim.getCurrentScreen().getWindowManager().closeAll()
+            self.closePausingWindows()
             pause = Pause(self.cspsim)
             self.cspsim.getCurrentScreen().getWindowManager().show(pause)
         

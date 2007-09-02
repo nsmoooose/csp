@@ -86,22 +86,58 @@ public:
 	Control();
 	virtual ~Control();
 
+	/** Disposing all resources to free up memory and prepare this object for 
+	 * deletion. All signals is also disposed to break circular references.
+	 * Override this method to dispose other valuable resources (child controls
+	 * or control specific signals).
+	 */
 	virtual void dispose();
 
+	/** Returns the id of this control. Each control can be given an unique id
+	 * to be able to find it in the control hierchy using the Container::getById() 
+	 * method.
+	 */
 	virtual std::string getId() const;
+	/** Sets a new id for this control. This id makes it easy to find the control
+	 * again using the Container::getById() method.
+	 */
 	virtual void setId(const std::string& id);
 
+	/** Retreives the name of this class. This name is used together with 
+	 * serialization to be able to instantiate the correct class.
+	 */
 	virtual std::string getName() const;
 
+	/** Returns the Container that holds this Control.
+	 */
 	virtual Container* getParent();
+	
+	/** Returns the Container that holds this Control.
+	 */
 	virtual const Container* getParent() const;
+	
+	/** Sets a new parent for this control. The parent is held using a
+	 * WeakRef to avoid circular references.
+	 */
 	virtual void setParent(Container* parent);
+	
+	/** Retreives the WindowManager that this Control belongs to. Note
+	 * that this method may return a NULL value if the Window isn't displayed
+	 * yet.
+	 */
 	virtual WindowManager* getWindowManager();
 
+	/** Returns the CssClass to use for this Control. Each Window holds a map 
+	 * with named Style objects that you can refer to from any Control. If no
+	 * CssClass is assigned we are using inheritence to build the Style object
+	 * used to render the Control geometry.
+	 */
 	virtual optional<std::string> getCssClass() const;
+	
+	/** Sets a new CssClass to use for this Control. */
 	virtual void setCssClass(const optional<std::string>& cssClass);
 
-	/** Function that generates all geometry that is used to display the widget.
+	/** Function that generates all geometry that is used to display the Control.
 	 * 	buildGeometry is called just before the window is displayed.
 	 */
 	virtual void buildGeometry();
@@ -112,20 +148,36 @@ public:
 	virtual float getZPos() const;
 	virtual void setZPos(float zPos);
 
-	virtual const Point& getLocation() const;
-	virtual void setLocation(const Point& point);
+	virtual const Point getLocation() const;
 
-	virtual const Size& getSize() const;
-	virtual void setSize(const Size& size);
+	virtual const Size getSize() const;
 
-	virtual const Style& getStyle() const;
-	virtual Style& getStyle();
+	virtual const Ref<Style> getStyle() const;
+	virtual Ref<Style> getStyle();
 	
+	/** Returns the enabled status of the Control. If the control is disabled it has
+	 * the disabled state added. No click signals are fired either.
+	 */
 	virtual bool getEnabled() const;
+	
+	/** Sets the enabled status of the Control. If the control is disabled the 
+	 * disabled state is added. No click signals are fired either.
+	 */
 	virtual void setEnabled(bool enabled);
 
+	/** Adds a state to the Control. Example: By adding the state "disabled" you can
+	 * use the Label:disabled CssClass to change the appearence of the control. A
+	 * Control can have several states assigned. Example: "disabled" and "hover". Then
+	 * you should use the following CssClass: "Label:disabled:hover"
+	 */
 	virtual void addState(const std::string& state);
+	
+	/** Removes an existing state from this Control. */
 	virtual void removeState(const std::string& state);
+	
+	/** Retreives all states as a single string. Each state is separated with a : 
+	 * and sorted in alphabetic order.
+	 */
 	virtual std::string getState() const;
 
 	/** The following members is signals that any class
@@ -134,8 +186,12 @@ public:
 	ClickSignal Click;
 	HoverSignal Hover;
 
-	// Fires the click signal.
+	/** Fires the click signal. This method is normally called from WindowManager 
+	 * and shouldn't be used directly. */
 	virtual void onClick(ClickEventArgs& event);
+
+	/** Fires the hover signal. This method is normally called from WindowManager 
+	 * and shouldn't be used directly. */
 	virtual void onHover(HoverEventArgs& event);
 
 	template<class Archive>
@@ -143,14 +199,34 @@ public:
 		ar & make_nvp("@Id", m_Id);
 		ar & make_nvp("@Enabled", m_Enabled);
 		ar & make_nvp("@CssClass", m_CssClass);
-		ar & make_nvp("@LocationX", m_Point.x);
-		ar & make_nvp("@LocationY", m_Point.y);
+		ar & make_nvp("@LocationX", m_Style->left);
+		ar & make_nvp("@LocationY", m_Style->top);
 		ar & make_nvp("@LocationZ", m_ZPos);
-		ar & make_nvp("@SizeWidth", m_Size.width);
-		ar & make_nvp("@SizeHeight", m_Size.height);
+		ar & make_nvp("@SizeWidth", m_Style->width);
+		ar & make_nvp("@SizeHeight", m_Style->height);
 		ar & make_nvp("Style", m_Style);
 	}
 
+	/** Layout and geometric logic will be suspended. This is very usefull
+	 * when you are changing multiple properties that affect properties like 
+	 * size, width, position etc. When you are finished with your changes
+	 * you should call resumeLayout() for your changes to take effect.
+	 */ 
+	virtual void suspendLayout();
+	
+	/** Resumes layout of your controls. All changes you make to properties
+	 * like size, width, position etc will take effect immediatly.
+	 */
+	virtual void resumeLayout();
+	
+	/** Performs all pending layout and geometric changes.
+	 */
+	virtual void performLayout();
+	
+	/** Returns true if layout has been suspended. 
+	 */
+	virtual bool layoutSuspended();
+	
 protected:
 
 private:
@@ -164,11 +240,9 @@ private:
 	optional<std::string> m_CssClass;
 
 	float m_ZPos;
-	Point m_Point;
-	Size m_Size;
 
 	WeakRef<Container> m_Parent;
-	Style m_Style;
+	Ref<Style> m_Style;
 	bool m_Visible;
 
 	Ref<Signal> m_ClickSignal;

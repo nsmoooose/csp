@@ -20,7 +20,7 @@
           	</Style>
           </Label>
           <Button Id="instantAction" Text="${instant_action}" LocationX="30" LocationY="30" LocationZ="4" SizeWidth="150" SizeHeight="40" />
-          <Button Id="tutorials" Enabled="false" Text="${tutorials}" LocationX="30" LocationY="75" LocationZ="4" SizeWidth="150" SizeHeight="40" />
+          <Button Id="tutorials" Enabled="true" Text="${tutorials}" LocationX="30" LocationY="75" LocationZ="4" SizeWidth="150" SizeHeight="40" />
           <Button Id="singleplayer" Enabled="false" Text="${singleplayer}" LocationX="30" LocationY="120" LocationZ="4" SizeWidth="150" SizeHeight="40" />
           <Button Id="multiplayer" Enabled="false" Text="${multiplayer}" LocationX="30" LocationY="165" LocationZ="4" SizeWidth="150" SizeHeight="40" />
           <Button Id="credits" Enabled="false" Text="${credits}" LocationX="30" LocationY="210" LocationZ="4" SizeWidth="150" SizeHeight="40" />

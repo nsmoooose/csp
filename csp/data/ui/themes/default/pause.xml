@@ -9,8 +9,8 @@
     <Control>
       <MultiControlContainer>
         <Controls>
-          <Label LocationX="10" LocationY="2" SizeWidth="328" SizeHeight="30" Text="${csp} - ${pause}" />
-          <Label CssClass="stripe" LocationX="0" LocationY="30" SizeWidth="428" SizeHeight="10" />
+          <Label CssClass="window_caption" Text="${csp} - ${pause}" />
+          <Label CssClass="stripe" />
           <Image LocationX="10" LocationY="50" SizeWidth="64" SizeHeight="64">
           	<Style>
           		<BackgroundColor>ffffffff</BackgroundColor>

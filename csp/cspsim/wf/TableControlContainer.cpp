@@ -103,10 +103,12 @@ void TableControlContainer::layoutChildControls() {
 			if(control.valid()) {		
 				double width = tableSize.width * column.getWidth() - m_CellPadding.left - m_CellPadding.right;
 				double height = tableSize.height * row.getHeight() - m_CellPadding.top - m_CellPadding.bottom;
-				control->setSize(Size(width, height));
 
-				Point childControlLocation(point.x + m_CellPadding.left, point.y + m_CellPadding.top);
-				control->setLocation(childControlLocation);
+				Ref<Style> style = control->getStyle();
+				style->setWidth(Style::UnitValue(Style::Pixels, width));
+				style->setHeight(Style::UnitValue(Style::Pixels, height));
+				style->setLeft(Style::UnitValue(Style::Pixels, point.x + m_CellPadding.left));
+				style->setTop(Style::UnitValue(Style::Pixels, point.y + m_CellPadding.top));  
 				
 				Container* controlContainer = dynamic_cast<Container*>(control.get());
 				if(controlContainer != NULL) {

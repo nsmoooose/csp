@@ -31,6 +31,10 @@ CSP_NAMESPACE
 
 namespace wf {
 
+/** A Control that represents an image. You set the image to display using
+ * the backgroundImage property on the style object. Do not forget to also set
+ * backgroundColor as this is controling the alpha channel.
+ */ 
 class CSPSIM_EXPORT Image : public Control {
 public:
 	Image();

@@ -62,8 +62,11 @@ void Window::layoutChildControls() {
 	if(childControl != NULL) {
 		ControlGeometryBuilder geometryBuilder;
 		Rectangle clientRect = getClientRect();
-		childControl->setSize(Size(clientRect.width(), clientRect.height()));
-		childControl->setLocation(Point(clientRect.x0, clientRect.y0));
+		Ref<Style> style = childControl->getStyle();
+		style->setWidth(Style::UnitValue(Style::Pixels, clientRect.width()));
+		style->setHeight(Style::UnitValue(Style::Pixels, clientRect.height()));
+		style->setLeft(Style::UnitValue(Style::Pixels, clientRect.x0));
+		style->setTop(Style::UnitValue(Style::Pixels, clientRect.y0));
 		Container* container = dynamic_cast<Container*>(childControl);
 		if(container != NULL) {
 			container->layoutChildControls();
@@ -109,8 +112,8 @@ const StringResourceManager* Window::getStringResourceManager() const {
 	return m_StringResources.get();	
 }
 
-optional<Style> Window::getNamedStyle(const std::string& name) const {
-	optional<Style> style;
+optional<Ref<Style> > Window::getNamedStyle(const std::string& name) const {
+	optional<Ref<Style> > style;
 	// Assign the style to the optional if it exists in the map.
 	NamedStyleMap::const_iterator styleIterator = m_Styles.find(name);
 	if(styleIterator != m_Styles.end()) {
@@ -119,7 +122,7 @@ optional<Style> Window::getNamedStyle(const std::string& name) const {
 	return style;
 }
 
-void Window::addNamedStyle(const std::string& name, const Style& style) {
+void Window::addNamedStyle(const std::string& name, Style* style) {
 	m_Styles[name] = style;
 }
 
@@ -134,8 +137,10 @@ void Window::centerWindow() {
 	Point windowLocation = 
 		Point(screenSize.width / 2 - windowSize.width / 2, 
 		screenSize.height / 2 - windowSize.height / 2);
-		
-	setLocation(windowLocation);
+
+	Ref<Style> style = getStyle();
+	style->setLeft(Style::UnitValue(Style::Pixels, windowLocation.x));
+	style->setTop(Style::UnitValue(Style::Pixels, windowLocation.y));		
 
 	layoutChildControls();
 	buildGeometry();
@@ -147,8 +152,11 @@ void Window::maximizeWindow() {
 	}
 
 	Size screenSize = m_WindowManager->getScreenSize();
-	setSize(screenSize);
-	setLocation(Point(0, 0));
+	Ref<Style> style = getStyle();
+	style->setWidth(Style::UnitValue(Style::Pixels, screenSize.width));
+	style->setHeight(Style::UnitValue(Style::Pixels, screenSize.height));
+	style->setLeft(Style::UnitValue(Style::Pixels, 0));
+	style->setTop(Style::UnitValue(Style::Pixels, 0));
 
 	layoutChildControls();
 	buildGeometry();

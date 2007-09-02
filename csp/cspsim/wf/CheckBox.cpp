@@ -38,7 +38,9 @@ namespace wf {
 
 CheckBox::CheckBox() : m_Checked(false), m_CheckedChanged(new Signal) {
 	Ref<Check> check = new Check;
-	check->setSize(Size(20,20));
+	Ref<Style> style = check->getStyle();
+	style->setWidth(Style::UnitValue(Style::Pixels, 20));
+	style->setHeight(Style::UnitValue(Style::Pixels, 20));
 	setControl(check.get());
 }
 
@@ -66,8 +68,11 @@ void CheckBox::layoutChildControls() {
 	Control* childControl = getControl();
 	if(childControl != NULL) {
 		float height = getSize().height;
-		childControl->setLocation(Point(0,0));
-		childControl->setSize(Size(height, height));
+		Ref<Style> style = childControl->getStyle();
+		style->setLeft(Style::UnitValue(Style::Pixels, 0));
+		style->setTop(Style::UnitValue(Style::Pixels, 0));
+		style->setWidth(Style::UnitValue(Style::Pixels, height));
+		style->setHeight(Style::UnitValue(Style::Pixels, height));
 		childControl->setZPos(0.5f);
 	}
 }

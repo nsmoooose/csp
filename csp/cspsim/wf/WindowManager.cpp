@@ -169,10 +169,10 @@ void WindowManager::removeStateAndRebuildGeometry(const std::string& state, Cont
 		return;
 	}
 
-	Style currentStyle = StyleBuilder::buildStyle(control);
+	Ref<Style> currentStyle = StyleBuilder::buildStyle(control);
 	control->removeState(state);
-	Style newStyle = StyleBuilder::buildStyle(control);
-	if(currentStyle != newStyle) {
+	Ref<Style> newStyle = StyleBuilder::buildStyle(control);
+	if(!currentStyle->equals(newStyle.get())) {
 		control->buildGeometry();
 	}
 }
@@ -182,10 +182,10 @@ void WindowManager::addStateAndRebuildGeometry(const std::string& state, Control
 		return;
 	}
 
-	Style currentStyle = StyleBuilder::buildStyle(control);
+	Ref<Style> currentStyle = StyleBuilder::buildStyle(control);
 	control->addState(state);
-	Style newStyle = StyleBuilder::buildStyle(control);
-	if(currentStyle != newStyle) {
+	Ref<Style> newStyle = StyleBuilder::buildStyle(control);
+	if(!currentStyle->equals(newStyle.get())) {
 		control->buildGeometry();
 	}
 }
@@ -252,30 +252,32 @@ void WindowManager::show(Window* window) {
 	const Size windowSize = window->getSize();
 	Size screenSize = getScreenSize();
 
-	Style windowStyle = StyleBuilder::buildStyle(window);
-	if(windowStyle.horizontalAlign) {
-		if(*windowStyle.horizontalAlign == "left") {
+	Ref<Style> windowStyle = StyleBuilder::buildStyle(window);
+	if(windowStyle->getHorizontalAlign()) {
+		if(*windowStyle->getHorizontalAlign() == "left") {
 			windowLocation.x = 0;
 		}
-		else if(*windowStyle.horizontalAlign == "center") {
+		else if(*windowStyle->getHorizontalAlign() == "center") {
 			windowLocation.x = (screenSize.width / 2) - (windowSize.width / 2);
 		}
-		else if(*windowStyle.horizontalAlign == "right") {
+		else if(*windowStyle->getHorizontalAlign() == "right") {
 			windowLocation.x = screenSize.width - windowSize.width;
 		}
 	}
-	if(windowStyle.verticalAlign) {
-		if(*windowStyle.verticalAlign == "top") {
+	if(windowStyle->getVerticalAlign()) {
+		if(*windowStyle->getVerticalAlign() == "top") {
 			windowLocation.y = 0;
 		}
-		else if(*windowStyle.verticalAlign == "middle") {
+		else if(*windowStyle->getVerticalAlign() == "middle") {
 			windowLocation.y = (screenSize.height / 2) - (windowSize.height / 2);
 		}
-		else if(*windowStyle.verticalAlign == "bottom") {
+		else if(*windowStyle->getVerticalAlign() == "bottom") {
 			windowLocation.y = screenSize.height - windowSize.height;
 		}
 	}
-	window->setLocation(windowLocation);
+	Ref<Style> style = window->getStyle();
+	style->setLeft(Style::UnitValue(Style::Pixels, windowLocation.x));
+	style->setTop(Style::UnitValue(Style::Pixels, windowLocation.y));
 
 	// Build the actual geometry of all controls that is going to be
 	// displayed.

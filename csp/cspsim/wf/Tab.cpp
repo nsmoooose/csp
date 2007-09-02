@@ -120,7 +120,7 @@ void Tab::layoutChildControls() {
 		rebuildHeaders();
 	}
 	
-	Style headerStyle = StyleBuilder::buildStyle(m_Headers[0].get());
+	Ref<Style> headerStyle = StyleBuilder::buildStyle(m_Headers[0].get());
 	ControlGeometryBuilder builder;
 	
 	float headerHeight = 0;
@@ -130,7 +130,9 @@ void Tab::layoutChildControls() {
 		Ref<TabPage> page = m_Pages[i];
 		Ref<TabHeader> header = m_Headers[i];
 
-		if(headerStyle.fontFamily && headerStyle.fontSize) {
+		Ref<Style> style = header->getStyle();
+		
+		if(headerStyle->getFontFamily() && headerStyle->getFontSize()) {
 			// First we must handle if the string is a resource string.
 			// All strings that includes ${my_string} is a reference from
 			// a resource declared in an other file. The correct string
@@ -145,7 +147,7 @@ void Tab::layoutChildControls() {
 			}
 			
 			// Retreive the size of the text.
-			Size textSize = builder.getSizeOfText(parsedText, *headerStyle.fontFamily, *headerStyle.fontSize);
+			Size textSize = builder.getSizeOfText(parsedText, *headerStyle->getFontFamily(), *headerStyle->getFontSize());
 			
 			// TODO: These hardcoded values shouldn't be here. We should
 			// set a margin property in the style object. But this change
@@ -153,26 +155,29 @@ void Tab::layoutChildControls() {
 			textSize.height += 15;
 			textSize.width += 20;
 			headerHeight = std::max(headerHeight, (float)textSize.height);
-			header->setSize(textSize);
+
+			style->setWidth(Style::UnitValue(Style::Pixels, textSize.width));
+			style->setHeight(Style::UnitValue(Style::Pixels, textSize.height));
 		}
 		else {
 			// This happens when the user has forgotten to set
 			// mandatory style settings.
-			header->setSize(Size(100, 20));
+			style->setWidth(Style::UnitValue(Style::Pixels, 100));
+			style->setHeight(Style::UnitValue(Style::Pixels, 200));
 		}
 			
 		// Position header control after one and the other according
 		// to the order the pages are in.
-		header->setLocation(Point(headerXLocation, 0));
+		style->setLeft(Style::UnitValue(Style::Pixels, headerXLocation));
+		style->setTop(Style::UnitValue(Style::Pixels, 0));
 		headerXLocation += header->getSize().width;
 	}
 
 	// Adjust header height to the highest header. 
 	for(TabHeaderVector::size_type i=0;i<m_Headers.size();++i) {
 		Ref<TabHeader> header = m_Headers[i];
-		Size headerSize = header->getSize();
-		headerSize.height = headerHeight;
-		header->setSize(headerSize);
+		Ref<Style> style = header->getStyle();
+		style->setHeight(Style::UnitValue(Style::Pixels, headerHeight));
 	}
 
 	// Adjust the size of the tab pages now when we know the 
@@ -180,9 +185,15 @@ void Tab::layoutChildControls() {
 	for(TabPageVector::size_type i=0;i<m_Pages.size();++i) {
 		Ref<TabPage> page = m_Pages[i];
 
+		Ref<Style> style = page->getStyle();
+
+		Size size = getSize();
+
 		// Position the content of a page.
-		page->setLocation(Point(0.0f, headerHeight));
-		page->setSize(Size(getSize().width, getSize().height - headerHeight));
+		style->setLeft(Style::UnitValue(Style::Pixels, 0));
+		style->setTop(Style::UnitValue(Style::Pixels, headerHeight));
+		style->setWidth(Style::UnitValue(Style::Pixels, size.width));
+		style->setHeight(Style::UnitValue(Style::Pixels, size.height - headerHeight));
 		
 		// Layout all child controls.
 		page->layoutChildControls();
@@ -262,8 +273,6 @@ void TabPage::setText(const std::string& text) {
 // ===================================================================
 
 TabHeader::TabHeader() {
-	// TODO: Remove when we can set size and position with style object.
-	setSize(Size(150, 30));
 }
 
 TabHeader::~TabHeader() {

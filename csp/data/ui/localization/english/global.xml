@@ -27,7 +27,9 @@
 		<String key="restart_required">Restart is required for changes to take effect.</String>
 		<String key="singleplayer">Single player</String>
 		<String key="screen_resolution">Resolution</String>
+		<String key="start_simulation">Start</String>
 		<String key="tutorials">Tutorials</String>
+		<String key="tutorials_takeoff">Takeoff (F16)</String>
 		<String key="ui_theme">Theme</String>
 		<String key="ui_language">Language</String>
 	</Strings>

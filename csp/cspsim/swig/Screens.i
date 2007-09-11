@@ -46,9 +46,11 @@ public:
 
 class MenuScreen : public ::csp::BaseScreen {
 public:
-	MenuScreen();
 	virtual wf::WindowManager* getWindowManager();
 	virtual wf::Serialization* getSerializer();	
+	
+private:
+	MenuScreen();	
 };
 
 %typemap(out) BaseScreen * = SWIGTYPE *DYNAMIC;

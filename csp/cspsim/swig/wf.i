@@ -297,6 +297,8 @@ public:
 	virtual void show(Window* window);
 	virtual void close(Window* window);	
 	virtual void closeAll();
+private:
+	WindowManager();
 };
 
 class Window : public SingleControlContainer {

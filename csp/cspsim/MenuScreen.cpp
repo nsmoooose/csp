@@ -22,6 +22,7 @@
  *
  **/
 
+#include <osg/State>
 #include <csp/cspsim/CSPSim.h>
 #include <csp/cspsim/EventMapIndex.h>
 #include <csp/cspsim/MenuScreen.h>
@@ -29,14 +30,14 @@
 
 CSP_NAMESPACE
 
-MenuScreen::MenuScreen() {
+MenuScreen::MenuScreen(osg::State* state) : m_State(state) {
 }
 
 MenuScreen::~MenuScreen() {
 }
 
 void MenuScreen::onInit() {
-	m_WindowManager = new wf::WindowManager;
+	m_WindowManager = new wf::WindowManager(m_State.get());
 	m_Serializer = new wf::Serialization(getUIPath());
 
 	// We need some kindo of keyboard binding for this screen.

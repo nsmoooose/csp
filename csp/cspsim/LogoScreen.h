@@ -31,7 +31,10 @@
 #include <osg/ref_ptr>
 //#include <osgProducer/Viewer>
 
-namespace osg { class Texture2D; }
+namespace osg {
+	class State; 
+	class Texture2D; 
+}
 namespace osgUtil { class SceneView; }
 
 
@@ -46,7 +49,7 @@ CSP_NAMESPACE
  */
 class LogoScreen : public BaseScreen { //, public osgProducer::Viewer, public virtual OpenThreads::Thread {
 public:
-	LogoScreen(int width, int height);
+	LogoScreen(osg::State* state, int width, int height);
 	virtual ~LogoScreen();
  
 	virtual void onInit();
@@ -59,6 +62,7 @@ public:
 	void stop();
 
 private:
+	osg::ref_ptr<osg::State> m_State;
 	osg::ref_ptr<osgUtil::SceneView> m_LogoView;
 	osg::ref_ptr<osg::Texture2D> m_Texture;
 	//osgProducer::Viewer m_Viewer;

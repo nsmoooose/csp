@@ -45,33 +45,7 @@ CSP_NAMESPACE
 
 namespace wf {
 
-WindowManager::WindowManager(osgUtil::SceneView* view)
-	: m_View(view), m_Group(new osg::Group) {
-
-	Size screenSize;
-	float screenScale;
-	calculateScreenSizeAndScale(screenSize, screenScale);
-	if(screenScale != 1.0) {
-		osg::ref_ptr<osg::MatrixTransform> scaledGroup = new osg::MatrixTransform;
-		osg::Matrix scale;
-		scale.makeScale(osg::Vec3(screenScale, screenScale, screenScale));
-		scaledGroup->setMatrix(scale);
-		m_Group = scaledGroup.get();
-	}
-
-	m_View->setSceneData(m_Group.get());
-	m_View->setLightingMode(osgUtil::SceneView::NO_SCENEVIEW_LIGHT);
-
-    osg::StateSet *stateSet = m_Group->getOrCreateStateSet();
-	stateSet->setMode(GL_LIGHTING, osg::StateAttribute::OFF);
-	stateSet->setMode(GL_DEPTH_TEST, osg::StateAttribute::ON);
-	stateSet->setRenderingHint(osg::StateSet::TRANSPARENT_BIN);
-
-    osg::ref_ptr<osg::BlendFunc> blendFunction = new osg::BlendFunc;
-    stateSet->setAttributeAndModes(blendFunction.get());
-}
-
-WindowManager::WindowManager() : m_Group(new osg::Group) {
+WindowManager::WindowManager(osg::State* state) : m_Group(new osg::Group) {
 	const int screenWidth = CSPSim::theSim->getSDLScreen()->w;
 	const int screenHeight = CSPSim::theSim->getSDLScreen()->h;
 
@@ -91,6 +65,7 @@ WindowManager::WindowManager() : m_Group(new osg::Group) {
 
 	osgUtil::SceneView *sv = new osgUtil::SceneView(displaySettings.get());
 	sv->setDefaults(osgUtil::SceneView::COMPILE_GLOBJECTS_AT_INIT);
+	sv->setState(state);
 	sv->setViewport(0, 0, screenWidth, screenHeight);
 
 	// left, right, bottom, top, zNear, zFar
@@ -140,6 +115,10 @@ WindowManager::WindowManager() : m_Group(new osg::Group) {
 }
 
 WindowManager::~WindowManager() {
+}
+
+osgUtil::SceneView* WindowManager::getSceneView() {
+	return m_View.get();
 }
 
 bool WindowManager::onClick(int x, int y) {

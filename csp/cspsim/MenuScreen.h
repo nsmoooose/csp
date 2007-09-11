@@ -28,6 +28,10 @@
 #include <csp/cspsim/BaseScreen.h>
 #include <csp/cspsim/wf/WindowManager.h>
 
+namespace osg {
+	class State;
+}
+
 CSP_NAMESPACE
 
 namespace wf {
@@ -36,7 +40,7 @@ namespace wf {
 
 class CSPSIM_EXPORT MenuScreen : public BaseScreen { 
 public:
-	MenuScreen();
+	MenuScreen(osg::State* state);
 	virtual ~MenuScreen();
  
 	virtual void onInit();
@@ -52,6 +56,7 @@ public:
 	virtual wf::Serialization* getSerializer();
 
 private:
+	osg::ref_ptr<osg::State> m_State;
 	Ref<wf::WindowManager> m_WindowManager;
 	Ref<wf::Serialization> m_Serializer;
 };

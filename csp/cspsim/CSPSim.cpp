@@ -83,6 +83,7 @@
 #include <OpenGL/glu.h>  // Header File For The GLu32 Library
 #endif
 
+#include <osg/State>
 #include <osg/Timer>
 #include <osg/Notify>
 #include <osgAL/SoundManager>
@@ -288,6 +289,9 @@ void CSPSim::init() {
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+		// Create a global state used by all scene views.
+		m_GlobalState = new osg::State;
+
 		// should run in its own thread
 		SDL_GL_SwapBuffers();
 		//--m_RenderSurface->swapBuffers();
@@ -339,6 +343,8 @@ void CSPSim::cleanup() {
 		SDL_JoystickClose(m_SDLJoystick);
 		m_SDLJoystick = NULL;
 	}
+
+	m_GlobalState = NULL;
 
 	StoresDatabase::getInstance().reset();
 
@@ -441,7 +447,7 @@ void CSPSim::loadSimulation() {
 	SDL_GL_SwapBuffers();
 
 	CSPLOG(DEBUG, APP) << "Initializing scene graph";
-	m_Scene = new VirtualScene(screenSettings.width, screenSettings.height);
+	m_Scene = new VirtualScene(m_GlobalState.get(), screenSettings.width, screenSettings.height);
 	m_Scene->buildScene();
 	m_Scene->setTerrain(m_Terrain);
 
@@ -566,7 +572,7 @@ void CSPSim::unloadSimulationNow() {
 }
 
 void CSPSim::displayLogoScreen() {
-	Ref<LogoScreen> logoScreen = new LogoScreen(screenSettings.width, screenSettings.height);
+	Ref<LogoScreen> logoScreen = new LogoScreen(m_GlobalState.get(), screenSettings.width, screenSettings.height);
 	logoScreen->onInit();
 	
 	logoScreen->onRender();
@@ -577,7 +583,7 @@ void CSPSim::displayLogoScreen() {
 }
 
 void CSPSim::displayMenuScreen() {
-	Ref<MenuScreen> menuScreen = new MenuScreen();
+	Ref<MenuScreen> menuScreen = new MenuScreen(m_GlobalState.get());
 	menuScreen->onInit();
 	
 	changeScreen(menuScreen.get());

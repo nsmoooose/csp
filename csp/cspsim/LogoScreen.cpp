@@ -45,7 +45,8 @@ CSP_NAMESPACE
 
 //extern OpenThreads::Barrier bar;
 
-LogoScreen::LogoScreen(int width, int height):
+LogoScreen::LogoScreen(osg::State* state, int width, int height):
+	m_State(state),
 	m_width(width),
 	m_height(height) {
 }
@@ -110,6 +111,7 @@ void LogoScreen::onInit() {
 	
 	m_LogoView = new osgUtil::SceneView();
 	m_LogoView->setDefaults();
+	m_LogoView->setState(m_State.get());
 	m_LogoView->setViewport(0,0,m_width,m_height);
 	float scale = 0.5f;
 	float w = scale * m_width, h = scale * m_height;

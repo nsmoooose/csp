@@ -387,8 +387,9 @@ void VirtualScene::removeFeature(Ref<FeatureGroup> feature) {
 }
 
 
-VirtualScene::VirtualScene(int width, int height):
+VirtualScene::VirtualScene(osg::State* state, int width, int height):
 	m_SceneState(new SceneState),
+	m_GlobalState(state),
 	m_ViewDistance(30000.0),
 	m_ViewAngle(60.0),
 	m_NearPlane(2.0),
@@ -408,9 +409,6 @@ void VirtualScene::init() {
 	// set up the display settings that will be shared by all sceneviews.
 	m_DisplaySettings = new osg::DisplaySettings();
 	m_DisplaySettings->setDefaults();
-
-	// create the global state shared by all scene views (which access a single gl context).
-	m_GlobalState = new osg::State();
 
 	// configure the default state for all scene graphs in the various scene views.
 	m_GlobalStateSet = new osg::StateSet();
@@ -512,19 +510,9 @@ wf::WindowManager* VirtualScene::getWindowManager() {
 }
 
 void VirtualScene::createWindowView() {
-	m_WindowView = makeSceneView(0);
-	m_WindowView->getRenderStage()->setClearMask(GL_DEPTH_BUFFER_BIT);
-
-	const int screenWidth = CSPSim::theSim->getSDLScreen()->w;
-	const int screenHeight = CSPSim::theSim->getSDLScreen()->h;
-	m_WindowView->setProjectionMatrixAsOrtho(0, screenWidth, screenHeight, 0, -1000, 1000);
-	
-	// eye, center, up
-	osg::Matrix view_matrix;
-	view_matrix.makeLookAt(osg::Vec3(0, 0, 100.0), osg::Vec3(0.0, 0.0, 0.0), osg::Vec3(0, 1, 0));
-	m_WindowView->setViewMatrix(view_matrix);
-	
-	m_WindowManager = new wf::WindowManager(m_WindowView.get());	
+	m_WindowManager = new wf::WindowManager(m_GlobalState.get());
+	osg::ref_ptr<osgUtil::SceneView> windowView = m_WindowManager->getSceneView();
+	windowView->getRenderStage()->setClearMask(GL_DEPTH_BUFFER_BIT);	
 }
 
 void VirtualScene::buildScene() {
@@ -534,8 +522,6 @@ void VirtualScene::buildScene() {
 	//(Un)comment to (enable) disable debug info from osg
 	//osg::setNotifyLevel(osg::DEBUG_INFO);
 	/////////////////////////////////////
-
-	assert(!m_GlobalState.valid());  // only call once!
 
 	init();
 	createSceneViews();
@@ -685,19 +671,13 @@ void VirtualScene::drawInfoView() {
 	m_InfoView->draw();
 }
 
-void VirtualScene::drawWindowView() {
-	m_WindowView->update();
-	m_WindowView->cull();
-	m_WindowView->draw();
-}
-
 int VirtualScene::drawScene() {
 	CSPLOG(DEBUG, APP) << "VirtualScene::drawScene()...";
 	drawVeryFarView();
 	drawFarView();
 	drawNearView();
 	drawInfoView();
-	drawWindowView();
+	m_WindowManager->onRender();
 	if (m_Terrain.valid()) m_Terrain->endDraw();
 	return 1;
 }

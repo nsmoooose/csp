@@ -87,7 +87,7 @@ public:
 class CSPSIM_EXPORT VirtualScene: public Referenced
 {
 public:
-	VirtualScene(int width, int height);
+	VirtualScene(osg::State* state, int width, int height);
 	virtual ~VirtualScene();
 
 	void buildScene();
@@ -192,7 +192,6 @@ private:
 	void drawFarView();
 	void drawNearView();
 	void drawInfoView();
-	void drawWindowView();
 
 protected:
 	void _updateFog(Vector3 const &lookPos, Vector3 const &eyePos);
@@ -203,7 +202,6 @@ protected:
 	osg::ref_ptr<osgUtil::SceneView> m_NearView;
 	osg::ref_ptr<osgUtil::SceneView> m_FarView;
 	osg::ref_ptr<osgUtil::SceneView> m_VeryFarView;
-	osg::ref_ptr<osgUtil::SceneView> m_WindowView;
 
 	osg::ref_ptr<osg::State> m_GlobalState;
 	osg::ref_ptr<osg::StateSet> m_GlobalStateSet;

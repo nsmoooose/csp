@@ -36,6 +36,7 @@
 
 namespace osg {
 	class Group;
+	class State;
 }
 
 namespace osgUtil {
@@ -50,9 +51,10 @@ class Serialization;
 
 class CSPSIM_EXPORT WindowManager : public Referenced, public WeakReferenced {
 public:
-	WindowManager(osgUtil::SceneView* view);
-	WindowManager();
+	WindowManager(osg::State* state);
 	virtual ~WindowManager();
+	
+	virtual osgUtil::SceneView* getSceneView();
 
 	virtual bool onClick(int x, int y);
 	virtual bool onMouseMove(int x, int y, int dx, int dy);

@@ -28,7 +28,7 @@
 #include <iostream>
 
 void _createVehicleHelper(csp::CSPSim *self, const char *path, csp::Vector3 position,
-                          csp::Vector3 velocity, csp::Vector3 attitude) {
+                          csp::Vector3 velocity, csp::Vector3 attitude, bool human) {
 	csp::Ref<csp::DynamicObject> obj = self->getDataManager().getObject(path);
 	if (!obj) {
 		std::cout << "WARNING: Failed to create object '" << path << "'\n";
@@ -40,7 +40,7 @@ void _createVehicleHelper(csp::CSPSim *self, const char *path, csp::Vector3 posi
 	attitude *= 3.1416 / 180.0;
 	q_attitude.makeRotate(attitude.x(), attitude.y(), -attitude.z());
 	obj->setAttitude(q_attitude);
-	self->getBattlefield()->__test__addLocalHumanUnit(obj);
+	self->getBattlefield()->__test__addLocalHumanUnit(obj, human);
 	if (!self->getActiveObject()) self->setActiveObject(obj);
 }
 
@@ -100,14 +100,14 @@ public:
 
 %extend CSPSim {
 	void createVehicle(const char *path, csp::Vector3 position,
-	                   csp::Vector3 velocity, csp::Vector3 attitude) {
-		_createVehicleHelper(self, path, position, velocity, attitude);
+	                   csp::Vector3 velocity, csp::Vector3 attitude, bool human) {
+		_createVehicleHelper(self, path, position, velocity, attitude, human);
 	}
 	void createVehicle(const char *path, csp::LLA lla,
-	                   csp::Vector3 velocity, csp::Vector3 attitude) {
+	                   csp::Vector3 velocity, csp::Vector3 attitude, bool human) {
 		csp::Ref<const csp::Projection> map = csp::CSPSim::theSim->getTheater()->getTerrain()->getProjection();
 		csp::Vector3 position = map->convert(lla);
-		_createVehicleHelper(self, path, position, velocity, attitude);
+		_createVehicleHelper(self, path, position, velocity, attitude, human);
 	}
 	std::string const &getTerrainName() { return self->getTheater()->getTerrain()->getName(); }
 	int getTerrainVersion() { return self->getTheater()->getTerrain()->getVersion(); }

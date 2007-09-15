@@ -194,7 +194,7 @@ void StoresManagementSystem::releaseMarkedStores(DynamicObject *parent) {
 			object->setVelocity(parent->getVelocity() + (parent->getAngularVelocity() ^ parent->getAttitude().rotate(store_position)) + ejection_velocity);
 			object->setAngularVelocity(parent->getAngularVelocity() + ejection_angular_velocity);
 
-			CSPSim::theSim->getBattlefield()->__test__addLocalHumanUnit(object);  // XXX TOTAL HACK FOR NOW!!!
+			CSPSim::theSim->getBattlefield()->__test__addLocalHumanUnit(object, false);  // XXX TOTAL HACK FOR NOW!!!
 		}
 	}
 

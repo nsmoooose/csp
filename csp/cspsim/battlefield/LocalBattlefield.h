@@ -82,7 +82,7 @@ public:
 	void setCamera(Vector3 const &eye_point, const Vector3& look_pos, const Vector3& up_vec);
 
 	// testing interface
-	void __test__addLocalHumanUnit(Unit const &unit);
+	void __test__addLocalHumanUnit(Unit const &unit, bool human);
 
 	inline bool isConnectionActive() const {
 		return m_ConnectionState == CONNECTION_ACTIVE;

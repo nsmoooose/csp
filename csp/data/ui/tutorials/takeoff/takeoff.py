@@ -68,7 +68,7 @@ class TakeOff(Mission):
         # We add a single aircraft at the airport.
         vec = csp.csplib.Vector3
         f16dj = "sim:vehicles.aircraft.f16dj"
-        self.cspsim.createVehicle(f16dj, vec(-29495, -10530, 91.3), vec(0, 0, 0), vec(0.0, 0.0, 180.0))        
+        self.cspsim.createVehicle(f16dj, vec(-29495, -10530, 91.3), vec(0, 0, 0), vec(0.0, 0.0, 180.0), True)
         
         # Set the date and time. We want daylight for the first mission.
         date = csp.csplib.SimDate(2007,6,12,10,0,0)

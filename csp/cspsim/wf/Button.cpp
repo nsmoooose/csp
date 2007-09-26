@@ -34,18 +34,10 @@ CSP_NAMESPACE
 
 namespace wf {
 
-Button::Button() : SingleControlContainer() {
-}
-
-Button::Button(const std::string text) 
-	: SingleControlContainer(), m_text(text) {
+Button::Button() : SingleControlContainer("Button") {
 }
 
 Button::~Button() {
-}
-
-std::string Button::getName() const {
-	return "Button";
 }
 
 void Button::buildGeometry() {

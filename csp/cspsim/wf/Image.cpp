@@ -30,14 +30,10 @@ CSP_NAMESPACE
 
 namespace wf {
 
-Image::Image() {
+Image::Image() : Control("Image") {
 }
 
 Image::~Image() {
-}
-
-std::string Image::getName() const {
-	return "Image";
 }
 
 void Image::buildGeometry() {

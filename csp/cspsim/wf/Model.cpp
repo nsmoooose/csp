@@ -30,14 +30,10 @@ CSP_NAMESPACE
 
 namespace wf {
 
-Model::Model() : m_Scale(1.0) {
+Model::Model() : Control("Model"), m_Scale(1.0) {
 }
 
 Model::~Model() {
-}
-
-std::string Model::getName() const {
-	return "Model";
 }
 
 std::string Model::getModelFilePath() const {

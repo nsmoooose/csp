@@ -50,7 +50,7 @@ private:
 	TabPage* m_Page;
 };
 
-Tab::Tab() : m_CurrentPage(NULL) {
+Tab::Tab() : Container("Tab"), m_CurrentPage(NULL) {
 }
 
 Tab::~Tab() {
@@ -67,10 +67,6 @@ ControlVector Tab::getChildControls() {
 		childControls.push_back((*tabHeader));
 	}
 	return childControls;
-}
-
-std::string Tab::getName() const {
-	return "Tab";
 }
 
 void Tab::buildGeometry() {
@@ -244,14 +240,10 @@ void Tab::setCurrentPage(TabPage* page) {
 
 // ===================================================================
 
-TabPage::TabPage() {
+TabPage::TabPage() : SingleControlContainer("TabPage") {
 }
 
 TabPage::~TabPage() {
-}
-
-std::string TabPage::getName() const {
-	return "TabPage";
 }
 
 void TabPage::buildGeometry() {
@@ -272,14 +264,10 @@ void TabPage::setText(const std::string& text) {
 
 // ===================================================================
 
-TabHeader::TabHeader() {
+TabHeader::TabHeader() : Control("TabHeader") {
 }
 
 TabHeader::~TabHeader() {
-}
-
-std::string TabHeader::getName() const {
-	return "TabHeader";
 }
 
 void TabHeader::buildGeometry() {

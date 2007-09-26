@@ -29,25 +29,9 @@ CSP_NAMESPACE
 
 namespace wf {
 
-TableControlContainer::TableControlContainer() {
+TableControlContainer::TableControlContainer() : 
+	Container("TableControlContainer") {
 	m_CellPadding.setAll(2.0f);
-}
-
-TableControlContainer::TableControlContainer(unsigned int columns, unsigned int rows) {
-	setColumnCount(columns);
-	setRowCount(rows);
-
-	m_CellPadding.setAll(2.0f);
-	
-	double width =  1.0f / columns;
-	for(unsigned int i=0;i<columns;++i) {
-		m_Columns[i].setWidth(width);
-	}
-	
-	double height = 1.0f / rows;
-	for(unsigned int i=0;i<rows;++i) {
-		m_Rows[i].setHeight(height);
-	}
 }
 
 TableControlContainer::~TableControlContainer() {
@@ -67,10 +51,6 @@ ControlVector TableControlContainer::getChildControls() {
 		}
 	}
 	return childControls;
-}
-
-std::string TableControlContainer::getName() const {
-	return "TableControlContainer";
 }
 
 void TableControlContainer::buildGeometry() {

@@ -41,8 +41,6 @@ public:
 	Check();
 	virtual ~Check();
 
-	virtual std::string getName() const;
-
 	virtual void buildGeometry();
 
 private:

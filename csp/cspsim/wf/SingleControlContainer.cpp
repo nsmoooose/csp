@@ -29,7 +29,10 @@ CSP_NAMESPACE
 
 namespace wf {
 
-SingleControlContainer::SingleControlContainer() {
+SingleControlContainer::SingleControlContainer() : Container("SingleControlContainer") {
+}
+
+SingleControlContainer::SingleControlContainer(std::string name) : Container(name) {
 }
 
 SingleControlContainer::~SingleControlContainer() {
@@ -41,10 +44,6 @@ ControlVector SingleControlContainer::getChildControls() {
 		controls.push_back(m_Control);
 	}
 	return controls;
-}
-
-std::string SingleControlContainer::getName() const {
-	return "SingleControlContainer";
 }
 
 void SingleControlContainer::buildGeometry() {

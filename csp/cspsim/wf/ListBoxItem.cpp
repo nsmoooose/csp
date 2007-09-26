@@ -34,7 +34,7 @@ CSP_NAMESPACE
 
 namespace wf {
 
-ListBoxItem::ListBoxItem() {
+ListBoxItem::ListBoxItem() : SingleControlContainer("ListBoxItem") {
 	Ref<Label> label = new Label();
 	Ref<Style> style = label->getStyle();
 	style->setTextHorizontalAlign(std::string("center"));
@@ -42,19 +42,17 @@ ListBoxItem::ListBoxItem() {
 	setControl(label.get());
 }
 
-ListBoxItem::ListBoxItem(const std::string text) : m_Text(text) {
-	Ref<Label> label = new Label(text);
+ListBoxItem::ListBoxItem(const std::string& text) : 
+	SingleControlContainer("ListBoxItem"), m_Text(text) {
+	Ref<Label> label = new Label();
 	Ref<Style> style = label->getStyle();
 	style->setTextHorizontalAlign(std::string("center"));
 	label->setZPos(-0.1f);
+	label->setText(text);
 	setControl(label.get());
 }
 
 ListBoxItem::~ListBoxItem() {
-}
-
-std::string ListBoxItem::getName() const {
-	return "ListBoxItem";
 }
 
 void ListBoxItem::buildGeometry() {

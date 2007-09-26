@@ -45,7 +45,6 @@ public:
 	TabHeader();
 	virtual ~TabHeader();
 	
-	virtual std::string getName() const;
 	virtual void buildGeometry();
 	
 	// Returns the text that is displayed in header of a tab page.
@@ -78,7 +77,6 @@ public:
 	TabPage();
 	virtual ~TabPage();
 
-	virtual std::string getName() const;
 	virtual void buildGeometry();
 	
 	// Returns the text that is displayed in header of a tab page.
@@ -110,8 +108,6 @@ public:
 	virtual ~Tab();
 
 	virtual ControlVector getChildControls();
-
-	virtual std::string getName() const;
 
 	virtual void buildGeometry();
 	virtual void layoutChildControls();

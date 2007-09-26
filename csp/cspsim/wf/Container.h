@@ -38,7 +38,7 @@ namespace wf {
  */
 class CSPSIM_EXPORT Container : public Control {
 public:
-	Container();
+	Container(std::string name);
 	virtual ~Container();
 	
 	virtual void layoutChildControls() = 0;

@@ -32,14 +32,12 @@ CSP_NAMESPACE
 
 namespace wf {
 
-Window::Window() : m_StringResources(new StringResourceManager) {
+Window::Window() : 
+	SingleControlContainer("Window"), 
+	m_StringResources(new StringResourceManager) {
 }
 
 Window::~Window() {
-}
-
-std::string Window::getName() const {
-	return "Window";
 }
 
 void Window::buildGeometry() {

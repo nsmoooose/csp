@@ -40,8 +40,6 @@ public:
 	Image();
 	virtual ~Image();
 
-	virtual std::string getName() const;
-	
 	virtual void buildGeometry();	
 };
 

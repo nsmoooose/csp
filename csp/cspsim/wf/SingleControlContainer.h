@@ -44,11 +44,10 @@ namespace wf {
 class CSPSIM_EXPORT SingleControlContainer : public Container {
 public:
 	SingleControlContainer();
+	SingleControlContainer(std::string name);
 	virtual ~SingleControlContainer();
 
 	virtual ControlVector getChildControls();
-
-	virtual std::string getName() const;
 
 	virtual void buildGeometry();
 	

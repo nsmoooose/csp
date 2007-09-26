@@ -37,7 +37,8 @@ CSP_NAMESPACE
 
 namespace wf {
 
-Control::Control() :
+Control::Control(std::string name) :
+	m_Name(name),
 	m_Enabled(true), m_TransformGroup(new osg::MatrixTransform), 
 	m_ZPos(1.0), m_Style(new Style), m_ClickSignal(new Signal)
 {
@@ -67,7 +68,7 @@ void Control::setId(const std::string& id) {
 }
 
 std::string Control::getName() const {
-	return "Control";
+	return m_Name;
 }
 
 void Control::buildGeometry() {

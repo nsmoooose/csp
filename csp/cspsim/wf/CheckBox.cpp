@@ -36,7 +36,8 @@ CSP_NAMESPACE
 
 namespace wf {
 
-CheckBox::CheckBox() : m_Checked(false), m_CheckedChanged(new Signal) {
+CheckBox::CheckBox() : SingleControlContainer("CheckBox"), 
+	m_Checked(false), m_CheckedChanged(new Signal) {
 	Ref<Check> check = new Check;
 	Ref<Style> style = check->getStyle();
 	style->setWidth(Style::UnitValue(Style::Pixels, 20));
@@ -45,10 +46,6 @@ CheckBox::CheckBox() : m_Checked(false), m_CheckedChanged(new Signal) {
 }
 
 CheckBox::~CheckBox() {
-}
-
-std::string CheckBox::getName() const {
-	return "CheckBox";
 }
 
 void CheckBox::buildGeometry() {

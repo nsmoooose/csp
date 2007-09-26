@@ -30,17 +30,10 @@ CSP_NAMESPACE
 
 namespace wf {
 
-Label::Label() {
-}
-
-Label::Label(const std::string text) : m_Text(text) {
+Label::Label() : Control("Label") {
 }
 
 Label::~Label() {
-}
-
-std::string Label::getName() const {
-	return "Label";
 }
 
 void Label::buildGeometry() {

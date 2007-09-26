@@ -47,8 +47,6 @@ public:
 	
 	virtual ControlVector getChildControls();
 
-	virtual std::string getName() const;
-
 	virtual void buildGeometry();
 
 	//! Does nothing in this implementation.

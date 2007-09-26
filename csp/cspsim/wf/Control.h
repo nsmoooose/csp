@@ -83,7 +83,7 @@ typedef sigc::signal<void, HoverEventArgs&> HoverSignal;
  */
 class CSPSIM_EXPORT Control : public Referenced, public WeakReferenced {
 public:
-	Control();
+	Control(std::string name);
 	virtual ~Control();
 
 	/** Disposing all resources to free up memory and prepare this object for 
@@ -231,6 +231,7 @@ protected:
 
 private:
 	std::string m_Id;
+	std::string m_Name;
 	bool m_Enabled;
 
 	typedef std::set<std::string> StateSet;

@@ -31,14 +31,10 @@ CSP_NAMESPACE
 
 namespace wf {
 
-Check::Check() {
+Check::Check() : Control("Check") {
 }
 
 Check::~Check() {
-}
-
-std::string Check::getName() const {
-	return "Check";
 }
 
 void Check::buildGeometry() {

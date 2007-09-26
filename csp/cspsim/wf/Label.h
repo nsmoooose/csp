@@ -42,10 +42,7 @@ namespace wf {
 class CSPSIM_EXPORT Label : public Control {
 public:
 	Label();
-	Label(const std::string text);
 	virtual ~Label();
-
-	virtual std::string getName() const;
 
 	virtual void buildGeometry();
 	

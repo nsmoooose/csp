@@ -29,7 +29,7 @@ CSP_NAMESPACE
 
 namespace wf {
 
-Container::Container() {
+Container::Container(std::string name) : Control(name) {
 }
 
 Container::~Container() {

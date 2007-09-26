@@ -44,8 +44,6 @@ public:
 	CheckBox();
 	virtual ~CheckBox();
 
-	virtual std::string getName() const;
-
 	virtual void buildGeometry();
 	virtual void layoutChildControls();
 

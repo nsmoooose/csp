@@ -29,7 +29,8 @@ CSP_NAMESPACE
 
 namespace wf {
 
-MultiControlContainer::MultiControlContainer() {
+MultiControlContainer::MultiControlContainer() : 
+	Container("MultiControlContainer") {
 }
 
 MultiControlContainer::~MultiControlContainer() {
@@ -37,10 +38,6 @@ MultiControlContainer::~MultiControlContainer() {
 
 ControlVector MultiControlContainer::getChildControls() {
 	return m_Controls;
-}
-
-std::string MultiControlContainer::getName() const {
-	return "MultiControlContainer";
 }
 
 void MultiControlContainer::buildGeometry() {

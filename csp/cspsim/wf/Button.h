@@ -39,10 +39,7 @@ namespace wf {
 class CSPSIM_EXPORT Button : public SingleControlContainer {
 public:
 	Button();
-	Button(const std::string text);
 	virtual ~Button();
-
-	virtual std::string getName() const;
 
 	virtual void buildGeometry();
 	

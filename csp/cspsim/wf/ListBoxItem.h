@@ -39,13 +39,13 @@ namespace wf {
 class CSPSIM_EXPORT ListBoxItem : public SingleControlContainer {
 public:
 	ListBoxItem();
-	ListBoxItem(const std::string text);
+	/** Creates a new list box item with the text as content. */
+	ListBoxItem(const std::string& text);
 	virtual ~ListBoxItem();
-
-	virtual std::string getName() const;
 
 	virtual void buildGeometry();
 	
+	/** Retreives the text associated with this list box item. */
 	virtual const std::string getText() const;
 	virtual void setText(const std::string& text);
 		

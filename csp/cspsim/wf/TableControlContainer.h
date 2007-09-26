@@ -87,12 +87,9 @@ public:
 	typedef std::vector<ControlVector> XYVector;
 
 	TableControlContainer();
-	TableControlContainer(unsigned int columns, unsigned int rows);
 	virtual ~TableControlContainer();
 
 	virtual ControlVector getChildControls();
-
-	virtual std::string getName() const;
 
 	virtual void buildGeometry();
 	

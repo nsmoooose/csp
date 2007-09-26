@@ -65,6 +65,6 @@ class SlotManager:
 class ListBoxManager:
     def addListToControl(self, listbox, texts):
         for text in texts:
-            listBoxItem = csp.cspsim.ListBoxItem(text)
+            listBoxItem = csp.cspsim.ListBoxItem()
+            listBoxItem.setText(text)
             listbox.addItem(listBoxItem)
-        

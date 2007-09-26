@@ -175,6 +175,9 @@ public:
 	virtual Signal* getClickSignal();
 
 	virtual void dispose();
+	
+private:
+	Control();
 };
 
 // ***************** CHECKBOX *****************************
@@ -200,7 +203,6 @@ public:
 class Label : public Control {
 public:
 	Label();
-	Label(const std::string text);
 	virtual ~Label();
 
 	virtual const std::string& getText() const;
@@ -261,7 +263,6 @@ public:
 class Button : public SingleControlContainer {
 public:
 	Button();
-	Button(const std::string text);
 	virtual ~Button();
 
 	virtual const std::string getText() const;
@@ -273,7 +274,7 @@ public:
 class ListBoxItem : public SingleControlContainer {
 public:
 	ListBoxItem();
-	ListBoxItem(const std::string text);
+	ListBoxItem(const std::string& text);
 	virtual ~ListBoxItem();
 
 	virtual const std::string getText() const;

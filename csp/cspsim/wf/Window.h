@@ -57,8 +57,6 @@ public:
 	Window();
 	virtual ~Window();
 
-	virtual std::string getName() const;
-
 	/** Sets the WindowManager that this Window belongs to. */
 	virtual void setWindowManager(WindowManager* manager);
 	

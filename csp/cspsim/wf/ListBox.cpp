@@ -34,7 +34,7 @@ CSP_NAMESPACE
 
 namespace wf {
 
-ListBox::ListBox() : m_SelectedItemChanged(new Signal) {
+ListBox::ListBox() : Container("ListBox"), m_SelectedItemChanged(new Signal) {
 }
 
 ListBox::~ListBox() {
@@ -47,10 +47,6 @@ ControlVector ListBox::getChildControls() {
 		childControls.push_back(*item);
 	}
 	return childControls;
-}
-
-std::string ListBox::getName() const {
-	return "ListBox";
 }
 
 void ListBox::buildGeometry() {

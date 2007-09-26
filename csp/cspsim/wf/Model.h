@@ -39,8 +39,6 @@ public:
 	Model();
 	virtual ~Model();
 
-	virtual std::string getName() const;
-	
 	virtual std::string getModelFilePath() const;
 	virtual void setModelFilePath(std::string& filePath);
 

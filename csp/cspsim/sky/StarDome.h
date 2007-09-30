@@ -41,7 +41,7 @@ public:
 
 	virtual ~StarDome();
 
-	virtual void drawImplementation(osg::State&) const;
+	virtual void drawImplementation(osg::RenderInfo&) const;
 	virtual osg::BoundingBox computeBound() const;
 
 	osg::Geode *makeGeode();

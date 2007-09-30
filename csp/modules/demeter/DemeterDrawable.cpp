@@ -89,7 +89,7 @@ const char* DemeterDrawable::className() const
 	return "DemeterDrawable";
 }
 
-void DemeterDrawable::drawImplementation(RenderInfo& /*state*/) const
+void DemeterDrawable::drawImplementation(State& /*state*/) const
 {
 	if (m_RefTerrain.valid())
 	{
@@ -227,7 +227,7 @@ const char* DemeterLatticeDrawable::className() const
 	return "DemeterLatticeDrawable"; 
 }
 
-void DemeterLatticeDrawable::drawImplementation(RenderInfo& /*state*/) const
+void DemeterLatticeDrawable::drawImplementation(State& /*state*/) const
 {
 	if (m_RefTerrainLattice.valid())
 	{

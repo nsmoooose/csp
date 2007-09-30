@@ -173,7 +173,7 @@ StarDome::StarDome(const StarDome &copy, const osg::CopyOp &copyop): osg::Drawab
 	assert(0);
 }
 
-void StarDome::drawImplementation(osg::RenderInfo&) const {
+void StarDome::drawImplementation(osg::State&) const {
 	const double atten = (10.0 / 255.0) * pow(10.0, m_SkyMagnitude);
 	glPushAttrib(GL_ENABLE_BIT);
 	glPushMatrix();

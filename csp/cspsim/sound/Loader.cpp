@@ -26,7 +26,7 @@
 #include <csp/csplib/util/Log.h>
 #include <csp/csplib/util/FileUtility.h>
 
-#include <openalpp/Sample>
+#include <openalpp/sample.h>
 
 #include <csp/csplib/util/undef.h>
 #include <map>

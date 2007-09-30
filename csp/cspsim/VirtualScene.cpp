@@ -961,7 +961,7 @@ void VirtualScene::setAspect(float value) {
 }
 
 void VirtualScene::getViewport(int& x, int& y, int& width, int& height) {
-	m_FarView->getViewport(/*x, y, width, height*/);
+	m_FarView->getViewport(x, y, width, height);
 }
 
 void VirtualScene::spinTheWorld(bool spin) {

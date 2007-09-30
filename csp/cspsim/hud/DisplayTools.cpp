@@ -185,7 +185,7 @@ void Element::clear() {
 #if OSG_VERSION_MAJOR == 1 && OSG_VERSION_MINOR > 0
 	geode()->removeDrawables(0, geode()->getNumDrawables());
 #else
-	geode()->removeDrawables(0, geode()->getNumDrawables());
+	geode()->removeDrawable(0, geode()->getNumDrawables());
 #endif
 }
 

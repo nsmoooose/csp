@@ -57,7 +57,7 @@ public:
 	void setChunkLodTree(ChunkLodTree *tree);
 	ChunkLodTree* getChunkLodTree() { return _tree; }
 	const ChunkLodTree* getChunkLodTree() const { return _tree; }
-	virtual void drawImplementation(osg::RenderInfo &) const;
+	virtual void drawImplementation(osg::State &) const;
 
 protected:
 	virtual osg::BoundingBox computeBound() const;

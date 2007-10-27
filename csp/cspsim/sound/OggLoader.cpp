@@ -27,7 +27,7 @@
 #include <csp/csplib/util/Log.h>
 #include <csp/csplib/util/Uniform.h>
 
-#include <openalpp/sample.h>
+#include <openalpp/Sample>
 #include <vorbis/vorbisfile.h>
 
 #include <csp/csplib/util/undef.h>
@@ -37,13 +37,12 @@ CSP_NAMESPACE
 class OggLoader: public SoundFileLoader {
 public:
 	static bool loadOgg(std::string const &filename, std::string &data, ALenum &format, ALsizei &freq) {
-		FILE *f = fopen(filename.c_str(), "rb");
-		if (!f) {
+		OggVorbis_File ogg;
+		int open_result = ov_fopen(const_cast<char*>(filename.c_str()), &ogg);
+		if(open_result < 0) {
 			CSPLOG(ERROR, AUDIO) << "error opening file sound sample " << filename;
 			return false;
 		}
-		OggVorbis_File ogg;
-		ov_open(f, &ogg, NULL, 0);
 		vorbis_info *info = ov_info(&ogg, -1);
 		format = (info->channels == 1) ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16;
 		freq = info->rate;

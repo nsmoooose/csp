@@ -102,7 +102,7 @@ WindowManager::WindowManager(osg::State* state) : m_Group(new osg::Group) {
 	sv->getCullVisitor()->setCullingMode(osgUtil::CullVisitor::ENABLE_ALL_CULLING);
 	sv->setCullMask(SceneMasks::CULL_ONLY | SceneMasks::NORMAL);
 	sv->getUpdateVisitor()->setTraversalMask(SceneMasks::UPDATE_ONLY | SceneMasks::NORMAL);
-	sv->getRenderStage()->setClearMask(GL_DEPTH_BUFFER_BIT);
+	sv->getCamera()->setClearMask(GL_DEPTH_BUFFER_BIT);
 
 	m_View = sv;
 

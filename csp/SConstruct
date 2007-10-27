@@ -59,11 +59,11 @@ build.ExternalLibrary(
 build.ExternalLibrary(
 	name = 'sound',
 	config = [
-		build.PkgConfig(package='openalpp', version='0.2'),
+#		build.PkgConfig(package='openalpp', version='0.2'),
 		build.PkgConfig(package='vorbisfile', version='1.1.0'),
-		build.DevpackConfig(dlls='openalpp', headers=[('openalpp', 'sounddata.h')]),
-		build.DevpackConfig(dlls=['libvorbis', 'libvorbisfile'], headers=[('vorbis', 'vorbisfile.h')]),
-		build.DevpackConfig(dlls='libogg', headers=[('ogg', 'ogg.h')]),
+		build.DevpackConfig(dlls='oalpp', headers=[('openalpp', 'sounddata')]),
+		build.DevpackConfig(dlls=['vorbis', 'vorbisfile'], headers=[('vorbis', 'vorbisfile.h')]),
+		build.DevpackConfig(dlls='ogg', headers=[('ogg', 'ogg.h')]),
 	])
 
 build.ExternalLibrary(
@@ -83,12 +83,11 @@ build.ExternalLibrary(
 build.ExternalLibrary(
 	name = 'osg',
 	config = [
-		build.PkgConfig(package='openscenegraph', version='0.9.9'),
-		build.PkgConfig(package='openthreads', version='0.9.9'),
-		build.PkgConfig(package='producer', version='0.9.9'),
-		build.PkgConfig(package='osgal', version='0.3'),
+		build.PkgConfig(package='openscenegraph', version='2.0.0'),
+		build.PkgConfig(package='openthreads', version='1.9'),
+		build.PkgConfig(package='osgal', version='0.6.1'),
 		build.DevpackConfig(dlls='osgal', headers=[('osgAL', 'SoundNode')]),
-		build.DevpackConfig(dlls=['osg', 'osgDB', 'osgFX', 'osgGA', 'osgParticle', 'osgProducer', 'osgText', 'osgUtil', 'OpenThreadsWin32', 'Producer'], headers=[('osg', 'Depth'), ('osgText', 'Font')]),
+		build.DevpackConfig(dlls=['osg', 'osgDB', 'osgFX', 'osgGA', 'osgParticle', 'osgViewer', 'osgText', 'osgUtil', 'OpenThreads'], headers=[('osg', 'Depth'), ('osgText', 'Font')]),
 	])
 
 build.ExternalLibrary(

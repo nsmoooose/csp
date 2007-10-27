@@ -30,7 +30,7 @@
 #include <csp/csplib/data/Object.h>
 #include <csp/csplib/data/Vector3.h>
 
-#include <openalpp/ref_ptr.h>
+//#include <openalpp/ref_ptr.h>
 #include <osg/ref_ptr>
 
 namespace openalpp { class Sample; }
@@ -76,7 +76,7 @@ private:
 	int m_Priority;
 
 	mutable osg::ref_ptr<osgAL::SoundState> m_State;
-	mutable openalpp::ref_ptr<openalpp::Sample> m_Sample;
+	mutable osg::ref_ptr<openalpp::Sample> m_Sample;
 
 	void loadSample() const;
 };

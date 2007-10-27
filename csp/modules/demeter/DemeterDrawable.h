@@ -58,7 +58,7 @@ namespace Demeter
             Terrain*                    GetTerrain() { return m_RefTerrain.get(); }
             const Terrain*              GetTerrain() const { return m_RefTerrain.get(); }
 
-            virtual void                drawImplementation(osg::State&) const;
+            virtual void                drawImplementation(osg::RenderInfo&) const;
             
         protected:
         
@@ -103,7 +103,7 @@ namespace Demeter
 			void addTerrain( Terrain* pTerrain );
 			void removeTerrain( Terrain * pTerrain );
 
-            virtual void                drawImplementation(osg::State&) const;
+            virtual void                drawImplementation(osg::RenderInfo&) const;
 
 			virtual void     SetCameraPosition(float, float, float);
             

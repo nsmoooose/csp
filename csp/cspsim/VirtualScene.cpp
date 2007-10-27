@@ -478,7 +478,7 @@ void VirtualScene::createVeryFarView() {
 void VirtualScene::createFarView() {
 	m_FarView = makeSceneView(SceneMasks::FAR);
 	// clear the depth buffer (but not the color buffer)
-	m_FarView->getRenderStage()->setClearMask(GL_DEPTH_BUFFER_BIT);
+	m_FarView->getCamera()->setClearMask(GL_DEPTH_BUFFER_BIT);
 	m_FarGroup = new osg::Group;
 	m_FarGroup->setName("far_group");
 	m_FarView->setSceneData(m_FarGroup.get());
@@ -487,7 +487,7 @@ void VirtualScene::createFarView() {
 void VirtualScene::createNearView() {
 	m_NearView = makeSceneView(SceneMasks::NEAR);
 	// clear the depth buffer (but not the color buffer)
-	m_NearView->getRenderStage()->setClearMask(GL_DEPTH_BUFFER_BIT);
+	m_NearView->getCamera()->setClearMask(GL_DEPTH_BUFFER_BIT);
 	m_NearView->getCullVisitor()->setImpostorsActive(false);
 	m_NearGroup = new osg::Group;
 	m_NearGroup->setName("near_group");
@@ -498,7 +498,7 @@ void VirtualScene::createInfoView() {
 	m_InfoView = makeSceneView(0);
 
 	// clear the depth buffer (but not the color buffer)
-	m_InfoView->getRenderStage()->setClearMask(GL_DEPTH_BUFFER_BIT);
+	m_InfoView->getCamera()->setClearMask(GL_DEPTH_BUFFER_BIT);
 
 	m_InfoGroup = new osg::Group;
 	m_InfoGroup->setName("info_group");
@@ -511,8 +511,6 @@ wf::WindowManager* VirtualScene::getWindowManager() {
 
 void VirtualScene::createWindowView() {
 	m_WindowManager = new wf::WindowManager(m_GlobalState.get());
-	osg::ref_ptr<osgUtil::SceneView> windowView = m_WindowManager->getSceneView();
-	windowView->getRenderStage()->setClearMask(GL_DEPTH_BUFFER_BIT);	
 }
 
 void VirtualScene::buildScene() {
@@ -961,7 +959,7 @@ void VirtualScene::setAspect(float value) {
 }
 
 void VirtualScene::getViewport(int& x, int& y, int& width, int& height) {
-	m_FarView->getViewport(x, y, width, height);
+	m_FarView->getViewport(/*x, y, width, height*/);
 }
 
 void VirtualScene::spinTheWorld(bool spin) {

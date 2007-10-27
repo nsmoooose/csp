@@ -104,7 +104,7 @@ void ChunkLodDrawable::setChunkLodTree(ChunkLodTree* tree) {
 	}
 }
 
-void ChunkLodDrawable::drawImplementation(osg::State& state) const {
+void ChunkLodDrawable::drawImplementation(osg::RenderInfo& info) const {
 	static int frame = 0;
 
 	_triangles_rendered = 0;
@@ -117,21 +117,21 @@ void ChunkLodDrawable::drawImplementation(osg::State& state) const {
 		}
 		ChunkLodTree *tree = const_cast<ChunkLodTree*>(_tree);
 
-		osg::Matrix mv = state.getModelViewMatrix();
+		osg::Matrix mv = info.getState()->getModelViewMatrix();
 		mv.invert(mv);
 		osg::Vec3 viewpoint = mv.getTrans();
 
-		state.disableTexCoordPointersAboveAndIncluding(0); // NEW
-		state.disableAllVertexArrays();
+		info.getState()->disableTexCoordPointersAboveAndIncluding(0); // NEW
+		info.getState()->disableAllVertexArrays();
 
-		_details->enable(state);
+		_details->enable(*info.getState());
 
 		osg::Timer t;
 		osg::Timer_t update_t = t.tick();
 
-		tree->update(viewpoint, state);
+		tree->update(viewpoint, *info.getState());
 		//osg::Timer_t render_t = t.tick();
-		_triangles_rendered = tree->render(state, *_details);
+		_triangles_rendered = tree->render(*info.getState(), *_details);
 		_triangle_count += _triangles_rendered;
 
 
@@ -153,11 +153,11 @@ void ChunkLodDrawable::drawImplementation(osg::State& state) const {
 		} 
 
 
-		_details->disable(state);
+		_details->disable(*info.getState());
 
-		state.disableAllVertexArrays();
-		state.dirtyTexCoordPointersAboveAndIncluding(0);
-		state.setActiveTextureUnit(0);
+		info.getState()->disableAllVertexArrays();
+		info.getState()->dirtyTexCoordPointersAboveAndIncluding(0);
+		info.getState()->setActiveTextureUnit(0);
 
 		frame++;
 	}

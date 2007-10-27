@@ -30,7 +30,7 @@
 #include <csp/csplib/util/osg.h>
 
 #include <osgAL/SoundState>
-#include <openalpp/sample.h>
+#include <openalpp/Sample>
 #include <csp/csplib/util/undef.h>
 
 

@@ -38,6 +38,12 @@ def run(view, ui):
 def main(args):
 	print "Combat Simulator Project Theater Layout Tool"
 	print "============================================"
+	
+	options = app.options
+
+	if options.pause:
+		pauseForDebugger()
+	
 	view = cLayout.View()
 	argv = [app.programName()] + list(args)
 	if view.init(argv):
@@ -47,6 +53,27 @@ def main(args):
 	thread.start_new_thread(run, (view, ui))
 	ui.MainLoop()
 	view.quit()
+
+def pauseForDebugger():
+	"""
+	Print a help message for attaching gdb to this process and wait for keyboard
+	input.  Should be called after the cspsim module has been loaded if requested.
+	"""
+	print
+	print "All extension modules have been loaded and the simulation is now paused"
+	print "to give you an opportunity to attach a debugging session.  Under GNU/Linux"
+	print "run the following command from a separate shell to attach a debug session:"
+	print
+	print "   gdb python %d" % os.getpid()
+	print
+	print "This will run gdb and attach to the simulation process.  Once gdb finishes"
+	print "loading symbols for all the modules, you can set breakpoints as needed"
+	print "and then enter 'c' to continue."
+	print
+	print "Finally, return to this window and press <enter> to resume."
+	print
+	sys.stdin.readline()
+
 
 # find the root of the CSP workspace
 base = csp.dir  #os.path.dirname(os.path.dirname(app.__file__))
@@ -59,5 +86,6 @@ model_path = os.path.join(data, 'models')
 
 app.addOption('--xml', default=xml_path, type='string', help='path to theater data')
 app.addOption('--model', default=model_path, type='string', help='path to 3d models')
+app.addOption('--pause', action='store_true', default=False, help='pause on startup for attaching a debugger')
 app.start()
 print 'end'

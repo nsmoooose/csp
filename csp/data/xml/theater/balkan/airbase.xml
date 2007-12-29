@@ -596,8 +596,32 @@
             <Path name="model">Hemtt_tanker01</Path>
             <Float name="x">374.34</Float>
             <Float name="y">-242.77</Float>
-	    <Float name="orientation">1.064</Float>
-	</Object>
+            <Float name="orientation">1.064</Float>
+        </Object>
+        <Object class="FeatureLayout">
+            <Path name="model">cistern01</Path>
+            <Float name="x">520</Float>
+            <Float name="y">420</Float>
+            <Float name="orientation">4.71</Float>
+        </Object>
+        <Object class="FeatureLayout">
+            <Path name="model">cistern01</Path>
+            <Float name="x">570</Float>
+            <Float name="y">420</Float>
+            <Float name="orientation">4.71</Float>
+        </Object>
+        <Object class="FeatureLayout">
+            <Path name="model">cistern01</Path>
+            <Float name="x">520</Float>
+            <Float name="y">370</Float>
+            <Float name="orientation">4.71</Float>
+        </Object>
+        <Object class="FeatureLayout">
+            <Path name="model">cistern01</Path>
+            <Float name="x">570</Float>
+            <Float name="y">370</Float>
+            <Float name="orientation">4.71</Float>
+        </Object>
     </List>
 </Object>
 

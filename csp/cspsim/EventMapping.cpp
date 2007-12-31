@@ -53,6 +53,10 @@ int EventMapping::getJoystickButtonID(int device, int button, int state, int jmo
 	return (device & 0xF) + ((button & 0xFFF) << 4) + ((jmod & 0xF) << 16) + ((mode & 0xF) << 20) + press;
 }
 
+int EventMapping::getJoystickAxisID(int device, int axis) const {
+	return (device & 0xF) + ((axis & 0xFF) << 4);
+}
+
 int EventMapping::getMouseButtonID(int device, int button, int state, int kmod, int mode) const {
 	int press = (state == SDL_PRESSED) ? (1 << 31) : 0;
 	return (device & 0xF) + ((button & 0xFF) << 4) + ((kmod & 0xFFF) <<  12) + ((mode & 0xF) << 24) + press;
@@ -78,13 +82,16 @@ EventMapping::Script const *EventMapping::getJoystickButtonScript(int device, in
 }
 
 EventMapping::Axis const *EventMapping::getJoystickAxis(int device, int axis) const {
-	return &(m_JoystickAxisMap[device & 3][axis & 7]);
+	int id = getJoystickAxisID(device, axis);
+	axis_map::const_iterator axisIt = m_JoystickAxisMap.find(id);
+	if (axisIt == m_JoystickAxisMap.end()) return NULL;
+	return &(axisIt->second);
 }
 
 void EventMapping::addJoystickAxisMap(int device, int axis, Axis const &a) {
-	assert(device >= 0 && device < 4);
-	assert(axis >= 0 && axis < 8);
-	m_JoystickAxisMap[device][axis] = a;
+	int id = getJoystickAxisID(device, axis);
+	m_JoystickAxisMap[id] = a;
+	m_usedJoysticks.insert(device);
 }
 
 void EventMapping::addKeyMap(int device, SDL_keysym &key, int state, int mode, Script const &s) {
@@ -95,6 +102,7 @@ void EventMapping::addKeyMap(int device, SDL_keysym &key, int state, int mode, S
 void EventMapping::addJoystickButtonMap(int device, int button, int state, int jmod, int mode, Script const &s) {
 	int id = getJoystickButtonID(device, button, state, jmod, mode);
 	m_JoystickButtonMap[id] = s;
+	m_usedJoysticks.insert(device);
 }
 
 void EventMapping::addMouseMotionMap(int device, int state, int kmod, int mode, Motion const &motion) {
@@ -164,7 +172,7 @@ void EventMapping::parseMap(const char *line, EventMapping::Script &script) {
 		} else
 		if (type == 'A') {
 			if (script.size() != 1) return;
-			addJoystickAxisMap(device, id, Axis(script[0].id)); 
+			addJoystickAxisMap(device, id, Axis(script[0].id));  // TODO: add mode ?
 		}
 	} else
 	if (device_type == 'K') {

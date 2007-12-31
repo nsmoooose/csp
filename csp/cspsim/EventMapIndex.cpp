@@ -36,6 +36,15 @@
 
 CSP_NAMESPACE
 
+EventMapIndex::~EventMapIndex() {
+	OpenedJoysticks::const_iterator openedJoystickIt;
+	for (openedJoystickIt = m_openedJoysticks.begin(); openedJoystickIt != m_openedJoysticks.end(); ++openedJoystickIt) {
+		if (openedJoystickIt->second) {
+			SDL_JoystickClose(openedJoystickIt->second);
+		}
+	}
+}
+
 EventMapping::RefT EventMapIndex::getMap(const hasht &key) {
 	MapHash::iterator i = m_Index.find(key);
 	if (i == m_Index.end()) return NULL;
@@ -57,6 +66,7 @@ void EventMapIndex::load(std::string const &path) {
 		for (idx = bindings.begin(); idx != bindings.end(); idx++) {
 			m_Index[*idx] = m;
 		}
+		openNewJoysticks( m->getUsedJoysticks() );
 	}
 }
 
@@ -68,6 +78,22 @@ void EventMapIndex::loadAllMaps() {
 		std::string fn = ospath::join(path, *file);
 		if (ospath::getFileExtension(fn) == "hid") {
 			load(fn);
+		}
+	}
+}
+
+void EventMapIndex::openNewJoysticks(const EventMapping::UsedJoysticks & usedJoysticks) {
+	EventMapping::UsedJoysticks::const_iterator usedJoystickIt;
+	for (usedJoystickIt = usedJoysticks.begin(); usedJoystickIt != usedJoysticks.end(); ++usedJoystickIt) {
+		typedef std::pair<OpenedJoysticks::iterator, bool> InsertResult;
+		InsertResult insertResult = m_openedJoysticks.insert( OpenedJoysticks::value_type(*usedJoystickIt, 0) );
+		if (insertResult.second) {
+			insertResult.first->second = SDL_JoystickOpen(insertResult.first->first);
+			if (insertResult.first->second == 0) {
+				CSPLOG(ERROR, APP) << "Failed to open joystick #"
+					<< std::dec << insertResult.first->first
+					<< " (" << SDL_GetError() << ")";
+			}
 		}
 	}
 }

@@ -149,8 +149,41 @@ public:
 	}
 };
 
+class AxisCommand: public CameraCommand {
+protected:
+	double m_value;
+	void reset() {
+		m_value = 0.0;
+	}
+	AxisCommand() {
+		  reset();
+	}
+public:
+	void set(double value) {
+		m_value = value;
+	}
+};
+
+class LeftRightAxisCommand: public AxisCommand {
+public:
+	virtual void execute(CameraKinematics* ck) {
+		ck->displacementLeftRight(m_value);
+		reset();
+	}
+};
+
+class UpDownAxisCommand: public AxisCommand {
+public:
+	virtual void execute(CameraKinematics* ck) {
+		ck->displacementUpDown(m_value);
+		reset();
+	}
+};
+
 struct CameraCommands {
 	MouseCommand Mouse;
+	LeftRightAxisCommand LeftRightAxis;
+	UpDownAxisCommand UpDownAxis;
 	PanUpCommand PanUp;
 	PanDownCommand PanDown;
 	PanLeftCommand PanLeft;

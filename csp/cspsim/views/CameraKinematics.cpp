@@ -173,6 +173,18 @@ void CameraKinematics::displacement(int /*x*/, int /*y*/, int dx, int dy) {
 	m_ExternalPan = true;
 }
 
+void CameraKinematics::displacementLeftRight(double x) {
+	m_PanRateTheta = 0.0;
+	m_Theta = -x * PI;
+	m_ExternalPan = true;
+}
+
+void CameraKinematics::displacementUpDown(double y) {
+	m_PanRatePhi = 0.0;
+	m_Phi = -y * PI;
+	m_ExternalPan = true;
+}
+
 void CameraKinematics::accept(CameraCommand* cc) {
 	if (cc) cc->execute(this);
 }

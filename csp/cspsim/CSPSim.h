@@ -155,7 +155,6 @@ private:
 	Ref<wf::Signal> m_ConfigurationChanged;
 	
 	SDL_Surface *m_SDLScreen;
-	SDL_Joystick* m_SDLJoystick;
 
 	Ref<BaseScreen> m_CurrentScreen;
 	Ref<config::Configuration> m_Configuration;

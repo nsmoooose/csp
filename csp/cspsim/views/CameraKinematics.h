@@ -78,6 +78,8 @@ public:
 	void lookRight() { m_Theta = -PI_2; m_Phi = 0.0; m_ExternalPan = true; }
 	void lookLeft() { m_Theta = PI_2; m_Phi = 0.0; m_ExternalPan = true; }
 	void displacement(int x, int y, int dx, int dy);
+	void displacementLeftRight(double x);
+	void displacementUpDown(double y);
 	inline void setPhi(double phi) { m_Phi = phi; }
 	inline double getPhi() const { return m_Phi; }
 	inline void setTheta(double theta) { m_Theta = theta; }

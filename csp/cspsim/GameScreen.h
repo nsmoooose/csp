@@ -112,6 +112,8 @@ public:
 		BIND_ACTION("LABELS_TOGGLE", on_LabelsToggle);
 		BIND_CLICK("LEFT_CLICK", on_LeftClick);
 		BIND_MOTION("CAMERA_PAN", on_MouseView);
+		BIND_AXIS("CAMERA_PAN_LEFT_RIGHT", on_ViewPanLeftRight);
+		BIND_AXIS("CAMERA_PAN_UP_DOWN", on_ViewPanUpDown);
 	END_INPUT_INTERFACE  // protected:
 
 public:
@@ -162,6 +164,8 @@ public:
 	void on_LabelsToggle();
 	void on_LeftClick(MapEvent::ClickEvent const &event);
 	void on_MouseView(MapEvent::MotionEvent const &event);
+	void on_ViewPanLeftRight(MapEvent::AxisEvent const &event);
+	void on_ViewPanUpDown(MapEvent::AxisEvent const &event);
 
 	virtual void initInterface();
 

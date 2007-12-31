@@ -35,6 +35,7 @@
 
 #include <string>
 #include <vector>
+#include <set>
 
 CSP_NAMESPACE
 
@@ -97,10 +98,13 @@ public:
 
 	typedef HashMap<int, Script>::Type script_map;
 	typedef HashMap<int, Motion>::Type motion_map;
+	typedef HashMap<int, Axis>::Type axis_map;
 	typedef script_map::const_iterator EventScript;
+	typedef std::set<int> UsedJoysticks;
 
 	int getKeyID(int device, SDL_keysym const &key, int state, int mode) const;
 	int getJoystickButtonID(int device, int button, int state, int jmod, int mode) const;
+	int getJoystickAxisID(int device, int axis) const;
 	int getMouseButtonID(int device, int button, int state, int kmod, int mode) const;
 	int getMouseMotionID(int device, int state, int kmod, int mode) const;
 
@@ -126,17 +130,18 @@ public:
 	void parseBinding(const char *line);
 	bool load(std::string const &path);
 
+	const UsedJoysticks &getUsedJoysticks() const { return m_usedJoysticks; }
 	const std::vector<hasht> &getBindings() const { return m_Bindings; }
 
 private:
 	script_map m_KeyMap;
 	script_map m_JoystickButtonMap;	
+	axis_map   m_JoystickAxisMap;
 	script_map m_MouseButtonMap;
 	motion_map m_MouseMotionMap;
 	
+	UsedJoysticks m_usedJoysticks;
 	std::vector<hasht> m_Bindings;
-	
-	Axis m_JoystickAxisMap[4][8];
 };
 
 

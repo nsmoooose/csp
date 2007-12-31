@@ -496,6 +496,16 @@ void GameScreen::on_MouseView(MapEvent::MotionEvent const &event) {
 	m_CameraAgent->setCameraCommand(&m_CameraCommands->Mouse);
 }
 
+void GameScreen::on_ViewPanLeftRight(MapEvent::AxisEvent const &event) {
+	m_CameraCommands->LeftRightAxis.set(event.value);
+	m_CameraAgent->setCameraCommand(&m_CameraCommands->LeftRightAxis);
+}
+
+void GameScreen::on_ViewPanUpDown(MapEvent::AxisEvent const &event) {
+	m_CameraCommands->UpDownAxis.set(event.value);
+	m_CameraAgent->setCameraCommand(&m_CameraCommands->UpDownAxis);
+}
+
 void GameScreen::setCamera(double dt) {
 	VirtualScene* scene = CSPSim::theSim->getScene();
 	if (scene) {

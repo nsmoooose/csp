@@ -58,7 +58,6 @@ CSP_NAMESPACE
 class InputInterface;
 
 typedef sigc::slot<void> ActionEventSlot;
-typedef sigc::signal<void> ActionEventSignal;
 typedef sigc::slot<void, MapEvent::ClickEvent const &> ClickEventSlot;
 typedef sigc::signal<void, MapEvent::CommandEvent const &> CommandEventSignal;
 typedef sigc::slot<void, MapEvent::MotionEvent const &> MotionEventSlot;
@@ -350,6 +349,14 @@ public:
 	 */
 	void bindActionEvent(std::string const &id, ActionEventSlot const &slot) {
 		runtimeDispatch()->bindAction(id, slot);
+	}
+
+	/** Bind a handler to a click event at runtime.  Using runtime
+	 *  handlers (as opposed to the class handlers set by the BIND
+	 *  macros) incurs storage costs per instance.
+	 */
+	void bindClickEvent(std::string const &id, ClickEventSlot const &slot) {
+		runtimeDispatch()->bindClick(id, slot);
 	}
 
 	/** Bind a handler to an axis event at runtime.  Using runtime

@@ -339,10 +339,6 @@ void CSPSim::cleanup() {
 	m_Terrain = NULL;
 	m_Theater = NULL;
 	m_Scene = NULL;
- 	if (m_SDLJoystick) {
-		SDL_JoystickClose(m_SDLJoystick);
-		m_SDLJoystick = NULL;
-	}
 
 	m_GlobalState = NULL;
 
@@ -843,12 +839,8 @@ int CSPSim::initSDL() {
 	}
 
 	SDL_JoystickEventState(SDL_ENABLE);
-	m_SDLJoystick = SDL_JoystickOpen(0);
-	if (m_SDLJoystick == NULL) {
-		CSPLOG(ERROR, APP) << "Failed to open joystick (" <<  SDL_GetError() << ")";
-	}
 
-	SDL_EnableUNICODE(1);
+	SDL_EnableUNICODE(1); // TODO: must be an option
 
 	// make sure SDL_Quit gets called when the program exits.
 	atexit(SDL_Quit);

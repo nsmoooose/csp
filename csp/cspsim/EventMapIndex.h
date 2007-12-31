@@ -30,21 +30,27 @@
 #include <csp/cspsim/EventMapping.h>
 
 #include <csp/csplib/util/HashUtility.h>
+#include <map>
 
 CSP_NAMESPACE
 
 class EventMapIndex: public Referenced {
 public:
+	~EventMapIndex();
 	EventMapping::RefT getMap(const hasht &key);
 	EventMapping::RefT getMap(const std::string &id);
 	void load(std::string const &path);
 	void loadAllMaps();
 
 protected:
+	void openNewJoysticks(const EventMapping::UsedJoysticks & usedJoysticks);
+	
 	typedef HashMap<hasht, EventMapping::RefT>::Type MapHash;
 	typedef std::vector<EventMapping::RefT> MapVector;
+	typedef std::map<int, SDL_Joystick*> OpenedJoysticks;
 	MapHash m_Index;
 	MapVector m_Maps;
+	OpenedJoysticks m_openedJoysticks;
 };
 
 CSP_NAMESPACE_END

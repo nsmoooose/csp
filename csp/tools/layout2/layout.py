@@ -1,7 +1,28 @@
 #!/usr/bin/env python
 
+import os
+import csp.csplib
+import csp.cspsim
+
 from csp.tools.layout2 import layout_module
 from csp.tools.layout2.scripts.ui.LayoutApplication import LayoutApplication
+
+def loadModules():
+	modules = ('chunklod', 'demeter')
+	extension = {
+		'posix' : '.so',
+		'nt' : '.dll',
+	}.get(os.name, '')
+	for module in modules:
+		module_path = os.path.join('..', '..', 'modules', module, '.bin', module) + extension
+		# for windows demos, the modules are instead placed in the current directory.
+		# TODO move them to ../modules/*.dll?
+		if not os.path.exists(module_path):
+			module_path = os.path.join(module) + extension
+		if not csp.csplib.ModuleLoader.load(module_path):
+			print('Unable to load required extension module "%s"' % module)
+
+loadModules()
 
 # Create the application object and run the main loop.
 app = LayoutApplication(0)

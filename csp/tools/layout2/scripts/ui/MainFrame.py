@@ -10,6 +10,7 @@ from controls.SceneWindow import SceneWindow
 from commands.MoveCameraToHomeCommand import MoveCameraToHomeCommand
 from commands.OpenSelectedFileCommand import OpenSelectedFileCommand
 from commands.QuitCommand import QuitCommand
+from commands.ReCompileDataArchiveCommand import ReCompileDataArchiveCommand
 
 class MainFrame(wx.Frame):
 	"""This is the top window that contains all controls used by the layout editor.
@@ -39,15 +40,15 @@ class MainFrame(wx.Frame):
 
 		fileMenuCommands = [QuitCommand]
 		viewMenuCommands = [MoveCameraToHomeCommand]
-		toolbarCommands = [OpenSelectedFileCommand, MoveCameraToHomeCommand]
+		toolsMenuCommands = [ReCompileDataArchiveCommand]
+		toolbarCommands = [OpenSelectedFileCommand, MoveCameraToHomeCommand, ReCompileDataArchiveCommand]
 
 		# Menu items.
 		menuBar = wx.MenuBar()
 
-		fileMenu = controlFactory.GenerateMenuItems(self, fileMenuCommands)
-		menuBar.Append(fileMenu, "File")
-		viewMenu = controlFactory.GenerateMenuItems(self, viewMenuCommands)	
-		menuBar.Append(viewMenu, "View")
+		menuBar.Append(controlFactory.GenerateMenuItems(self, fileMenuCommands), "File")
+		menuBar.Append(controlFactory.GenerateMenuItems(self, viewMenuCommands), "View")
+		menuBar.Append(controlFactory.GenerateMenuItems(self, toolsMenuCommands), "Tools")
 
 		self.SetMenuBar(menuBar)
 

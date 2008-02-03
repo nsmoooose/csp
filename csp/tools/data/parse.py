@@ -629,12 +629,7 @@ class ObjectHandler(ElementHandler):
 
 
 class ObjectXMLArchive:
-	MASTER = None
-
 	def __init__(self, prefix, path):
-		if ObjectXMLArchive.MASTER is not None:
-			raise "Can only create one ObjectXMLArchive object"
-		ObjectXMLArchive.MASTER = self
 		self._basepath = path
 		self._objects = {}
 		self._paths = {}

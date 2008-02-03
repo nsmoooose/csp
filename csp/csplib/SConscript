@@ -150,11 +150,6 @@ build.SourceGroup(expenv,
 		'util/Noise.cpp',
 		'util/Noise.h',
 		'util/Properties.h',
-		# disabled for now to avoid having to link libpython for executables
-		# that use csplib.  these should probably be moved to csplib_module,
-		# since that necessarily uses python.
-		#'util/PyCasts.cpp',
-		#'util/PyCasts.h',
 		'util/Random.cpp',
 		'util/Random.h',
 		'util/Ref.h',
@@ -211,7 +206,12 @@ build.SharedLibrary(expenv,
 
 build.SharedLibrary(env,
 	name = 'csplib_module',
-	sources = ['csplib.i'],
+	sources = [
+		'csplib.i',
+		'util/PythonCasts.h',
+		'util/PythonSignals.h',
+		'util/PythonSwig.h'
+	],
 	deps = ['csplib'],
 	aliases = ['all', 'csplib'],
 	SHLIBPREFIX='_')
@@ -231,7 +231,6 @@ build.Test(env,
 	sources = [
 		'util/test/test_Boolean.cpp',
 		'util/test/test_FileUtility.cpp',
-		#'util/test/test_PyCasts.cpp',
 		'util/test/test_Ref.cpp',
 		'util/test/test_StringTools.cpp',
 		'util/test/test_Testing.cpp'

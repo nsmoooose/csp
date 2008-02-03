@@ -1,0 +1,3 @@
+Hello and welcome to the CSP layout editor.
+
+Here you have some starting information:

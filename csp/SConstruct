@@ -32,6 +32,7 @@ PACKAGES = [
 	'modules',
 	'tools/canopy',
 	'tools/layout',
+	'tools/layout2',
 ]
 
 build.ExternalLibrary(
@@ -113,6 +114,8 @@ class Environment(build.Environment):
 	  scons cspsim           build the main flight simulator client
 	  scons indexserver      build the master server needed for multiplayer
 	  scons dox              generate doxygen documentation
+	  scons layout           build the theater layout tool
+	  scons vcproj           generate Microsoft Visual Studio compatible project and solution
 	  scons runtests         build and run all unittests
 	  scons csplib.runtests  build and run all unittests in csplib
 	"""

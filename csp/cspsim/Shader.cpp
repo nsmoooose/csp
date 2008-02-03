@@ -17,7 +17,6 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include <csp/cspsim/Shader.h>
-#include <csp/cspsim/Config.h>
 #include <csp/cspsim/StateStack.h>
 #include <csp/csplib/util/FileUtility.h>
 #include <csp/csplib/util/StringTools.h>
@@ -49,6 +48,10 @@
 
 
 CSP_NAMESPACE
+
+void Shader::setShaderPath(const std::string& path) {
+	m_ShaderPath = path;
+}
 
 void Shader::addDefaultUniforms(osg::StateSet *ss) {
 	ss->addUniform(m_Tex0.get());
@@ -96,12 +99,11 @@ Shader *Shader::instance() {
 }
 
 osg::Program *Shader::loadProgram(std::string const &basename) {
-	static const std::string dir = ospath::join(getDataPath(), "shaders");
 	osg::Shader *v_shader = new osg::Shader(osg::Shader::VERTEX);
 	osg::Shader *f_shader = new osg::Shader(osg::Shader::FRAGMENT);
 	bool ok = false;
-	ok = v_shader->loadShaderSourceFromFile(ospath::join(dir, basename + ".vertex")) || ok;
-	ok = f_shader->loadShaderSourceFromFile(ospath::join(dir, basename + ".fragment")) || ok;
+	ok = v_shader->loadShaderSourceFromFile(ospath::join(m_ShaderPath, basename + ".vertex")) || ok;
+	ok = f_shader->loadShaderSourceFromFile(ospath::join(m_ShaderPath, basename + ".fragment")) || ok;
 	if (!ok) return 0;
 	osg::Program *program = new osg::Program;
 	program->addShader(v_shader);

@@ -21,6 +21,7 @@
 
 #include <csp/csplib/util/Namespace.h>
 #include <csp/csplib/util/HashUtility.h>
+#include <csp/cspsim/Export.h>
 
 #include <osg/NodeVisitor>
 #include <osg/ref_ptr>
@@ -40,7 +41,7 @@ CSP_NAMESPACE
  *  the 'shaders' subdirectory of the default data directory (see
  *  Config.h).
  */
-class Shader {
+class CSPSIM_EXPORT Shader {
 public:
 	/** Visits an OSG subgraph, applying shaders to specific StateSets.
 	 *  Tracks OSG state to decide which shader is most appropriate (since
@@ -61,6 +62,8 @@ public:
 		class Impl;
 		Impl* m_Impl;
 	};
+
+	void setShaderPath(const std::string& path);
 
 	/** Apply a shader to a StateSet.  The shader is loaded from files
 	 *  in the {datadir}/shaders subdirectory.  The shader files must
@@ -90,6 +93,9 @@ public:
 private:
 	// Singleton.
 	Shader();
+	
+	/** The path to the directory where all shader files is stored. */
+	std::string m_ShaderPath;
 
 	/** Get the shader program for the specified effect.  Returns null if
 	 *  the effect could not be found or compiled.  Programs are loaded

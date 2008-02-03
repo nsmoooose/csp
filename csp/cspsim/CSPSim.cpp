@@ -48,6 +48,7 @@
 #include <csp/cspsim/MenuScreen.h>
 #include <csp/cspsim/ObjectModel.h>
 #include <csp/cspsim/Profile.h>
+#include <csp/cspsim/Shader.h>
 #include <csp/cspsim/SimpleSceneManager.h>
 #include <csp/cspsim/sound/Loader.h>
 #include <csp/cspsim/sound/SoundEngine.h>
@@ -276,6 +277,9 @@ void CSPSim::init() {
 		ospath::addpath(search_path, model_path);
 		ospath::addpath(search_path, font_path);
 		ObjectModel::setDataFilePathList(search_path);
+
+		std::string shader_path = ospath::join(getDataPath(), "shaders");
+		Shader::instance()->setShaderPath(shader_path);
 
 		if (initSDL()) {
 			::exit(1);  // error already logged

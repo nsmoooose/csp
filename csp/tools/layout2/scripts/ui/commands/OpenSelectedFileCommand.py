@@ -3,9 +3,10 @@ import os.path
 import wx
 from csp.tools.layout2.scripts.data import DataTree
 from csp.tools.layout2.scripts.ui.controls.ProjectTree import ProjectTree
+from Command import Command
 from FileCommandRegistry import FileCommandRegistry
 
-class OpenSelectedFileCommand:
+class OpenSelectedFileCommand(Command):
 	"""Opens the selected file in the project tree of this 
 	application. When this command is executed we are trying
 	to identify the type of file we are loading and then

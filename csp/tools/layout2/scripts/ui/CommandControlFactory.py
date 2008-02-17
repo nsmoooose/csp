@@ -50,6 +50,18 @@ class EventToCommandExecutionAdapter:
 	def Execute(self, event):
 		"""Bind this method to a wx event. When the event is fired the command will
 		be executed."""
-		print("Executing: " + self.command.__class__.__name__)
+		
+		# If possible we will print the command execution to the output document.
+		# We will also assign the output document to the command so the command can
+		# be able the print messages to the console.
+		application = wx.GetApp()
+		if application is not None:
+			documents = application.GetDocumentRegistry()
+			outputDocument = documents.GetByName('output')
+			if outputDocument is not None:
+				self.command.SetOutputDocument(outputDocument)
+				outputDocument.WriteLine("Executing: " + self.command.__class__.__name__)
+		
+		# Execute the command.
 		self.command.Execute()
 		event.Skip()

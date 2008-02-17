@@ -4,6 +4,9 @@ class Command:
 	"""Base class for all command objects. Implement
 	apropriate methods in your derived class to execute
 	this command."""
+	
+	def __init__(self):
+		self.outputDocument = None
 
 	def GetCaption(self):
 		"""The name of the command to be displayed in a menu
@@ -24,3 +27,8 @@ class Command:
 	def Execute(self):
 		pass
 
+	def SetOutputDocument(self, outputDocument):
+		self.outputDocument = outputDocument
+		
+	def GetOutputDocument(self):
+		return self.outputDocument

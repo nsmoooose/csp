@@ -4,6 +4,7 @@ import wx.richtext
 
 from ControlIdGenerator import ControlIdGenerator
 from CommandControlFactory import CommandControlFactory
+from controls.OutputWindow import OutputWindow
 from controls.ProjectTree import ProjectTree
 from controls.SceneWindow import SceneWindow
 
@@ -45,11 +46,9 @@ class MainFrame(wx.Frame):
 
 		# Menu items.
 		menuBar = wx.MenuBar()
-
 		menuBar.Append(controlFactory.GenerateMenuItems(self, fileMenuCommands), "File")
 		menuBar.Append(controlFactory.GenerateMenuItems(self, viewMenuCommands), "View")
 		menuBar.Append(controlFactory.GenerateMenuItems(self, toolsMenuCommands), "Tools")
-
 		self.SetMenuBar(menuBar)
 
 		# Create the toolbar
@@ -65,11 +64,22 @@ class MainFrame(wx.Frame):
 		# Divides the document area from the properties control.
 		# To the left we have a project, properties and that type
 		# of controls. To the right we have all opened documents.
+		# And at the bottom we have the output panel.
 		splitter1 = wx.SplitterWindow(self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.SP_NOBORDER)
 		propertyNotebook = wx.Notebook(splitter1, wx.ID_ANY, style=wx.NB_LEFT)
-		documentNotebook = wx.Notebook(splitter1, wx.ID_ANY)
-		splitter1.SplitVertically(propertyNotebook, documentNotebook, 200)
-		
+		splitter2 = wx.SplitterWindow(splitter1, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.SP_NOBORDER)
+		outputNotebook = wx.Notebook(splitter2, wx.ID_ANY)
+		documentNotebook = wx.Notebook(splitter2, wx.ID_ANY)
+		splitter1.SplitVertically(propertyNotebook, splitter2, 200)
+		splitter2.SetSashGravity(1.0)
+		splitter2.SplitHorizontally(documentNotebook, outputNotebook, -100)
+
+		# We need to insert the default output window that is used
+		# to display any kind of text from commands executed.
+		outputPage = OutputWindow(outputNotebook, wx.ID_ANY)
+		outputPage.ConnectToDocument(application.GetDocumentRegistry().GetByName('output'))
+		outputNotebook.AddPage(outputPage, "Output")
+
 		# Add the first document to this window.
 		startPage = wx.richtext.RichTextCtrl(documentNotebook)
 		startPage.GetBuffer().LoadFile("start.txt")
@@ -89,7 +99,7 @@ class MainFrame(wx.Frame):
 		projectTreePage.SetRootDirectory(application.Configuration['LayoutApplication.DataDirectory'])
 		projectTreePage.SetOpenCommand(OpenSelectedFileCommand)
 		ProjectTree.Instance = projectTreePage
-		
+
 		propertyNotebook.AddPage(projectTreePage, "Project")
 
 		# Connect idle event.

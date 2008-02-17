@@ -27,104 +27,104 @@ if __name__ == "__main__":
 	sys.exit(1)
 
 from csp import csplib
+from csp.base.signals import Signal
 from csp.tools.data.parse import ObjectXMLArchive, XMLSyntax
-from csp.tools.data.debug import *
 
+class CompilerEvent:
+	"""This is the base event class for a compiler message.
+	This object is emitted with a compiler signal to 
+	notify listeners about informational, warnings or error
+	messages."""
+	
+	def __init__(self, type, message):
+		self.type = type
+		self.message = message
 
-class Cache:
-	def __init__(self, fn):
-		self.timestamp = None
-		self.source = None
-		if os.path.exists(fn):
-			try:
-				# open archive for reading, but disable chaining
-				self.source = csplib.DataArchive(fn, 1, 0)
-				self.timestamp = os.path.getmtime(fn)
-			except:
-				self.source = None
-				self.timestamp = None
+	def GetType(self):
+		"""The type of message corresponds to the constants
+		defined in the compiler class. Information, Warning, Error."""
+		return self.type
 
-	def close(self):
-		self.source = None
-
-	def getObject(self, id):
-		if self.source is not None:
-			try:
-				return self.source.getObject(id)
-			except csplib.libexc, e:
-				e.clear()
-				DEBUG(2, "Exception reading cache for object %s:\n%s" % (id, e))
-		return None
-
-	def isNewer(self, fn):
-		if self.timestamp is None:
-			return 1
-		try:
-			mtime = os.path.getmtime(fn)
-		except:
-			return 1
-		return mtime > self.timestamp
-
+	def GetMessage(self):
+		"""The actual text message."""
+		return self.message
 
 class Compiler:
-	def compileAll(self):
-		DEBUG(0, "Compiling '%s' from '%s'" % (self.outfile, self.infile))
-		DEBUG(1, "Opening input archive")
-		prefix = os.path.splitext(os.path.basename(self.outfile))[0]
-		master = ObjectXMLArchive(prefix, self.infile);
-		DEBUG(1, "Loading all objects")
-		resetWarnings()
-		if not self.rebuild:
-			cache = Cache(self.outfile)
-			master.setCache(cache)
-		all = master.loadAll()
-		if not self.rebuild:
-			cache.close()
-		warnings, level = getWarnings()
-		DEBUG(1, "XML parse completed.")
-		if warnings > 0:
-			DEBUG(0, "%d warnings (severity=%d)." % (warnings, level))
-			if level > 0 and not self.force:
-				DEBUG(0, "Compiled data archive NOT written!")
-				return warnings, level
-		paths = master.getPaths()
-		DEBUG(1,"Compiling all objects")
-		compiled = csplib.DataArchive(self.outfile, 0)
+	"""Class that is responsible for creating an archive file that is
+	faster to load than an xml file."""
+
+	Information = 1
+	Warning = 2
+	Error = 3
+
+	def __init__(self):
+		# A counter for the number of warnings that has occured.
+		self.warnings = 0
+		self.errors = 0
+
+		# Define default signal functions.
+		self.compilerSignal = Signal()
+		self.compilerSignal.Connect(self.on_Signal)
+
+	def on_Signal(self, event):
+		if event.GetType() == Compiler.Warning:
+			self.warnings+=1
+		elif event.GetType() == Compiler.Error:
+			self.errors+=1
+
+	def GetCompilerSignal(self):
+		"""Returns a signal object that can be used to be notified when
+		a compiler event occurs. Compiler events are information, warnings
+		or errors."""
+		return self.compilerSignal
+
+	def CompileAll(self, sourceDirectory, archiveFile):
+		"""Compiles all files in the directory specified. All files will
+		be placed in a single archive file."""
+
+		self.compilerSignal.Emit(CompilerEvent(Compiler.Information, "Compiling '%s' from '%s'" % (archiveFile, sourceDirectory)))
+		self.compilerSignal.Emit(CompilerEvent(Compiler.Information, "Opening input archive"))
+		prefix = os.path.splitext(os.path.basename(archiveFile))[0]
+
+		# Construct an xml archive and load every object found in it.
+		xmlDirectoryArchive = ObjectXMLArchive(prefix, sourceDirectory);
+		self.compilerSignal.Emit(CompilerEvent(Compiler.Information, "Loading all objects"))
+		try:
+			allObjects = xmlDirectoryArchive.loadAll()
+		except Exception, e:
+			self.compilerSignal.Emit(CompilerEvent(Compiler.Error, str(e)))
+			return False
+		self.compilerSignal.Emit(CompilerEvent(Compiler.Information, "XML parse completed."))
+
+		# Verify that all paths are correct within the file.
+		paths = xmlDirectoryArchive.getPaths()
+		self.dumpBadPaths(allObjects, paths)
+		
+		# If there is any errors at this point we do not continue. We simply
+		# return without no archive file beeing created.
+		if self.errors > 0:
+			return False
+
+		# Now it is time to create the archive file and write every object
+		# into it.
+		self.compilerSignal.Emit(CompilerEvent(Compiler.Information, "Compiling all objects to archive file"))
+		compiled = csplib.DataArchive(archiveFile, 0)
 		hash_string = csplib.hash_string
-		for id in all.keys():
-			object = all[id]
-			DEBUG(2, "Compiling object '%s' [%s] %s" % (id, hash_string(id), str(object)))
-			# objects cached from the original archive are Pointers, so we need to
-			# dereference them.  this should be cleaned up a bit.
-			try:
-				object = object.__get__()
-			except:
-				pass
+		for id in allObjects.keys():
+			object = allObjects[id]
+			self.compilerSignal.Emit(CompilerEvent(Compiler.Information, "Compiling object '%s' [%s] %s" % (id, hash_string(id), str(object))))
 			compiled.addObject(object, id)
-		self.dumpBadPaths(all, paths)
-		DEBUG(0, "Finished.")
-		return warnings, level
+		self.compilerSignal.Emit(CompilerEvent(Compiler.Information, "Finished."))
+		return True
 
 	def dumpBadPaths(self, all, paths):
-		if getWarningLevel() < 1: return
 		badpaths = filter(lambda x, a=all: not a.has_key(x), paths.keys())
-		if len(badpaths) > 0 and getWarningLevel() >= 1:
-			print
-			print "Found %d broken path(s):" % len(badpaths)
+		if len(badpaths) > 0:
+			self.compilerSignal.Emit(CompilerEvent(Error, "Found %d broken path(s):" % len(badpaths)))
 			idx = 0
 			for path in badpaths:
 				idx = idx + 1
-				print "%03d: Path '%s'" % (idx, path)
+				self.compilerSignal.Emit(CompilerEvent(Error, "%03d: Path '%s'" % (idx, path)))
 				objects = {}
 				for obj in paths[path]: objects[obj] = 1
-				print "   : defined in '" + "'\n    defined in '".join(objects.keys()) + "'"
-			print
-
-	def __init__(self, infile, outfile, rebuild=0, force=0, debug_level=0, warning_level=1):
-		setWarningLevel(warning_level)
-		setDebugLevel(debug_level)
-		self.infile = infile
-		self.outfile = outfile
-		self.rebuild = rebuild
-		self.force = force
-
+				self.compilerSignal.Emit(CompilerEvent(Error, "   : defined in '" + "'\n    defined in '".join(objects.keys()) + "'"))

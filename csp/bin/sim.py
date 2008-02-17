@@ -156,15 +156,17 @@ def findConfig(ini, prefer=None, report=1):
 	return None
 
 
+def printCompilerMessage(event):
+	print(event.GetMessage())
+
 def compileData(xml, dar, rebuild=0, level=0):
 	from csp.tools.data.compile import Compiler
-	compiler = Compiler(xml, dar, rebuild=rebuild, debug_level=level, warning_level=level)
-	warnings, level = compiler.compileAll()
-	if warnings > 0 and level > 0:
-		print "Run with '--warn=%d' to see all warnings." % level
-		print "Please fix all warnings and recompile."
+	compiler = Compiler()
+	compiler.GetCompilerSignal().Connect(printCompilerMessage)
+	result = compiler.CompileAll(xml, dar)
+	if result == False:
+		print "Please fix all errors and recompile."
 		sys.exit(1)
-
 
 def setDefaultJoystick():
 	"""Provide a default value for the SDL joystick environment variable"""

@@ -3,8 +3,10 @@ import dumbdbm
 import os.path
 import wx
 import shelve
-from csp.tools.layout2.layout_module import *
 
+from csp.tools.layout2.layout_module import *
+from csp.tools.layout2.scripts.document.DocumentRegistry import DocumentRegistry
+from csp.tools.layout2.scripts.document.OutputDocument import OutputDocument
 from MainFrame import MainFrame
 from SelectDataDirectoryDialog import SelectDataDirectoryDialog
 
@@ -19,12 +21,17 @@ class LayoutApplication(wx.App):
 		readmeFile = os.path.join(os.getcwd(), 'start.txt')
 		if not os.path.isfile(readmeFile):
 			os.chdir('..')
-		
+
 		readmeFile = os.path.join(os.getcwd(), 'start.txt')
 		if not os.path.isfile(readmeFile):
 			return False
-	
+
 		self.Configuration = shelve.open('.csplayout')
+
+		# Add the default output document that many command
+		# objects are using.
+		self.documentRegistry = DocumentRegistry()
+		self.documentRegistry.Add(OutputDocument('output'))
 
 		dlg = SelectDataDirectoryDialog(None, wx.ID_ANY, "CSP Theater Layout Tool")
 		if dlg.ShowModal() == wx.ID_OK:
@@ -49,3 +56,8 @@ class LayoutApplication(wx.App):
 			return True
 		else:
 			return False
+
+	def GetDocumentRegistry(self):
+		"""Returns the document registry. This class has the 
+		responsibility to keep track of all opened documents."""
+		return self.documentRegistry

@@ -23,6 +23,7 @@ import re
 import os.path
 
 from csp import csplib
+from csp.base.signals import Signal
 
 from xml.sax import ContentHandler, ErrorHandler, make_parser
 import xml.sax
@@ -35,15 +36,27 @@ except Exception, e:
 	GzipError = str(e)
 
 from traceback import print_exception
-from csp.tools.data.debug import *
-
 
 g_InterfaceRegistry = csplib.InterfaceRegistry.getInterfaceRegistry()
 
 
+class ParserEvent:
+	"""This is the base event class for a parser message.
+	This object is emitted with a signal to 
+	notify listeners about informational, warnings or error
+	messages."""
+
+	def __init__(self, message):
+		self.message = message
+
+	def GetMessage(self):
+		"""The actual text message."""
+		return self.message
+
+
+
 class XMLSyntax(StandardError):
 	def __init__(self, *args):
-		print "XMLSyntax:", args
 		self.args = args
 
 
@@ -101,7 +114,6 @@ def adjust_path(base, id):
 class ElementHandler(ContentHandler):
 
 	def __init__(self, id, base, name, attrs):
-		#print id, base, name
 		self._handler = None
 		self._handler_tag = None
 		self._element = None
@@ -123,8 +135,7 @@ class ElementHandler(ContentHandler):
 			self.cdata(c)
 
 	def cdata(self, c):
- 		self._c = self._c + c
-#		pass
+		self._c = self._c + c
 
 	def endChild(self):
 		self._element = self._handler.getElement()
@@ -191,14 +202,9 @@ class SimpleHandler(ElementHandler):
 
 	def __init__(self, id, base, name, attrs):
 		ElementHandler.__init__(self, id, base, name, attrs)
-#		self._c = ""
 
 	def validateChild(self, name, attrs):
 		return 0
-
-#	def cdata(self, c):
-# 		self._c = self._c + c
-
 
 class ListHandler(SimpleHandler):
 	
@@ -256,18 +262,6 @@ class ListHandler(SimpleHandler):
 		interface.clear(obj, name)
 		for item in self._element:
 			interface.push_back(obj, name, item)
-
-# 		if isinstance(items[0], csplib.Path):
-# 			for item in items:
-# 				if is_python:
-					##path = PyPathPointer()
-# 					path = csplib.PathPointer()
-# 					path.setPath(item.getPath())
-# 					list.append(path)
-# 				else:
-# 					list.extend().setPath(item.getPath())
-# 		else:
-# 				list.extend(items)
 
 
 class FloatListHandler(ListHandler):
@@ -562,6 +556,7 @@ class ObjectHandler(ElementHandler):
 		ElementHandler.__init__(self, id, base, name, attrs)
 		self._class = attrs.get("class", None)
 		self._interface = None
+		self._warningSignal = Signal()
 
 		if self._class is None:
 			raise XMLSyntax, "Object missing class attribute"
@@ -573,18 +568,12 @@ class ObjectHandler(ElementHandler):
 			msg = "Class '%s' not available" % self._class
 			interface_names = map(lambda x: x.split(":")[0], g_InterfaceRegistry.getInterfaceNames())
 			interface_names.sort()
-			print "Known classes are:"
-			print "  " + "\n  ".join(interface_names)
 			raise NameError, msg
-		if getDebugLevel() > 0:
+		try:
 			obj = self._interface.createObject()
-		else:
-			try:
-				obj = self._interface.createObject()
-			except:
-				print "ERROR Creating class", self._class
-				msg = "ERROR Creating class %s" % self._class
-				raise msg
+		except:
+			msg = "ERROR Creating class %s" % self._class
+			raise msg
 		self._object = obj
 		self._assigned = {}
 		self._objectClass = self._object.__class__
@@ -592,18 +581,17 @@ class ObjectHandler(ElementHandler):
 		self._req_variables = self._interface.getRequiredNames()
 
 		if attrs.has_key("static"):
-			WARN(1, "'static' attribute of <Object> is deprecated.")
-		
+			self._warningSignal.Emit(ParserEvent("'static' attribute of <Object> is deprecated."))
+
 	def endChild(self):
 		name = self._attrs["name"].encode('ascii')
 		self._assigned[name] = 1
 		self._handler.assign(self._interface, self._object, name)
-		#print name, self._handler.getElement()
 		self.checkName(name)
 
 	def checkName(self, name):
 		if name in self._all_variables: return 0
-		WARN(1, "Setting unknown member '%s' of class '%s'!" % (name, self._class))
+		self._warningSignal.Emit(ParserEvent("Setting unknown member '%s' of class '%s'!" % (name, self._class)))
 		return 1
 
 	def end(self):
@@ -613,7 +601,6 @@ class ObjectHandler(ElementHandler):
 		self._element.convertXML()
 
 	def checkAssigned(self):
-		if getWarningLevel() < 1: return
 		isAssigned = self._assigned.has_key
 		isUnassigned = lambda x, _a=isAssigned: not _a(x)
 		unassigned = filter(isUnassigned, self._req_variables)
@@ -621,7 +608,7 @@ class ObjectHandler(ElementHandler):
 			msg = "'%s' Object in '%s' has unassigned member(s):\n" % (self._class, self._id)
 			for member in unassigned:
 				msg += "       : %s\n" % member
-			WARN(1, msg)
+			self._warningSignal.Emit(ParserEvent(msg))
 
 	def handleChild(self, name, attrs):
 		_handler = None
@@ -634,19 +621,8 @@ class ObjectXMLArchive:
 		self._objects = {}
 		self._paths = {}
 		self._externals = {}
-		self._cache = None
 		self._prefix = prefix
 
-# 	def getObject(self, id):
-# 		if not self._objects.has_key(id):
-# 			self._objects[id] = self.loadObject(id)
-# 		return self._objects[id]
-#
-# 	def loadObject(self, id):
-# 		path = id_to_path(id)
-# 		path = os.path.join(self._basepath, path);
-# 		return self.loadPath(path, id)
-		
 	def loadPath(self, path, id):
 		if not os.path.exists(path):
 			path = path + '.xml'
@@ -654,10 +630,6 @@ class ObjectXMLArchive:
 				path = path + '.gz'
 				if not os.path.exists(path):
 					raise IOError, "Unable to find data for %s" % id
-		if self._cache and not self._cache.isNewer(path):
-			obj = self._cache.getObject(id)
-			if obj is not None:
-				return obj
 		if path.endswith('.gz'):
 			if GzipFile is None:
 				raise IOError, "Unable to open '%s', since zlib appears to be missing or improperly installed (%s)." % (path, GzipError)
@@ -672,31 +644,21 @@ class ObjectXMLArchive:
 		except RuntimeError:
 			raise
 		except StandardError, e:
+			errorMessage = ''
 			locator = fh._locator
 			column = locator.getColumnNumber()
 			line = locator.getLineNumber()
 			public = locator.getPublicId()
 			system = locator.getSystemId()
 			if column is None:
-				print "In source file \"%s\" [line %d]" % (path, line),
+				errorMessage += "In source file \"%s\" [line %d]" % (path, line)
 			else:
-				print "In source file \"%s\" [line %d, col %d]" % (path, line, column),
+				errorMessage += "In source file \"%s\" [line %d, col %d]" % (path, line, column)
 			if public is not None or system is not None:
-				print " - %s, %s" % (public, system)
-			print
-			print "Exception:", e
-			type_, value, traceback = sys.exc_info()
-		 	log = open("error.log", "wt")
-			if log is not None:
-				if column is None:
-					print >>log, "%s[%d] - %s, %s" % (path, line, public, system)
-				else:
-					print >>log, "%s[%d:%d] - %s, %s" % (path, line, column, public, system)
-				print_exception(type_, value, traceback, file=open("error.log", "wt"))
-				print "Exception traceback saved to error.log"
-			else:
-				raise
-			sys.exit(1)
+				errorMessage += " - %s, %s" % (public, system)
+
+			errorMessage += "\nException: %s" % e
+			raise Exception, errorMessage
 		self.addReferences(id, self._paths, fh._paths)
 		self.addReferences(id, self._externals, fh._externals)
 		return fh.getElement()
@@ -713,9 +675,6 @@ class ObjectXMLArchive:
 	def getExternals(self):
 		return self._externals
 
-	def setCache(self, cache):
-		self._cache = cache
-
 	def loadAll(self, path = ""):
 		dirpath = os.path.join(self._basepath, path)
 		filenames = os.listdir(dirpath)
@@ -726,10 +685,8 @@ class ObjectXMLArchive:
 			if filename.endswith('.xml') \
 				or filename.endswith('.xml.gz'):
 				id = path_to_id(self._prefix, filepath)
-				DEBUG(2, "Loading object '%s' from '%s'" % (id, fullpath))
 				self._objects[id] = self.loadPath(fullpath, id)
 			elif os.path.isdir(fullpath):
-				DEBUG(1, "Entering " + fullpath)
 				self.loadAll(filepath)
 		return self._objects
 

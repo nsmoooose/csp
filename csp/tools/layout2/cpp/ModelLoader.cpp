@@ -48,7 +48,6 @@ osg::ref_ptr<osg::Node> csp::layout::getFeatureModel(csp::Object *object) {
 	ElevationCorrection correction(0);
 	model->addSceneModel(group.get(), transform, correction);
 	group->addChild(Handle::makeHandle(osg::Vec4(0, 1, 0, 1)));
-	osgDB::writeNodeFile(*group, "TEST.osg");
 	return group.get();
 }
 

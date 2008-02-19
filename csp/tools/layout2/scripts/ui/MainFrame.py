@@ -82,7 +82,7 @@ class MainFrame(wx.Frame):
 
 		# Add the first document to this window.
 		startPage = wx.richtext.RichTextCtrl(documentNotebook)
-		startPage.GetBuffer().LoadFile("start.txt")
+		startPage.LoadFile("start.txt")
 		startPage.SetEditable(False)
 		documentNotebook.AddPage(startPage, "Start")
 

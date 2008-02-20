@@ -29,12 +29,14 @@ class ProjectTree(wx.TreeCtrl):
 		self.nodeDictionary[self.baseDirectory] = self.AddRoot('CSP')
 
 		for root, dirs, files in os.walk(directory):
-			# print(root)
 			parentNode = self.nodeDictionary[root]
 			if '.svn' in dirs:
 				dirs.remove('.svn')
 			if '_svn' in dirs:
 				dirs.remove('_svn')
+				
+			dirs.sort()
+			files.sort()
 			for subDirectory in dirs:
 				newNode = self.AppendItem(parentNode, subDirectory)
 				self.nodeDictionary[os.path.join(root, subDirectory)] = newNode

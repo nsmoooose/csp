@@ -48,7 +48,7 @@ public:
 	VoidSignal SwapBuffers;
 
 	OsgGraphicsWindow();
-	~OsgGraphicsWindow();
+	virtual ~OsgGraphicsWindow();
 	
 	/* Render a new frame. This method is used from the OnIdle
 	event in wxPython. */

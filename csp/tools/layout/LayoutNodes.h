@@ -89,7 +89,7 @@ public:
 	virtual void accept(LayoutNodeVisitor &v)=0;
 	virtual void traverse(LayoutNodeVisitor &v)=0;
 
-	unsigned int id() { return reinterpret_cast<unsigned int>(this); }
+	size_t id() { return reinterpret_cast<size_t>(this); }
 
 	virtual void transform(osg::Matrix const &t) {
 		osg::Matrix m = _move->getMatrix();

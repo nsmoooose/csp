@@ -41,7 +41,7 @@ public:
 	virtual void onRefresh();
 };
 
-typedef int CallbackId;
+typedef size_t CallbackId;
 
 
 /** Class representing the entire layout node graph.  Manages node selection,

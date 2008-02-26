@@ -52,7 +52,7 @@ public:
 	virtual void onKey(std::string const &) {}
 };
 
-typedef int CallbackId;
+typedef size_t CallbackId;
 
 
 /** View class for the 3D layout.  Contains and provides access to the FeatureGraph

@@ -18,6 +18,7 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, US
 
+#include <iostream>
 #include <strstream>
 #include <osgViewer/ViewerEventHandlers>
 #include <osgGA/TrackballManipulator>
@@ -32,6 +33,7 @@ public:
 	Ref<Scene> m_Scene;
 
 	void init(OsgGraphicsWindow* window, Scene* scene) {
+	
 		m_Window = window;
 		m_Scene = scene;
 
@@ -43,7 +45,7 @@ public:
 
 		setState( new osg::State );
 		getState()->setGraphicsContext(this);
-
+	
 		if (_traits.valid() && _traits->sharedContext)
 		{
 			getState()->setContextID( _traits->sharedContext->getState()->getContextID() );
@@ -161,6 +163,7 @@ std::string csp::layout::OsgGraphicsWindow::getTrackballInformation() {
 	stream << " Distance: " << manipulator->getDistance();
 	stream << " Rotation: " << rotation._v[0] << ", " << rotation._v[1] << ", " << rotation._v[2] << ", " << rotation._v[3];
 	stream << std::ends;
+	
 	return stream.str();
 }
 

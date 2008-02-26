@@ -24,7 +24,10 @@ class SceneWindow(wx.glcanvas.GLCanvas):
 
 		self.graphicsWindow.connectToSetCurrent(self.on_SetCurrent)
 		self.graphicsWindow.connectToSwapBuffers(self.on_SwapBuffers)
-
+		
+	def SetDocument(self, document):
+		self.graphicsWindow.graph().setRoot(document.GetRootNode())
+		
 	def MoveCameraToHome(self):
 		self.graphicsWindow.moveCameraToHome()
 

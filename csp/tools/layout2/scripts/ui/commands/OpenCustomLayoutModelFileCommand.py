@@ -2,6 +2,7 @@
 import os.path
 import wx
 from csp.tools.layout2.scripts.data import DataTree
+from csp.tools.layout2.scripts.document.SceneDocument import SceneDocument
 from FileCommand import FileCommand
 
 class OpenCustomLayoutModelFileCommand(FileCommand):
@@ -63,11 +64,14 @@ class OpenCustomLayoutModelFileCommand(FileCommand):
 		self._node_map = node_map
 		node = node_map.getRoot()
 		assert(node is not None and node.isGroup())
-		
-		sceneWindow = topWindow.GetSceneWindow()
-		sceneWindow.graphicsWindow.graph().setRoot(node)
 
+		# Create a document and add the root node to it. This will in
+		# turn signal the document added signal that is caught in the gui.
+		# This will create a 3D view.
+		document = SceneDocument('Scene')
+		document.SetRootNode(node)
+		application.GetDocumentRegistry().Add(document)
+		
 		node.thisown = 0
-		self.UpdateTree(node)
 		return 1
 

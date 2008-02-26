@@ -2,6 +2,8 @@
 import wx
 import wx.richtext
 
+from csp.tools.layout2.scripts.document.SceneDocument import SceneDocument
+
 from ControlIdGenerator import ControlIdGenerator
 from CommandControlFactory import CommandControlFactory
 from controls.OutputWindow import OutputWindow
@@ -28,7 +30,9 @@ class MainFrame(wx.Frame):
 		# configuration object.
 		application = wx.GetApp()
 		
-
+		documentRegistry = application.GetDocumentRegistry()
+		documentRegistry.GetDocumentAddedSignal().Connect(self.documentAdded_Signal)
+		
 		# Create a control id generator. This is used by all helper classes
 		# to actualy define an unique id for each control (menu, toolbar button)
 		# etc.
@@ -65,11 +69,11 @@ class MainFrame(wx.Frame):
 		# To the left we have a project, properties and that type
 		# of controls. To the right we have all opened documents.
 		# And at the bottom we have the output panel.
-		splitter1 = wx.SplitterWindow(self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.SP_NOBORDER)
-		propertyNotebook = wx.Notebook(splitter1, wx.ID_ANY, style=wx.NB_LEFT)
-		splitter2 = wx.SplitterWindow(splitter1, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.SP_NOBORDER)
-		outputNotebook = wx.Notebook(splitter2, wx.ID_ANY)
-		documentNotebook = wx.Notebook(splitter2, wx.ID_ANY)
+		splitter1 = wx.SplitterWindow(self, wx.ID_ANY)
+		propertyNotebook = wx.Notebook(splitter1, wx.ID_ANY, style=wx.NB_TOP)
+		splitter2 = wx.SplitterWindow(splitter1, wx.ID_ANY)
+		outputNotebook = wx.Notebook(splitter2, wx.ID_ANY, style=wx.NB_TOP)
+		documentNotebook = wx.Notebook(splitter2, wx.ID_ANY, style=wx.NB_TOP)
 		splitter1.SplitVertically(propertyNotebook, splitter2, 200)
 		splitter2.SetSashGravity(1.0)
 		splitter2.SplitHorizontally(documentNotebook, outputNotebook, -100)
@@ -86,12 +90,6 @@ class MainFrame(wx.Frame):
 		startPage.SetEditable(False)
 		documentNotebook.AddPage(startPage, "Start")
 
-		# Add the scene control that is responsible for the 3D
-		# scene.
-		scenePage = SceneWindow(documentNotebook, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.BORDER_NONE, "GLCanvas", 0, wx.NullPalette)
-		documentNotebook.AddPage(scenePage, "Scene")
-		self.scene = scenePage
-
 		# Display the tree control with all files in this project. Also
 		# register this instance so all command object can use it to 
 		# access the selected file or directory.
@@ -101,15 +99,28 @@ class MainFrame(wx.Frame):
 		ProjectTree.Instance = projectTreePage
 
 		propertyNotebook.AddPage(projectTreePage, "Project")
+		
+		# Store some variables for later use
+		self.documentNotebook = documentNotebook
+		self.scene = None
 
 		# Connect idle event.
 		wx.EVT_IDLE(self, self.on_Idle)
 
 	def on_Idle(self, event):
 		# Only render when the scene is visible on screen.
-		if self.scene.IsShownOnScreen():
+		if self.scene is not None and self.scene.IsShownOnScreen():
 			self.scene.Frame()
 			event.RequestMore()
+			
+	def documentAdded_Signal(self, document):
+		# Add the scene control that is responsible for the 3D
+		# scene.
+		if isinstance(document, SceneDocument):
+			scenePage = SceneWindow(self.documentNotebook, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.BORDER_NONE, "GLCanvas", 0, wx.NullPalette)
+			scenePage.SetDocument(document)
+			self.documentNotebook.AddPage(scenePage, "Scene")
+			self.scene = scenePage
 
 	def GetSceneWindow(self):
 		return self.scene

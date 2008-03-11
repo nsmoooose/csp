@@ -14,11 +14,22 @@ class OutputWindow(wx.Window):
 		wx.Window.__init__(self, parent, id)
 		self.textCtrl = wx.TextCtrl(self, wx.ID_ANY, style = wx.TE_MULTILINE|wx.TE_READONLY|wx.TE_DONTWRAP)
 		self.Bind(wx.EVT_SIZE, self.on_Size)
+		self.document = None
 
-	def ConnectToDocument(self, document):
+	def SetDocument(self, document):
 		if document is None:
 			return
-		document.GetChangedSignal().Connect(self.on_DocumentChanged)
+
+		# Store a reference to the document for later use.
+		self.document = document
+		self.document.GetChangedSignal().Connect(self.on_DocumentChanged)
+		
+		# Call the changed method in order to display the content
+		# from the document.
+		self.on_DocumentChanged(document)
+	
+	def GetDocument(self):
+		return self.document
 
 	def on_Size(self, event):
 		width, height = self.GetClientSizeTuple()

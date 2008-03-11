@@ -2,6 +2,7 @@
 import wx
 import os.path
 
+from csp.tools.layout2.scripts.document.OutputDocument import OutputDocument
 from Command import Command
 
 # TODO
@@ -51,5 +52,11 @@ class ReCompileDataArchiveCommand(Command):
 
 	def compiler_Signal(self, event):
 		application = wx.GetApp()
-		outputDocument = application.GetDocumentRegistry().GetByName('output')
+		documentName = 'Archive compiler'
+		outputDocument = application.GetDocumentRegistry().GetByName(documentName)
+		if outputDocument is None:
+			outputDocument = OutputDocument(documentName)
+			documentRegistry = application.GetDocumentRegistry()
+			documentRegistry.Add(outputDocument)
+			documentRegistry.SetCurrentDocument(outputDocument)
 		outputDocument.WriteLine(event.GetMessage())

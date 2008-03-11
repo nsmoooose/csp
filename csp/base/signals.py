@@ -10,9 +10,17 @@ class Signal:
 		"""Connects a slot to the list of listeners. The slot is a simple method
 		that takes a single parameter (the message)."""
 		self.slots.append(slot)
+		
+	def Disconnect(self, slot):
+		self.slots.remove(slot)
 	
 	def Emit(self, event):
 		"""Emits the signals to all listeners. We are simply iterating the list
 		of slots and call each one of them with the message."""
 		for slot in self.slots:
 			slot(event)
+
+	def Dispose(self):
+		"""Disconnects all clients by clearing the slots list. No further use
+		of this instance is recomended."""
+		self.slots = None

@@ -2,6 +2,8 @@
 import os.path
 import wx
 
+from csp.tools.layout2.scripts.document.OutputDocument import OutputDocument
+
 class CommandControlFactory:
 	"""A factory that creates ui controls that is bound to command objects."""
 	
@@ -56,11 +58,18 @@ class EventToCommandExecutionAdapter:
 		# be able the print messages to the console.
 		application = wx.GetApp()
 		if application is not None:
-			documents = application.GetDocumentRegistry()
-			outputDocument = documents.GetByName('output')
-			if outputDocument is not None:
-				self.command.SetOutputDocument(outputDocument)
-				outputDocument.WriteLine("Executing: " + self.command.__class__.__name__)
+			documentRegistry = application.GetDocumentRegistry()
+			documentName = 'Command history'
+
+			# Get the output document. If it doesn't exist we will create it and
+			# add it to the list of current documents.
+			outputDocument = documentRegistry.GetByName(documentName)
+			if outputDocument is None:
+				outputDocument = OutputDocument(documentName)
+				documentRegistry.Add(outputDocument)
+
+			self.command.SetOutputDocument(outputDocument)
+			outputDocument.WriteLine("Executing: " + self.command.__class__.__name__)
 		
 		# Execute the command.
 		self.command.Execute()

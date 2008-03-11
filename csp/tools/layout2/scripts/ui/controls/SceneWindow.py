@@ -15,6 +15,7 @@ class SceneWindow(wx.glcanvas.GLCanvas):
 	def __init__(self, parent, id, pos, size, style, name, attribList, palette):
 		wx.glcanvas.GLCanvas.__init__(self, parent, id, pos, size, style, name, attribList, palette)
 
+		self.document = None
 		self.graphicsWindow = OsgGraphicsWindow()
 
 		self.Bind(wx.EVT_SIZE, self.on_Size)
@@ -25,14 +26,33 @@ class SceneWindow(wx.glcanvas.GLCanvas):
 		self.graphicsWindow.connectToSetCurrent(self.on_SetCurrent)
 		self.graphicsWindow.connectToSwapBuffers(self.on_SwapBuffers)
 		
+		application = wx.GetApp()
+		application.GetIdleSignal().Connect(self.on_Idle)
+		documentRegistry = application.GetDocumentRegistry()
+		documentRegistry.GetDocumentClosedSignal().Connect(self.document_Closed)
+
+	def GetDocument(self):
+		return self.document
+		
 	def SetDocument(self, document):
+		self.document = document
 		self.graphicsWindow.graph().setRoot(document.GetRootNode())
 		
 	def MoveCameraToHome(self):
 		self.graphicsWindow.moveCameraToHome()
 
-	def Frame(self):
-		self.graphicsWindow.Frame()
+	def on_Idle(self, event):
+		# Only render when the scene is visible on screen.
+		if self.IsShownOnScreen():
+			self.graphicsWindow.Frame()
+			event.RequestMore()
+	
+	def document_Closed(self, document):
+		print('document closed')
+		if document == self.document:
+			application = wx.GetApp()
+			application.GetIdleSignal().Disconnect(self.on_Idle)
+			print('disconnected idle signal')
 
 	def on_Size(self, event):
 		width, height = self.GetClientSizeTuple()

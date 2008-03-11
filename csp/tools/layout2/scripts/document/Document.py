@@ -1,14 +1,4 @@
-
-class DocumentSignal:
-	def __init__(self):
-		self.slots = []
-	
-	def Connect(self, slot):
-		self.slots.append(slot)
-		
-	def Emit(self, document):
-		for slot in self.slots:
-			slot(document)
+from csp.base.signals import Signal
 
 class Document:
 	"""Base class for all documents that can be loaded
@@ -16,7 +6,7 @@ class Document:
 
 	def __init__(self, name):
 		self.name = name
-		self.changedSignal = DocumentSignal()
+		self.changedSignal = Signal()
 
 	def GetName(self):
 		"""Returns the name of the document."""
@@ -24,3 +14,7 @@ class Document:
 
 	def GetChangedSignal(self):
 		return self.changedSignal
+
+	def Dispose(self):
+		self.changedSignal.Dispose()
+		self.changedSignal = None

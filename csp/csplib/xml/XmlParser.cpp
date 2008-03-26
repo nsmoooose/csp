@@ -368,7 +368,10 @@ XMLNode XMLNode::openFileHelper(CSP_XMLCSTR filename, CSP_XMLCSTR tag)
 	if (pResults.error != eXMLErrorNone)
 	{
 		// create message
-		char message[2000],*s1="",*s3=""; CSP_XMLCSTR s2=CSP_XMLSTRP("");
+		char message[2000];
+		const char *s1="";
+		const char *s3="";
+		CSP_XMLCSTR s2=CSP_XMLSTRP("");
 		if (pResults.error==eXMLErrorFirstTagNotFound) { s1="First Tag should be '"; s2=tag; s3="'.\n"; }
 		sprintf(message,
 #ifdef _XMLUNICODE

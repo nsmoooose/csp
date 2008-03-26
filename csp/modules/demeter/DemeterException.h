@@ -31,7 +31,7 @@ using namespace std;
 class DemeterException
 {
 public:
-							DemeterException(char* szErrorMessage)
+							DemeterException(const char* szErrorMessage)
 							{
 								m_pErrorMessage = new string("TERRAIN ERROR: ");
 								m_pErrorMessage->append(szErrorMessage);

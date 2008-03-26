@@ -192,7 +192,13 @@ def FinalizePackages(env):
 
 def GlobalSetup(env, distributed=1, short_messages=None, default_message=None, config=None, with_swig=1, timer=1):
 	options = scons.GetOptions()
-	ssoptions = scons.GetSettableOptions()
+	# TODO remove ssoptions altogether; options.num_jobs should work in 0.97 and newer
+	# versions of scons.
+	try:
+		ssoptions = scons.GetSettableOptions()
+		num_jobs = ssoptions.get('num_jobs')
+	except AttributeError:
+		num_jobs = options.num_jobs
 
 	if default_message is not None:
 		util.SetDefaultMessage(env, default_message)
@@ -204,7 +210,7 @@ def GlobalSetup(env, distributed=1, short_messages=None, default_message=None, c
 	buildlog.InitializeLogging(env)
 	if short_messages:
 		buildlog.SetShortMessages(env)
-	if distributed and ssoptions.get('num_jobs') > 1:
+	if distributed and num_jobs > 1:
 		scons.SetDistributed(env)
 	util.AddPhonyTarget(env, 'config')
 	SConsEnvironment.CopyEnvironment = util.CopyEnvironment

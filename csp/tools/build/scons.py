@@ -58,16 +58,26 @@ def DisableQuiet():
 
 def GetOptions():
 	try:
-		return SCons.Script.Main.options
+		return SCons.Script.Main.OptionsParser.values
 	except:
-		return SCons.Script.options  # version 0.96.1
+		# TODO remove these older accessors; hopefully OptionsParser
+		# is stable going forward.
+		try:
+			return SCons.Script.Main.options
+		except:
+			return SCons.Script.options  # version 0.96.1
 
 
+# Remove this method.  The only option that we access through it is num_jobs,
+# which is available via GetOptions in scons 0.97.
 def GetSettableOptions():
 	try:
 		return SCons.Script.Main.ssoptions
 	except:
-		return SCons.Script.ssoptions  # version 0.96.1
+		try:
+			return SCons.Script.ssoptions  # version 0.96.1
+		except:
+			return GetOptions()
 
 
 def GetCommandlineTargets():

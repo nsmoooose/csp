@@ -959,7 +959,11 @@ void VirtualScene::setAspect(float value) {
 }
 
 void VirtualScene::getViewport(int& x, int& y, int& width, int& height) {
-	m_FarView->getViewport(/*x, y, width, height*/);
+	const osg::Viewport* vp = m_FarView->getViewport();
+	x = vp->x();
+	y = vp->y();
+	width = vp->width();
+	height = vp->height();
 }
 
 void VirtualScene::spinTheWorld(bool spin) {

@@ -21,8 +21,8 @@
 #ifndef __CSP_LAYOUT_FEATUREGRAPH_H__
 #define __CSP_LAYOUT_FEATUREGRAPH_H__
 
-#include <csp/tools/layout/LayoutNodes.h>
-#include <csp/tools/layout/Undo.h>
+#include <csp/tools/layout2/cpp/LayoutNodes.h>
+#include <csp/tools/layout2/cpp/Undo.h>
 #include <osg/Referenced>
 #include <osg/ref_ptr>
 

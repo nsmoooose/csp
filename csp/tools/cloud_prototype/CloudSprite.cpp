@@ -13,8 +13,8 @@ CloudSprite::~CloudSprite(void) {
 
 void CloudSprite::UpdateModel(const osg::Vec3& position, const float& alpha, const osg::Vec3& color) {
 	osg::Vec3 corner(-0.5f, 0.0f, -0.5f);
-	osg::Vec3 width(3.0f, 0.0f, 0.0f);
-	osg::Vec3 height(0.0f, 0.0f, 3.0f);
+	osg::Vec3 width(5.0f, 0.0f, 0.0f);
+	osg::Vec3 height(0.0f, 0.0f, 5.0f);
 	osg::Vec4 colorWithAlpha(color, alpha);
 
 	osg::ref_ptr<osg::Geometry> geometry = new osg::Geometry;
@@ -52,11 +52,12 @@ void CloudSprite::UpdateModel(const osg::Vec3& position, const float& alpha, con
 	geometry->addPrimitiveSet(new osg::DrawArrays(GL_QUADS, 0, 4));
 
 	osg::ref_ptr<osg::StateSet> stateset = new osg::StateSet;
-	osg::ref_ptr<osg::Texture2D> texture = CloudTextureFactory::Instance()->getTexture("cloud_texture01.png");
+	osg::ref_ptr<osg::Texture2D> texture = CloudTextureFactory::Instance()->getTexture("cloud_texture02.png");
 	stateset->setTextureAttributeAndModes(0, texture.get(), osg::StateAttribute::ON);
 	geometry->setStateSet(stateset.get());
 
-    setMode(osg::Billboard::POINT_ROT_EYE);
+//    setMode(osg::Billboard::POINT_ROT_EYE);
+    setMode(osg::Billboard::POINT_ROT_WORLD);
     addDrawable(geometry.get());
 
 	setPosition(0, position);

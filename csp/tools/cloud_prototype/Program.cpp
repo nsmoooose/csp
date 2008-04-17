@@ -165,25 +165,36 @@ osg::Group* createModel()
     return root;
 }
 
-void addClouds(osg::Group* model) {
-	osg::ref_ptr<osg::MatrixTransform> transformation = new osg::MatrixTransform();
-	transformation->setMatrix(osg::Matrix::translate(10, 0, 0));
-	osg::ref_ptr<CloudBox> cloudBox = new CloudBox();
-	cloudBox->setWidth(10);
-	cloudBox->setDepth(10);
-	cloudBox->UpdateModel();
-	transformation->addChild(cloudBox.get());
-	model->addChild(transformation.get());
+void addClouds(osg::Group* model, float radius, int count) {
+	float angle = osg::PI * 2 / count;
+	for(int i = 0;i<count;++i) {
+		float x = cos(static_cast<float>(i) * angle) * radius;
+		float y = sin(static_cast<float>(i) * angle) * radius;
+		float z = sin(static_cast<float>(i) * angle * 3) * 10;
+
+		osg::ref_ptr<osg::MatrixTransform> transformation = new osg::MatrixTransform();
+		transformation->setMatrix(osg::Matrix::translate(x, y, z));
+		osg::ref_ptr<CloudBox> cloudBox = new CloudBox();
+		cloudBox->setWidth(30);
+		cloudBox->setDepth(30);
+		cloudBox->UpdateModel();
+		transformation->addChild(cloudBox.get());
+		model->addChild(transformation.get());
+	}
 }
 
-int main(int, char**)
-{
+int main(int, char**) {
     // construct the viewer
     osgViewer::Viewer viewer;
     
-    // set the scene to render
+    // Create a x, y, z model.
 	osg::ref_ptr<osg::Group> model = createModel();
-	addClouds(model.get());
+
+	// Add clouds
+	addClouds(model.get(), 50, 10);
+	addClouds(model.get(), 100, 18);
+
+	// Set scene data
     viewer.setSceneData(model.get());
 
     // run the viewers frame loop

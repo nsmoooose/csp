@@ -1,4 +1,5 @@
-#pragma once
+#ifndef __CSPSIM_CLOUDS_CLOUDTEXTUREFACTORY_H__
+#define __CSPSIM_CLOUDS_CLOUDTEXTUREFACTORY_H__
 
 #include <osg/ref_ptr>
 #include <osg/Texture2D>
@@ -18,3 +19,5 @@ private:
 	CloudTextureFactory(void) {}
 	static CloudTextureFactory* m_Instance;
 };
+
+#endif

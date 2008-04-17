@@ -28,7 +28,7 @@ private:
 	float m_Width;
 
 	struct ColorLevel {
-		ColorLevel(){}
+		ColorLevel() {}
 		ColorLevel(const float& t, const osg::Vec3& c) : threshold(t), color(c) {}
 		float threshold;
 		osg::Vec3 color;
@@ -36,6 +36,16 @@ private:
 
 	typedef std::vector<ColorLevel> ColorLevelVector;
 	ColorLevelVector m_ColorLevels;
+
+	struct OpacityLevel {
+		OpacityLevel() {}
+		OpacityLevel(const float& t, const float& o) : threshold(t), opacity(o) {}
+		float threshold;
+		float opacity;
+	};
+
+	typedef std::vector<OpacityLevel> OpacityLevelVector;
+	OpacityLevelVector m_OpacityLevels;
 };
 
 #endif

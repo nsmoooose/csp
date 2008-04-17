@@ -2,9 +2,25 @@
 #include <osg/BlendFunc>
 
 #include "CloudBox.h"
+#include "CloudMath.h"
 #include "CloudSprite.h"
 
-CloudBox::CloudBox(void) : m_Depth(10.0f), m_Height(10.0f), m_Width(10.0f) {
+template<class T>
+T FindCorrectLevel(std::vector<std::pair<float, T> >& v, float value) {
+	T default_value;
+
+	for(std::vector<std::pair<float, T> >::size_type index = 0;index < v.size();++index) {
+		if(value >= v.at(index).first) {
+			default_value = v.at(index).second;
+		}
+		else {
+			break;
+		}
+	}
+	return default_value;
+}
+
+CloudBox::CloudBox(void) : m_SpriteRemovalThreshold(2.0) {
 	// This is the default color vector. Lower parts of the cloud will get a 
 	// darker shade and higher parts will be more white.
 	m_ColorLevels.push_back(ColorLevel(0.0, osg::Vec3(0.8, 0.8, 0.8)));
@@ -25,28 +41,20 @@ CloudBox::CloudBox(void) : m_Depth(10.0f), m_Height(10.0f), m_Width(10.0f) {
 CloudBox::~CloudBox(void) {
 }
 
-void CloudBox::setDepth(float depth) {
-	m_Depth = depth;
+void CloudBox::setDimensions(osg::Vec3 dimensions) {
+	m_Dimensions = dimensions;
 }
 
-float CloudBox::getDepth() {
-	return m_Depth;
+osg::Vec3 CloudBox::getDimensions() {
+	return m_Dimensions;
 }
 
-void CloudBox::setHeight(float height) {
-	m_Height = height;
+void CloudBox::setSpriteRemovalThreshold(float threshold) {
+	m_SpriteRemovalThreshold = threshold;
 }
 
-float CloudBox::getHeight() {
-	return m_Height;
-}
-
-void CloudBox::setWidth(float width) {
-	m_Width = width;
-}
-
-float CloudBox::getWidth() {
-	return m_Width;
+float CloudBox::getSpriteRemovalThreshold() {
+	return m_SpriteRemovalThreshold;
 }
 
 void CloudBox::UpdateModel() {
@@ -64,57 +72,45 @@ void CloudBox::UpdateModel() {
 	stateset->setAttributeAndModes(alphafunc.get(), osg::StateAttribute::ON);
 
 	// Calculate the center of the cloud.
-	osg::Vec3 cloudCenter(m_Width/2, m_Depth/2, m_Height/2);
-	float maximumDistance = sqrt(cloudCenter.x() * cloudCenter.x() + 
-		cloudCenter.y() * cloudCenter.y() + cloudCenter.z() * cloudCenter.z());
+	osg::Vec3 cloudCenter(0.0, 0.0, 0.0);
+	float maximumDistance = sqrt(m_Dimensions.x() * m_Dimensions.x() + 
+		m_Dimensions.y() * m_Dimensions.y() + m_Dimensions.z() * m_Dimensions.z());
 
 	// Randomly place a number of sprites.
 	for(int i = 0;i<250;++i) {
 		// Create a sprite and set the billboard type to use.
 		osg::ref_ptr<CloudSprite> sprite = new CloudSprite();
-		sprite->setMode(osg::Billboard::POINT_ROT_EYE);
+		sprite->setMode(osg::Billboard::AXIAL_ROT);
 
 		// Calculate the position of the sprite.
-		osg::Vec3 position((rand() % (int)m_Width), 
-			(rand() % (int)m_Depth), (rand() % (int)m_Height));
+		osg::Vec3 position(
+			CloudMath::GenerateRandomNumber(0 - m_Dimensions.x(), m_Dimensions.x()), 
+			CloudMath::GenerateRandomNumber(0 - m_Dimensions.y(), m_Dimensions.y()), 
+			CloudMath::GenerateRandomNumber(0 - m_Dimensions.z(), m_Dimensions.z()));
 
-		// Calculate the distance to the sprite from the center of this cloud. 
-		// The further away from the center of the cloud we add transparency.
-		osg::Vec3 delta = position - cloudCenter;
-		float distance = sqrt(delta.x() * delta.x() + delta.y() * delta.y() + delta.z() * delta.z());
-		float dissipation = 1.0f - distance / maximumDistance;
+		if(CloudMath::InsideEllipsoid(position, m_Dimensions)) {
+			// Calculate the distance to the sprite from the center of this cloud. 
+			// The further away from the center of the cloud we add transparency.
+			osg::Vec3 delta = position - cloudCenter;
+			float distance = sqrt(delta.x() * delta.x() + delta.y() * delta.y() + delta.z() * delta.z());
+			float dissipation = 1.0f - distance / maximumDistance;
+			float selectedOpacity = FindCorrectLevel(m_OpacityLevels, dissipation);
 
-		OpacityLevel selectedOpacityLevel;
-		for(OpacityLevelVector::size_type index = 0;index < m_OpacityLevels.size();++index) {
-			if(dissipation >= m_OpacityLevels.at(index).threshold) {
-				selectedOpacityLevel = m_OpacityLevels.at(index);
-			}
-			else {
-				break;
-			}
+			// Calculate the color level to use. Retreive the color using our color vector.
+			float colorLevel = (position.z() + m_Dimensions.z()) / (m_Dimensions.z() * 2);
+			osg::Vec3 selectedColor = FindCorrectLevel(m_ColorLevels, colorLevel);
+
+			// Update the model with the calculated data.
+			sprite->UpdateModel(position, selectedOpacity, selectedColor);
+
+			addChild(sprite.get());
 		}
-
-		// Calculate the color level to use.
-		float colorLevel = position.z() / m_Height;
-
-		// Retreive the color using our color vector.
-		ColorLevel selectedColorLevel;
-		for(ColorLevelVector::size_type index = 0;index < m_ColorLevels.size();++index) {
-			if(colorLevel >= m_ColorLevels.at(index).threshold) {
-				selectedColorLevel = m_ColorLevels.at(index);
-			}
-			else {
-				break;
-			}
-		}
-
-
-		// Update the model with the calculated data.
-		sprite->UpdateModel(position, selectedOpacityLevel.opacity, selectedColorLevel.color);
-
-		addChild(sprite.get());
 	}
 
+	// There is probably a lot of sprites that are very close to each other.
+	// These will draw over each other and generate some overhead. We loop
+	// through all sprites and check distances between them. If any are closer
+	// than a specified threshold we will remove it completely.
 	for(int i = getNumChildren()-1;i >= 0;--i) {
 		// Get sprite and its position.
 		osg::ref_ptr<CloudSprite> sprite = dynamic_cast<CloudSprite*>(getChild(i));
@@ -128,13 +124,15 @@ void CloudBox::UpdateModel() {
 				break;
 
 			osg::ref_ptr<CloudSprite> spriteToTest = dynamic_cast<CloudSprite*>(getChild(j));
+			if(!spriteToTest.valid())
+				continue;
 			osg::Vec3 spritePositionToTest = spriteToTest->getPosition(0);
 
 			osg::Vec3 delta = spritePositionToTest - spritePosition;
 			float distance = sqrt(delta.x() * delta.x() + delta.y() * delta.y() + delta.z() * delta.z());
 
 			// This value should be computed depending on the width and height of the sprite.
-			if(distance < 2.66)
+			if(distance < m_SpriteRemovalThreshold)
 			{
 				deleteSprite = true;
 				break;

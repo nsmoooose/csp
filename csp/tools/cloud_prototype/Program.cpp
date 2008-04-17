@@ -21,6 +21,8 @@
 #pragma comment(lib, "osgGA")
 #pragma comment(lib, "osgViewer")
 
+#include <iostream>
+
 #include <osg/Node>
 #include <osg/Geometry>
 #include <osg/Notify>
@@ -39,6 +41,7 @@
 #include <osgViewer/Viewer>
 
 #include "CloudBox.h"
+#include "CloudMath.h"
 
 typedef std::vector< osg::ref_ptr<osg::Image> > ImageList;
 
@@ -175,15 +178,46 @@ void addClouds(osg::Group* model, float radius, int count) {
 		osg::ref_ptr<osg::MatrixTransform> transformation = new osg::MatrixTransform();
 		transformation->setMatrix(osg::Matrix::translate(x, y, z));
 		osg::ref_ptr<CloudBox> cloudBox = new CloudBox();
-		cloudBox->setWidth(30);
-		cloudBox->setDepth(30);
+		cloudBox->setSpriteRemovalThreshold(1.0);
+		cloudBox->setDimensions(osg::Vec3(15, 15, 5));
 		cloudBox->UpdateModel();
 		transformation->addChild(cloudBox.get());
 		model->addChild(transformation.get());
 	}
 }
 
+class Assert {
+public:
+	static void IsTrue(bool expression, const char* message) {
+		if(!expression) WriteMessageAndAbort(message);
+	}
+
+	static void IsFalse(bool expression, const char* message) {
+		if(expression) WriteMessageAndAbort(message);
+	}
+
+private:
+	static void WriteMessageAndAbort(const char* message) {
+		std::cout << message << std::endl;
+		abort();
+	}
+};
+
 int main(int, char**) {
+	/* Ellipsoid tests. */
+	Assert::IsFalse(CloudMath::InsideEllipsoid(osg::Vec3(1, 1, 1), osg::Vec3(0.5, 0.5, 0.5)), "Point shall be outside of sphere");
+	Assert::IsFalse(CloudMath::InsideEllipsoid(osg::Vec3(1, 0, 0), osg::Vec3(0.5, 0.5, 0.5)), "Point shall be outside of sphere");
+	Assert::IsFalse(CloudMath::InsideEllipsoid(osg::Vec3(0.3, 0.3, 1.0), osg::Vec3(0.5, 0.5, 0.5)), "Point shall be outside of sphere");
+	Assert::IsFalse(CloudMath::InsideEllipsoid(osg::Vec3(0.3, 0.6, 0.3), osg::Vec3(0.5, 0.5, 0.5)), "Point shall be outside of sphere");
+	Assert::IsTrue(CloudMath::InsideEllipsoid(osg::Vec3(0.3, 0.3, 0.3), osg::Vec3(0.5, 0.5, 0.5)), "Point shall be inside of sphere");
+	Assert::IsTrue(CloudMath::InsideEllipsoid(osg::Vec3(-0.3, -0.3, -0.3), osg::Vec3(0.5, 0.5, 0.5)), "Point shall be inside of sphere");
+	Assert::IsTrue(CloudMath::InsideEllipsoid(osg::Vec3(-0.3, 0.3, -0.3), osg::Vec3(0.5, 0.5, 0.5)), "Point shall be inside of sphere");
+	Assert::IsTrue(CloudMath::InsideEllipsoid(osg::Vec3(0.49, 0.0, 0.0), osg::Vec3(0.5, 1.5, 1.5)), "Point shall be inside of sphere");
+
+	/* Randomizer tests. */
+	Assert::IsTrue(CloudMath::GenerateRandomNumber(0, 10) >= 0, "Should be a positive number");
+	Assert::IsTrue(CloudMath::GenerateRandomNumber(-10, -1) < 0, "Should be a negative number");
+
     // construct the viewer
     osgViewer::Viewer viewer;
     

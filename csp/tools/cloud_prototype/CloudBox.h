@@ -11,39 +11,25 @@ public:
 	CloudBox(void);
 	virtual ~CloudBox(void);
 
-	void setDepth(float depth);
-	float getDepth();
+	void setDimensions(osg::Vec3 dimensions);
+	osg::Vec3 getDimensions();
 
-	void setHeight(float height);
-	float getHeight();
-
-	void setWidth(float width);
-	float getWidth();
+	// All sprites that are closer to each other than the set
+	// threshold will be removed from this cloud box.
+	void setSpriteRemovalThreshold(float threshold);
+	float getSpriteRemovalThreshold();
 
 	void UpdateModel();
 
 private:
-	float m_Depth;
-	float m_Height;
-	float m_Width;
+	osg::Vec3 m_Dimensions;
+	float m_SpriteRemovalThreshold;
 
-	struct ColorLevel {
-		ColorLevel() {}
-		ColorLevel(const float& t, const osg::Vec3& c) : threshold(t), color(c) {}
-		float threshold;
-		osg::Vec3 color;
-	};
-
+	typedef std::pair<float, osg::Vec3> ColorLevel;
 	typedef std::vector<ColorLevel> ColorLevelVector;
 	ColorLevelVector m_ColorLevels;
 
-	struct OpacityLevel {
-		OpacityLevel() {}
-		OpacityLevel(const float& t, const float& o) : threshold(t), opacity(o) {}
-		float threshold;
-		float opacity;
-	};
-
+	typedef std::pair<float, float> OpacityLevel;
 	typedef std::vector<OpacityLevel> OpacityLevelVector;
 	OpacityLevelVector m_OpacityLevels;
 };

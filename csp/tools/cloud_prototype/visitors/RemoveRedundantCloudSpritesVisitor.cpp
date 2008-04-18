@@ -1,6 +1,5 @@
 #include "RemoveRedundantCloudSpritesVisitor.h"
 #include "../CloudBox.h"
-#include "../CloudSprite.h"
 
 namespace csp {
 namespace clouds {
@@ -23,22 +22,18 @@ void RemoveRedundantCloudSpritesVisitor::RemoveSprites(CloudBox* cloudBox) {
 	// These will draw over each other and generate some overhead. We loop
 	// through all sprites and check distances between them. If any are closer
 	// than a specified threshold we will remove it completely.
-	for(int i = cloudBox->getNumChildren()-1;i >= 0;--i) {
+	for(int i = cloudBox->getNumDrawables()-1;i >= 0;--i) {
 		// Get sprite and its position.
-		osg::ref_ptr<CloudSprite> sprite = dynamic_cast<CloudSprite*>(cloudBox->getChild(i));
-		osg::Vec3 spritePosition = sprite->getPosition(0);
+		osg::Vec3 spritePosition = cloudBox->getPosition(i);
 
 		bool deleteSprite = false;
 
-		for(int j = cloudBox->getNumChildren()-1;j >= 0;--j) {
+		for(int j = cloudBox->getNumDrawables()-1;j >= 0;--j) {
 			// Don't compare with myself...
 			if(i == j)
 				break;
 
-			osg::ref_ptr<CloudSprite> spriteToTest = dynamic_cast<CloudSprite*>(cloudBox->getChild(j));
-			if(!spriteToTest.valid())
-				continue;
-			osg::Vec3 spritePositionToTest = spriteToTest->getPosition(0);
+			osg::Vec3 spritePositionToTest = cloudBox->getPosition(j);
 
 			osg::Vec3 delta = spritePositionToTest - spritePosition;
 			float distance = sqrt(delta.x() * delta.x() + delta.y() * delta.y() + delta.z() * delta.z());
@@ -52,7 +47,7 @@ void RemoveRedundantCloudSpritesVisitor::RemoveSprites(CloudBox* cloudBox) {
 		}
 
 		if(deleteSprite)
-			cloudBox->removeChild(i);
+			cloudBox->removeDrawable(cloudBox->getDrawable(i));
 	}
 }
 

@@ -119,10 +119,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\CloudSprite.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\CloudTextureFactory.cpp"
 				>
 			</File>
@@ -158,10 +154,6 @@
 			</File>
 			<File
 				RelativePath=".\CloudRegistry.h"
-				>
-			</File>
-			<File
-				RelativePath=".\CloudSprite.h"
 				>
 			</File>
 			<File

@@ -1,3 +1,4 @@
+#include <osg/MatrixTransform>
 #include "Cloud.h"
 #include "CloudBox.h"
 #include "CloudRegistry.h"
@@ -7,7 +8,7 @@ namespace clouds {
 
 osg::ref_ptr<Cloud> CloudRegistry::CreateModel01() {
 	osg::ref_ptr<Cloud> cloud = new Cloud();
-	cloud->setSpriteRemovalThreshold(1.0);
+	cloud->setSpriteRemovalThreshold(2.0);
 
 	osg::ref_ptr<CloudBox> cloudBox01 = new CloudBox();
 	cloudBox01->setDimensions(osg::Vec3(15.0, 15.0, 5.0));
@@ -21,7 +22,7 @@ osg::ref_ptr<Cloud> CloudRegistry::CreateModel01() {
 
 osg::ref_ptr<Cloud> CloudRegistry::CreateModel02() {
 	osg::ref_ptr<Cloud> cloud = new Cloud();
-	cloud->setSpriteRemovalThreshold(1.0);
+	cloud->setSpriteRemovalThreshold(2.0);
 
 	osg::ref_ptr<CloudBox> cloudBox01 = new CloudBox();
 	cloudBox01->setDimensions(osg::Vec3(20.0, 15.0, 5.0));
@@ -30,13 +31,15 @@ osg::ref_ptr<Cloud> CloudRegistry::CreateModel02() {
 	cloudBox01->setDensity(300);
 	cloud->addChild(cloudBox01.get());
 
+	osg::ref_ptr<osg::MatrixTransform> transformation02 = new osg::MatrixTransform();
+	transformation02->setMatrix(osg::Matrix::translate(0, 0, 4));
 	osg::ref_ptr<CloudBox> cloudBox02 = new CloudBox();
 	cloudBox02->setDimensions(osg::Vec3(5.0, 5.0, 8.0));
 	cloudBox02->setColorLevels(CreateDefaultColorLevels());
 	cloudBox02->setOpacityLevels(CreateDefaultOpacityLevels());
-	cloudBox02->setMatrix(osg::Matrix::translate(0, 0, 4));
 	cloudBox01->setDensity(100);
-	cloud->addChild(cloudBox02.get());
+	transformation02->addChild(cloudBox02.get());
+	cloud->addChild(transformation02.get());
 
 	cloud->UpdateModel();
 	return cloud;
@@ -49,7 +52,6 @@ CloudRegistry::CloudVector CloudRegistry::CreateDefaultClouds() {
 
 	return clouds;
 }
-
 
 CloudBox::ColorLevelVector CloudRegistry::CreateDefaultColorLevels() {
 	// Lower parts of the cloud will get a  darker shade and higher parts will be more white.

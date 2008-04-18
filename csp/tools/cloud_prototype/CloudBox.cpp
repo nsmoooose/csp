@@ -1,9 +1,9 @@
-#include <osg/AlphaFunc>
-#include <osg/BlendFunc>
+#include <osg/Geometry>
+#include <osg/Texture2D>
 
 #include "CloudBox.h"
 #include "CloudMath.h"
-#include "CloudSprite.h"
+#include "CloudTextureFactory.h"
 
 template<class T>
 T FindCorrectLevel(std::vector<std::pair<float, T> >& v, float value) {
@@ -62,30 +62,18 @@ int CloudBox::getDensity() {
 }
 
 void CloudBox::UpdateModel() {
-	// Hint osg that we must handle the cloud as a transparent object.
-	osg::ref_ptr<osg::StateSet> stateset = getOrCreateStateSet();
-	stateset->setRenderingHint(osg::StateSet::TRANSPARENT_BIN);
-
-	// Must also tell osg that we need to blend the alpha channel with
-	// the background.
-	osg::ref_ptr<osg::BlendFunc> blendFunction = new osg::BlendFunc;
-    stateset->setAttributeAndModes(blendFunction.get());
-
-	osg::ref_ptr<osg::AlphaFunc> alphafunc = new osg::AlphaFunc;
-	alphafunc->setFunction(osg::AlphaFunc::GREATER, 0.0f);
-	stateset->setAttributeAndModes(alphafunc.get(), osg::StateAttribute::ON);
+    setMode(osg::Billboard::POINT_ROT_EYE);
+//    setMode(osg::Billboard::POINT_ROT_WORLD);
 
 	// Calculate the center of the cloud.
 	osg::Vec3 cloudCenter(0.0, 0.0, 0.0);
 	float maximumDistance = sqrt(m_Dimensions.x() * m_Dimensions.x() + 
 		m_Dimensions.y() * m_Dimensions.y() + m_Dimensions.z() * m_Dimensions.z());
 
+	addDrawable(CreateCloudSprite(1.0, osg::Vec3(1.0, 1.0, 1.0), osg::Vec2(m_Dimensions.x(), m_Dimensions.x())).get());
+
 	// Randomly place a number of sprites.
 	for(int i = 0;i<m_Density;++i) {
-		// Create a sprite and set the billboard type to use.
-		osg::ref_ptr<CloudSprite> sprite = new CloudSprite();
-		sprite->setMode(osg::Billboard::AXIAL_ROT);
-
 		// Calculate the position of the sprite.
 		osg::Vec3 position(
 			CloudMath::GenerateRandomNumber(0 - m_Dimensions.x(), m_Dimensions.x()), 
@@ -105,11 +93,68 @@ void CloudBox::UpdateModel() {
 			osg::Vec3 selectedColor = FindCorrectLevel(m_ColorLevels, colorLevel);
 
 			// Update the model with the calculated data.
-			sprite->UpdateModel(position, selectedOpacity, selectedColor);
-
-			addChild(sprite.get());
+			osg::Vec2 size(CloudMath::GenerateRandomNumber(4, 9), CloudMath::GenerateRandomNumber(5, 7));
+			osg::ref_ptr<osg::Geometry> drawable = CreateCloudSprite(selectedOpacity, selectedColor, size);
+			addDrawable(drawable.get(), position);
 		}
 	}
+}
+
+osg::ref_ptr<osg::Geometry> CloudBox::CreateCloudSprite(const float& alpha, const osg::Vec3& color, const osg::Vec2& size) {
+	osg::Vec3 corner(0 - size.x() / 2, 0.0f, 0 - size.y() / 2);
+	osg::Vec3 width(size.x(), 0.0f, 0.0f);
+	osg::Vec3 height(0.0f, 0.0f, size.y());
+	osg::Vec4 colorWithAlpha(color, alpha);
+
+	osg::ref_ptr<osg::Geometry> geometry = new osg::Geometry;
+
+	osg::ref_ptr<osg::Vec3Array> vertices = new osg::Vec3Array;
+	vertices->push_back(corner);
+	vertices->push_back(corner + width);
+	vertices->push_back(corner + width + height);
+	vertices->push_back(corner + height);
+	geometry->setVertexArray(vertices.get());
+
+	// Apply a random rotation of the cloud sprite. The cloud looks
+	// a little better then.
+	float q = osg::DegreesToRadians(CloudMath::GenerateRandomNumber(0, 360));
+	osg::Matrix matrix = osg::Matrix::rotate(q, osg::Vec3(0, 1, 0));
+	vertices->at(0) = osg::Matrix::transform3x3(vertices->at(0), matrix);
+	vertices->at(1) = osg::Matrix::transform3x3(vertices->at(1), matrix);
+	vertices->at(2) = osg::Matrix::transform3x3(vertices->at(2), matrix);
+	vertices->at(3) = osg::Matrix::transform3x3(vertices->at(3), matrix);
+	
+	osg::ref_ptr<osg::Vec4Array> colors = new osg::Vec4Array;
+	colors->push_back(colorWithAlpha);
+	colors->push_back(colorWithAlpha);
+	colors->push_back(colorWithAlpha);
+	colors->push_back(colorWithAlpha);
+
+	geometry->setColorArray(colors.get());
+    geometry->setColorBinding(osg::Geometry::BIND_PER_VERTEX);
+
+	osg::ref_ptr<osg::Vec3Array> norms = new osg::Vec3Array();
+	norms->push_back((width^height));
+	norms->at(0).normalize();
+    
+    geometry->setNormalArray(norms.get());
+    geometry->setNormalBinding(osg::Geometry::BIND_OVERALL);
+
+	osg::ref_ptr<osg::Vec2Array> textureCoordinates = new osg::Vec2Array();
+	textureCoordinates->push_back(osg::Vec2(0.0f, 0.0f));
+    textureCoordinates->push_back(osg::Vec2(1.0f, 0.0f));
+    textureCoordinates->push_back(osg::Vec2(1.0f, 1.0f));
+    textureCoordinates->push_back(osg::Vec2(0.0f, 1.0f));
+    geometry->setTexCoordArray(0, textureCoordinates.get());
+
+	geometry->addPrimitiveSet(new osg::DrawArrays(GL_QUADS, 0, 4));
+
+	osg::ref_ptr<osg::StateSet> stateset = new osg::StateSet;
+	osg::ref_ptr<osg::Texture2D> texture = CloudTextureFactory::Instance()->getTexture("cloud_texture02.png");
+	stateset->setTextureAttributeAndModes(0, texture.get(), osg::StateAttribute::ON);
+	geometry->setStateSet(stateset.get());
+
+	return geometry;
 }
 
 } // end namespace clouds

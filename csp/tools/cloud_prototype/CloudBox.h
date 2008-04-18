@@ -1,7 +1,7 @@
 #ifndef __CSPSIM_CLOUDS_CLOUDBOX_H__
 #define __CSPSIM_CLOUDS_CLOUDBOX_H__
 
-#include <osg/MatrixTransform>
+#include <osg/Billboard>
 
 namespace csp {
 namespace clouds {
@@ -22,7 +22,7 @@ At the bottom or at the top. The threshold for each color level is a value betwe
 
 Opacity levels controls alpha value depending on distance from center of cloud. The
 threshold is a value between 0 and 1.0. */
-class CloudBox : public osg::MatrixTransform
+class CloudBox : public osg::Billboard
 {
 public:
 	typedef std::pair<float, osg::Vec3> ColorLevel;
@@ -54,6 +54,8 @@ private:
 	ColorLevelVector m_ColorLevels;
 	OpacityLevelVector m_OpacityLevels;
 	int m_Density;
+
+	osg::ref_ptr<osg::Geometry> CreateCloudSprite(const float& alpha, const osg::Vec3& color, const osg::Vec2& size);
 };
 
 }	// end namespace clouds

@@ -1,7 +1,7 @@
 #ifndef __CSPSIM_CLOUDS_CLOUDMATH_H__
 #define __CSPSIM_CLOUDS_CLOUDMATH_H__
 
-#include <osg/vec3>
+#include <osg/Vec3>
 
 namespace csp {
 namespace clouds {

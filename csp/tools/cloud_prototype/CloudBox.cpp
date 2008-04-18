@@ -9,7 +9,7 @@ template<class T>
 T FindCorrectLevel(std::vector<std::pair<float, T> >& v, float value) {
 	T default_value;
 
-	for(std::vector<std::pair<float, T> >::size_type index = 0;index < v.size();++index) {
+	for(typename std::vector<std::pair<float, T> >::size_type index = 0;index < v.size();++index) {
 		if(value >= v.at(index).first) {
 			default_value = v.at(index).second;
 		}

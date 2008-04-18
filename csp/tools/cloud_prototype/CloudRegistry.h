@@ -20,8 +20,8 @@ public:
 
 	static CloudVector CreateDefaultClouds();
 
-	static CloudBox::ColorLevelVector CloudRegistry::CreateDefaultColorLevels();
-	static CloudBox::OpacityLevelVector CloudRegistry::CreateDefaultOpacityLevels();
+	static CloudBox::ColorLevelVector CreateDefaultColorLevels();
+	static CloudBox::OpacityLevelVector CreateDefaultOpacityLevels();
 };
 
 }	// end namespace clouds

@@ -1,6 +1,9 @@
 #include <osgDB/ReadFile>
 #include "CloudTextureFactory.h"
 
+namespace csp {
+namespace clouds {
+
 CloudTextureFactory* CloudTextureFactory::m_Instance = NULL;
 
 CloudTextureFactory* CloudTextureFactory::Instance() {
@@ -28,3 +31,6 @@ osg::ref_ptr<osg::Texture2D> CloudTextureFactory::getTexture(const char* fileNam
 	}
 	return foundTexture->second;
 }
+
+} // end namespace clouds
+} // end namespace csp

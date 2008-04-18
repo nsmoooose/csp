@@ -20,22 +20,10 @@ T FindCorrectLevel(std::vector<std::pair<float, T> >& v, float value) {
 	return default_value;
 }
 
-CloudBox::CloudBox(void) : m_SpriteRemovalThreshold(2.0) {
-	// This is the default color vector. Lower parts of the cloud will get a 
-	// darker shade and higher parts will be more white.
-	m_ColorLevels.push_back(ColorLevel(0.0, osg::Vec3(0.8, 0.8, 0.8)));
-	m_ColorLevels.push_back(ColorLevel(0.25, osg::Vec3(0.82, 0.82, 0.82)));
-	m_ColorLevels.push_back(ColorLevel(0.30, osg::Vec3(0.85, 0.85, 0.85)));
-	m_ColorLevels.push_back(ColorLevel(0.40, osg::Vec3(0.87, 0.87, 0.87)));
-	m_ColorLevels.push_back(ColorLevel(0.55, osg::Vec3(0.9, 0.9, 0.9)));
-	m_ColorLevels.push_back(ColorLevel(0.60, osg::Vec3(0.93, 0.93, 0.93)));
-	m_ColorLevels.push_back(ColorLevel(0.65, osg::Vec3(0.97, 0.97, 0.97)));
-	m_ColorLevels.push_back(ColorLevel(0.70, osg::Vec3(1.0, 1.0, 1.0)));
+namespace csp {
+namespace clouds {
 
-	m_OpacityLevels.push_back(OpacityLevel(0.0, 0.1));
-	m_OpacityLevels.push_back(OpacityLevel(0.1, 0.3));
-	m_OpacityLevels.push_back(OpacityLevel(0.3, 0.7));
-	m_OpacityLevels.push_back(OpacityLevel(0.4, 1.0));
+	CloudBox::CloudBox(void) : m_Density(100) {
 }
 
 CloudBox::~CloudBox(void) {
@@ -49,12 +37,28 @@ osg::Vec3 CloudBox::getDimensions() {
 	return m_Dimensions;
 }
 
-void CloudBox::setSpriteRemovalThreshold(float threshold) {
-	m_SpriteRemovalThreshold = threshold;
+void CloudBox::setColorLevels(const ColorLevelVector& levels) {
+	m_ColorLevels = levels;
 }
 
-float CloudBox::getSpriteRemovalThreshold() {
-	return m_SpriteRemovalThreshold;
+CloudBox::ColorLevelVector CloudBox::getColorLevels() {
+	return m_ColorLevels;
+}
+
+void CloudBox::setOpacityLevels(const OpacityLevelVector& levels) {
+	m_OpacityLevels = levels;
+}
+
+CloudBox::OpacityLevelVector CloudBox::getOpacityLevels() {
+	return m_OpacityLevels;
+}
+
+void CloudBox::setDensity(int count) {
+	m_Density = count;
+}
+
+int CloudBox::getDensity() {
+	return m_Density;
 }
 
 void CloudBox::UpdateModel() {
@@ -77,7 +81,7 @@ void CloudBox::UpdateModel() {
 		m_Dimensions.y() * m_Dimensions.y() + m_Dimensions.z() * m_Dimensions.z());
 
 	// Randomly place a number of sprites.
-	for(int i = 0;i<250;++i) {
+	for(int i = 0;i<m_Density;++i) {
 		// Create a sprite and set the billboard type to use.
 		osg::ref_ptr<CloudSprite> sprite = new CloudSprite();
 		sprite->setMode(osg::Billboard::AXIAL_ROT);
@@ -106,40 +110,7 @@ void CloudBox::UpdateModel() {
 			addChild(sprite.get());
 		}
 	}
-
-	// There is probably a lot of sprites that are very close to each other.
-	// These will draw over each other and generate some overhead. We loop
-	// through all sprites and check distances between them. If any are closer
-	// than a specified threshold we will remove it completely.
-	for(int i = getNumChildren()-1;i >= 0;--i) {
-		// Get sprite and its position.
-		osg::ref_ptr<CloudSprite> sprite = dynamic_cast<CloudSprite*>(getChild(i));
-		osg::Vec3 spritePosition = sprite->getPosition(0);
-
-		bool deleteSprite = false;
-
-		for(int j = this->getNumChildren()-1;j >= 0;--j) {
-			// Don't compare with myself...
-			if(i == j)
-				break;
-
-			osg::ref_ptr<CloudSprite> spriteToTest = dynamic_cast<CloudSprite*>(getChild(j));
-			if(!spriteToTest.valid())
-				continue;
-			osg::Vec3 spritePositionToTest = spriteToTest->getPosition(0);
-
-			osg::Vec3 delta = spritePositionToTest - spritePosition;
-			float distance = sqrt(delta.x() * delta.x() + delta.y() * delta.y() + delta.z() * delta.z());
-
-			// This value should be computed depending on the width and height of the sprite.
-			if(distance < m_SpriteRemovalThreshold)
-			{
-				deleteSprite = true;
-				break;
-			}
-		}
-
-		if(deleteSprite)
-			removeChild(i);
-	}
 }
+
+} // end namespace clouds
+} // end namespace csp

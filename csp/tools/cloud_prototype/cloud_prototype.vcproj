@@ -115,6 +115,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\CloudRegistry.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\CloudSprite.cpp"
 				>
 			</File>
@@ -124,6 +128,14 @@
 			</File>
 			<File
 				RelativePath=".\Program.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\visitors\RemoveRedundantCloudSpritesVisitor.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\visitors\UpdateCloudModelVisitor.cpp"
 				>
 			</File>
 		</Filter>
@@ -145,11 +157,23 @@
 				>
 			</File>
 			<File
+				RelativePath=".\CloudRegistry.h"
+				>
+			</File>
+			<File
 				RelativePath=".\CloudSprite.h"
 				>
 			</File>
 			<File
 				RelativePath=".\CloudTextureFactory.h"
+				>
+			</File>
+			<File
+				RelativePath=".\visitors\RemoveRedundantCloudSpritesVisitor.h"
+				>
+			</File>
+			<File
+				RelativePath=".\visitors\UpdateCloudModelVisitor.h"
 				>
 			</File>
 		</Filter>

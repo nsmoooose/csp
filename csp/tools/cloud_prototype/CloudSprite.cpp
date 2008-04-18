@@ -5,6 +5,9 @@
 #include <osg/Texture2D>
 #include <osgDB/ReadFile>
 
+namespace csp {
+namespace clouds {
+
 CloudSprite::CloudSprite(void) {
 }
 
@@ -62,3 +65,6 @@ void CloudSprite::UpdateModel(const osg::Vec3& position, const float& alpha, con
 
 	setPosition(0, position);
 }
+
+} // end namespace clouds
+} // end namespace csp

@@ -1,6 +1,9 @@
 #include <stdlib.h>
 #include "CloudMath.h"
 
+namespace csp {
+namespace clouds {
+
 bool CloudMath::InsideEllipsoid(osg::Vec3 point, osg::Vec3 ellipsoid) {
 	float value1 = 
 		(point.x() * point.x()) / (ellipsoid.x() * ellipsoid.x()) +
@@ -18,3 +21,6 @@ bool CloudMath::InsideEllipsoid(osg::Vec3 point, osg::Vec3 ellipsoid) {
 float CloudMath::GenerateRandomNumber(float minimum, float maximum) {
 	return (rand() % static_cast<int>(maximum - minimum)) + minimum;
 }
+
+} // end namespace clouds
+} // end namespace csp

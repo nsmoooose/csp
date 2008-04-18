@@ -1,20 +1,31 @@
 #ifndef __CSPSIM_CLOUDS_CLOUD_H__
 #define __CSPSIM_CLOUDS_CLOUD_H__
 
-#include <osg/Node>
+#include <osg/Group>
 
-class Cloud
+namespace csp {
+namespace clouds {
+
+/* A cloud is a group of cloud boxes. Each cloud box contains several cloud sprites.
+Together these forms a single cloud. */
+class Cloud : public osg::Group
 {
 public:
 	Cloud(void);
 	virtual ~Cloud(void);
 
-	void Init();
+	// Generates all necessary geometry to be able to display this cloud.
+	void UpdateModel();
 
-	osg::Node* getModel;
+	// All sprites that are closer to each other than the set threshold will be removed.
+	void setSpriteRemovalThreshold(float threshold);
+	float getSpriteRemovalThreshold();
 
 private:
-	osg::ref_ptr<osg::Node> m_Model;
+	float m_SpriteRemovalThreshold;
 };
+
+}	// end namespace clouds
+}	// end namespace csp
 
 #endif

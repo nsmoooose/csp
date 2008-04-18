@@ -39,11 +39,15 @@
 #include <osgDB/ReadFile>
 
 #include <osgViewer/Viewer>
+#include <osgViewer/ViewerEventHandlers>
 
 #include "CloudBox.h"
 #include "CloudMath.h"
+#include "CloudRegistry.h"
 
 typedef std::vector< osg::ref_ptr<osg::Image> > ImageList;
+
+using namespace csp::clouds;
 
 /** create quad at specified position. */
 osg::Drawable* createSquare(const osg::Vec3& corner,const osg::Vec3& width,const osg::Vec3& height)
@@ -168,20 +172,22 @@ osg::Group* createModel()
     return root;
 }
 
-void addClouds(osg::Group* model, float radius, int count) {
+void addClouds(osg::Group* model, CloudRegistry::CloudVector& clouds, float radius, int count) {
+	CloudRegistry::CloudVector::size_type cloudIndex = 0;
+
 	float angle = osg::PI * 2 / count;
-	for(int i = 0;i<count;++i) {
+	for(int i = 0;i<count;++i, ++cloudIndex) {
+		// Wrap around when there is no more clouds.
+		if(cloudIndex >= clouds.size()) 
+			cloudIndex = 0;
+
 		float x = cos(static_cast<float>(i) * angle) * radius;
 		float y = sin(static_cast<float>(i) * angle) * radius;
 		float z = sin(static_cast<float>(i) * angle * 3) * 10;
 
 		osg::ref_ptr<osg::MatrixTransform> transformation = new osg::MatrixTransform();
 		transformation->setMatrix(osg::Matrix::translate(x, y, z));
-		osg::ref_ptr<CloudBox> cloudBox = new CloudBox();
-		cloudBox->setSpriteRemovalThreshold(1.0);
-		cloudBox->setDimensions(osg::Vec3(15, 15, 5));
-		cloudBox->UpdateModel();
-		transformation->addChild(cloudBox.get());
+		transformation->addChild(clouds.at(cloudIndex).get());
 		model->addChild(transformation.get());
 	}
 }
@@ -220,13 +226,15 @@ int main(int, char**) {
 
     // construct the viewer
     osgViewer::Viewer viewer;
+    viewer.addEventHandler(new osgViewer::StatsHandler());
     
     // Create a x, y, z model.
 	osg::ref_ptr<osg::Group> model = createModel();
 
+	CloudRegistry::CloudVector clouds = CloudRegistry::CreateDefaultClouds();
 	// Add clouds
-	addClouds(model.get(), 50, 10);
-	addClouds(model.get(), 100, 18);
+	addClouds(model.get(), clouds, 50, 10);
+	addClouds(model.get(), clouds, 100, 18);
 
 	// Set scene data
     viewer.setSceneData(model.get());

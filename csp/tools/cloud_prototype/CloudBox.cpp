@@ -1,4 +1,3 @@
-#include <osg/Geometry>
 #include <osg/Texture2D>
 
 #include "CloudBox.h"
@@ -23,7 +22,13 @@ T FindCorrectLevel(std::vector<std::pair<float, T> >& v, float value) {
 namespace csp {
 namespace clouds {
 
-	CloudBox::CloudBox(void) : m_Density(100) {
+const osg::Billboard::Mode CloudBox::BillboardMode = osg::Billboard::POINT_ROT_EYE; 
+const float LODDistance1 = 3000;
+const float LODDistance2 = 5000;
+const float LODDistance3 = 1000;
+const float LODDistance4 = 10000;
+
+CloudBox::CloudBox(void) : m_Density(100) {
 }
 
 CloudBox::~CloudBox(void) {
@@ -62,42 +67,9 @@ int CloudBox::getDensity() {
 }
 
 void CloudBox::UpdateModel() {
-    setMode(osg::Billboard::POINT_ROT_EYE);
-//    setMode(osg::Billboard::POINT_ROT_WORLD);
-
-	// Calculate the center of the cloud.
-	osg::Vec3 cloudCenter(0.0, 0.0, 0.0);
-	float maximumDistance = sqrt(m_Dimensions.x() * m_Dimensions.x() + 
-		m_Dimensions.y() * m_Dimensions.y() + m_Dimensions.z() * m_Dimensions.z());
-
-	addDrawable(CreateCloudSprite(1.0, osg::Vec3(1.0, 1.0, 1.0), osg::Vec2(m_Dimensions.x(), m_Dimensions.x())).get());
-
-	// Randomly place a number of sprites.
-	for(int i = 0;i<m_Density;++i) {
-		// Calculate the position of the sprite.
-		osg::Vec3 position(
-			CloudMath::GenerateRandomNumber(0 - m_Dimensions.x(), m_Dimensions.x()), 
-			CloudMath::GenerateRandomNumber(0 - m_Dimensions.y(), m_Dimensions.y()), 
-			CloudMath::GenerateRandomNumber(0 - m_Dimensions.z(), m_Dimensions.z()));
-
-		if(CloudMath::InsideEllipsoid(position, m_Dimensions)) {
-			// Calculate the distance to the sprite from the center of this cloud. 
-			// The further away from the center of the cloud we add transparency.
-			osg::Vec3 delta = position - cloudCenter;
-			float distance = sqrt(delta.x() * delta.x() + delta.y() * delta.y() + delta.z() * delta.z());
-			float dissipation = 1.0f - distance / maximumDistance;
-			float selectedOpacity = FindCorrectLevel(m_OpacityLevels, dissipation);
-
-			// Calculate the color level to use. Retreive the color using our color vector.
-			float colorLevel = (position.z() + m_Dimensions.z()) / (m_Dimensions.z() * 2);
-			osg::Vec3 selectedColor = FindCorrectLevel(m_ColorLevels, colorLevel);
-
-			// Update the model with the calculated data.
-			osg::Vec2 size(CloudMath::GenerateRandomNumber(4, 9), CloudMath::GenerateRandomNumber(5, 7));
-			osg::ref_ptr<osg::Geometry> drawable = CreateCloudSprite(selectedOpacity, selectedColor, size);
-			addDrawable(drawable.get(), position);
-		}
-	}
+	addChild(CreateHighDetailGeometry().get(), 0.0, LODDistance1);
+	addChild(CreateMediumDetailGeometry().get(), LODDistance2, LODDistance3);
+	addChild(CreateLowDetailGeometry().get(), LODDistance3, LODDistance4);
 }
 
 osg::ref_ptr<osg::Geometry> CloudBox::CreateCloudSprite(const float& alpha, const osg::Vec3& color, const osg::Vec2& size) {
@@ -155,6 +127,60 @@ osg::ref_ptr<osg::Geometry> CloudBox::CreateCloudSprite(const float& alpha, cons
 	geometry->setStateSet(stateset.get());
 
 	return geometry;
+}
+
+osg::ref_ptr<osg::Node> CloudBox::CreateHighDetailGeometry() {
+	osg::ref_ptr<osg::Billboard> billboard = new osg::Billboard();
+    billboard->setMode(BillboardMode);
+
+	// Calculate the center of the cloud.
+	osg::Vec3 cloudCenter(0.0, 0.0, 0.0);
+	float maximumDistance = sqrt(m_Dimensions.x() * m_Dimensions.x() + 
+		m_Dimensions.y() * m_Dimensions.y() + m_Dimensions.z() * m_Dimensions.z());
+
+	billboard->addDrawable(CreateCloudSprite(1.0, osg::Vec3(1.0, 1.0, 1.0), osg::Vec2(m_Dimensions.x(), m_Dimensions.x())).get());
+
+	// Randomly place a number of sprites.
+	for(int i = 0;i<m_Density;++i) {
+		// Calculate the position of the sprite.
+		osg::Vec3 position(
+			CloudMath::GenerateRandomNumber(0 - m_Dimensions.x(), m_Dimensions.x()), 
+			CloudMath::GenerateRandomNumber(0 - m_Dimensions.y(), m_Dimensions.y()), 
+			CloudMath::GenerateRandomNumber(0 - m_Dimensions.z(), m_Dimensions.z()));
+
+		if(CloudMath::InsideEllipsoid(position, m_Dimensions)) {
+			// Calculate the distance to the sprite from the center of this cloud. 
+			// The further away from the center of the cloud we add transparency.
+			osg::Vec3 delta = position - cloudCenter;
+			float distance = sqrt(delta.x() * delta.x() + delta.y() * delta.y() + delta.z() * delta.z());
+			float dissipation = 1.0f - distance / maximumDistance;
+			float selectedOpacity = FindCorrectLevel(m_OpacityLevels, dissipation);
+
+			// Calculate the color level to use. Retreive the color using our color vector.
+			float colorLevel = (position.z() + m_Dimensions.z()) / (m_Dimensions.z() * 2);
+			osg::Vec3 selectedColor = FindCorrectLevel(m_ColorLevels, colorLevel);
+
+			// Update the model with the calculated data.
+			osg::Vec2 size(CloudMath::GenerateRandomNumber(4, 9), CloudMath::GenerateRandomNumber(5, 7));
+			osg::ref_ptr<osg::Geometry> drawable = CreateCloudSprite(selectedOpacity, selectedColor, size);
+			billboard->addDrawable(drawable.get(), position);
+		}
+	}
+	return billboard.get();
+}
+
+osg::ref_ptr<osg::Node> CloudBox::CreateMediumDetailGeometry() {
+	osg::ref_ptr<osg::Billboard> billboard = new osg::Billboard();
+    billboard->setMode(BillboardMode);
+	
+	return billboard.get();
+}
+
+osg::ref_ptr<osg::Node> CloudBox::CreateLowDetailGeometry() {
+	osg::ref_ptr<osg::Billboard> billboard = new osg::Billboard();
+    billboard->setMode(BillboardMode);
+	
+	return billboard.get();
 }
 
 } // end namespace clouds

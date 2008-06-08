@@ -22,10 +22,9 @@
  *
  **/
 
-#include <csp/cspsim/Atmosphere.h>
 #include <csp/csplib/util/Noise.h>
 #include <csp/csplib/util/Random.h>
-
+#include <csp/cspsim/weather/Atmosphere.h>
 
 // temporary, for testing.
 #include <cstdio>
@@ -41,6 +40,7 @@ namespace {
 
 CSP_NAMESPACE
 
+namespace weather {
 
 Atmosphere::Atmosphere() {
 	generateWinds();
@@ -370,6 +370,7 @@ void Atmosphere::tabulateCAS() {
 	m_CAS.interpolate(Table2::Dim(300)(300), Interpolation::LINEAR);
 }
 
+}
 
 CSP_NAMESPACE_END
 

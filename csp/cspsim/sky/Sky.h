@@ -16,8 +16,8 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-#ifndef __CSP_CSPSIM_SKY_SKYOBSERVER_H__
-#define __CSP_CSPSIM_SKY_SKYOBSERVER_H__
+#ifndef __CSP_CSPSIM_SKY_SKY_H__
+#define __CSP_CSPSIM_SKY_SKY_H__
 
 #include <csp/csplib/util/Ref.h>
 
@@ -149,5 +149,5 @@ private:
 
 CSP_NAMESPACE_END
 
-#endif // __CSP_CSPSIM_SKY_SKYOBSERVER_H__
+#endif // __CSP_CSPSIM_SKY_SKY_H__
 

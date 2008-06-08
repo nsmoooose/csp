@@ -158,6 +158,9 @@ public:
 	void drawPlayerInterface();
 
 	osg::Group *getInfoGroup();
+	
+	// TODO: Cloud experiments. 
+	osg::Group *getCloudGroup() { return m_CloudGroup.get(); }
 
 private:
 
@@ -260,6 +263,9 @@ protected:
 
 	// root node for sound effects (the listener)
 	osg::ref_ptr<osg::PositionAttitudeTransform> m_SoundRoot;
+	
+	// TODO: Testing of clouds. This should be moved from here.
+	osg::ref_ptr<osg::Group> m_CloudGroup;
 };
 
 CSP_NAMESPACE_END

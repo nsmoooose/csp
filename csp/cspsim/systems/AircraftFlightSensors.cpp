@@ -23,10 +23,12 @@
  **/
 
 #include <csp/cspsim/systems/AircraftFlightSensors.h>
+
+#include <csp/cspsim/weather/Atmosphere.h>
+
 #include <csp/cspsim/ConditionsChannels.h>
 #include <csp/cspsim/FlightDynamicsChannels.h>
 #include <csp/cspsim/KineticsChannels.h>
-#include <csp/cspsim/Atmosphere.h>
 #include <csp/cspsim/CSPSim.h>
 
 #include <csp/csplib/util/Conversions.h>
@@ -46,7 +48,7 @@ AircraftFlightSensors::AircraftFlightSensors(): m_Distance(0) { }
 double AircraftFlightSensors::onUpdate(double dt) {
 	Vector3 pos = b_Position->value();
 	double speed = b_Velocity->value().length();
-	Atmosphere const *atmosphere = CSPSim::theSim->getAtmosphere();
+	weather::Atmosphere const *atmosphere = CSPSim::theSim->getAtmosphere();
 	if (atmosphere) {
 		b_Density->value() = atmosphere->getDensity(pos.z());
 		b_Temperature->value() = atmosphere->getTemperature(pos.z());

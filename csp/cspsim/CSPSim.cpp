@@ -33,7 +33,6 @@
 
 #include <csp/cspsim/CSPSim.h>
 #include <csp/cspsim/AnimationSequence.h>
-#include <csp/cspsim/Atmosphere.h>
 #include <csp/cspsim/config/Configuration.h>
 #include <csp/cspsim/config/Display.h>
 #include <csp/cspsim/config/UserInterface.h>
@@ -60,6 +59,8 @@
 #include <csp/cspsim/battlefield/SimObject.h>
 
 #include <csp/cspsim/stores/StoresDatabase.h>
+
+#include <csp/cspsim/weather/Atmosphere.h>
 
 #include <csp/cspsim/wf/SignalData.h>
 
@@ -120,7 +121,7 @@ CSPSim *CSPSim::theSim = 0;
 
 CSPSim::CSPSim():
 	m_ConfigurationChanged(new wf::Signal),
-	m_Atmosphere(new Atmosphere),
+	m_Atmosphere(new weather::Atmosphere),
 	//--m_RenderSurface(new Producer::RenderSurface),
 	m_InputEvent(new InputEvent)
 {

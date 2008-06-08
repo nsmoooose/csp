@@ -32,8 +32,9 @@
 
 #include <vector>
 
-
 CSP_NAMESPACE
+
+namespace weather {
 
 /**
  * class Atmosphere
@@ -183,6 +184,8 @@ inline double Atmosphere::getMach(double speed, double alt) const {
 inline float Atmosphere::getCAS(double mach, double altitude) const {
 	return m_CAS[static_cast<float>(mach)][static_cast<float>(altitude)];
 }
+
+} // end namespace weather
 
 CSP_NAMESPACE_END
 

@@ -35,12 +35,16 @@
 #include <csp/cspsim/views/CameraAgent.h>
 #include <csp/cspsim/views/CameraCommand.h>
 #include <csp/cspsim/views/View.h>
+#include <csp/cspsim/weather/clouds/Cloud.h>
+#include <csp/cspsim/weather/clouds/CloudRegistry.h>
+#include <csp/cspsim/weather/clouds/CloudUtils.h>
 #include <csp/cspsim/wf/WindowManager.h>
 
 #include <csp/csplib/util/FileUtility.h>
 #include <csp/csplib/util/Log.h>
 
 #include <osg/Image>
+#include <osg/MatrixTransform>
 #include <osgDB/WriteFile>
 #include <osgDB/FileUtils>
 #include <osgUtil/SceneView>
@@ -467,6 +471,15 @@ void GameScreen::on_ResetSpin() {
 	if (scene) {
 		scene->resetSpin();
 	}
+}
+
+void GameScreen::on_ToggleClouds() {
+	osg::ref_ptr<osg::MatrixTransform> model = new osg::MatrixTransform();
+	osg::Matrix move = osg::Matrix::translate(osg::Vec3(-29495, -10530, 301.3));
+	model->setMatrix(move);
+	weather::clouds::CloudRegistry::CloudVector clouds = weather::clouds::CloudRegistry::CreateDefaultClouds();
+	weather::clouds::CloudUtils::addRandomClouds(model.get(), clouds, osg::Vec3(2000, 2000, 20), 40);
+	CSPSim::theSim->getScene()->getCloudGroup()->addChild(model.get());
 }
 
 void GameScreen::on_LabelsToggle() {

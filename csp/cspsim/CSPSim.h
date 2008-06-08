@@ -70,11 +70,8 @@ namespace osg {
 struct SDL_Surface;
 typedef struct _SDL_Joystick SDL_Joystick;
 
-//--namespace Producer { class RenderSurface; }
-
 CSP_NAMESPACE
 
-class Atmosphere;
 class BaseScreen;
 class Client;
 class DataManager;
@@ -87,6 +84,8 @@ class TerrainObject;
 class Theater;
 class VirtualHID;
 class VirtualScene;
+
+namespace weather { class Atmosphere; }
 
 /** The primary simulation engine for CSP.  Also acts as a singleton to provide
  *  direct access to shared simulation state.  Do not abuse this access point;
@@ -140,7 +139,7 @@ public:
 
 	DataManager & getDataManager() { return *m_DataManager; }
 
-	Atmosphere const * getAtmosphere() const { return m_Atmosphere.get(); }
+	weather::Atmosphere const * getAtmosphere() const { return m_Atmosphere.get(); }
 	
 protected:
 
@@ -190,7 +189,7 @@ private:
 	Ref<Theater> m_Theater;
 	Ref<TerrainObject> m_Terrain;
 	Ref<DataManager> m_DataManager;
-	ScopedPointer<Atmosphere> m_Atmosphere;
+	ScopedPointer<weather::Atmosphere> m_Atmosphere;
 
 	//--osg::ref_ptr<Producer::RenderSurface> m_RenderSurface;
 	// Shared state used by all SceneViews.

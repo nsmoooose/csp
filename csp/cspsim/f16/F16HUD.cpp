@@ -38,7 +38,8 @@
 #include <csp/cspsim/hud/Text.h>
 #include <csp/cspsim/hud/PitchLadder.h>
 
-#include <csp/cspsim/Atmosphere.h>
+#include <csp/cspsim/weather/Atmosphere.h>
+
 #include <csp/cspsim/ConditionsChannels.h>
 #include <csp/cspsim/CSPSim.h>
 #include <csp/cspsim/FlightDynamicsChannels.h>

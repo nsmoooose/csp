@@ -22,9 +22,8 @@
  *
  **/
 
-// TODO rename SkyObserver to Sky
 // implement horizon colors
-// move orbital body creation and image loading to skyobserver
+// move orbital body creation and image loading to Sky
 
 #include <csp/cspsim/VirtualScene.h>
 #include <csp/cspsim/Animation.h>
@@ -37,13 +36,13 @@
 #include <csp/cspsim/SceneConstants.h>
 #include <csp/cspsim/Shader.h>
 
-#include <csp/cspsim/sky/SkyObserver.h>
+#include <csp/cspsim/sky/Sky.h>
 #include <csp/cspsim/sky/SkyDome.h>
 #include <csp/cspsim/sky/StarDome.h>
 #include <csp/cspsim/sky/SolarSystem.h>
 #include <csp/cspsim/sky/OrbitalBodyModel.h>
 #include <csp/cspsim/sky/OrbitalBodyImposter.h>
-#include <osgDB/ReadFile> // TODO move orbital body creation and image loading to skyobserver
+#include <osgDB/ReadFile> // TODO move orbital body creation and image loading to Sky
 
 #include <csp/cspsim/sound/SoundEngine.h>
 #include <csp/cspsim/TerrainObject.h>
@@ -600,6 +599,10 @@ void VirtualScene::buildScene() {
 	m_NearObjectGroup = new osg::Group;
 	m_NearGroup->addChild(m_SkyLights.get());
 	m_NearGroup->addChild(m_NearObjectGroup.get());
+	
+	// TODO: Remove these calls and place them into some kind of weather object.
+	m_CloudGroup = new osg::Group;
+	m_NearGroup->addChild(m_CloudGroup.get());
 
 	//FIXME: why doesn't ALL_OPTIMIZATIONS work as expected?
 	//osgUtil::Optimizer opt;

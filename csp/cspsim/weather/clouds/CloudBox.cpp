@@ -1,8 +1,8 @@
 #include <osg/Texture2D>
 
-#include "CloudBox.h"
-#include "CloudMath.h"
-#include "CloudTextureFactory.h"
+#include <csp/cspsim/weather/clouds/CloudBox.h>
+#include <csp/cspsim/weather/clouds/CloudMath.h>
+#include <csp/cspsim/weather/clouds/CloudTextureFactory.h>
 
 template<class T>
 T FindCorrectLevel(std::vector<std::pair<float, T> >& v, float value) {
@@ -20,6 +20,7 @@ T FindCorrectLevel(std::vector<std::pair<float, T> >& v, float value) {
 }
 
 namespace csp {
+namespace weather {
 namespace clouds {
 
 const osg::Billboard::Mode CloudBox::BillboardMode = osg::Billboard::POINT_ROT_EYE; 
@@ -195,4 +196,5 @@ osg::ref_ptr<osg::Node> CloudBox::CreateLowDetailGeometry() {
 }
 
 } // end namespace clouds
+} // end namespace weather
 } // end namespace csp

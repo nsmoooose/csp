@@ -16,9 +16,9 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-#include <csp/cspsim/sky/SkyObserver.h>
 #include <csp/cspsim/sky/Common.h>
 #include <csp/cspsim/sky/OrbitalBodyModel.h>
+#include <csp/cspsim/sky/Sky.h>
 #include <csp/cspsim/sky/SkyDome.h>
 #include <csp/cspsim/sky/SolarSystem.h>
 #include <csp/cspsim/sky/StarDome.h>

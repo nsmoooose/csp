@@ -66,7 +66,7 @@
 // TODO can't smoke effects be implemented without touching all these singletons?
 #include <csp/cspsim/CSPSim.h>
 #include <csp/cspsim/VirtualScene.h>
-#include <csp/cspsim/Atmosphere.h>
+#include <csp/cspsim/weather/Atmosphere.h>
 
 #include <csp/csplib/util/Random.h>
 #include <csp/csplib/util/osg.h>
@@ -87,6 +87,8 @@
 #include <cassert>
 #include <cstdio>
 #include <algorithm>
+
+using namespace csp::weather;
 
 CSP_NAMESPACE
 

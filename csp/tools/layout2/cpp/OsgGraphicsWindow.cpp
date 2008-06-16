@@ -19,7 +19,7 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, US
 
 #include <iostream>
-#include <strstream>
+#include <sstream>
 #include <osgViewer/ViewerEventHandlers>
 #include <osgGA/TrackballManipulator>
 #include <osgDB/ReadFile>
@@ -156,7 +156,7 @@ void csp::layout::OsgGraphicsWindow::handleMouseButtonUp(int x, int y, int butto
 std::string csp::layout::OsgGraphicsWindow::getTrackballInformation() {
 	osgGA::TrackballManipulator* manipulator = dynamic_cast<osgGA::TrackballManipulator*>(m_Implementation->m_Viewer->getCameraManipulator());
 
-	std::strstream stream;
+	std::stringstream stream;
 	osg::Vec3 center = manipulator->getCenter();
 	osg::Quat rotation = manipulator->getRotation();
 	stream << "Center: " << center._v[0] << ", " << center._v[1] << ", " << center._v[2];

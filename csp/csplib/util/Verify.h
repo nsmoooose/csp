@@ -45,7 +45,7 @@
 #ifndef __CSPLIB_UTIL_VERIFY_H__
 #define __CSPLIB_UTIL_VERIFY_H__
 
-
+#include <cstdlib>
 #include <csp/csplib/util/Log.h>
 #include <limits>
 

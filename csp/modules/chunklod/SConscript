@@ -18,7 +18,7 @@
 
 Import('env build')
 
-env = env.Copy()
+env = env.Clone()
 env.AppendUnique(CPPDEFINES=Split('OSGCHUNKLOD_LIBRARY'))
 
 # cspchunklod generates lots of warnings; feel free to clean it up and then remove this line

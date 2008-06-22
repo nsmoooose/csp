@@ -18,7 +18,7 @@
 
 Import('env build')
 
-env = env.Copy()
+env = env.Clone()
 env.AppendUnique(CPPDEFINES=Split('TERRAIN_EXPORTS'))
 
 build.SharedLibrary(env,

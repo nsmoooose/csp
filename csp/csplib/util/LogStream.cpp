@@ -308,7 +308,9 @@ void LogStream::close() {
 
 void LogStream::logToFile(std::string const &filename) {
 	std::ofstream *target = new std::ofstream(filename.c_str());
-	if (!target) CSPLOG(ERROR, ALL) << "Unable to open log stream to file " << filename;
+	if (!target) {
+	  CSPLOG(ERROR, ALL) << "Unable to open log stream to file " << filename;
+	}
 	close();
 	if (target) {
 		target->rdbuf()->pubsetbuf(0, 0);

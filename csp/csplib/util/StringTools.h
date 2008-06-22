@@ -80,7 +80,7 @@ std::string CSPLIB_EXPORT RightTrimString(std::string const &str, std::string co
 
 /** Find the first non-whitespace character in a c-string. */
 inline const char *skipWhitespace(const char *str) {
-	for (char c = *str; c == ' ' || c == '\t' || c == '\n' || c == '\r'; c = *(++str));
+	for (char c = *str; c == ' ' || c == '\t' || c == '\n' || c == '\r'; c = *(++str)) ;
 	return str;
 }
 

@@ -18,7 +18,7 @@ def makeEnvironment(**kw):
 
 def _dll(env, target, sources, alias=[], depends=[], **kw):
 	if depends:
-		env = env.Copy()
+		env = env.Clone()
 		for dep in depends:
 			dep.apply(env)
 	dll, lib, exp = env.SharedLibrary(target, sources, **kw)
@@ -35,7 +35,7 @@ def _lib(env, target, sources, alias=[], **kw):
 
 def _exe(env, target, sources, alias=[], depends=[], **kw):
 	if depends:
-		env = env.Copy()
+		env = env.Clone()
 		for dep in depends:
 			dep.apply(env)
 	exe = env.Program(target, sources, **kw)

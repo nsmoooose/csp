@@ -395,7 +395,7 @@ template <typename T>
 class ScratchPad: public DataEntry {
 public:
 	typedef Ref<Accessor<T> > Callback;
-	typedef Ref<ScratchPad> Ref;
+	typedef Ref<ScratchPad> RefT;
 
 	/** Construct a new scratch pad.  The leading asterisk will be placed at the
 	 *  specified (x,y) coordinates, followed by the value and a trailing asterisk.

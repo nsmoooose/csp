@@ -27,6 +27,7 @@
 
 #include <osg/ref_ptr>
 #include <osg/Vec4>
+#include <string>
 #include <vector>
 #include <csp/csplib/util/Namespace.h>
 

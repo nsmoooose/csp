@@ -27,6 +27,7 @@
 
 #include <cstdio>
 #include <iostream>
+#include <stdlib.h>
 
 CSP_NAMESPACE
 

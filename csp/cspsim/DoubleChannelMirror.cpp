@@ -59,7 +59,9 @@ public:
 				m_Channel = 0;  // be nice
 			}
 		}
-		if (!m_Channel) CSPLOG(WARNING, OBJECT) << "Unable to bind or create shared data channel " << getChannelName();
+		if (!m_Channel) {
+			CSPLOG(WARNING, OBJECT) << "Unable to bind or create shared data channel " << getChannelName();
+		}
 	}
 
 	virtual bool receive(ValueSet const &values, unsigned &idx) {

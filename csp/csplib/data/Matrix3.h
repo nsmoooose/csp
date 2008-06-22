@@ -40,7 +40,7 @@
 #include <vector>
 #include <cassert>
 #include <cmath>
-
+#include <string.h>
 
 CSP_NAMESPACE
 

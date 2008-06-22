@@ -18,7 +18,7 @@
 
 Import('env build')
 
-expenv = env.Copy()
+expenv = env.Clone()
 expenv.Append(CPPDEFINES=Split('CSPLIB_EXPORTS'))
 
 

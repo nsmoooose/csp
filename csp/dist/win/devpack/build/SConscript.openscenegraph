@@ -7,7 +7,7 @@ env = devpack.makeEnvironment(
 
 
 def make(lib, sources, LIBS=[]):
-	e = env.Copy()
+	e = env.Clone()
 	e.AppendUnique(CPPFLAGS=['/D%s_LIBRARY' % lib.upper()])
 	e.AppendUnique(LIBS=LIBS)
 	e.dll(lib + '.dll', sources, alias=['osg'], depends=[devpack.OpenThreads, devpack.Producer])
@@ -309,7 +309,7 @@ make('osgWrappers', [
 """
 
 
-envapp = env.Copy()
+envapp = env.Clone()
 envapp.AppendUnique(LIBS=['osg.lib', 'osgGA.lib', 'osgDB.lib', 'osgUtil.lib', 'osgProducer.lib'])
 
 def Program(exe, sources, **kw):
@@ -320,7 +320,7 @@ Program('osgversion.exe', ['applications/osgversion/osgversion.cpp'])
 Program('osgconv.exe', ['applications/osgconv/osgconv.cpp', 'applications/osgconv/OrientationConverter.cpp'])
 
 
-plugin_env = env.Copy(
+plugin_env = env.Clone(
 	LIBS=[
 		"advapi32.lib",
 		"comdlg32.lib",
@@ -346,7 +346,7 @@ def Plugin(dll, sources, deps=[], **kw):
 	deps = [devpack.OpenThreads] + deps
 	env = plugin_env
 	if kw:
-		env = plugin_env.Copy()
+		env = plugin_env.Clone()
 		env.AppendUnique(**kw)
 	env.dll('osgdb_' + dll, sources, alias=['plugins'], depends=deps)
 

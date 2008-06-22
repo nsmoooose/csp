@@ -68,7 +68,7 @@ SOURCES = [
 env.dll('SDL.dll', SOURCES, alias=['sdl'])
 env.lib('SDLmain.lib', ["src/main/win32/SDL_win32_main.c"], alias=['sdl'])
 
-envtest = env.Copy()
+envtest = env.Clone()
 #envtest['CPPFLAGS'] = Split('/D_MBCS /DWIN32 /D_WINDOWS /DNDEBUG /DHAVE_OPENGL')
 #envtest['LIBS'] = Split('SDL.lib kernel32.lib')
 envtest.exe('testwin.exe', ['test/testwin.c'], alias=['sdltest'], LIBPATH=['.'], LIBS=['SDL.lib', 'SDLmain.lib'], LINKFLAGS=['/SUBSYSTEM:CONSOLE'])

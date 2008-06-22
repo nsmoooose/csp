@@ -41,8 +41,8 @@ int UpdateProxy::update(double time) {
 }
 
 
-UpdateProxy::Ref UpdateMaster::registerUpdate(UpdateTarget *target, double delay) {
-	UpdateProxy::Ref proxy;
+UpdateProxyRef UpdateMaster::registerUpdate(UpdateTarget *target, double delay) {
+	UpdateProxyRef proxy;
 	if (target) {
 		delay = std::max(0.0, delay);
 		proxy = new UpdateProxy(target, this, m_Time + delay);

@@ -73,7 +73,7 @@ void Display::setDimensions(float x, float y) {
 	// every clip plane change blows away all other state attributes, so
 	// we have to manually save and restort the stateset.
 	osg::ref_ptr<osg::StateSet> old = new osg::StateSet(*(m_Root->getOrCreateStateSet()));
-	while (m_Root->removeClipPlane(0U));  // remove all clip planes
+	while (m_Root->removeClipPlane(0U)) ;  // remove all clip planes
 	float x_min = -0.5 * x;
 	float y_min = -0.5 * y;
 	m_Root->addClipPlane(new osg::ClipPlane(0,  1.0, 0.0,  0.0, -x_min));

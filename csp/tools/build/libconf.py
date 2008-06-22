@@ -50,7 +50,7 @@ class ExternalLibrary:
 
 	def config(self, conf, global_settings):
 		valid = 1
-		oldenv = conf.env.Copy()
+		oldenv = conf.env.Clone()
 		settings = util.Settings()
 		for c in self._config:
 			valid = c.configure(conf) and valid

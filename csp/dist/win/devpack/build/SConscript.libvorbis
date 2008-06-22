@@ -36,7 +36,7 @@ FILE = [
 
 env.dll('libvorbis.dll', SOURCES, alias=['sound'], depends=[devpack.ogg])
 
-env = env.Copy()
+env = env.Clone()
 env.AppendUnique(CCFLAGS=['/DLIBVORBISFILE_EXPORTS'])
 
 env.dll('libvorbisfile.dll', FILE, alias=['sound'], depends=[devpack.ogg, devpack.vorbis])

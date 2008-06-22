@@ -27,7 +27,7 @@
 #include <csp/csplib/util/FileUtility.h>
 
 #include <cstdlib>
-
+#include <string.h>
 
 #ifdef _WIN32
 #  define STRICT  /* Strict typing, please */

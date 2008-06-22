@@ -28,7 +28,7 @@ import SCons
 
 class SourceGroup:
 	def __init__(self, env, name='', sources=[], deps=[], **kw):
-		self._env = env.Copy()
+		self._env = env.Clone()
 		self._name = name
 		self._sources = [x for x in env.arg2nodes(sources)]
 		self._deps = deps
@@ -103,7 +103,7 @@ class SourceGroup:
 
 class Target:
 	def __init__(self, env, name, sources=[], aliases=[], deps=[], always_build=0, softlink=0, doxygen=None, is_test=0, **kw):
-		self._env = env.Copy()
+		self._env = env.Clone()
 		self._name = name
 		self._sources = [s for s in sources if s.startswith('@')]
 		pure = [s for s in sources if not s.startswith('@')]

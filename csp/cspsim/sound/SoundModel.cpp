@@ -70,7 +70,9 @@ void SoundModel::addExternalSound(osgAL::SoundState *sound, Vector3 const &offse
 	data.scene_node = placeNode(data.sound_node, offset, direction);
 	data.mode = EXTERNAL;
 	const bool duplicate = !m_SoundIndex.insert(std::make_pair(sound, data)).second;
-	if (duplicate) CSPLOG(FATAL, AUDIO) << "Duplicate sound " << sound->getName();
+	if (duplicate) {
+		CSPLOG(FATAL, AUDIO) << "Duplicate sound " << sound->getName();
+	}
 	m_SoundGroup->addChild(data.scene_node.get());
 }
 
@@ -84,7 +86,9 @@ void SoundModel::addInternalSound(osgAL::SoundState *sound, Vector3 const &offse
 	data.scene_node = placeNode(data.sound_node, offset, direction);
 	data.mode = INTERNAL;
 	const bool duplicate = !m_SoundIndex.insert(std::make_pair(sound, data)).second;
-	if (duplicate) CSPLOG(FATAL, AUDIO) << "Duplicate sound " << sound->getName();
+	if (duplicate) {
+		CSPLOG(FATAL, AUDIO) << "Duplicate sound " << sound->getName();
+	}
 	m_SoundGroup->addChild(data.scene_node.get());
 }
 
@@ -99,7 +103,9 @@ void SoundModel::addHeadsetSound(osgAL::SoundState *sound) {
 	data.scene_node = data.sound_node.get();
 	data.mode = HEADSET;
 	const bool duplicate = !m_SoundIndex.insert(std::make_pair(sound, data)).second;
-	if (duplicate) CSPLOG(FATAL, AUDIO) << "Duplicate sound " << sound->getName();
+	if (duplicate) {
+		CSPLOG(FATAL, AUDIO) << "Duplicate sound " << sound->getName();
+	}
 	m_SoundGroup->addChild(data.scene_node.get());
 }
 

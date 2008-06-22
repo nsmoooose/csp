@@ -118,7 +118,7 @@ class Task: public ThreadSafeReferenced {
 friend class Thread;
 
 public:
-	typedef Ref<Task> Ref;
+	typedef Ref<Task> TaskRef;
 
 	/** Test if a request to abort the task has been made.
 	 *

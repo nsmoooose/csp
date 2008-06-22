@@ -67,7 +67,7 @@ class _BuildRegistry:
 		if ('config' in scons.GetCommandlineTargets()) or not self._ReadConfigs(env):
 			if not env.GetOption('clean'):
 				valid = 1
-				conf = autoconf.CustomConfigure(env.Copy())
+				conf = autoconf.CustomConfigure(env.Clone())
 				settings = util.Settings()
 				for name, lib in self._libraries.items():
 					valid = lib.config(conf, settings) and valid

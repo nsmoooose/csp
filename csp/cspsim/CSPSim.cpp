@@ -476,9 +476,9 @@ void CSPSim::loadSimulation() {
 	m_Battlefield = new LocalBattlefield(m_DataManager);
 	m_Battlefield->setSceneManager(new SimpleSceneManager(m_Scene, visual_radius));
 	if (m_Theater.valid()) {
-		FeatureGroup::Ref::list groups = m_Theater->getAllFeatureGroups();
+		FeatureGroupRef::list groups = m_Theater->getAllFeatureGroups();
 		CSPLOG(DEBUG, BATTLEFIELD) << "Adding " << groups.size() << " features to the battlefield";
-		for (FeatureGroup::Ref::list::iterator iter = groups.begin(); iter != groups.end(); ++iter) {
+		for (FeatureGroupRef::list::iterator iter = groups.begin(); iter != groups.end(); ++iter) {
 			m_Battlefield->addStatic(*iter);
 		}
 	}

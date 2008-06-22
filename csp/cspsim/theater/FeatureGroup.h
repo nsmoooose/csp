@@ -74,8 +74,6 @@ protected:
 
 public:
 
-	typedef Ref<FeatureGroup> Ref;
-
 	CSP_DECLARE_OBJECT(FeatureGroup)
 
 	/**
@@ -131,6 +129,8 @@ public:
 
 	virtual void project(Projection const &);
 };
+
+typedef Ref<FeatureGroup> FeatureGroupRef;
 
 CSP_NAMESPACE_END
 

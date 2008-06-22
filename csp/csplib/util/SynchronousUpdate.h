@@ -102,9 +102,6 @@ friend class UpdateMaster;
 friend class UpdateTarget;
 
 public:
-	/// Convenience typedef for UpdateProxy references.
-	typedef Ref<UpdateProxy> Ref;
-
 	/** Get the (internal) time value of the next update.
 	 */
 	double nextUpdateTime() const { return m_NextUpdateTime; }
@@ -178,6 +175,8 @@ private:
 
 };
 
+/// Convenience typedef for UpdateProxy references.
+typedef Ref<UpdateProxy> UpdateProxyRef;
 
 /** Update scheduling class.
  *
@@ -195,14 +194,14 @@ private:
 class CSPLIB_EXPORT UpdateMaster {
 
 	/// Binary predicate for prioritizing delayed update callbacks.
-	struct UpdatePriority: public std::binary_function<UpdateProxy::Ref,UpdateProxy::Ref,bool> {
-		bool operator()(UpdateProxy::Ref &a, UpdateProxy::Ref &b) {
+	struct UpdatePriority: public std::binary_function<UpdateProxyRef, UpdateProxyRef, bool> {
+		bool operator()(UpdateProxyRef &a, UpdateProxyRef &b) {
 			return (a->nextUpdateTime() > b->nextUpdateTime());
 		}
 	} m_Priority;
 
-	typedef std::vector<UpdateProxy::Ref> UpdateVector;
-	typedef std::list<UpdateProxy::Ref> UpdateList;
+	typedef std::vector<UpdateProxyRef> UpdateVector;
+	typedef std::list<UpdateProxyRef> UpdateList;
 
 	/// A priority queue of delayed callbacks
 	UpdateVector m_DelayQueue;
@@ -230,7 +229,7 @@ public:
 	 *  @param target The UpdateTarget instance to register.
 	 *  @param delay The delay until the first callback (default 0.0)
 	 */
-	UpdateProxy::Ref registerUpdate(UpdateTarget *target, double delay = 0.0);
+	UpdateProxyRef registerUpdate(UpdateTarget *target, double delay = 0.0);
 
 	/** Update immediate callbacks and any delayed callbacks that are ready.
 	 */

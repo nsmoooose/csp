@@ -963,10 +963,10 @@ void VirtualScene::setAspect(float value) {
 
 void VirtualScene::getViewport(int& x, int& y, int& width, int& height) {
 	const osg::Viewport* vp = m_FarView->getViewport();
-	x = vp->x();
-	y = vp->y();
-	width = vp->width();
-	height = vp->height();
+	x = static_cast<int>(vp->x());
+	y = static_cast<int>(vp->y());
+	width = static_cast<int>(vp->width());
+	height = static_cast<int>(vp->height());
 }
 
 void VirtualScene::spinTheWorld(bool spin) {
@@ -1046,7 +1046,7 @@ bool VirtualScene::pick(int x, int y) {
 		assert(m_NearObjectGroup->getNumChildren() == 1);
 		osg::Vec3 var_near;
 		osg::Vec3 var_far;
-		const int height = m_NearView->getViewport()->height();
+		const int height = static_cast<int>(m_NearView->getViewport()->height());
 		if (m_NearView->projectWindowXYIntoObject(x, height - y, var_near, var_far)) {
 			osgUtil::IntersectVisitor iv;
 			osg::ref_ptr<osg::LineSegment> line_segment = new osg::LineSegment(var_near, var_far);

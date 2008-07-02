@@ -49,8 +49,8 @@
 #include <csp/cspsim/theater/FeatureGroup.h>
 #include <csp/cspsim/theater/FeatureSceneGroup.h>
 
-#include <csp/cspsim/wf/Serialization.h>
-#include <csp/cspsim/wf/WindowManager.h>
+#include <csp/cspwf/Serialization.h>
+#include <csp/cspwf/WindowManager.h>
 
 #include <csp/csplib/util/Log.h>
 #include <csp/csplib/data/Types.h>
@@ -509,7 +509,9 @@ wf::WindowManager* VirtualScene::getWindowManager() {
 }
 
 void VirtualScene::createWindowView() {
-	m_WindowManager = new wf::WindowManager(m_GlobalState.get());
+	const int screenWidth = CSPSim::theSim->getSDLScreen()->w;
+	const int screenHeight = CSPSim::theSim->getSDLScreen()->h;
+	m_WindowManager = new wf::WindowManager(m_GlobalState.get(), screenWidth, screenHeight);
 }
 
 void VirtualScene::buildScene() {

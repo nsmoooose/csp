@@ -59,7 +59,7 @@
 #include <csp/csplib/util/Ref.h>
 #include <csp/csplib/util/ScopedPointer.h>
 #include <csp/csplib/data/Date.h>
-#include <csp/cspsim/wf/Signal.h>
+#include <csp/cspwf/Signal.h>
 
 #include <osg/ref_ptr>
 
@@ -149,6 +149,7 @@ protected:
 	void doInput(double dt, BaseScreen* currentScreen);
 	void updateObjects(double dt);
 	void doStartupScript();
+	void setWfResourceLocator();
 
 private:
 	Ref<wf::Signal> m_ConfigurationChanged;

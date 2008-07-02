@@ -40,5 +40,5 @@ build.SharedLibrary(env,
 		'cpp/Scene.h',
 	],
 	deps = ['osg', 'csplib', 'cspsim'],
-	aliases = 'layout2',
+	aliases = ['layout2', 'all'],
 	SHLIBPREFIX = '_')

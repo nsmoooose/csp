@@ -26,7 +26,7 @@
 #define __CSPSIM_MENUSCREEN_H__
 
 #include <csp/cspsim/BaseScreen.h>
-#include <csp/cspsim/wf/WindowManager.h>
+#include <csp/cspwf/WindowManager.h>
 
 namespace osg {
 	class State;

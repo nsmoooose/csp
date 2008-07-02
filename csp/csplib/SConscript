@@ -240,8 +240,8 @@ build.Test(env,
 build.Test(env,
 	name = 'test_numeric',
 	sources = [
-		'numeric/test/test_Vector.cpp',
-		'numeric/test/test_NumericalMethod.cpp',
+		# 'numeric/test/test_Vector.cpp',
+		# 'numeric/test/test_NumericalMethod.cpp',
 	],
 	deps = ['csplib'])
 

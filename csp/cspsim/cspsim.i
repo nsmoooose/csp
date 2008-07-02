@@ -46,6 +46,6 @@ class Referenced {
 
 %include <csp/cspsim/swig/Config.i>
 %include <csp/cspsim/swig/VirtualScene.i>
-%include <csp/cspsim/swig/wf.i>
+%include <csp/cspwf/cspwf.i>
 %include <csp/cspsim/swig/Screens.i>
 %include <csp/cspsim/swig/CSPSim.i>

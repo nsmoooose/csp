@@ -38,7 +38,7 @@
 #include <csp/cspsim/weather/clouds/Cloud.h>
 #include <csp/cspsim/weather/clouds/CloudRegistry.h>
 #include <csp/cspsim/weather/clouds/CloudUtils.h>
-#include <csp/cspsim/wf/WindowManager.h>
+#include <csp/cspwf/WindowManager.h>
 
 #include <csp/csplib/util/FileUtility.h>
 #include <csp/csplib/util/Log.h>
@@ -250,13 +250,13 @@ wf::WindowManager* GameScreen::getWindowManager() {
 	return CSPSim::theSim->getScene()->getWindowManager();
 }
 
-wf::InputInterfaceManager* GameScreen::getInputInterfaceManager() {
-	if (m_InputInterfaceManager.valid()) {
-		return m_InputInterfaceManager.get();
+InputInterfaceWfAdapter* GameScreen::getInputInterfaceWfAdapter() {
+	if (m_InputInterfaceWfAdapter.valid()) {
+		return m_InputInterfaceWfAdapter.get();
 	}
 
-	m_InputInterfaceManager = new wf::InputInterfaceManager(this);
-	return m_InputInterfaceManager.get();
+	m_InputInterfaceWfAdapter = new InputInterfaceWfAdapter(this);
+	return m_InputInterfaceWfAdapter.get();
 }
 
 void GameScreen::on_View1() {

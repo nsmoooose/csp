@@ -31,6 +31,7 @@ def _configureModules():
 		path = [
 			os.path.join(dir, 'csplib', '.bin'),
 			os.path.join(dir, 'cspsim', '.bin'),
+			os.path.join(dir, 'cspwf', '.bin'),
 		]
 		devpack = os.environ.get('CSPDEVPACK')
 		if devpack:

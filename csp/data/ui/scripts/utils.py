@@ -56,8 +56,8 @@ class SlotManager:
 
     def connectToInputInterfaceAction(self, cspsim, action, method):
         gameScreen = cspsim.getCurrentScreen()
-        interfaceManager = gameScreen.getInputInterfaceManager()
-        signal = interfaceManager.registerActionSignal(action)
+        interfaceAdapter = gameScreen.getInputInterfaceWfAdapter()
+        signal = interfaceAdapter.registerActionSignal(action)
         slot = SlotProxy(method)
         signal.connect(slot)
         self.slots.append(slot)

@@ -26,6 +26,19 @@
 
 namespace csp {
 
+%newobject InputInterfaceWfAdapter::getActionSignal();
+%newobject InputInterfaceWfAdapter::registerActionSignal();
+
+class InputInterfaceWfAdapter : public Referenced {
+private:
+	InputInterfaceWfAdapter();
+	~InputInterfaceWfAdapter();
+	
+public:
+	virtual wf::Signal* getActionSignal(const std::string& id);
+	virtual wf::Signal* registerActionSignal(const std::string& id);	
+};
+
 class BaseScreen {
 	BaseScreen();	
 };
@@ -35,7 +48,7 @@ private:
 	GameScreen();
 public:
 	virtual wf::WindowManager* getWindowManager();
-	virtual wf::InputInterfaceManager* getInputInterfaceManager();
+	virtual InputInterfaceWfAdapter* getInputInterfaceWfAdapter();
 };
 
 class LogoScreen : public ::csp::BaseScreen {

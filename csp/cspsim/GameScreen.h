@@ -26,7 +26,7 @@
 #define __CSPSIM_GAMESCREEN_H__
 
 #include <csp/cspsim/BaseScreen.h>
-#include <csp/cspsim/wf/InputInterfaceManager.h>
+#include <csp/cspsim/InputInterfaceWfAdapter.h>
 #include <csp/csplib/util/Ref.h>
 #include <csp/csplib/util/ScopedPointer.h>
 #include <csp/csplib/util/Callback.h>
@@ -62,7 +62,7 @@ public:
 	virtual void onUpdate(double dt);
 
 	virtual wf::WindowManager* getWindowManager();
-	virtual wf::InputInterfaceManager* getInputInterfaceManager();
+	virtual InputInterfaceWfAdapter* getInputInterfaceWfAdapter();
 
 	virtual void setActiveObject(Ref<DynamicObject> const &);
 
@@ -195,7 +195,7 @@ private:
 	callback<void, int, const std::string&> m_OnPlayerQuit;
 	
 	// Handles signals to be emitted to the python gui code. For example player QUIT action.
-	Ref<wf::InputInterfaceManager> m_InputInterfaceManager;
+	Ref<InputInterfaceWfAdapter> m_InputInterfaceWfAdapter;
 
 	// Receives mouse move events from the input interface and sends 
 	// them on to the window framework for processing.  

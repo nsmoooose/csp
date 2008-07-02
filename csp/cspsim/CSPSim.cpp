@@ -62,7 +62,8 @@
 
 #include <csp/cspsim/weather/Atmosphere.h>
 
-#include <csp/cspsim/wf/SignalData.h>
+#include <csp/cspwf/ResourceLocator.h>
+#include <csp/cspwf/SignalData.h>
 
 #include <csp/csplib/data/GeoPos.h>
 #include <csp/csplib/data/DataArchive.h>
@@ -185,6 +186,10 @@ void CSPSim::setConfiguration(config::Configuration* config) {
 	Ref<config::UserInterface> userInterface = config->getUserInterface();
 	setUITheme(userInterface->getTheme());
 	setUILanguage(userInterface->getLanguage());
+
+	// A change of theme will result in new paths. Lets replace the
+	// existing resource locator for window framework with a new one.
+	setWfResourceLocator();
 		
 	// Save the new configuration to persistent storage. 
 	// Configuration changes is stored on successfull quit of the application.
@@ -193,6 +198,29 @@ void CSPSim::setConfiguration(config::Configuration* config) {
 	Ref<wf::SignalData> data = new wf::SignalData;
 	m_ConfigurationChanged->emit(data.get());
 } 
+
+void CSPSim::setWfResourceLocator() {
+	wf::StringVector includeFolders;
+
+	// Add the current theme folder.
+	std::string themesPath = ospath::join(getUIPath(), "themes");
+	std::string themePath = ospath::join(themesPath, getUITheme());
+	includeFolders.push_back(themePath);
+
+	// Add the current language folder
+	std::string localizationPath = ospath::join(getUIPath(), "localization");
+	std::string languagePath = ospath::join(localizationPath, getUILanguage());
+	includeFolders.push_back(languagePath);
+	
+	// Add the data directory
+	includeFolders.push_back(getDataPath());
+
+	// Add the ui directory below the data directory.	
+	includeFolders.push_back(getUIPath());
+
+	Ref<wf::ResourceLocator> resourceLocator = new wf::ResourceLocator(includeFolders);
+	wf::setDefaultResourceLocator(resourceLocator.get());
+}
 
 wf::Signal* CSPSim::getConfigurationChangedSignal() {
 	return m_ConfigurationChanged.get();
@@ -281,6 +309,11 @@ void CSPSim::init() {
 
 		std::string shader_path = ospath::join(getDataPath(), "shaders");
 		Shader::instance()->setShaderPath(shader_path);
+
+		// setup paths for window framework. This is needed for it to
+		// find xml files describing the user interface and other graphical
+		// elements.
+		setWfResourceLocator();
 
 		if (initSDL()) {
 			::exit(1);  // error already logged

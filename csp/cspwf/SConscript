@@ -1,0 +1,100 @@
+# -*- python -*-
+#
+# Copyright 2004-2005 Mark Rose <mkrose@users.sourceforge.net>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+Import('env build')
+
+expenv = env.Clone()
+expenv.AppendUnique(CPPDEFINES=Split('CSPWF_EXPORTS __CSPSIM_EXE__'))
+
+build.SourceGroup(expenv,
+	name = 'cspwf',
+	sources = [
+		'Button.cpp',
+		'Button.h',
+		'Check.cpp',
+		'Check.h',
+		'CheckBox.cpp',
+		'CheckBox.h',
+		'Container.cpp',
+		'Container.h',
+		'Control.cpp',
+		'Control.h',
+		'ControlCallback.cpp',
+		'ControlCallback.h',
+		'ControlGeometryBuilder.cpp',
+		'ControlGeometryBuilder.h',
+		'Image.cpp',
+		'Image.h',
+		'Label.cpp',
+		'Label.h',
+		'ListBox.cpp',
+		'ListBox.h',
+		'ListBoxItem.cpp',
+		'ListBoxItem.h',
+		'Model.cpp',
+		'Model.h',
+		'MultiControlContainer.cpp',
+		'MultiControlContainer.h',
+		'ResourceLocator.cpp',
+		'ResourceLocator.h',
+		'ScrollBar.cpp',
+		'ScrollBar.h',
+		'Serialization.cpp',
+		'Serialization.h',
+		'Signal.cpp',
+		'Signal.h',
+		'SignalData.cpp',
+		'SignalData.h',
+		'SingleControlContainer.cpp',
+		'SingleControlContainer.h',
+		'Slot.cpp',
+		'Slot.h',
+		'StringResourceManager.cpp',
+		'StringResourceManager.h',
+		'Style.cpp',
+		'Style.h',
+		'StyleBuilder.cpp',
+		'StyleBuilder.h',
+		'Tab.cpp',
+		'Tab.h',
+		'TableControlContainer.cpp',
+		'TableControlContainer.h',
+		'Window.cpp',
+		'Window.h',
+		'WindowManager.cpp',
+		'WindowManager.h',
+	],
+	deps = ['csplib', 'opengl', 'osg', 'sdl', 'sound'])
+
+build.SharedLibrary(expenv,
+	name = 'cspwf',
+	sources = [
+		'@cspwf',
+	],
+	aliases = ['all', 'cspwf'],
+	doxygen = 'cspwf.dox',
+	softlink = 1)
+
+#build.SharedLibrary(env,
+#	name = 'cspwf_module',
+#	sources = ['cspwf.i'],
+#	deps = ['cspwf'],
+#	aliases = ['all', 'cspwf'],
+#	doxygen = 'cspwf.dox',
+#	SHLIBPREFIX = '_')
+

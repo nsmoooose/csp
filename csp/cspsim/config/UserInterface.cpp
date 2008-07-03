@@ -26,7 +26,7 @@
 #include <csp/cspsim/Config.h>
 #include <csp/cspsim/config/UserInterface.h>
 
-CSP_NAMESPACE
+namespace csp {
 namespace config {
 
 UserInterface::UserInterface(const std::string& language, const std::string& theme) : m_Language(language), m_Theme(theme) {
@@ -85,5 +85,5 @@ StringVector UserInterface::enumerateLanguages() {
 	return stringsToReturn;
 }
 
-}
-CSP_NAMESPACE_END
+} // end namespace config
+} // end namespace csp

@@ -29,12 +29,13 @@
 #include <csp/csplib/util/Ref.h>
 #include <csp/cspsim/Export.h>
 
-CSP_NAMESPACE
-
+namespace csp {
 namespace config {
 
 typedef std::vector<std::string> StringVector;
 
+/** Use to retreive and change display settings. Use CSPSim singleton in order
+ * to make changes permanent. See Configuration class for more information. */
 class CSPSIM_EXPORT Display: public Referenced {
 public:
 	Display(int width, int height, bool fullscreen);
@@ -49,6 +50,10 @@ public:
 	virtual bool getFullscreen();
 	virtual void setFullscreen(bool fullscreen);
 
+	/** Enumerates all display modes and returns them as a vector in the following
+	 *	format. NxN. Ex:
+	 *	1280x1027
+	 *	1024x768 */
 	virtual StringVector enumerateDisplayModes();
 
 	virtual Display* clone();
@@ -58,9 +63,8 @@ private:
 	bool m_Fullscreen;
 };
 
-}
-
-CSP_NAMESPACE_END
+} // end namespace config
+} // end namespace csp
 
 #endif // __CSPSIM_CONFIG_DISPLAY_H__
 

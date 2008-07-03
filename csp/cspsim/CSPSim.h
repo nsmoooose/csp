@@ -54,7 +54,6 @@
 #define __CSPSIM_H__
 
 #include <csp/cspsim/Config.h>
-#include <csp/cspsim/config/Configuration.h>
 #include <csp/cspsim/Export.h>
 #include <csp/csplib/util/Ref.h>
 #include <csp/csplib/util/ScopedPointer.h>
@@ -70,7 +69,7 @@ namespace osg {
 struct SDL_Surface;
 typedef struct _SDL_Joystick SDL_Joystick;
 
-CSP_NAMESPACE
+namespace csp {
 
 class BaseScreen;
 class Client;
@@ -85,6 +84,7 @@ class Theater;
 class VirtualHID;
 class VirtualScene;
 
+namespace config { class Configuration; }
 namespace weather { class Atmosphere; }
 
 /** The primary simulation engine for CSP.  Also acts as a singleton to provide
@@ -199,8 +199,7 @@ private:
 	ScopedPointer<InputEvent> m_InputEvent;
 };
 
-
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPSIM_H__
 

@@ -16,19 +16,17 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-
 /**
  * @file Configuration.cpp
  *
  **/
-
 
 #include <csp/cspsim/Config.h>
 #include <csp/cspsim/config/Configuration.h>
 #include <csp/cspsim/config/Display.h>
 #include <csp/cspsim/config/UserInterface.h>
 
-CSP_NAMESPACE
+namespace csp {
 namespace config {
 
 Configuration::Configuration(Display* display, UserInterface* userInterface) : m_Display(display), m_UserInterface(userInterface) {
@@ -49,5 +47,6 @@ UserInterface* Configuration::getUserInterface() {
 	return m_UserInterface.get();
 }
 
-}  // namespace config
-CSP_NAMESPACE_END
+} // end namespace config
+} // end namespace csp
+

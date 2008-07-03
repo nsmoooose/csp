@@ -26,7 +26,7 @@
 #include <SDL/SDL.h>
 #include <csp/cspsim/config/Display.h>
 
-CSP_NAMESPACE
+namespace csp {
 namespace config {
 
 Display::Display(int width, int height, bool fullscreen) : m_Width(width), m_Height(height), m_Fullscreen(fullscreen) {
@@ -90,5 +90,5 @@ StringVector Display::enumerateDisplayModes() {
 	return displayModes;
 }
 
-}
-CSP_NAMESPACE_END
+} // end namespace config
+} // end namespace csp

@@ -16,12 +16,10 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-
 /**
  * @file UserInterface.h
  *
  **/
-
 
 #ifndef __CSPSIM_CONFIG_USERINTERFACE_H__
 #define __CSPSIM_CONFIG_USERINTERFACE_H__
@@ -31,26 +29,37 @@
 #include <csp/csplib/util/Ref.h>
 #include <csp/cspsim/Export.h>
 
-CSP_NAMESPACE
-
+namespace csp {
 namespace config {
 
 typedef std::vector<std::string> StringVector;
 
+/** Use to retreive and change user interface settings. Use CSPSim singleton in order
+ *  to make changes permanent. See Configuration class for more information. */
 class CSPSIM_EXPORT UserInterface: public Referenced {
 public:
 	UserInterface(const std::string& language, const std::string& theme);
 	virtual ~UserInterface();
 
+	/** Retreive name of the current language settings. */
 	virtual std::string getLanguage();
+	/** Changes the language. Call enumerateLanguages() for information about
+		known languages. */
 	virtual void setLanguage(const std::string& language);
 
+	/** Returns the name of the current graphical theme used. */
 	virtual std::string getTheme();
+	/** Set a new theme. Call enumerateThemes() to get existing themes
+		to choose from. */
 	virtual void setTheme(const std::string& themeName);
 
 	virtual UserInterface* clone();
 
+	/** Enumerates the known themes for csp. Each theme has its own directory so
+		this method simply enumerates known directories. */
 	virtual StringVector enumerateThemes();
+	/** Enumerates the known user interface languages for csp. Each language has
+		its own directory so this method simply enumerates known directories. */
 	virtual StringVector enumerateLanguages();
 
 private:
@@ -58,9 +67,8 @@ private:
 	std::string m_Theme;
 };
 
-}
-
-CSP_NAMESPACE_END
+} // end namespace config
+} // end namespace csp
 
 #endif // __CSPSIM_CONFIG_USERINTERFACE_H__
 

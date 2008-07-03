@@ -15,13 +15,10 @@
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-
-
 /**
  * @file Configuration.h
  *
  **/
-
 
 #ifndef __CSPSIM_CONFIG_CONFIGURATION_H__
 #define __CSPSIM_CONFIG_CONFIGURATION_H__
@@ -29,13 +26,26 @@
 #include <csp/csplib/util/Ref.h>
 #include <csp/cspsim/Export.h>
 
-CSP_NAMESPACE
+namespace csp {
 
+/** Data classes for configuring the simulator. Display settings, ui theme, language etc.  */
 namespace config {
 
 class Display;
 class UserInterface;
 
+/** A configuration object that contains data about changeable settings.
+ * In order to make changes permanent you must call CSPSim singleton. It is wise
+ * to use a clone while you are editing the configuration.
+\code
+  // clone the existing configuration.
+  Ref<config::Configuration> newConfig = theSim->getConfiguration()->clone();
+  // change something.
+  newConfig->setXxxxYyyy("aaa");
+  // apply the new configuration
+  theSim->setConfiguration(newConfig.get());
+\endcode
+*/
 class CSPSIM_EXPORT Configuration: public Referenced {
 public:
 	Configuration(Display* display, UserInterface* userInterface);
@@ -51,9 +61,8 @@ private:
 	Ref<UserInterface> m_UserInterface;
 };
 
-}
-
-CSP_NAMESPACE_END
+} // end namespace config
+} // end namespace csp
 
 #endif // __CSPSIM_CONFIG_CONFIGURATION_H__
 

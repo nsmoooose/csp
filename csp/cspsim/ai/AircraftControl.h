@@ -26,7 +26,8 @@
 #include <csp/cspsim/Bus.h>
 #include <csp/cspsim/ai/PID.h>
 
-CSP_NAMESPACE
+namespace csp {
+namespace ai {
 
 class AircraftControl: public Referenced {
 public:
@@ -144,7 +145,8 @@ private:
 	bool m_Done;
 };
 
-CSP_NAMESPACE_END
+} // end namespace ai
+} // end namespace csp
 
 #endif // __CSPSIM_AI_AIRCRAFTCONTROL_H__
 

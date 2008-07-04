@@ -23,7 +23,8 @@
 #include <csp/cspsim/ai/AircraftTask.h>
 #include <csp/csplib/data/Vector3.h>
 
-CSP_NAMESPACE
+namespace csp {
+namespace ai {
 
 class LandingTask: public AircraftTask {
 public:
@@ -57,7 +58,8 @@ private:
 	bool m_AbortSafe;
 };
 
-CSP_NAMESPACE_END
+} // end namespace ai
+} // end namespace csp
 
 #endif // __CSPSIM_AI_LANDINGTASK_H__
 

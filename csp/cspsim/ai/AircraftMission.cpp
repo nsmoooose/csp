@@ -24,7 +24,8 @@
 #include <csp/cspsim/ai/Task.inl>
 #include <csp/cspsim/ai/Waypoint.h>
 
-CSP_NAMESPACE
+namespace csp {
+namespace ai {
 
 AircraftMission::AircraftMission(): AircraftTask("Mission") {
 	addHandler(TAKEOFF, &AircraftMission::onTakeoff, "TAKEOFF");
@@ -70,5 +71,5 @@ void AircraftMission::onLandingDone(Status status) {
 	}
 }
 
-CSP_NAMESPACE_END
-
+} // end namespace ai
+} // end namespace csp

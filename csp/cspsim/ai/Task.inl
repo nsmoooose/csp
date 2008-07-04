@@ -25,7 +25,8 @@
 
 #include <sigc++/functors/mem_fun.h>
 
-CSP_NAMESPACE
+namespace csp {
+namespace ai {
 
 template <class TASK>
 void Task::addHandler(int state, void (TASK::*method)(), std::string const &name) {
@@ -38,7 +39,8 @@ void Task::override(Task *task, void (CLASS::*method)(Status)) {
 	setOverrideHandler(sigc::mem_fun(static_cast<CLASS*>(this), method));
 }
 
-CSP_NAMESPACE_END
+} // end namespace ai
+} // end namespace csp
 
 #endif // __CSPSIM_AI_TASK_INL__
 

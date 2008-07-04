@@ -23,7 +23,8 @@
 #include <csp/cspsim/ai/Runway.h>
 #include <csp/cspsim/ai/Task.inl>
 
-CSP_NAMESPACE
+namespace csp {
+namespace ai {
 
 AircraftTask::AircraftTask(const char *name): Task(name) {
 }
@@ -53,5 +54,5 @@ bool AircraftTask::checkDive() {
 	return false;
 }
 
-CSP_NAMESPACE_END
-
+} // end namespace ai
+} // end namespace csp

@@ -28,12 +28,13 @@
 
 #include <csp/cspsim/System.h>
 
-#include <csp/csplib/data/Vector3.h>
-#include <csp/csplib/data/Quat.h>
 #include <csp/csplib/data/Date.h>
+#include <csp/csplib/data/Quat.h>
+#include <csp/csplib/data/Vector3.h>
 #include <csp/csplib/util/TimeStamp.h>
 
-CSP_NAMESPACE
+namespace csp {
+namespace ai {
 
 class AircraftControl;
 class Task;
@@ -63,7 +64,8 @@ protected:
 	Ref<Task> m_Task;
 };
 
-CSP_NAMESPACE_END
+} // end namespace ai
+} // end namespace csp
 
 #endif // __CSPSIM_AI_AIRCRAFTAGENT_H__
 

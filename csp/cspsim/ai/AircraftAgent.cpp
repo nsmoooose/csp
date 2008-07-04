@@ -51,11 +51,11 @@
 
 #include <iostream>
 
-CSP_NAMESPACE
+namespace csp {
+namespace ai {
 
 CSP_XML_BEGIN(AircraftAgent)
 CSP_XML_END
-
 
 AircraftAgent::AircraftAgent() {
 	m_AircraftControl = new AircraftControl;
@@ -110,5 +110,5 @@ double AircraftAgent::onUpdate(double dt) {
 	return 0.0;
 }
 
-CSP_NAMESPACE_END
-
+} // end namespace ai
+} // end namespace csp

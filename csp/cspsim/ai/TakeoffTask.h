@@ -22,7 +22,8 @@
 
 #include <csp/cspsim/ai/AircraftTask.h>
 
-CSP_NAMESPACE
+namespace csp {
+namespace ai {
 
 class TakeoffTask: public AircraftTask {
 public:
@@ -44,7 +45,8 @@ private:
 	double m_RunwayHeading;
 };
 
-CSP_NAMESPACE_END
+} // end namespace ai
+} // end namespace csp
 
 #endif // __CSPSIM_AI_TAKEOFFTASK_H__
 

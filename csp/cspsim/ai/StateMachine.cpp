@@ -28,8 +28,8 @@ const std::string EmtpyString;
 typedef sigc::slot<void> Callback;
 }
 
-
-CSP_NAMESPACE
+namespace csp {
+namespace ai {
 
 struct StateMachine::Handler {
 	Handler(std::string const &name, Callback const &callback): name(name), callback(callback) {}
@@ -80,7 +80,5 @@ std::string const &StateMachine::stateName() const {
 	return !m_Impl->handler ? EmtpyString : m_Impl->handler->name;
 }
 
-
-CSP_NAMESPACE_END
-
-
+} // end namespace ai
+} // end namespace csp

@@ -22,7 +22,8 @@
 
 #include <csp/cspsim/ai/AircraftTask.h>
 
-CSP_NAMESPACE
+namespace csp {
+namespace ai {
 
 class DiveRecovery: public AircraftTask {
 public:
@@ -33,7 +34,8 @@ private:
 	void onDiveRecovery();
 };
 
-CSP_NAMESPACE_END
+} // end namespace ai
+} // end namespace csp
 
 #endif // __CSPSIM_AI_DIVERECOVERY_H__
 

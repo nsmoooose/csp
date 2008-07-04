@@ -24,7 +24,8 @@
 #include <csp/csplib/util/ScopedPointer.h>
 #include <csp/csplib/util/SignalFwd.h>
 
-CSP_NAMESPACE
+namespace csp {
+namespace ai {
 
 class StateMachine;
 
@@ -133,7 +134,8 @@ private:
 	double m_DebugTime;
 };
 
-CSP_NAMESPACE_END
+} // end namespace ai
+} // end namespace csp
 
 #endif // __CSPSIM_AI_TASK_H__
 

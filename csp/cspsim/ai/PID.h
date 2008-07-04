@@ -23,11 +23,25 @@
 #include <csp/csplib/util/Math.h>
 
 
-CSP_NAMESPACE
+namespace csp {
+namespace ai {
 
 /** A simple proportional-integral-derivative (PID) controller
- *  implementation.  See http://en.wikipedia.org/wiki/PID_controller
- *  for general background on PID controllers.
+ * implementation.  See http://en.wikipedia.org/wiki/PID_controller for general background 
+ * on PID controllers.
+ *
+ * From wikipedia:
+ * A proportional–integral–derivative controller (PID controller) is a generic control
+ * loop feedback mechanism widely used in industrial control systems. A PID controller
+ * attempts to correct the error between a measured process variable and a desired setpoint
+ * by calculating and then outputting a corrective action that can adjust the process accordingly.
+ *
+ * A familiar example of a control loop is the action taken to keep one's shower water at the
+ * ideal temperature, which typically involves the mixing of two process streams, cold and hot 
+ * water. The person feels the water to estimate its temperature. Based on this measurement they
+ * perform a control action: use the cold water tap to adjust the process. The person would repeat
+ * this input-output control loop, adjusting the hot water flow until the process temperature
+ * stabilized at the desired value.
  */
 class PID {
 public:
@@ -107,7 +121,8 @@ private:
 	double m_LastValue;
 };
 
-CSP_NAMESPACE_END
+} // end namespace ai
+} // end namespace csp
 
 #endif // __CSPSIM_AI_PID_H__
 

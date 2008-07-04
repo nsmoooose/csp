@@ -25,7 +25,8 @@
 
 #include <string>
 
-CSP_NAMESPACE
+namespace csp {
+namespace ai {
 
 class StateMachine: NonCopyable {
 public:
@@ -45,7 +46,8 @@ private:
 	Impl *m_Impl;
 };
 
-CSP_NAMESPACE_END
+} // end namespace ai
+} // end namespace csp
 
 #endif // __CSPSIM_AI_STATEMACHINE_H__
 

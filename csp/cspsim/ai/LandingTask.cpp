@@ -23,7 +23,8 @@
 #include <csp/cspsim/ai/Task.inl>
 #include <iostream> // XXX
 
-CSP_NAMESPACE
+namespace csp {
+namespace ai {
 
 namespace {
 inline double slope(Vector3 const &v) {
@@ -204,5 +205,5 @@ void LandingTask::onAbort() {
 	}
 }
 
-CSP_NAMESPACE_END
-
+} // end namespace ai
+} // end namespace csp

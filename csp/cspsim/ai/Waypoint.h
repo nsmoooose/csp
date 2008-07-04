@@ -24,7 +24,8 @@
 #include <csp/csplib/util/Referenced.h>
 #include <csp/csplib/data/Vector3.h>
 
-CSP_NAMESPACE
+namespace csp {
+namespace ai {
 
 class Waypoint: public Referenced {
 public:
@@ -33,6 +34,7 @@ public:
 	double speed;
 };
 
-CSP_NAMESPACE_END
+} // end namespace ai
+} // end namespace csp
 
 #endif // __CSPSIM_AI_WAYPOINT_H__

@@ -22,7 +22,8 @@
 
 #include <csp/cspsim/ai/Task.h>
 
-CSP_NAMESPACE
+namespace csp {
+namespace ai {
 
 class AircraftControl;
 class Runway;
@@ -46,8 +47,8 @@ private:
 	Ref<const Runway> m_Runway;
 };
 
-
-CSP_NAMESPACE_END
+} // end namespace ai
+} // end namespace csp
 
 #endif // __CSPSIM_AI_AIRCRAFTTASK_H__
 

@@ -22,7 +22,8 @@
 #include <csp/csplib/util/Math.h>
 #include <iostream> // XXX
 
-CSP_NAMESPACE
+namespace csp {
+namespace ai {
 
 DiveRecovery::DiveRecovery(): AircraftTask("DiveRecovery") {
 	addHandler(DIVE_RECOVERY, &DiveRecovery::onDiveRecovery, "DIVE_RECOVERY");
@@ -48,5 +49,5 @@ void DiveRecovery::onDiveRecovery() {
 	// TODO impact -> fail()
 }
 
-CSP_NAMESPACE_END
-
+} // end namespace ai
+} // end namespace csp

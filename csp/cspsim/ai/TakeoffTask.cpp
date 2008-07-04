@@ -22,8 +22,8 @@
 #include <csp/cspsim/ai/Runway.h>
 #include <csp/cspsim/ai/Task.inl>
 
-CSP_NAMESPACE
-
+namespace csp {
+namespace ai {
 
 TakeoffTask::TakeoffTask(): AircraftTask("Takeoff") {
 	addHandler(READY, &TakeoffTask::onReady, "READY");
@@ -82,5 +82,5 @@ void TakeoffTask::init() {
 	assert(ai());
 }
 
-CSP_NAMESPACE_END
-
+} // end namespace ai
+} // end namespace csp

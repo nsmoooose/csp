@@ -24,7 +24,8 @@
 #include <csp/cspsim/ai/Waypoint.h>
 #include <vector>
 
-CSP_NAMESPACE
+namespace csp {
+namespace ai {
 
 class AircraftMission: public AircraftTask {
 public:
@@ -48,7 +49,8 @@ private:
 	void onLandingDone(Status status);
 };
 
-CSP_NAMESPACE_END
+} // end namespace ai
+} // end namespace csp
 
 #endif // __CSPSIM_AI_AIRCRAFTMISSION_H__
 

@@ -21,9 +21,9 @@
 #include <csp/cspsim/ai/Task.inl>
 #include <csp/cspsim/ai/StateMachine.h>
 #include <sigc++/functors/slot.h>
-//#include <csp/csplib/util/Signal.h>
 
-CSP_NAMESPACE
+namespace csp {
+namespace ai {
 
 Task::Task(const char *name):
 		m_Name(name),
@@ -111,5 +111,5 @@ void Task::override(Task *task) {
 	m_OverrideTask = task;
 }
 
-CSP_NAMESPACE_END
-
+} // end namespace ai
+} // end namespace csp

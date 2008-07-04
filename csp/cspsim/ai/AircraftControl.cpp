@@ -24,7 +24,8 @@
 #include <csp/cspsim/LandingGearChannels.h>
 #include <iostream> // XXX
 
-CSP_NAMESPACE
+namespace csp {
+namespace ai {
 
 AircraftControl::AircraftControl():
 		m_PitchPID(-5.0, -0.5, -1.0),
@@ -523,5 +524,6 @@ void AircraftControl::controlHeading(double heading_error, double vv_error, doub
 	m_HeadingError = heading_error;
 }
 
-CSP_NAMESPACE_END
+} // end namespace ai
+} // end namespace csp
 

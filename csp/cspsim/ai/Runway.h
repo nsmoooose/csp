@@ -26,7 +26,8 @@
 #include <csp/csplib/data/Matrix3.h>
 #include <csp/csplib/data/Vector3.h>
 
-CSP_NAMESPACE
+namespace csp {
+namespace ai {
 
 class Runway: public Referenced {
 public:
@@ -48,7 +49,8 @@ public:
 	bool valid;
 };
 
-CSP_NAMESPACE_END
+} // end namespace ai
+} // end namespace csp
 
 #endif  // __CSPSIM_AI_RUNWAY_H__
 

@@ -83,7 +83,11 @@
 //   over the standard 370-gallon wing tanks. The tanks are mounted on
 //   non-jettisonable pylons that can also carry the more common 370-gallon tanks."
 
-CSP_NAMESPACE
+namespace csp {
+
+using hud::DisplayFont;
+using hud::display::Element;
+using hud::display::SymbolMaker;
 
 namespace f16 {
 
@@ -167,7 +171,7 @@ public:
 
 // A display element for showing stores mounted on a hardpoint in the various
 // inventory pages.  Supports highlighting selected stores.
-class StationElement: public display::Element {
+class StationElement: public Element {
 public:
 	typedef osg::ref_ptr<StationElement> RefT;
 
@@ -223,7 +227,7 @@ public:
 private:
 	std::vector<osg::ref_ptr<osgText::Text> > m_Lines;
 	bool m_Selected;
-	display::SymbolMaker m_Box;
+	SymbolMaker m_Box;
 	osg::Vec4 m_Color;
 	osg::Vec4 m_Black;
 	double m_BoxLeft;
@@ -1055,6 +1059,4 @@ BombProfile &StoresManagementPage::getBombProfile() {
 }
 
 } // namespace f16
-
-CSP_NAMESPACE_END
-
+} // namespace csp

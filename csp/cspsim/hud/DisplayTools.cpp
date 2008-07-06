@@ -35,8 +35,8 @@
 #include <cassert>
 
 
-CSP_NAMESPACE
-
+namespace csp {
+namespace hud {
 namespace display {
 
 const SymbolMaker::Color SymbolMaker::Pen;
@@ -182,11 +182,7 @@ osg::Node *Element::node() {
 }
 
 void Element::clear() {
-#if OSG_VERSION_MAJOR == 1 && OSG_VERSION_MINOR > 0
 	geode()->removeDrawables(0, geode()->getNumDrawables());
-#else
-	geode()->removeDrawables(0, geode()->getNumDrawables());
-#endif
 }
 
 void Element::setLineWidth(double width) {
@@ -266,7 +262,6 @@ LabelElement::LabelElement(): m_Text(new osgText::Text) {
 	geode()->addDrawable(m_Text);
 }
 
-} // namespace display
-
-CSP_NAMESPACE_END
-
+} // end namespace display
+} // end namespace hud
+} // end namespace csp

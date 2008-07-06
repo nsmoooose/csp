@@ -376,7 +376,7 @@ void SceneModel::bindAnimationChannels(Bus* bus) {
 	std::for_each(m_AnimationCallbacks.begin(), m_AnimationCallbacks.end(), binder);
 }
 
-void SceneModel::bindHud(HUD *hud) {
+void SceneModel::bindHud(hud::HUD *hud) {
 	CSPLOG(DEBUG, OBJECT) << "adding HUD to model";
 	assert(hud);
 	m_HudModel = hud->hud();

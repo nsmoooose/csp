@@ -50,9 +50,11 @@ CSP_XML_BEGIN(MultiFunctionDisplay)
 	CSP_DEF("default_configuration", m_DefaultConfiguration, false)
 CSP_XML_END
 
-using display::Element;
-using display::ElementText;
-using display::SymbolMaker;
+using hud::Display;
+using hud::DisplayFont;
+using hud::display::Element;
+using hud::display::ElementText;
+using hud::display::SymbolMaker;
 
 
 DisplayLayout::DisplayLayout(double width, double height, DisplayFont *font): m_Width(width), m_Height(height), m_Font(font) {
@@ -226,9 +228,9 @@ void DisplayText::setText(std::string const &text, bool invert) {
 	size_t widest = 0;
 	for (unsigned i = 0; i < tokens.size(); ++i) {
 		widest = std::max(tokens[i].size(), widest);
-		display::ElementText *text = (i < m_Lines.size()) ? m_Lines[i].get() : 0;
+		ElementText *text = (i < m_Lines.size()) ? m_Lines[i].get() : 0;
 		if (!text) {
-			text = new display::ElementText(this);
+			text = new ElementText(this);
 			m_Font->apply(text);
 			m_Color = text->getColor();
 			m_Lines.push_back(text);

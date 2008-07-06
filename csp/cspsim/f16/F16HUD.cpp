@@ -65,14 +65,8 @@ CSP_XML_BEGIN(F16HUD)
 	CSP_DEF("color", m_Color, false)
 CSP_XML_END
 
-
-using display::Element;
-using display::MoveableElement;
-using display::DirectionElement;
-using display::FloatingFrame;
-using display::SymbolMaker;
-using display::ElementText;
-
+using namespace hud;
+using namespace hud::display;
 
 namespace {
 static const Vector3 DefaultHUDColor(0.45, 0.94, 0.68);
@@ -495,7 +489,7 @@ void F16HUD::registerChannels(Bus *bus) {
 	m_HUD.setColor(osg::Vec4(m_Color.x(), m_Color.y(), m_Color.z(), 1.0));
 	// XXX slightly dangerous... need to be sure to set the channel to NULL in
 	// our dtor, and users need to check for a null hud pointer.
-	bus->registerLocalDataChannel<HUD*>("HUD", &m_HUD);
+	bus->registerLocalDataChannel<hud::HUD*>("HUD", &m_HUD);
 	m_HudPanel.registerChannels(bus);
 }
 

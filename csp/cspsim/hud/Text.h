@@ -37,7 +37,8 @@
 namespace osgText { class Text; }
 namespace osgText { class Font; }
 
-CSP_NAMESPACE
+namespace csp {
+namespace hud {
 
 /** An abstract base class for a font/style that can be applied to
  *  an osgText::Text element.
@@ -76,7 +77,8 @@ public:
 	virtual void format(char *buffer, int len, float value);
 };
 
-CSP_NAMESPACE_END
+} // end namespace hud
+} // end namespace csp
 
 #endif // __CSPSIM_HUD_TEXT_H__
 

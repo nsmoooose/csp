@@ -31,7 +31,8 @@
 
 namespace osg { class Material; }
 
-CSP_NAMESPACE
+namespace csp {
+namespace hud {
 
 /** A container class representing a Heads Up Display.  The display is composed
  *  of one or more Elements.  The HUD defines a fixed frame to contain elements
@@ -128,6 +129,7 @@ private:
 	ForwardFrame m_ForwardFrame;
 };
 
-CSP_NAMESPACE_END
+} // end namespace hud
+} // end namespace csp
 
 #endif // __CSPSIM_HUD_HUD_H__

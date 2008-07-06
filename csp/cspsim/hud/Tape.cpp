@@ -32,7 +32,8 @@
 #include <cassert>
 #include <cmath>
 
-CSP_NAMESPACE
+namespace csp {
+namespace hud {
 
 HUDTape::HUDTape(Orientation orientation, int tick_count, float tick_spacing, float tick_width, float offset_x, float offset_y):
 	m_Orientation(orientation),
@@ -315,5 +316,5 @@ void HUDTape::show(bool visible) {
 	m_Hidden = !visible;
 }
 
-CSP_NAMESPACE_END
-
+} // end namespace hud
+} // end namespace csp

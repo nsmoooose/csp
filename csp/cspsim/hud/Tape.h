@@ -29,7 +29,8 @@
 #include <csp/cspsim/hud/HUD.h>
 #include <csp/cspsim/hud/Text.h>
 
-CSP_NAMESPACE
+namespace csp {
+namespace hud {
 
 // TODO
 // add major ticks
@@ -190,7 +191,8 @@ private:
 	std::vector<osg::ref_ptr<display::LabelElement> > m_Labels;
 };
 
-CSP_NAMESPACE_END
+} // end namespace hud
+} // end namespace csp
 
 #endif // __CSPSIM_HUD_TAPE_H__
 

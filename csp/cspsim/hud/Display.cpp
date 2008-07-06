@@ -30,7 +30,8 @@
 #include <osg/Group>
 #include <osg/Program>
 
-CSP_NAMESPACE
+namespace csp {
+namespace hud {
 
 Display::Display() {
 	// using a clipnode for the root is not ideal since it does not preserve
@@ -86,6 +87,5 @@ void Display::setDimensions(float x, float y) {
 	}
 }
 
-CSP_NAMESPACE_END
-
-
+} // end namespace hud
+} // end namespace csp

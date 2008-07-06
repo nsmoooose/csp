@@ -44,7 +44,6 @@ namespace osgParticle {
 CSP_NAMESPACE
 
 class DataRecorder;
-class HUD;
 class LocalController;
 class ObjectModel;
 class PhysicsModel;
@@ -56,6 +55,7 @@ class Station;
 class StoresManagementSystem;
 class SystemsModel;
 
+namespace hud { class HUD; }
 
 /**
  * class DynamicObject - Base class for all mobile objects in the simulation.
@@ -211,7 +211,7 @@ protected:
 	DataChannel<Vector3>::RefT b_CenterOfMassOffset;
 	DataChannel<StoresDynamics>::RefT b_StoresDynamics;
 	DataChannel<Quat>::RefT b_Attitude;
-	DataChannel<HUD*>::CRefT b_Hud;
+	DataChannel<hud::HUD*>::CRefT b_Hud;
 
 	std::string m_ObjectName;
 

@@ -44,10 +44,10 @@ CSP_NAMESPACE
 
 class AnimationCallback;
 class Bus;
-class HUD;
 class ObjectModel;
 class Quat;
 
+namespace hud { class HUD; }
 namespace fx { class SmokeTrailSystem; }
 
 
@@ -119,7 +119,7 @@ public:
 	 *  a NULL pointer to unbind the animations.
 	 */
 	void bindAnimationChannels(Bus*);
-	void bindHud(HUD* hud);
+	void bindHud(hud::HUD* hud);
 
 	void setSmokeEmitterLocation(std::vector<Vector3> const &sel);
 	bool addSmoke();

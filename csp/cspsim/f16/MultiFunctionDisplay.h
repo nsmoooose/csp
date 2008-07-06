@@ -26,19 +26,21 @@
 #ifndef __CSPSIM_F16_MULTIFUNCTIONDISPLAY_H__
 #define __CSPSIM_F16_MULTIFUNCTIONDISPLAY_H__
 
-#include <csp/cspsim/hud/Display.h>
+#include <csp/csplib/data/Vector3.h>
 #include <csp/cspsim/CockpitInterface.h>
 #include <csp/cspsim/System.h>
 #include <csp/cspsim/f16/F16System.h>
+#include <csp/cspsim/hud/Display.h>
 #include <csp/cspsim/hud/DisplayTools.h>
-#include <csp/csplib/data/Vector3.h>
 #include <sigc++/trackable.h>
 
 CSP_NAMESPACE
 
-namespace display { class Element; }
+namespace hud {
+	namespace display { class Element; }
+	class DisplayFont;
+}
 
-class DisplayFont;
 class DisplayFormat;
 class DisplayInterface;
 class FormatIndex;
@@ -58,7 +60,7 @@ protected:
 // A helper class for laying out text and symbols in a display.
 class DisplayLayout: public Referenced {
 public:
-	DisplayLayout(double width, double height, DisplayFont *font);
+	DisplayLayout(double width, double height, hud::DisplayFont *font);
 	~DisplayLayout();
 	double height() const { return m_Height; }
 	double width() const { return m_Width; }
@@ -67,31 +69,31 @@ public:
 	double osbRowOffset(int index, double rel=0.0) const;
 	double osbColOffset(int index, double rel=0.0) const;
 	void osbAlignment(int index, double &x, double &y, osgText::Text::AlignmentType &alignment) const;
-	DisplayFont *font() { return m_Font.get(); }
-	DisplayFont const *font() const { return m_Font.get(); }
+	hud::DisplayFont *font() { return m_Font.get(); }
+	hud::DisplayFont const *font() const { return m_Font.get(); }
 private:
 	double m_OsbSpacing;
 	double m_Width;
 	double m_Height;
-	osg::ref_ptr<DisplayFont> m_Font;
+	osg::ref_ptr<hud::DisplayFont> m_Font;
 };
 
 // A multiline text widget that supports drawing the text in reverse video.
-class DisplayText: public display::Element {
+class DisplayText: public hud::display::Element {
 public:
 	typedef osg::ref_ptr<DisplayText> RefT;
-	DisplayText(DisplayFont *font, double x, double y, osgText::Text::AlignmentType alignment);
+	DisplayText(hud::DisplayFont *font, double x, double y, osgText::Text::AlignmentType alignment);
 	void setPosition(double x, double y);
 	void setAlignment(osgText::Text::AlignmentType alignment);
 	void setText(std::string const &text, bool invert=false);
 	void setInvert(bool invert=true);
 private:
 	void reformat();
-	osg::ref_ptr<DisplayFont> m_Font;
+	osg::ref_ptr<hud::DisplayFont> m_Font;
 	osg::Vec4 m_Color;
 	osg::Vec4 m_Black;
-	display::SymbolMaker m_Box;
-	std::vector<osg::ref_ptr<display::ElementText> > m_Lines;
+	hud::display::SymbolMaker m_Box;
+	std::vector<osg::ref_ptr<hud::display::ElementText> > m_Lines;
 	double m_PosX;
 	double m_PosY;
 	osgText::Text::AlignmentType m_Alignment;
@@ -183,13 +185,13 @@ private:
 	MultiFunctionDisplay* m_OtherDisplay;
 
 	osg::ref_ptr<DisplayText> m_OSB[20];
-	osg::ref_ptr<DisplayFont> m_StandardFont;
+	osg::ref_ptr<hud::DisplayFont> m_StandardFont;
 	osg::ref_ptr<osg::Group> m_PageDisplay;
 	osg::ref_ptr<osg::Group> m_OverlayDisplay;
-	osg::ref_ptr<display::Element> m_BreakX;
+	osg::ref_ptr<hud::display::Element> m_BreakX;
 
 	Ref<DisplayLayout> m_Layout;
-	DataChannel<Display>::RefT b_Display;
+	DataChannel<hud::Display>::RefT b_Display;
 	f16::MasterModeSelection::CRefT b_MasterMode;
 	DataChannel<bool>::CRefT b_AdvanceAltitudeAdvisory;
 	std::string m_DefaultConfiguration;
@@ -260,11 +262,11 @@ public:
 
 // TODO make this class more useful: multiline alignment, offset,
 // subselection, etc.
-class OptionSelectButton: public display::Element {
+class OptionSelectButton: public hud::display::Element {
 public:
 	enum Mode { NORMAL, BOX, INVERSE, UNCHANGED };
-	OptionSelectButton(DisplayFont *font, double x, double y, osgText::Text::AlignmentType alignment, double margin=0.001);
-	display::ElementText *text() { return m_Text.get(); }
+	OptionSelectButton(hud::DisplayFont *font, double x, double y, osgText::Text::AlignmentType alignment, double margin=0.001);
+	hud::display::ElementText *text() { return m_Text.get(); }
 	void setText(std::string const &text, Mode mode=UNCHANGED);
 	void setText(std::string const &text, bool invert);
 	void resize();
@@ -277,8 +279,8 @@ private:
 	double m_Margin;
 	osg::Vec4 m_Color;
 	osg::Vec4 m_Black;
-	display::SymbolMaker m_Box;
-	osg::ref_ptr<display::ElementText> m_Text;
+	hud::display::SymbolMaker m_Box;
+	osg::ref_ptr<hud::display::ElementText> m_Text;
 };
 
 

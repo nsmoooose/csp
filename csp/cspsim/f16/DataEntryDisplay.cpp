@@ -46,11 +46,11 @@ CSP_XML_BEGIN(DataEntryDisplay)
 	CSP_DEF("line_spacing", m_LineSpacing, true)
 CSP_XML_END
 
-using display::Element;
-using display::ElementText;
-using display::SymbolMaker;
+using hud::display::Element;
+using hud::display::ElementText;
+using hud::display::SymbolMaker;
 
-class DEDStandardFont: public DisplayFont {
+class DEDStandardFont: public hud::DisplayFont {
 	float m_Height;
 	osg::Vec4 m_Color;
 	osg::ref_ptr<osgText::Font> m_Font;
@@ -83,7 +83,7 @@ void DataEntryDisplay::postCreate() {
 }
 
 void DataEntryDisplay::registerChannels(Bus* bus) {
-	b_Display = bus->registerSharedDataChannel<Display>("DataEntryDisplay", Display());
+	b_Display = bus->registerSharedDataChannel<hud::Display>("DataEntryDisplay", hud::Display());
 	b_Display->value().model()->addChild(m_Display.get());
 }
 
@@ -98,7 +98,7 @@ void DataEntryDisplay::initDisplay() {
 	CSPLOG(INFO, ALL) << "DataEntryDisplay::initDisplaye " << m_LineCount;
 	m_Lines = new osg::ref_ptr<osgText::Text>[m_LineCount];
 	for (unsigned i = 0; i < m_LineCount; ++i) {
-		display::LabelElement *line = new display::LabelElement;
+		hud::display::LabelElement *line = new hud::display::LabelElement;
 		m_StandardFont->apply(line->text());
 		m_Lines[i] = line->text();
 		m_Lines[i]->setPosition(osg::Vec3(0, 0, -m_LineSpacing * i));

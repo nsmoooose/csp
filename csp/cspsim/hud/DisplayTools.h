@@ -26,7 +26,6 @@
 #ifndef __CSPSIM_HUD_DISPLAYTOOLS_H__
 #define __CSPSIM_HUD_DISPLAYTOOLS_H__
 
-#include <csp/csplib/util/Namespace.h>
 #include <csp/csplib/util/Uniform.h>
 #include <osg/PositionAttitudeTransform>
 #include <osgText/Text>
@@ -34,11 +33,9 @@
 namespace osg { class Geode; }
 namespace osg { class Geometry; }
 
-
-CSP_NAMESPACE
-
+namespace csp {
+namespace hud {
 namespace display {
-
 
 /** A tool for drawing symbols.  Can be used either as a symbol factory or as a dynamic
  *  symbol.  To use as a factory, draw a symbol and then add it to a geode.  Once added
@@ -262,9 +259,9 @@ class FloatingFrame: public DirectionElement, public Frame {
 	virtual void _addElement(Element *element);
 };
 
-} // namespace display
-
-CSP_NAMESPACE_END
+} // end namespace display
+} // end namespace hud
+} // end namespace csp
 
 #endif // __CSPSIM_HUD_DISPLAYTOOLS_H__
 

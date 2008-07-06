@@ -39,9 +39,11 @@
 
 CSP_NAMESPACE
 
-class DisplayFont;
-class HUDTape;
-class PitchLadder;
+namespace hud {
+	class DisplayFont;
+	class HUDTape;
+	class PitchLadder;
+}
 class DEDReadout;
 class PullupAnticipationCue;
 class RadarAltitudeScale;
@@ -107,51 +109,51 @@ protected:
 	virtual void addPitchLadder();
 	virtual void addExtraSymbols();
 	virtual void addDEDReadout();
-	virtual void newVerticalText(osg::ref_ptr<display::ElementText> &element, float x, float y, display::ElementText::AlignmentType alignment=display::ElementText::BASE_LINE);
+	virtual void newVerticalText(osg::ref_ptr<hud::display::ElementText> &element, float x, float y, hud::display::ElementText::AlignmentType alignment=hud::display::ElementText::BASE_LINE);
 
 	virtual double getSpeedCaret(double ground_speed) const;
 	virtual double getSpeed() const;
 
 	Vector3 m_Color;
 
-	osg::ref_ptr<display::DirectionElement> m_Tadpole;
-	osg::ref_ptr<display::DirectionElement> m_Steerpoint;
-	osg::ref_ptr<display::DirectionElement> m_FlightPathMarker;
-	osg::ref_ptr<display::DirectionElement> m_BankAngleIndicator;
+	osg::ref_ptr<hud::display::DirectionElement> m_Tadpole;
+	osg::ref_ptr<hud::display::DirectionElement> m_Steerpoint;
+	osg::ref_ptr<hud::display::DirectionElement> m_FlightPathMarker;
+	osg::ref_ptr<hud::display::DirectionElement> m_BankAngleIndicator;
 	osg::ref_ptr<GhostHorizon> m_GhostHorizon;
 	osg::ref_ptr<PullupAnticipationCue> m_PullupAnticipationCue;
 	osg::ref_ptr<RadarAltitudeScale> m_RadarAltitudeScale;
 	osg::ref_ptr<ImpactPointCue> m_ImpactPointCue;
 	osg::ref_ptr<BombSteeringCue> m_BombSteeringCue;
-	osg::ref_ptr<display::Element> m_GunCross;
-	osg::ref_ptr<display::Element> m_RollTape;
-	osg::ref_ptr<display::Element> m_BreakX;
-	osg::ref_ptr<display::MoveableElement> m_RollMarker;
-	osg::ref_ptr<display::ElementText> m_GForceMeter;
-	osg::ref_ptr<display::ElementText> m_MaxGForce;
-	osg::ref_ptr<display::ElementText> m_MasterMode;
-	osg::ref_ptr<display::ElementText> m_MasterArm;
-	osg::ref_ptr<display::ElementText> m_MachMeter;
-	osg::ref_ptr<display::ElementText> m_AirspeedUnits;
-	osg::ref_ptr<display::ElementText> m_RadarAltimeter;
-	osg::ref_ptr<display::ElementText> m_Alow;
-	osg::ref_ptr<display::ElementText> m_SlantRange;
-	osg::ref_ptr<display::ElementText> m_SteerpointTime;
-	osg::ref_ptr<display::ElementText> m_SteerpointDistance;
-	osg::ref_ptr<PitchLadder> m_PitchLadder;
-	osg::ref_ptr<display::Element> m_GlideSlopeBar;
-	osg::ref_ptr<HUDTape> m_AirspeedTape;
-	osg::ref_ptr<display::Element> m_AirspeedBox;
-	osg::ref_ptr<display::ElementText> m_AirspeedText;
-	osg::ref_ptr<HUDTape> m_AltitudeTape;
-	osg::ref_ptr<display::Element> m_AltitudeBox;
-	osg::ref_ptr<display::ElementText> m_AltitudeText;
-	osg::ref_ptr<HUDTape> m_HeadingTape;
-	osg::ref_ptr<display::Element> m_HeadingBox;
-	osg::ref_ptr<display::ElementText> m_HeadingText;
-	osg::ref_ptr<display::DirectionElement> m_LandingAngleOfAttackRange;
-	osg::ref_ptr<display::FloatingFrame> m_VerticalFrame;
-	osg::ref_ptr<display::FloatingFrame> m_HeadingTapeFrame;
+	osg::ref_ptr<hud::display::Element> m_GunCross;
+	osg::ref_ptr<hud::display::Element> m_RollTape;
+	osg::ref_ptr<hud::display::Element> m_BreakX;
+	osg::ref_ptr<hud::display::MoveableElement> m_RollMarker;
+	osg::ref_ptr<hud::display::ElementText> m_GForceMeter;
+	osg::ref_ptr<hud::display::ElementText> m_MaxGForce;
+	osg::ref_ptr<hud::display::ElementText> m_MasterMode;
+	osg::ref_ptr<hud::display::ElementText> m_MasterArm;
+	osg::ref_ptr<hud::display::ElementText> m_MachMeter;
+	osg::ref_ptr<hud::display::ElementText> m_AirspeedUnits;
+	osg::ref_ptr<hud::display::ElementText> m_RadarAltimeter;
+	osg::ref_ptr<hud::display::ElementText> m_Alow;
+	osg::ref_ptr<hud::display::ElementText> m_SlantRange;
+	osg::ref_ptr<hud::display::ElementText> m_SteerpointTime;
+	osg::ref_ptr<hud::display::ElementText> m_SteerpointDistance;
+	osg::ref_ptr<hud::PitchLadder> m_PitchLadder;
+	osg::ref_ptr<hud::display::Element> m_GlideSlopeBar;
+	osg::ref_ptr<hud::HUDTape> m_AirspeedTape;
+	osg::ref_ptr<hud::display::Element> m_AirspeedBox;
+	osg::ref_ptr<hud::display::ElementText> m_AirspeedText;
+	osg::ref_ptr<hud::HUDTape> m_AltitudeTape;
+	osg::ref_ptr<hud::display::Element> m_AltitudeBox;
+	osg::ref_ptr<hud::display::ElementText> m_AltitudeText;
+	osg::ref_ptr<hud::HUDTape> m_HeadingTape;
+	osg::ref_ptr<hud::display::Element> m_HeadingBox;
+	osg::ref_ptr<hud::display::ElementText> m_HeadingText;
+	osg::ref_ptr<hud::display::DirectionElement> m_LandingAngleOfAttackRange;
+	osg::ref_ptr<hud::display::FloatingFrame> m_VerticalFrame;
+	osg::ref_ptr<hud::display::FloatingFrame> m_HeadingTapeFrame;
 	osg::ref_ptr<DEDReadout> m_DEDReadout;
 
 	LagFilter m_AlphaFilter;
@@ -164,8 +166,8 @@ protected:
 	int m_LastSteerpointTime;
 	int m_LastSteerpointDistance;
 
-	osg::ref_ptr<DisplayFont> m_StandardFont;
-	HUD m_HUD;
+	osg::ref_ptr<hud::DisplayFont> m_StandardFont;
+	hud::HUD m_HUD;
 
 	double m_ElapsedTime;
 	double m_UpdateTime;
@@ -184,7 +186,7 @@ protected:
 	typedef enum { CAS, TAS, GND } VelocityUnits;
 	VelocityUnits m_VelocityUnits;
 
-	display::SymbolMaker m_CaretSymbol;
+	hud::display::SymbolMaker m_CaretSymbol;
 };
 
 CSP_NAMESPACE_END

@@ -34,11 +34,10 @@
 namespace osg { class Group; }
 namespace osgText { class Text; }
 
-CSP_NAMESPACE
+namespace csp {
+namespace hud { class DisplayFont; }
 
-class DisplayFont;
 class AlphaNumericDisplay;
-
 
 class DataEntryDisplay: public System {
 public:
@@ -63,13 +62,13 @@ private:
 	osg::ref_ptr<osgText::Text> *m_Lines;
 	int m_DirtyCount;
 
-	DataChannel<Display>::RefT b_Display;
+	DataChannel<hud::Display>::RefT b_Display;
 	DataChannel<Ref<AlphaNumericDisplay> >::CRefT b_DEDReadout;
-	osg::ref_ptr<DisplayFont> m_StandardFont;
+	osg::ref_ptr<hud::DisplayFont> m_StandardFont;
 	osg::ref_ptr<osg::Group> m_Display;
 };
 
-CSP_NAMESPACE_END
+} // end namespace csp
 
 #endif // __CSPSIM_F16_MULTIFUNCTIONDISPLAY_H__
 

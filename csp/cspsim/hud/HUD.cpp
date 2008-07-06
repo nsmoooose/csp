@@ -35,7 +35,8 @@
 
 #include <cassert>
 
-CSP_NAMESPACE
+namespace csp {
+namespace hud {
 
 HUD::HUD(): m_ViewPoint(0, -1, 0) {
 	m_Material = new osg::Material;
@@ -111,5 +112,5 @@ void HUD::updateView() {
 	m_ForwardFrame.transform()->setPosition(offset);
 }
 
-CSP_NAMESPACE_END
-
+} // end namespace hud
+} // end namespace csp

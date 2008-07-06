@@ -16,12 +16,10 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-
 /**
  * @file Display.h
  *
  **/
-
 
 #ifndef __CSPSIM_DISPLAY_H__
 #define __CSPSIM_DISPLAY_H__
@@ -33,7 +31,8 @@ namespace osg { class Node; }
 namespace osg { class Group; }
 namespace osg { class ClipNode; }
 
-CSP_NAMESPACE
+namespace csp {
+namespace hud {
 
 /** Base class for vehicle displays that support text, ploting, and video
  *  rendering.  This class simply provides a root node for the display
@@ -74,7 +73,8 @@ private:
 	osg::ref_ptr<osg::ClipNode> m_Root;
 };
 
-CSP_NAMESPACE_END
+} // end namespace hud
+} // end namespace csp
 
 #endif // __CSPSIM_DISPLAY_H__
 

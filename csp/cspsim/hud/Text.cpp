@@ -32,11 +32,12 @@
 #define snprintf _snprintf
 #endif
 
-CSP_NAMESPACE
+namespace csp {
+namespace hud {
 
 void StandardFormatter::format(char *buffer, int len, float value) {
 	snprintf(buffer, len, m_Format.c_str(), value);
 }
 
-CSP_NAMESPACE_END
-
+} // end namespace hud
+} // end namespace csp

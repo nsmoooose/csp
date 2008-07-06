@@ -1579,7 +1579,7 @@ public:
 		if (!m_Adjustment) return false;
 		m_Adjustment->removeChild(0, 1);
 		if (bus) {
-			DataChannel<Display>::RefT channel = bus->getSharedChannel(m_Animation->getChannelName(), false);
+			DataChannel<hud::Display>::RefT channel = bus->getSharedChannel(m_Animation->getChannelName(), false);
 			if (channel.valid()) {
 				m_Adjustment->addChild(channel->value().model());
 			}

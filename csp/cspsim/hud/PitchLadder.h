@@ -28,7 +28,8 @@
 
 #include <csp/cspsim/hud/HUD.h>
 
-CSP_NAMESPACE
+namespace csp {
+namespace hud {
 
 /** A general purpose HUD pitch-ladder manager.  This class updates the pitch
  *  bar positions and orientations and culls pitch bars that are outside the
@@ -81,7 +82,8 @@ private:
 	float m_LastPitchAngle;
 };
 
-CSP_NAMESPACE_END
+} // end namespace hud
+} // end namespace csp
 
 #endif // __CSPSIM_HUD_PITCHLADDER_H__
 

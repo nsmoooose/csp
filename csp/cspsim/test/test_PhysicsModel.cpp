@@ -161,7 +161,9 @@ protected:
 		// PI seconds
 		for (int i = 0; i < 1000; ++i) {
 			physics->doSimStep(M_PI / 1000.0);
-			if ((i % 10) == 0) CSPLOG(DEBUG, PHYSICS) << i << "(" << (i * 180.0 / 1000) << "): " << *object;
+			if ((i % 10) == 0) {
+				CSPLOG(DEBUG, PHYSICS) << i << "(" << (i * 180.0 / 1000) << "): " << *object;
+			}
 		}
 
 		CSPLOG(DEBUG, PHYSICS) << "final: " << *object;
@@ -181,7 +183,9 @@ protected:
 		// 10 seconds @ 100 Hz
 		for (int i = 0; i < 1000; ++i) {
 			physics->doSimStep(0.01);
-			if ((i % 10) == 0) CSPLOG(DEBUG, PHYSICS) << i << "(" << (i * 0.01) << "): " << *object;
+			if ((i % 10) == 0) {
+				CSPLOG(DEBUG, PHYSICS) << i << "(" << (i * 0.01) << "): " << *object;
+			}
 		}
 
 		CSPLOG(DEBUG, PHYSICS) << "final: " << *object;
@@ -201,7 +205,9 @@ protected:
 		// PI seconds @ 100 Hz
 		for (int i = 0; i < 1000; ++i) {
 			physics->doSimStep(M_PI / 1000.0);
-			if ((i % 10) == 0) CSPLOG(DEBUG, PHYSICS) << i << "(" << (i * 180.0 * 0.001) << "): " << *object;
+			if ((i % 10) == 0) {
+				CSPLOG(DEBUG, PHYSICS) << i << "(" << (i * 180.0 * 0.001) << "): " << *object;
+			}
 		}
 
 		CSPLOG(DEBUG, PHYSICS) << "final: " << *object;
@@ -223,7 +229,9 @@ protected:
 		// PI seconds @ 100 Hz
 		for (int i = 0; i < 1000; ++i) {
 			physics->doSimStep(M_PI / 1000.0);
-			if ((i % 10) == 0) CSPLOG(DEBUG, PHYSICS) << i << "(" << (i * 180.0 * 0.001) << "): " << *object;
+			if ((i % 10) == 0) {
+				CSPLOG(DEBUG, PHYSICS) << i << "(" << (i * 180.0 * 0.001) << "): " << *object;
+			}
 		}
 
 		CSPLOG(DEBUG, PHYSICS) << "final: " << *object;
@@ -246,7 +254,9 @@ protected:
 		// 10 seconds @ 100 Hz
 		for (int i = 0; i < 1000; ++i) {
 			physics->doSimStep(10.0 / 1000.0);
-			if ((i % 10) == 0) CSPLOG(DEBUG, PHYSICS) << i << "(" << (i * 10.0 * 0.001) << "): " << *object;
+			if ((i % 10) == 0) {
+				CSPLOG(DEBUG, PHYSICS) << i << "(" << (i * 10.0 * 0.001) << "): " << *object;
+			}
 		}
 
 		CSPLOG(DEBUG, PHYSICS) << "final: " << *object;
@@ -272,7 +282,9 @@ protected:
 		for (int i = 0; i < 1000; ++i) {
 			//physics->doSimStep(5 * M_PI / 32 / 1000.0);
 			physics->doSimStep(5 * M_PI / 16 / 1000.0);
-			if ((i % 10) == 0) CSPLOG(DEBUG, PHYSICS) << i << "(" << (i * 225.0 * 0.001) << "): " << *object;
+			if ((i % 10) == 0) {
+				CSPLOG(DEBUG, PHYSICS) << i << "(" << (i * 225.0 * 0.001) << "): " << *object;
+			}
 		}
 
 		CSPLOG(DEBUG, PHYSICS) << "final: " << *object;

@@ -115,9 +115,14 @@ class Environment(build.Environment):
 	  scons all debug=1      build everything in debug mode (windows)
 	  scons cspsim           build the main flight simulator client
 	  scons indexserver      build the master server needed for multiplayer
+	  scons layout           build the theater layout tool version 1
+	  scons layout2          build the theater layout tool version 2
+
 	  scons dox              generate doxygen documentation
-	  scons layout           build the theater layout tool
+
 	  scons vcproj           generate Microsoft Visual Studio compatible project and solution
+
+	  scons tests            build all unittests
 	  scons runtests         build and run all unittests
 	  scons csplib.runtests  build and run all unittests in csplib
 	"""

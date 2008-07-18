@@ -29,7 +29,10 @@
 #include <cassert>
 #include <cstdio>
 #include <ctype.h>
+#include <iterator>
 #include <limits>
+#include <sstream>
+#include <vector>
 
 #if !defined(__GNUC__) && !defined(snprintf)
 #define snprintf _snprintf
@@ -64,6 +67,11 @@ std::string LeftTrimString(std::string const &str, std::string const &chars) {
 std::string RightTrimString(std::string const &str, std::string const &chars) {
 	const std::string::size_type end = str.find_last_not_of(chars);
 	return end == std::string::npos ? "" : str.substr(0, end + 1);
+}
+
+std::vector<std::string> SplitString(const std::string& s) {
+	std::istringstream is(s);
+	return std::vector<std::string>(std::istream_iterator<std::string>(is), std::istream_iterator<std::string>());
 }
 
 /** Parse an integer value from a c-string.  Returns the value as an unsigned
@@ -153,6 +161,18 @@ bool parseInt(const char *s, int16 &x) { return _parseInt(s, x); }
 bool parseInt(const char *s, uint16 &x) { return _parseInt(s, x); }
 bool parseInt(const char *s, int8 &x) { return _parseInt(s, x); }
 bool parseInt(const char *s, uint8 &x) { return _parseInt(s, x); }
+bool parseDouble(const char *s, double &x) {
+	size_t len = strlen(s);
+
+	// Very basic error checking of values.
+	for(unsigned int i = 0;i < len;++i) {
+		char value = s[i];
+		if((value < '0' || value > '9') && value != '.' && value != '-')
+			return false;
+	}
+
+	return sscanf(s, "%lf", &x) == 1;
+}
 
 // Helper class for stringprintf and friends.  Provides a fast, append-only string
 // buffer that uses the stack for small string.

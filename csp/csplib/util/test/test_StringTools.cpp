@@ -298,6 +298,30 @@ CSP_TESTFIXTURE(StringTools) {
 		CSP_EXPECT_EQ(stringprintf("%d %d", 1), "1 ");  // too few arguments
 		CSP_EXPECT_EQ(stringprintf("%10000d", 1), "");  // limit is 4096
 	}
+
+	CSP_TESTCASE(TestParseDouble) {
+		double x;
+		CSP_EXPECT_EQ(parseDouble("abc", x), false);
+
+		CSP_EXPECT_EQ(parseDouble("2", x), true);
+		CSP_EXPECT_EQ(x, 2.0);
+		
+		CSP_EXPECT_EQ(parseDouble("3.3", x), true);
+		CSP_EXPECT_EQ(x, 3.3);
+
+		CSP_EXPECT_EQ(parseDouble("-3.3", x), true);
+		CSP_EXPECT_EQ(x, -3.3);
+
+		CSP_EXPECT_EQ(parseDouble("3,3", x), false);
+	}
+
+	CSP_TESTCASE(TestSplitString) {
+		CSP_EXPECT_EQ(SplitString("123 456").size(), std::vector<std::string>::size_type(2));
+		CSP_EXPECT_EQ(SplitString("abc def").size(), std::vector<std::string>::size_type(2));
+		CSP_EXPECT_EQ(SplitString("").size(), std::vector<std::string>::size_type(0));
+		CSP_EXPECT_EQ(SplitString("abc def")[0], std::string("abc"));
+		CSP_EXPECT_EQ(SplitString("123 456")[1], std::string("456"));
+	}
 };
 
 CSP_NAMESPACE_END

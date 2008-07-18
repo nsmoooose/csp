@@ -3,7 +3,7 @@
 	<Float name="mass">20</Float>
 	<Float name="drag_factor">0.05</Float>
 	<Matrix name="unit_inertia">1 0 0 0 0.1 0 0 0 1</Matrix>
-	<Vector name="cg_offset">0 0 0 0 0 0 0 0 -0.03</Vector>
+	<Vector name="cg_offset">0 0 0</Vector>
 	<List name="mounts">
 		<Object class="RackMount">
 			<Vector name="offset">0 -0.2 -0.15</Vector>

@@ -33,10 +33,10 @@
 #include <csp/csplib/data/Vector3.h>
 #include <csp/csplib/data/Matrix3.h>
 #include <csp/csplib/data/Archive.h>
+#include <csp/csplib/util/StringTools.h>
 
 #include <iomanip>
 #include <sstream>
-
 
 CSP_NAMESPACE
 
@@ -71,8 +71,19 @@ void Vector3::serialize(Writer &writer) const {
 }
 
 void Vector3::parseXML(const char* cdata) {
-	int n = sscanf(cdata, "%lf %lf %lf", &_x, &_y, &_z);
-	if (n!=3) throw ParseException("SYNTAX ERROR: expecting 3 floats");
+	std::vector<std::string> values = SplitString(cdata);
+
+	// Make sure that there is enough values to parse.
+	if(values.size() != 3) {
+		throw ParseException("SYNTAX ERROR: expecting 3 floats.");
+	}
+
+	// Parse each value.
+	if(!parseDouble(values[0].c_str(), _x) ||
+	   !parseDouble(values[1].c_str(), _y) ||
+	   !parseDouble(values[2].c_str(), _z)) {	
+		throw ParseException("SYNTAX ERROR: expecting 3 floats in correct format.");
+	}
 }
 
 std::ostream &operator <<(std::ostream &o, Vector3 const &v) { return o << v.asString(); }

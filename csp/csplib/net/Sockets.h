@@ -18,7 +18,7 @@
 
 
 /**
- * @file SimNet/Sockets.h
+ * @file Sockets.h
  *
  */
 

@@ -522,7 +522,7 @@ public:
 	 *  methods, but the syntax is different: @b
 	 *  <tt>table[c0][c1][c2] == table.getValue(Vec(c0)(c1)(c2))</tt>
 	 *
-	 *  @param x The first coordinate to sample.
+	 *  @param y The first coordinate to sample.
 	 */
 	template <typename Y>
 	inline WRAP<N,X> operator[](Y y) const {

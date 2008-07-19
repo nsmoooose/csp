@@ -77,7 +77,10 @@ public:
 	/// guarantee a solution.  In general, it should be relatively fast and
 	/// less accurate than enhancedSolve, but ideally more stable.  An implicit
 	/// method may be required to assure more stability.
-	/// @param see enhancedSolve
+	/// @param y0 initial solution at time t0
+	/// @param y returns the final solution at time t0 + dt
+	/// @param t0 the initial time
+	/// @param dt the time interval of integration
 	virtual void quickSolve(Vectord const &y0, Vectord &y, double t0, double dt) = 0;
 
 	/// @return the name of the numerical method.

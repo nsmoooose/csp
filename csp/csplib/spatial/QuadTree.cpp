@@ -18,7 +18,7 @@
 
 
 /**
- * @file QuadTree.cc
+ * @file QuadTree.cpp
  * @brief An integer quadtree spatial index.
  */
 

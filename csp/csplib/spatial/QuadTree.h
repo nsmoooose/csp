@@ -339,6 +339,7 @@ public:
 	 */
 	bool remove(Child &child);
 
+#if 0
 	/** Update the position of an element.
 	 *  This is slightly more efficient than removing and reinserting the element.
 	 *
@@ -351,9 +352,8 @@ public:
 	 *  @param new_y The new y coordinate of the element in the range [0, 2**32).
 	 *  @return true if the element was found and updated.
 	 */
-	/* disabled (see above)
 	bool update(Child &child, uint32 old_x, uint32 old_y);
-	*/
+#endif
 
 	/** Query the index to find all elements within a region.
 	 *

@@ -361,7 +361,7 @@ public:
 	 *
 	 * @param ping_latency The transit time of a ping received from this peer,
 	 *   in ms, using the uncorrected epoch times on the local and remote machines.
-	 * @param time_offset The transit time of the last ping sent to this peer.
+	 * @param last_ping_latency The transit time of the last ping sent to this peer.
 	 */
 	void updateTiming(int ping_latency, int last_ping_latency);
 

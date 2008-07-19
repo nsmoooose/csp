@@ -284,7 +284,7 @@ public:
 	 *
 	 * @param section The section containing the key (will be created if non-existant).
 	 * @param key The key to define or redefine.
-	 * @param default_ The value to set.
+	 * @param value The value to set.
 	 */
 	void setInt(const std::string &section, const std::string &key, int value);
 	
@@ -293,7 +293,7 @@ public:
 	 *
 	 * @param section The section containing the key (will be created if non-existant).
 	 * @param key The key to define or redefine.
-	 * @param default_ The value to set.
+	 * @param value The value to set.
 	 */
 	void setBool(const std::string &section, const std::string &key, bool value);
 
@@ -302,7 +302,7 @@ public:
 	 *
 	 * @param section The section containing the key (will be created if non-existant).
 	 * @param key The key to define or redefine.
-	 * @param default_ The value to set.
+	 * @param value The value to set.
 	 */
 	void setFloat(const std::string &section, const std::string &key, double value);
 
@@ -311,7 +311,7 @@ public:
 	 *
 	 * @param section The section containing the key (will be created if non-existant).
 	 * @param key The key to define or redefine.
-	 * @param default_ The value to set.
+	 * @param value The value to set.
 	 */
 	void setString(const std::string &section, const std::string &key, const std::string &value);
 	
@@ -320,7 +320,7 @@ public:
 	 *
 	 * @param section The section containing the key (will be created if non-existant).
 	 * @param key The key to define or redefine.
-	 * @param default_ The value to set.
+	 * @param value The value to set.
 	 */
 	void setPath(const std::string &section, const std::string &key, const std::string &value);
 		

@@ -75,7 +75,7 @@ public:
 
 	/** Create a new tagged record by name.
 	 *
-	 *  @param The name of the tagged record class.
+	 *  @param name The name of the tagged record class.
 	 *  @returns 0 if the tagged record is not found.
 	 */
 	Ref<TaggedRecord> createRecord(std::string const &name) const;

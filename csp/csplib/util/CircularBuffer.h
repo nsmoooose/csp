@@ -179,7 +179,7 @@ public:
  *      processMessage(block, size);
  *      buffer.releaseReadBuffer();
  *  }
- *
+ *  @endcode
  */
 class CircularBuffer: public NonCopyable {
 

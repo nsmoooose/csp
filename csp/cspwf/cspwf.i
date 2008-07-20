@@ -155,7 +155,7 @@ public:
 	virtual void setParent(Container* parent);
 	virtual WindowManager* getWindowManager();
 
-	virtual void buildGeometry();
+	virtual void performLayout();
 
 	virtual Signal* getClickSignal();
 

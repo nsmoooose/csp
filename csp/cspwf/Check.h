@@ -40,7 +40,7 @@ public:
 	Check();
 	virtual ~Check();
 
-	virtual void buildGeometry();
+	virtual void performLayout();
 
 private:
 };

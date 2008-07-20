@@ -37,7 +37,6 @@ namespace osg {
 }
 
 namespace csp {
-
 namespace wf {
 
 class Window;
@@ -63,7 +62,7 @@ public:
 	/** Retreives the WindowManager that this Window belongs to. */
 	virtual WindowManager* getWindowManager();
 	
-	virtual void buildGeometry();
+	virtual void performLayout();
 	virtual void layoutChildControls();
 	
 	/** Closes this window. All controls are removed and the window cannot
@@ -125,7 +124,6 @@ private:
 };
 
 } // namespace wf
-
 } // namespace csp
 
 #endif // __CSPSIM_WF_WINDOW_H__

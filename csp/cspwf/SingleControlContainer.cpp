@@ -46,10 +46,10 @@ ControlVector SingleControlContainer::getChildControls() {
 	return controls;
 }
 
-void SingleControlContainer::buildGeometry() {
-	Control::buildGeometry();
+void SingleControlContainer::performLayout() {
+	Control::performLayout();
 	if(m_Control.valid()) {
-		m_Control->buildGeometry();
+		m_Control->performLayout();
 		getNode()->addChild(m_Control->getNode());
 	}
 }

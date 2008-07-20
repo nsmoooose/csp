@@ -52,8 +52,8 @@ ControlVector Tab::getChildControls() {
 	return childControls;
 }
 
-void Tab::buildGeometry() {
-	Container::buildGeometry();
+void Tab::performLayout() {
+	Container::performLayout();
 	
 	// If there is no pages then there is nothing to display. Lets just return in
 	// that case.
@@ -73,7 +73,7 @@ void Tab::buildGeometry() {
 	
 	// Build the geometry for the current tab page. All other pages won't
 	// be built bequase they aren't visible.
-	m_CurrentPage->buildGeometry();
+	m_CurrentPage->performLayout();
 	getNode()->addChild(m_CurrentPage->getNode());
 	
 	TabHeaderVector::iterator header = m_Headers.begin();
@@ -83,7 +83,7 @@ void Tab::buildGeometry() {
 			(*header)->addState("selected");
 		}
 		
-		(*header)->buildGeometry();
+		(*header)->performLayout();
 		getNode()->addChild((*header)->getNode());
 	}
 }
@@ -217,7 +217,7 @@ Ref<TabPage> Tab::getCurrentPage() {
 void Tab::setCurrentPage(TabPage* page) {
 	m_CurrentPage = page;
 	rebuildHeaders();
-	buildGeometry();
+	performLayout();
 }
 
 
@@ -229,9 +229,9 @@ TabPage::TabPage() : SingleControlContainer("TabPage") {
 TabPage::~TabPage() {
 }
 
-void TabPage::buildGeometry() {
+void TabPage::performLayout() {
 	// Make sure that all our child controls onInit() is called.
-	SingleControlContainer::buildGeometry();	
+	SingleControlContainer::performLayout();	
 
 	ControlGeometryBuilder geometryBuilder;
 	getNode()->addChild(geometryBuilder.buildTabPage(this));
@@ -253,8 +253,8 @@ TabHeader::TabHeader() : Control("TabHeader") {
 TabHeader::~TabHeader() {
 }
 
-void TabHeader::buildGeometry() {
-	Control::buildGeometry();
+void TabHeader::performLayout() {
+	Control::performLayout();
 	
 	ControlGeometryBuilder builder;
 	getNode()->addChild(builder.buildTabHeader(this));

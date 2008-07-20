@@ -46,7 +46,7 @@ public:
 	
 	virtual ControlVector getChildControls();
 
-	virtual void buildGeometry();
+	virtual void performLayout();
 
 	//! Does nothing in this implementation.
 	virtual void layoutChildControls();

@@ -28,7 +28,6 @@
 #include <csp/cspwf/Container.h>
 
 namespace csp {
-
 namespace wf {
 
 /** The base class for all controls that has a single child control.
@@ -49,7 +48,7 @@ public:
 
 	virtual ControlVector getChildControls();
 
-	virtual void buildGeometry();
+	virtual void performLayout();
 	
 	virtual void setControl(Control* childControl);
 	virtual Control* getControl();
@@ -70,7 +69,6 @@ private:
 };
 
 } // namespace wf
-
 } // namespace csp
 
 #endif // __CSPSIM_WF_SINGLECONTROLCONTAINER_H__

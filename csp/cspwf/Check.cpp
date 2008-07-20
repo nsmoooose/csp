@@ -36,8 +36,8 @@ Check::Check() : Control("Check") {
 Check::~Check() {
 }
 
-void Check::buildGeometry() {
-	Control::buildGeometry();
+void Check::performLayout() {
+	Control::performLayout();
 
 	// Build our own check control and add it to the group.
 	ControlGeometryBuilder geometryBuilder;

@@ -136,11 +136,6 @@ public:
 	/** Sets a new CssClass to use for this Control. */
 	virtual void setCssClass(const optional<std::string>& cssClass);
 
-	/** Function that generates all geometry that is used to display the Control.
-	 * 	buildGeometry is called just before the window is displayed.
-	 */
-	virtual void buildGeometry();
-
 	/** Returns the node that represents this control. */
 	virtual osg::Group* getNode();
 
@@ -218,7 +213,9 @@ public:
 	 */
 	virtual void resumeLayout();
 	
-	/** Performs all pending layout and geometric changes.
+	/** Performs all pending layout and geometric changes. It generates all
+	 * geometry that is used to display the Control. It is called just before 
+	 * the window is displayed.
 	 */
 	virtual void performLayout();
 	

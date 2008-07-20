@@ -55,7 +55,7 @@ ListBoxItem::ListBoxItem(const std::string& text) :
 ListBoxItem::~ListBoxItem() {
 }
 
-void ListBoxItem::buildGeometry() {
+void ListBoxItem::performLayout() {
 	// Without a parent we cannot build geometry.
 	if(getParent() == NULL) {
 		return;
@@ -67,7 +67,7 @@ void ListBoxItem::buildGeometry() {
 	}
 
 	// Make sure that all our child controls onInit() is called.
-	SingleControlContainer::buildGeometry();
+	SingleControlContainer::performLayout();
 	
 	ControlGeometryBuilder geometryBuilder;
 	osg::ref_ptr<osg::Group> item = geometryBuilder.buildListBoxItem(this);
@@ -80,7 +80,7 @@ const std::string ListBoxItem::getText() const {
 
 void ListBoxItem::setText(const std::string& text) {
 	m_Text = text;
-	buildGeometry();
+	performLayout();
 }
 
 const Ref<Style> ListBoxItem::getSelectedStyle() const {

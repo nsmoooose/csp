@@ -27,7 +27,6 @@
 #include <osg/Group>
 
 namespace csp {
-
 namespace wf {
 
 Model::Model() : Control("Model"), m_Scale(1.0) {
@@ -52,9 +51,9 @@ void Model::setScale(double scale) {
 	m_Scale = scale;
 }
 
-void Model::buildGeometry() {
+void Model::performLayout() {
 	// Make sure that all our child controls onInit() is called.
-	Control::buildGeometry();	
+	Control::performLayout();	
 	
 	ControlGeometryBuilder geometryBuilder;
 	osg::ref_ptr<osg::Group> model = geometryBuilder.buildModel(this);
@@ -62,5 +61,4 @@ void Model::buildGeometry() {
 }
 
 } // namespace wf
-
 } // namespace csp

@@ -40,8 +40,8 @@ Window::Window() :
 Window::~Window() {
 }
 
-void Window::buildGeometry() {
-	SingleControlContainer::buildGeometry();
+void Window::performLayout() {
+	SingleControlContainer::performLayout();
 
 	ControlGeometryBuilder geometryBuilder;
 	getNode()->addChild(geometryBuilder.buildWindow(this));
@@ -141,7 +141,7 @@ void Window::centerWindow() {
 	style->setTop(Style::UnitValue(Style::Pixels, windowLocation.y));		
 
 	layoutChildControls();
-	buildGeometry();
+	performLayout();
 }
 
 void Window::maximizeWindow() {
@@ -157,7 +157,7 @@ void Window::maximizeWindow() {
 	style->setTop(Style::UnitValue(Style::Pixels, 0));
 
 	layoutChildControls();
-	buildGeometry();
+	performLayout();
 }
 
 } // namespace wf

@@ -71,46 +71,6 @@ std::string Control::getName() const {
 	return m_Name;
 }
 
-void Control::buildGeometry() {
-	if(m_Parent.valid()) {
-		// Handle alignment of the control in the parents container.
-		// Some containers will resize child controls. These containers
-		// will alignment don't work.
-
-		const Size controlSize = getSize();
-		const int parentWidth = static_cast<int>(m_Parent->getClientRect().width());
-		const int parentHeight = static_cast<int>(m_Parent->getClientRect().height());
-		 
-		Ref<Style> controlStyle = StyleBuilder::buildStyle(this);
-		Ref<Style> style = getStyle();
-		if(controlStyle->getHorizontalAlign()) {
-			if(*controlStyle->getHorizontalAlign() == "left") {
-				style->setLeft(Style::UnitValue(Style::Pixels, 0));
-			}
-			else if(*controlStyle->horizontalAlign == "center") {
-				style->setLeft(Style::UnitValue(Style::Pixels, (parentWidth / 2) - (controlSize.width / 2)));
-			}
-			else if(*controlStyle->horizontalAlign == "right") {
-				style->setLeft(Style::UnitValue(Style::Pixels, parentWidth - controlSize.width));
-			}
-		} 
-		if(controlStyle->verticalAlign) {
-			if(*controlStyle->verticalAlign == "top") {
-				style->setTop(Style::UnitValue(Style::Pixels, 0));
-			}
-			else if(*controlStyle->verticalAlign == "middle") {
-				style->setTop(Style::UnitValue(Style::Pixels, (parentHeight / 2) - (controlSize.height / 2)));
-			}
-			else if(*controlStyle->verticalAlign == "bottom") {
-				style->setTop(Style::UnitValue(Style::Pixels, parentHeight - controlSize.height));
-			}
-		}
-	}
-
-	m_TransformGroup->removeChild(0, m_TransformGroup->getNumChildren());
-	updateMatrix();
-}
-
 Container* Control::getParent() {
 	return m_Parent.get();
 }
@@ -276,7 +236,43 @@ void Control::resumeLayout() {
 }
 
 void Control::performLayout() {
-	// TODO: To be implemented...
+	if(m_Parent.valid()) {
+		// Handle alignment of the control in the parents container.
+		// Some containers will resize child controls. These containers
+		// will alignment don't work.
+
+		const Size controlSize = getSize();
+		const int parentWidth = static_cast<int>(m_Parent->getClientRect().width());
+		const int parentHeight = static_cast<int>(m_Parent->getClientRect().height());
+		 
+		Ref<Style> controlStyle = StyleBuilder::buildStyle(this);
+		Ref<Style> style = getStyle();
+		if(controlStyle->getHorizontalAlign()) {
+			if(*controlStyle->getHorizontalAlign() == "left") {
+				style->setLeft(Style::UnitValue(Style::Pixels, 0));
+			}
+			else if(*controlStyle->horizontalAlign == "center") {
+				style->setLeft(Style::UnitValue(Style::Pixels, (parentWidth / 2) - (controlSize.width / 2)));
+			}
+			else if(*controlStyle->horizontalAlign == "right") {
+				style->setLeft(Style::UnitValue(Style::Pixels, parentWidth - controlSize.width));
+			}
+		} 
+		if(controlStyle->verticalAlign) {
+			if(*controlStyle->verticalAlign == "top") {
+				style->setTop(Style::UnitValue(Style::Pixels, 0));
+			}
+			else if(*controlStyle->verticalAlign == "middle") {
+				style->setTop(Style::UnitValue(Style::Pixels, (parentHeight / 2) - (controlSize.height / 2)));
+			}
+			else if(*controlStyle->verticalAlign == "bottom") {
+				style->setTop(Style::UnitValue(Style::Pixels, parentHeight - controlSize.height));
+			}
+		}
+	}
+
+	m_TransformGroup->removeChild(0, m_TransformGroup->getNumChildren());
+	updateMatrix();
 }
 
 bool Control::layoutSuspended() {
@@ -285,5 +281,4 @@ bool Control::layoutSuspended() {
 }
 
 } // namespace wf
-
 } // namespace csp

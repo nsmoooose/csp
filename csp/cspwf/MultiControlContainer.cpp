@@ -26,7 +26,6 @@
 #include <osg/Group>
 
 namespace csp {
-
 namespace wf {
 
 MultiControlContainer::MultiControlContainer() : 
@@ -40,12 +39,12 @@ ControlVector MultiControlContainer::getChildControls() {
 	return m_Controls;
 }
 
-void MultiControlContainer::buildGeometry() {
-	Control::buildGeometry();
+void MultiControlContainer::performLayout() {
+	Control::performLayout();
 
 	ControlVector::iterator control = m_Controls.begin();
 	for(;control != m_Controls.end();++control) {
-		(*control)->buildGeometry();
+		(*control)->performLayout();
 	}
 
 	osg::Group* group = getNode();
@@ -89,5 +88,4 @@ void MultiControlContainer::removeControl(Control* control) {
 }
 
 } // namespace wf
-
 } // namespace csp

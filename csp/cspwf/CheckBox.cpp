@@ -46,9 +46,9 @@ CheckBox::CheckBox() : SingleControlContainer("CheckBox"),
 CheckBox::~CheckBox() {
 }
 
-void CheckBox::buildGeometry() {
+void CheckBox::performLayout() {
 	// Make sure that all our child controls onInit() is called.
-	SingleControlContainer::buildGeometry();
+	SingleControlContainer::performLayout();
 
 	// Build our own button control and add it to the group.
 	ControlGeometryBuilder geometryBuilder;
@@ -78,7 +78,7 @@ const std::string CheckBox::getText() const {
 
 void CheckBox::setText(const std::string& text) {
 	m_Text = text;
-	buildGeometry();
+	performLayout();
 }
 
 bool CheckBox::getChecked() const {
@@ -101,7 +101,7 @@ void CheckBox::setChecked(bool checked) {
 		}
 	}
 	m_Checked = checked;
-	buildGeometry();
+	performLayout();
 
 	Ref<SignalData> data = new SignalData;
 	m_CheckedChanged->emit(data.get());

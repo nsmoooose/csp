@@ -53,14 +53,14 @@ ControlVector TableControlContainer::getChildControls() {
 	return childControls;
 }
 
-void TableControlContainer::buildGeometry() {
-	Container::buildGeometry();
+void TableControlContainer::performLayout() {
+	Container::performLayout();
 	
 	osg::Group* group = getNode();
 	ControlVector childControls = getChildControls();
 	ControlVector::iterator childControl = childControls.begin();
 	for(;childControl != childControls.end();++childControl) {
-		(*childControl)->buildGeometry();
+		(*childControl)->performLayout();
 		group->addChild((*childControl)->getNode());
 	}
 }

@@ -39,7 +39,7 @@ public:
 	Image();
 	virtual ~Image();
 
-	virtual void buildGeometry();	
+	virtual void performLayout();	
 };
 
 } // namespace wf

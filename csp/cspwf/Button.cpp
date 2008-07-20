@@ -38,8 +38,8 @@ Button::Button() : SingleControlContainer("Button") {
 Button::~Button() {
 }
 
-void Button::buildGeometry() {
-	SingleControlContainer::buildGeometry();
+void Button::performLayout() {
+	SingleControlContainer::performLayout();
 
 	// Build our own button control and add it to the group.
 	ControlGeometryBuilder geometryBuilder;
@@ -57,7 +57,7 @@ const std::string Button::getText() const {
 
 void Button::setText(const std::string& text) {
 	m_text = text;
-	buildGeometry();
+	performLayout();
 }
 
 } // namespace wf

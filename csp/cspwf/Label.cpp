@@ -36,9 +36,9 @@ Label::Label() : Control("Label") {
 Label::~Label() {
 }
 
-void Label::buildGeometry() {
+void Label::performLayout() {
 	// Make sure that all our child controls onInit() is called.
-	Control::buildGeometry();	
+	Control::performLayout();	
 	
 	ControlGeometryBuilder geometryBuilder;
 	osg::ref_ptr<osg::Group> label = geometryBuilder.buildLabel(this);
@@ -51,7 +51,7 @@ const std::string& Label::getText() const {
 
 void Label::setText(const std::string& text) {
 	m_Text = text;
-	buildGeometry();
+	performLayout();
 }
 
 } // namespace wf

@@ -43,7 +43,7 @@ public:
 
 	virtual ControlVector getChildControls();
 
-	virtual void buildGeometry();
+	virtual void performLayout();
 	virtual void layoutChildControls();
 	
 	virtual void addItem(ListBoxItem* item);

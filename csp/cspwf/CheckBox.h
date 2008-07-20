@@ -43,7 +43,7 @@ public:
 	CheckBox();
 	virtual ~CheckBox();
 
-	virtual void buildGeometry();
+	virtual void performLayout();
 	virtual void layoutChildControls();
 
 	virtual const std::string getText() const;

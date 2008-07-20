@@ -48,9 +48,9 @@ ControlVector ListBox::getChildControls() {
 	return childControls;
 }
 
-void ListBox::buildGeometry() {
+void ListBox::performLayout() {
 	// Make sure that all our child controls onInit() is called.
-	Container::buildGeometry();	
+	Container::performLayout();	
 	
 	// Build the geometry for the current control.
 	ControlGeometryBuilder geometryBuilder;
@@ -58,7 +58,7 @@ void ListBox::buildGeometry() {
 	
 	ListBoxItemVector::iterator item = m_Items.begin();
 	for(;item != m_Items.end();++item) {
-		(*item)->buildGeometry();
+		(*item)->performLayout();
 		getNode()->addChild((*item)->getNode());
 	}
 }
@@ -125,7 +125,7 @@ void ListBox::setSelectedItem(ListBoxItem* newItem) {
 	Ref<SignalData> data = new SignalData();
 	m_SelectedItemChanged->emit(data.get());
 	 
-	buildGeometry();
+	performLayout();
 }
 
 bool ListBox::setSelectedItemByText(const std::string& text) {

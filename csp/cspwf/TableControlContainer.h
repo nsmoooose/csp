@@ -91,7 +91,7 @@ public:
 
 	virtual ControlVector getChildControls();
 
-	virtual void buildGeometry();
+	virtual void performLayout();
 	
 	//! Resizes the child control to fit the entire surface of this control.
 	virtual void layoutChildControls();

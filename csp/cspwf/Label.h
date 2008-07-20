@@ -43,7 +43,7 @@ public:
 	Label();
 	virtual ~Label();
 
-	virtual void buildGeometry();
+	virtual void performLayout();
 	
 	/** Returns the text set on this control. */
 	virtual const std::string& getText() const;

@@ -40,7 +40,7 @@ public:
 	Button();
 	virtual ~Button();
 
-	virtual void buildGeometry();
+	virtual void performLayout();
 	
 	virtual const std::string getText() const;
 	virtual void setText(const std::string& text);

@@ -42,7 +42,7 @@ public:
 	ListBoxItem(const std::string& text);
 	virtual ~ListBoxItem();
 
-	virtual void buildGeometry();
+	virtual void performLayout();
 	
 	/** Retreives the text associated with this list box item. */
 	virtual const std::string getText() const;

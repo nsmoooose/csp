@@ -148,7 +148,7 @@ void WindowManager::removeStateAndRebuildGeometry(const std::string& state, Cont
 	control->removeState(state);
 	Ref<Style> newStyle = StyleBuilder::buildStyle(control);
 	if(!currentStyle->equals(newStyle.get())) {
-		control->buildGeometry();
+		control->performLayout();
 	}
 }
 
@@ -161,7 +161,7 @@ void WindowManager::addStateAndRebuildGeometry(const std::string& state, Control
 	control->addState(state);
 	Ref<Style> newStyle = StyleBuilder::buildStyle(control);
 	if(!currentStyle->equals(newStyle.get())) {
-		control->buildGeometry();
+		control->performLayout();
 	}
 }
 
@@ -256,7 +256,7 @@ void WindowManager::show(Window* window) {
 
 	// Build the actual geometry of all controls that is going to be
 	// displayed.
-	window->buildGeometry();
+	window->performLayout();
 
 	// Add the window into the tree of nodes in osg. This will make
 	// the window visible for the user in the next render.

@@ -44,7 +44,7 @@ public:
 	virtual double getScale() const;
 	virtual void setScale(double scale);
 
-	virtual void buildGeometry();
+	virtual void performLayout();
 		
 	template<class Archive>
 	void serialize(Archive & ar) {

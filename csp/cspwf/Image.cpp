@@ -27,7 +27,6 @@
 #include <osg/Group>
 
 namespace csp {
-
 namespace wf {
 
 Image::Image() : Control("Image") {
@@ -36,9 +35,9 @@ Image::Image() : Control("Image") {
 Image::~Image() {
 }
 
-void Image::buildGeometry() {
+void Image::performLayout() {
 	// Make sure that all our child controls onInit() is called.
-	Control::buildGeometry();	
+	Control::performLayout();	
 	
 	ControlGeometryBuilder geometryBuilder;
 	osg::ref_ptr<osg::Group> image = geometryBuilder.buildImage(this);
@@ -46,5 +45,4 @@ void Image::buildGeometry() {
 }
 
 } // namespace wf
-
 } // namespace csp

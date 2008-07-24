@@ -39,7 +39,7 @@
 #	pragma warning(pop)
 #endif
 
-CSP_NAMESPACE
+namespace csp {
 
 
 /** Minimal wrapper for GNU CommonC++ UDPReceive.
@@ -91,7 +91,7 @@ public:
 };
 
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPLIB_NET_SOCKETS_H__
 

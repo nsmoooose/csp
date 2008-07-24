@@ -36,7 +36,7 @@
 #include <cstdio>
 #include <cassert>
 
-CSP_NAMESPACE
+namespace csp {
 
 
 class DataArchive;
@@ -506,7 +506,7 @@ public:
 		Reader(reinterpret_cast<const uint8*>(data), n, archive, loadall) { }
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 
 #endif // __CSPLIB_DATA_PACK_H__

@@ -42,7 +42,7 @@
 #include <vector>
 
 
-CSP_NAMESPACE
+namespace csp {
 
 
 class Matrix3;
@@ -354,7 +354,7 @@ inline Vector3 operator * (double lhs, const Vector3 &rhs) { return rhs*lhs; }
 
 CSPLIB_EXPORT std::ostream &operator <<(std::ostream &o, Vector3 const &v);
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 
 #endif // __CSPLIB_DATA_VECTOR3_H__

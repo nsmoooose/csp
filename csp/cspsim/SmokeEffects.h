@@ -60,7 +60,7 @@ namespace osgParticle {
 	class Emitter;
 }
 
-CSP_NAMESPACE
+namespace csp {
 
 namespace fx {
 
@@ -211,7 +211,7 @@ protected:
 
 } // fx
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPSIM_SMOKEEFFECTS_H__
 

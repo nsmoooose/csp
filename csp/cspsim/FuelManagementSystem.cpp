@@ -27,7 +27,7 @@
 #include <csp/cspsim/stores/Stores.h>
 #include <csp/cspsim/stores/StoresManagementSystem.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 CSP_XML_BEGIN(FuelNode)
 	CSP_DEF("key", m_Key, true)
@@ -170,5 +170,5 @@ void FuelManagementSystem::rebind() {
 	}
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

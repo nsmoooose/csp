@@ -55,7 +55,7 @@
 #include <string>
 #include <vector>
 
-CSP_NAMESPACE
+namespace csp {
 
 class InputInterface;
 
@@ -189,7 +189,7 @@ protected:
 	bool m_MousePreDrag;
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPSIM_HID_H__
 

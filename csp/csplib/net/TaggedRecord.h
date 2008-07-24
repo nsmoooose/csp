@@ -54,7 +54,7 @@
 #include <ostream>
 
 
-CSP_NAMESPACE
+namespace csp {
 
 
 /** Simple Writer class for serializing to a memory buffer.
@@ -294,7 +294,7 @@ protected:
 };
 
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPLIB_NET_TAGGED_RECORD_H__
 

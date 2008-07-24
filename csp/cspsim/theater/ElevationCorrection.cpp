@@ -33,7 +33,7 @@
 #include <osg/io_utils>
 #endif
 
-CSP_NAMESPACE
+namespace csp {
 
 ElevationCorrection::ElevationCorrection(TerrainObject *terrain, float x, float y, float angle): LayoutTransform(x, y, angle) {
 	m_Terrain = terrain;
@@ -53,5 +53,5 @@ osg::Vec3 ElevationCorrection::operator()(osg::Vec3 const &offset) const {
 	return offset + osg::Z_AXIS * elevation;
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

@@ -29,7 +29,7 @@
 #include <stdexcept>
 #include <iostream>
 
-CSP_NAMESPACE
+namespace csp {
 
 const float Handle::m_Sampling = 1.0f/210;
 
@@ -107,5 +107,5 @@ InputEvent::InputEvent() {
 	}
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

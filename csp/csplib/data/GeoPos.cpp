@@ -32,7 +32,7 @@
 #include <iomanip>
 
 
-CSP_NAMESPACE
+namespace csp {
 
 namespace GeoRef {
 	const ReferenceEllipsoid Airy1830           (6377563.396, 6356256.909);
@@ -567,5 +567,5 @@ std::ostream &operator <<(std::ostream &o, UTM const &q) { return o << q.asStrin
 std::ostream &operator <<(std::ostream &o, ECEF const &q) { return o << q.asString(); }
 
 
-CSP_NAMESPACE_END
+} // namespace csp
 

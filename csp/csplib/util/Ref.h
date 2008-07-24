@@ -41,7 +41,7 @@
 %import "csp/csplib/util/Properties.h"
 #endif
 
-CSP_NAMESPACE
+namespace csp {
 
 
 class LinkCore;
@@ -305,7 +305,7 @@ protected:
 };
 
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 
 #endif //__CSPLIB_UTIL_REF_H__

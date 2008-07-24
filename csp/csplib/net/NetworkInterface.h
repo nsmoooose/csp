@@ -35,7 +35,7 @@
 #include <deque>
 
 
-CSP_NAMESPACE
+namespace csp {
 
 // forward declarations
 class NetworkNode;
@@ -410,6 +410,6 @@ public:
 	inline int getNominalOutgoingBandwidth() const { return m_OutgoingBandwidth; }
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPLIB_NET_NETWORKINTERFACE_H__

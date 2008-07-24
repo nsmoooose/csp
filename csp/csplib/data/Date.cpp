@@ -27,7 +27,7 @@
 #include <ostream>
 
 
-CSP_NAMESPACE
+namespace csp {
 
 
 const Date::day_t Date::days_in_months[2][13] =
@@ -411,6 +411,6 @@ std::ostream &operator <<(std::ostream &o, DateZulu const &d) { return o << d.as
 std::ostream &operator <<(std::ostream &o, SimDate const &d) { return o << d.asString(); }
 
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 

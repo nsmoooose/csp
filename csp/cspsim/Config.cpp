@@ -27,7 +27,7 @@
 
 #include <iostream>
 
-CSP_NAMESPACE
+namespace csp {
 
 /**
  * Global configuration file
@@ -112,6 +112,6 @@ extern CSPSIM_EXPORT void setUITheme(const std::string& themeName) {
 	g_Config.setPath("UI", "ThemeName", themeName);
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 

@@ -28,7 +28,7 @@
 
 #include <csp/cspsim/theater/FeatureModel.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 /**
  * class FeatureGroupModel (STATIC, ABSTRACT)
@@ -42,7 +42,7 @@ public:
 	virtual ~FeatureGroupModel();
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPSIM_THEATER_FEATUREGROUPMODEL_H__
 

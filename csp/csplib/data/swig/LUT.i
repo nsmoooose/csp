@@ -66,7 +66,7 @@
 }
 
 
-CSP_NAMESPACE
+namespace csp {
 
 class Interpolation {
 	Interpolation();
@@ -128,7 +128,7 @@ public:
 
 %exception;
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __NO_LUT__
 

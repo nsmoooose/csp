@@ -43,9 +43,7 @@
 #include <algorithm>
 #include <cmath>
 
-
-CSP_NAMESPACE
-
+namespace csp {
 
 /**
  * @brief Quaternion class using double-precision.
@@ -54,6 +52,10 @@ CSP_NAMESPACE
  * representation for rotations.  Many thorough treatments of
  * quaternions and their use in simulations can be readily found
  * on the web.
+ *
+ * Good introductions to Quaternions at:
+ * http://www.gamasutra.com/features/programming/19980703/quaternions_01.htm
+ * http://mathworld.wolfram.com/Quaternion.html
  *
  * @ingroup BaseTypes
  */
@@ -479,7 +481,6 @@ public:
 
 CSPLIB_EXPORT std::ostream &operator <<(std::ostream &o, Quat const &q);
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif  // __CSPLIB_DATA_QUAT_H__
-

@@ -40,7 +40,7 @@
 #include <iosfwd>
 #include <string>
 
-CSP_NAMESPACE
+namespace csp {
 
 
 CSP_EXCEPTION(TypeMismatch)
@@ -228,7 +228,7 @@ private:
 CSPLIB_EXPORT std::ostream &operator <<(std::ostream &o, TypeAdapter const &t);
 
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 
 #endif // __CSPLIB_DATA_TYPEADAPTER_H__

@@ -27,7 +27,7 @@
 
 #include <csp/cspsim/DynamicObject.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 class Store;
 
@@ -62,7 +62,7 @@ private:
 	bool m_DetachedModel;
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPSIM_STORES_PROJECTILE_H__
 

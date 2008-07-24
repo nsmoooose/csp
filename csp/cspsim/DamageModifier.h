@@ -28,7 +28,7 @@
 
 #include <csp/csplib/data/Object.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 /**
  * clss DamageModifier (STATIC)
@@ -54,7 +54,7 @@ public:
 	virtual void postCreate() {}
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif  // __DAMAGEMODIFIER_H__
 

@@ -25,7 +25,7 @@
 
 #include <csp/csplib/util/Testing.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 template <typename T> struct float_eq_t {};
 template <> struct float_eq_t<float> { static bool call(float a, float b) { return test::float_eq(a, b); } };
@@ -164,5 +164,5 @@ CSP_TESTFIXTURE(Testing) {
 	}
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 

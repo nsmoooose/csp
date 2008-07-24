@@ -27,7 +27,7 @@
 
 #include <csp/csplib/util/Ref.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 class FeatureObjectModel;
 
@@ -52,7 +52,7 @@ public:
 	Feature(FeatureObjectModel const *model, char value_ = 0);
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPSIM_THEATER_FEATURE_H__
 

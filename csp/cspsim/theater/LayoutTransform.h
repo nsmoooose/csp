@@ -30,7 +30,7 @@
 #include <csp/csplib/util/Namespace.h>
 #include <osg/Vec3>
 
-CSP_NAMESPACE
+namespace csp {
 
 class Vector3;
 
@@ -52,7 +52,7 @@ public:
 	float getAngle() const { return m_Angle; }
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPSIM_THEATER_LAYOUTTRANSFORM_H__
 

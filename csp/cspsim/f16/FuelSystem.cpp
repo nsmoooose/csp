@@ -34,7 +34,7 @@
 #include <csp/csplib/data/Enum.h>
 #include <csp/csplib/util/Conversions.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 namespace f16 {
 
@@ -339,5 +339,5 @@ const double FuelSystem::m_NominalFuelDensity = 0.8; // kg/l
 
 } // namespace f16
 
-CSP_NAMESPACE_END
+} // namespace csp
 

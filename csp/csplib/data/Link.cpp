@@ -32,7 +32,7 @@
 #include <sstream>
 
 
-CSP_NAMESPACE
+namespace csp {
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -145,5 +145,5 @@ LinkCore LinkCore::_internal_load(DataArchive* archive, ObjectID path) {
 	return _ppb;
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

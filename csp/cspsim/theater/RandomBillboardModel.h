@@ -31,7 +31,7 @@
 
 #include <vector>
 
-CSP_NAMESPACE
+namespace csp {
 
 class FeatureQuad;
 class FeatureSceneGroup;
@@ -82,7 +82,7 @@ public:
 
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPSIM_THEATER_RANDOMBILLBOARDMODEL_H__
 

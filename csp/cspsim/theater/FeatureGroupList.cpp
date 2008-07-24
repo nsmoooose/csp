@@ -29,7 +29,7 @@
 #include <csp/csplib/data/ObjectInterface.h>
 
 
-CSP_NAMESPACE
+namespace csp {
 
 CSP_XML_BEGIN(FeatureGroupList)
 	CSP_DEF("feature_groups", m_FeatureGroups, true)
@@ -49,5 +49,5 @@ void FeatureGroupList::projectFeatureGroups(Projection const &map) {
 	}
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

@@ -34,7 +34,7 @@
 #include <csp/cspsim/hud/DisplayTools.h>
 #include <sigc++/trackable.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 namespace hud {
 	namespace display { class Element; }
@@ -284,7 +284,7 @@ private:
 };
 
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPSIM_F16_MULTIFUNCTIONDISPLAY_H__
 

@@ -33,7 +33,7 @@
 
 #include <algorithm>
 
-CSP_NAMESPACE
+namespace csp {
 
 using bus::Kinetics;
 
@@ -197,5 +197,5 @@ void GroundCollisionDynamics::computeForceAndMoment(double) {
 	}
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

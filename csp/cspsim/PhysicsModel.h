@@ -35,7 +35,7 @@
 
 #include <csp/cspsim/System.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 
 class BaseDynamics;
@@ -168,7 +168,7 @@ private:
 	bool m_AddPseudoForces;
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif  // __PHYSICSMODEL_H__
 

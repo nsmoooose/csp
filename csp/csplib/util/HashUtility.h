@@ -34,7 +34,7 @@
 #include <string>
 
 
-CSP_NAMESPACE
+namespace csp {
 
 
 // Log a fatal error and abort the program.  Also declared in Log.h, but
@@ -269,7 +269,7 @@ inline fprint32 make_unordered_fingerprint(fprint32 x, fprint32 y) {
 //@}
 
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 
 #endif // __CSPLIB_UTIL_HASHUTILITY_H__

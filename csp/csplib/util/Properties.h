@@ -30,7 +30,7 @@
 #include <csp/csplib/util/Export.h>
 
 
-CSP_NAMESPACE
+namespace csp {
 
 
 /** Inheritable property for classes that cannot be copied.
@@ -80,7 +80,7 @@ struct HasBase {
 };
 
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 
 #endif // __CSPLIB_UTIL_PROPERTIES_H__

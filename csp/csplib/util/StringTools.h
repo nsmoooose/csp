@@ -32,7 +32,7 @@
 #include <deque>
 #include <vector>
 
-CSP_NAMESPACE
+namespace csp {
 
 
 /** Convert a string to uppercase (in place).
@@ -149,7 +149,7 @@ std::string CSPLIB_EXPORT stringprintf(const char *fmt,
 	FormatArg const &a0=FormatArg::nil, FormatArg const &a1=FormatArg::nil, FormatArg const &a2=FormatArg::nil,
 	FormatArg const &a3=FormatArg::nil, FormatArg const &a4=FormatArg::nil, FormatArg const &a5=FormatArg::nil);
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPLIB_UTIL_STRINGTOOLS_H__
 

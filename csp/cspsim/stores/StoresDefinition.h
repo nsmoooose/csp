@@ -32,7 +32,7 @@
 #include <map>
 #include <string>
 
-CSP_NAMESPACE
+namespace csp {
 
 class HardpointData;
 
@@ -70,7 +70,7 @@ private:
 	HardpointMap m_HardpointMap;
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPSIM_STORESDEFINITION_H__
 

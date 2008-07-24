@@ -29,7 +29,7 @@
 
 #define CSPLIB_API_VERSION 4
 
-CSP_NAMESPACE
+namespace csp {
 
 /**
  * Returns a string representing the csplib version number.  For unversioned
@@ -43,7 +43,7 @@ CSPLIB_EXPORT const char *getVersion();
  */
 CSPLIB_EXPORT const char *buildDate();
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 
 /**

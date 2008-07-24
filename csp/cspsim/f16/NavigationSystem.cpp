@@ -32,7 +32,7 @@
 #include <csp/csplib/util/Math.h>
 #include <csp/csplib/util/Conversions.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 NavigationSystem::NavigationSystem() {
 	m_Projection = CSPSim::theSim->getTheater()->getTerrain()->getProjection();
@@ -102,5 +102,5 @@ Vector3 NavigationSystem::toWorld(LLA const &position) {
 	return m_Projection->convert(position);
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

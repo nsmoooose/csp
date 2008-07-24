@@ -28,7 +28,7 @@
 #include <csp/csplib/data/ObjectInterface.h>
 #include <csp/csplib/util/StringTools.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 CSP_XML_BEGIN(Projectile)
 CSP_XML_END
@@ -71,5 +71,5 @@ void Projectile::createSceneModel() {
 	}
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

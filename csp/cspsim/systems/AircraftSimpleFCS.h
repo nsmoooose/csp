@@ -32,7 +32,7 @@
 #include <algorithm>
 #include <cmath>
 
-CSP_NAMESPACE
+namespace csp {
 
 class AircraftSimpleFCS: public System {
 public:
@@ -69,7 +69,7 @@ private:
 	double m_MinG;
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPSIM_AICRAFTSIMPLEFCS_H__
 

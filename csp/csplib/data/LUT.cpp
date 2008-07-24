@@ -27,7 +27,7 @@
 #include <sstream>
 
 
-CSP_NAMESPACE
+namespace csp {
 
 
 // GCC 3.4 and up require a copy constructor for const references to temporaries,
@@ -754,6 +754,6 @@ template class CSPLIB_EXPORT LUT<2, float>;
 template class CSPLIB_EXPORT LUT<3, float>;
 
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 

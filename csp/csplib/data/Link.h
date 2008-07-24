@@ -42,7 +42,7 @@
 #include <cassert>
 
 
-CSP_NAMESPACE
+namespace csp {
 
 
 class DataArchive;
@@ -427,7 +427,7 @@ void TypeAdapter::set(Link<Q> &x) const {
 	}
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPLIB_DATA_LINK_H__
 

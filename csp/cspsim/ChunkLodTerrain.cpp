@@ -37,7 +37,7 @@
 #include <csp/modules/chunklod/ChunkLodDrawable>
 #include <csp/modules/chunklod/TextureQuadTree>
 
-CSP_NAMESPACE
+namespace csp {
 
 /**
  * TODO
@@ -290,5 +290,5 @@ osg::Node *ChunkLodTerrain::getNode() {
 	return m_Node.get();
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

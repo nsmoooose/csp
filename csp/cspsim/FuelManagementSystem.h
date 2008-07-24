@@ -33,7 +33,7 @@
 #include <csp/csplib/data/ObjectInterface.h>
 #include <csp/csplib/data/Real.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 class FuelTank;
 class FuelManagementSystem;
@@ -214,7 +214,7 @@ private:
 	FuelNode::NodeMap m_NodeMap;
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPSIM_FUELMANAGEMENTSYSTEM_H__
 

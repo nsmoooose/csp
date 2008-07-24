@@ -31,7 +31,7 @@
 #include <cstdio>
 #include <iostream>
 
-CSP_NAMESPACE
+namespace csp {
 
 LLA GnomonicProjection::getCenter() const {
 	return LLA(m_Lat0, m_Lon0);
@@ -206,5 +206,5 @@ Vector3 SecantGnomonicProjection::getUp(Vector3 const &) const {
 	return Vector3::ZAXIS;
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

@@ -28,7 +28,7 @@
 #include <csp/csplib/util/Properties.h>
 #include <csp/csplib/util/Timing.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 
 /** Class for managing iterations of a timed loop.
@@ -176,7 +176,7 @@ private:
 	}
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPLIB_NET_STOPWATCH_H__
 

@@ -42,7 +42,7 @@ namespace osg {
 	class Geometry;
 }
 
-CSP_NAMESPACE
+namespace csp {
 
 class FeatureSceneGroup;
 class LayoutTransform;
@@ -94,7 +94,7 @@ public:
 
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPSIM_THEATER_RANDOMFORESTMODEL_H__
 

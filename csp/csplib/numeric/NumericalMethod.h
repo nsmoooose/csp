@@ -25,7 +25,7 @@
 #include <csp/csplib/util/Export.h>
 #include <csp/csplib/numeric/Vector.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 namespace numeric {
 
@@ -253,7 +253,7 @@ private:
 
 } // namespace numeric
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPLIB_NUMERIC_NUMERICALMETHOD_H__
 

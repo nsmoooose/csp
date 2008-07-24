@@ -24,7 +24,7 @@
 #include <csp/cspsim/Bus.h>
 #include <csp/csplib/util/StringTools.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 Bus::Bus(std::string const &name): m_Bound(false), m_Enabled(true), m_Name(name), m_Status(1.0) {
 	CSPLOG(DEBUG, OBJECT) << "Bus(" << name << ") created.";
@@ -79,5 +79,5 @@ void Bus::setEnabled(bool enabled) {
 	m_Enabled = enabled;
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

@@ -38,7 +38,7 @@
 
 // TODO barrier, unit tests
 
-CSP_NAMESPACE
+namespace csp {
 
 
 /** Convert a timeout in seconds to a timeout_t in milliseconds.  The latter
@@ -305,7 +305,7 @@ CSP_SCOPEDLOCK(WriteUnlock, ReadWriteLock, unlock, lockWrite)
 CSP_SCOPEDLOCK(SemaphoreUnlock, Semaphore, post, wait)
 
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPLIB_THREAD_SYNCHRONIZATION_H__
 

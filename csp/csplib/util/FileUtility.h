@@ -34,7 +34,7 @@
 #include <csp/csplib/util/Namespace.h>
 
 
-CSP_NAMESPACE
+namespace csp {
 
 /**
  * @defgroup FileUtils File Utilities
@@ -163,7 +163,7 @@ namespace ospath {
 //@}
 
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPLIB_UTIL_FILEUTILITY_H__
 

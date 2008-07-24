@@ -24,7 +24,7 @@
 
 #include <csp/cspsim/f16/MasterModes.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 namespace f16 {
 
@@ -56,5 +56,5 @@ void MasterModeSelection::updateMode() {
 
 } // namespace f16
 
-CSP_NAMESPACE_END
+} // namespace csp
 

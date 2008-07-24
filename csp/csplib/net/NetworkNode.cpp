@@ -27,7 +27,7 @@
 #include <csp/csplib/net/NetworkNode.h>
 #include <sstream>
 
-CSP_NAMESPACE
+namespace csp {
 
 NetworkNode::NetworkNode() {
 	m_port = 0;
@@ -84,5 +84,5 @@ std::string NetworkNode::ipToString(uint32 addr) {
 	return os.str();
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

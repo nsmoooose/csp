@@ -29,7 +29,7 @@
 #include <csp/cspsim/System.h>
 #include <csp/csplib/data/Vector3.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 /** Implements the F-16 Ground Avoidance Advisory Function (GAAF).
  *
@@ -117,7 +117,7 @@ private:
 	DescentWarningState m_DescentWarningState;
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPSIM_F16_GROUND_AVOIDANCE_ADVISORY_H__
 

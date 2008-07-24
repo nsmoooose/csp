@@ -48,7 +48,7 @@
 #include <cassert>
 
 
-CSP_NAMESPACE
+namespace csp {
 
 // characters surrounding section names ('[' and ']' for typical windows .ini)
 #define SECTION_START   '['
@@ -532,5 +532,5 @@ static config_test t;
 #endif // __TEST__
 
 
-CSP_NAMESPACE_END
+} // namespace csp
 

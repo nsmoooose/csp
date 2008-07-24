@@ -32,7 +32,7 @@
 #include <cstdlib>
 
 
-CSP_NAMESPACE
+namespace csp {
 
 
 // static StackTrace to avoid allocations in the signal handlers.
@@ -212,5 +212,5 @@ void AutoTrace::setLog(LogStream &log) {
 }
 
 
-CSP_NAMESPACE_END
+} // namespace csp
 

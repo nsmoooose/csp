@@ -52,7 +52,7 @@
 #include <csp/cspsim/FlightModel.h>
 #include <csp/csplib/data/ObjectInterface.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 CSP_XML_BEGIN(FlightModel)
 	CSP_DEF("wing_span", m_WingSpan, true)
@@ -102,5 +102,5 @@ double FlightModel::groundEffect(double height) {
 	return 1.0;
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

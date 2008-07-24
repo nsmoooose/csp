@@ -31,7 +31,7 @@
 
 #include <csp/cspsim/BaseDynamics.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 class EngineDynamics;
 class ThrustData;
@@ -152,7 +152,7 @@ public:
 	std::vector<Vector3> getSmokeEmitterLocation() const;
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPSIM_ENGINE_H__
 

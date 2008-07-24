@@ -39,11 +39,6 @@
  *
  */
 
-/**
- * @namespace spatial
- * @brief Spatial representation and indexing
- */
-
 #ifndef __CSPLIB_SPATIAL_QUADTREE_H__
 #define __CSPLIB_SPATIAL_QUADTREE_H__
 
@@ -56,8 +51,9 @@
 #include <iosfwd>
 
 
-CSP_NAMESPACE
+namespace csp {
 
+/** Spatial representation and indexing. */
 namespace spatial {
 
 typedef uint32 Coordinate;
@@ -381,8 +377,7 @@ extern CSPLIB_EXPORT std::ostream & operator << (std::ostream &os, Region const 
 
 
 } // namespace spatial
-
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPLIB_SPATIAL_QUADTREE_H__
 

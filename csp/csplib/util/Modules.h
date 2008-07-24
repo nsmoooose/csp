@@ -30,7 +30,7 @@
 #include <csp/csplib/util/Properties.h>
 #include <string>
 
-CSP_NAMESPACE
+namespace csp {
 
 /** Interface for loading shared libraries at runtime.  Works only on systems
  *  that support dynamic loading.
@@ -56,7 +56,7 @@ public:
 	static bool isLoaded(std::string const &path);
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPLIB_UTIL_MODULES_H__
 

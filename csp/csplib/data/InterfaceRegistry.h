@@ -35,7 +35,7 @@
 #include <csp/csplib/util/Singleton.h>
 
 
-CSP_NAMESPACE
+namespace csp {
 
 
 class InterfaceProxy;
@@ -112,7 +112,7 @@ private:
 };
 
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPLIB_DATA_INTERFACEREGISTRY_H__
 

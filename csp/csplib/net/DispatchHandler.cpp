@@ -25,7 +25,7 @@
 
 #include <csp/csplib/net/DispatchHandler.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 
 DispatchHandler::DispatchHandler(Ref<MessageQueue> const &queue): m_Queue(queue) {
@@ -65,5 +65,5 @@ inline Ref<BaseCallback> DispatchHandler::getCallback(const TaggedRecord::Id id)
 	return (iter == m_DispatchMap.end() ? 0 : iter->second);
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

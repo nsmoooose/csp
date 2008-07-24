@@ -36,7 +36,7 @@
 #include <vector>
 
 
-CSP_NAMESPACE
+namespace csp {
 
 
 class DataArchive;
@@ -188,7 +188,7 @@ private:
 };
 
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPLIB_DATA_DATAMANAGER_H__
 

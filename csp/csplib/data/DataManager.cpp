@@ -27,7 +27,7 @@
 #include <csp/csplib/util/Exception.h>
 
 
-CSP_NAMESPACE
+namespace csp {
 
 
 DataManager::DataManager() {
@@ -159,5 +159,5 @@ DataArchive *DataManager::findArchive(ObjectID const &id, std::string const &pat
 	return archive;
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

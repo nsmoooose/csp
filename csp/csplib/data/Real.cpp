@@ -29,7 +29,7 @@
 #include <sstream>
 
 
-CSP_NAMESPACE
+namespace csp {
 
 // shared random number generator for Real instances
 // XXX in multithreaded environments this *must* be replaced
@@ -90,5 +90,5 @@ std::string Real::asString() const {
 
 std::ostream &operator <<(std::ostream &o, Real const &r) { return o << r.asString(); }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

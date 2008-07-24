@@ -37,7 +37,7 @@
 #include <sstream>
 #include <iomanip>
 
-CSP_NAMESPACE
+namespace csp {
 
 CSP_XML_BEGIN(AircraftFlightSensors)
 CSP_XML_END
@@ -98,5 +98,5 @@ void AircraftFlightSensors::getInfo(InfoList &info) const {
 	info.push_back(line.str());
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

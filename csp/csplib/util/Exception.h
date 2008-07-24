@@ -32,7 +32,7 @@
 #include <csp/csplib/util/Namespace.h>
 
 
-CSP_NAMESPACE
+namespace csp {
 
 class StackTrace;
 
@@ -151,7 +151,7 @@ public: \
  */
 CSP_EXCEPTION(PythonException)
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 
 #endif // __CSPLIB_UTIL_EXCEPTION_H__

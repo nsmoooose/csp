@@ -27,7 +27,7 @@
 
 #include <csp/cspsim/DynamicObject.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 /** Outline of a tank object class -- not functional.
  */
@@ -74,7 +74,7 @@ protected:
 	DataChannel<double>::RefT b_Heading;
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPSIM_TANKOBJECT_H__
 

@@ -41,7 +41,7 @@
 #include <osgText/Font>
 
 
-CSP_NAMESPACE
+namespace csp {
 
 CSP_XML_BEGIN(MultiFunctionDisplay)
 	CSP_DEF("channel", m_ChannelName, true)
@@ -914,5 +914,5 @@ DisplayText *MultiFunctionDisplay::osb(unsigned index) {
 	return m_OSB[index].get();
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

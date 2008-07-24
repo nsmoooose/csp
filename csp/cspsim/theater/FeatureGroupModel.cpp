@@ -24,10 +24,10 @@
 
 #include <csp/cspsim/theater/FeatureGroupModel.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 FeatureGroupModel::FeatureGroupModel() {}
 FeatureGroupModel::~FeatureGroupModel() {}
 
-CSP_NAMESPACE_END
+} // namespace csp
 

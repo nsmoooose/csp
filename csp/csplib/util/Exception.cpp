@@ -28,7 +28,7 @@
 #include <iostream>
 #include <sstream>
 
-CSP_NAMESPACE
+namespace csp {
 
 
 ExceptionBase::ExceptionBase(std::string const &type, std::string const &msg, bool trace): _trace(0) {
@@ -119,5 +119,5 @@ std::ostream &operator<<(std::ostream &out, const ExceptionBase& exc) {
 	return out;
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

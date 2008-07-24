@@ -26,7 +26,7 @@
 #include <csp/cspsim/CockpitInterface.h>
 #include <csp/csplib/util/StringTools.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 CockpitSwitch::CockpitSwitch(Enumeration const *states, std::string const &channel, std::string const &command, std::string const &initial): m_Command(command) {
 	assert(states);
@@ -104,5 +104,5 @@ void CockpitInterface::registerChannels(Bus *bus) {
 }
 
 
-CSP_NAMESPACE_END
+} // namespace csp
 

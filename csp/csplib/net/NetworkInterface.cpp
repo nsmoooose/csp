@@ -65,7 +65,7 @@
 //
 
 
-CSP_NAMESPACE
+namespace csp {
 
 
 #pragma pack(push, 1)
@@ -897,4 +897,4 @@ const NetworkNode &NetworkInterface::getLocalNode() const {
 	return *m_LocalNode;
 }
 
-CSP_NAMESPACE_END
+} // namespace csp

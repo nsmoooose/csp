@@ -33,7 +33,7 @@
 #include <csp/csplib/data/Object.h>
 #include <csp/csplib/data/Vector3.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 /**
  * class FlightModel
@@ -139,7 +139,7 @@ protected:
 	Vector3 m_CenterOfMassBody;
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPSIM_FLIGHTMODEL_H__
 

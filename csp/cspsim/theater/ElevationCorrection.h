@@ -29,7 +29,7 @@
 #include <csp/cspsim/theater/LayoutTransform.h>
 #include <osg/Vec3>
 
-CSP_NAMESPACE
+namespace csp {
 
 class TerrainObject;
 
@@ -47,7 +47,7 @@ public:
 	osg::Vec3 operator()(osg::Vec3 const &offset) const;
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPSIM_THEATER_ELEVATIONCORRECTION_H__
 

@@ -26,7 +26,7 @@
 #include <csp/cspsim/GearAnimation.h>
 #include <csp/csplib/data/ObjectInterface.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 CSP_XML_BEGIN(M2kGearAnimation)
 	CSP_DEF("absorber02_length", m_Absorber02Length, false)
@@ -80,5 +80,5 @@ void M2kGearAnimation::registerChannels(Bus* bus) {
 	b_Compression = bus->registerLocalDataChannel<double>(prefix() + ".Compression", 0.0);
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

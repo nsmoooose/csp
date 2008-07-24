@@ -29,7 +29,7 @@
 #include <csp/cspsim/f16/MultiFunctionDisplay.h>
 #include <map>
 
-CSP_NAMESPACE
+namespace csp {
 
 namespace f16 {
 
@@ -74,7 +74,7 @@ protected:
 
 } // namespace f16
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPSIM_F16_STORESMANAGEMENTPAGES_H__
 

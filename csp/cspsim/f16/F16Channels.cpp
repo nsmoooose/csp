@@ -25,7 +25,7 @@
 
 #include <csp/cspsim/f16/F16Channels.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 namespace bus {
 
@@ -43,5 +43,5 @@ const char *F16::INSAttitude = "F16.INS.Attitude";
 
 } // namespace bus
 
-CSP_NAMESPACE_END
+} // namespace csp
 

@@ -29,7 +29,7 @@
 #include <csp/csplib/util/Namespace.h>
 #include <csp/csplib/util/Properties.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 /** Creates a single, static instance of the templated class.
  *  TODO could stand lots of improvement (delete priority, thread
@@ -57,7 +57,7 @@ protected:
 	virtual ~Singleton() {}
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPLIB_UTIL_SINGLETON_H__
 

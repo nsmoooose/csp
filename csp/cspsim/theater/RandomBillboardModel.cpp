@@ -40,7 +40,7 @@
 #include <osg/Geometry>
 #include <osgUtil/Optimizer>
 
-CSP_NAMESPACE
+namespace csp {
 
 CSP_XML_BEGIN(RandomBillboardModel)
 	CSP_DEF("models", m_Models, true)
@@ -122,5 +122,5 @@ void RandomBillboardModel::addSceneModel(FeatureSceneGroup *group, LayoutTransfo
 	//optimizer.optimize(group);
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

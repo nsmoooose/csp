@@ -37,7 +37,7 @@ namespace osg { class Group; }
 namespace osgAL { class SoundNode; }
 namespace osgAL { class SoundState; }
 
-CSP_NAMESPACE
+namespace csp {
 
 class SceneModel;
 class SoundEffect;
@@ -96,7 +96,7 @@ private:
 };
 
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __SOUNDMODEL_H__
 

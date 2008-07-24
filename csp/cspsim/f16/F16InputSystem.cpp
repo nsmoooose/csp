@@ -25,7 +25,7 @@
 
 #include <csp/cspsim/f16/F16InputSystem.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 CSP_XML_BEGIN(F16InputSystem)
 CSP_XML_END
@@ -52,5 +52,5 @@ void AircraftInputSystem::IncAirbrake() {
 	m_AirbrakeInput.setValue(v);
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

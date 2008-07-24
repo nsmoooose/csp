@@ -37,7 +37,7 @@
 
 #include <vector>
 
-CSP_NAMESPACE
+namespace csp {
 
 class GearAnimation;
 
@@ -336,7 +336,7 @@ private:
 	void onGearCommand();
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPSIM_LANDINGGEAR_H__
 

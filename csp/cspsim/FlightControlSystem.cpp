@@ -40,7 +40,7 @@
 #include <vector>
 
 
-CSP_NAMESPACE
+namespace csp {
 
 // FIXME circuits can create circular references.  need to add an "unlink"
 // function to zero all references, and call that for each node when the
@@ -756,5 +756,5 @@ CSP_XML_END
 
 //} // namespace fcsnode
 
-CSP_NAMESPACE_END
+} // namespace csp
 

@@ -27,7 +27,7 @@
 
 #include <csp/csplib/util/Namespace.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 /** A optional class inspired by boost::optional.
  */
@@ -109,6 +109,6 @@ private:
 	T* m_object;
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif //__CSPLIB_UTIL_OPTIONAL_H__

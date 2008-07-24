@@ -29,7 +29,7 @@
 
 #include <cstdio>
 
-CSP_NAMESPACE
+namespace csp {
 
 struct DataRecorder::File {
 	File(FILE *file): fptr(file) { }
@@ -199,6 +199,6 @@ void DataRecorder::_flush() {
 	m_Count = 0;
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 

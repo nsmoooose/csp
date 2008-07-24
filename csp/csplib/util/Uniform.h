@@ -30,7 +30,7 @@
 
 #include <cstring>  // for memcpy
 
-CSP_NAMESPACE
+namespace csp {
 
 
 //@{
@@ -113,7 +113,7 @@ inline T1 alias_cast(T2 src) {
 
 //@}
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPLIB_UTIL_UNIFORM_H__
 

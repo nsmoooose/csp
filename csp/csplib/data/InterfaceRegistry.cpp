@@ -32,7 +32,7 @@
 #include <vector>
 
 
-CSP_NAMESPACE
+namespace csp {
 
 InterfaceRegistry &InterfaceRegistry::getInterfaceRegistry() {
 	static InterfaceRegistry registry;
@@ -90,6 +90,6 @@ void InterfaceRegistry::addInterface(const char *name, hasht id, InterfaceProxy 
 	CSPLOG(DEBUG, REGISTRY) << "Registering interface<" << name << "> [" << id << "]";
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 

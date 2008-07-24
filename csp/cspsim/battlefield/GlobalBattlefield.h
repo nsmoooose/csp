@@ -39,7 +39,7 @@
 
 #include <set>
 
-CSP_NAMESPACE
+namespace csp {
 
 class Server;
 
@@ -523,7 +523,7 @@ private:
 	ClientDataMap m_ClientData;
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPSIM_BATTLEFIELD_GLOBALBATTLEFIELD_H__
 

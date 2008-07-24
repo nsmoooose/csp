@@ -31,7 +31,7 @@
 #include <csp/csplib/util/Math.h>
 #include <csp/csplib/data/ObjectInterface.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 CSP_XML_BEGIN(F16GearDynamics)
 CSP_XML_END
@@ -95,5 +95,5 @@ bool F16GearDynamics::gearHandleRequestHandler(bool const &up) {
 
 F16GearDynamics::F16GearDynamics(): m_GearHandleRequest(this, &F16GearDynamics::gearHandleRequestHandler) { }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

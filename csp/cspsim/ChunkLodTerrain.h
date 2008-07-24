@@ -48,7 +48,7 @@ namespace osg {
 }
 
 
-CSP_NAMESPACE
+namespace csp {
 
 /**
  * class ChunkLodTerrain
@@ -122,7 +122,7 @@ protected:
 	bool m_Loaded;
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CHUNKLODTERRAIN_H__
 

@@ -38,7 +38,7 @@ namespace osg {
 namespace osgUtil { class SceneView; }
 
 
-CSP_NAMESPACE
+namespace csp {
 
 //struct SDL_Surface;
 
@@ -70,7 +70,7 @@ private:
 	int m_width, m_height;
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPSIM_LOGOSCREEN_H__
 

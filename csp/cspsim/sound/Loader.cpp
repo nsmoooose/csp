@@ -32,7 +32,7 @@
 #include <map>
 #include <cassert>
 
-CSP_NAMESPACE
+namespace csp {
 
 namespace {
 
@@ -100,7 +100,7 @@ void SoundFileLoader::init() {
 }
 
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 
 /* test code:

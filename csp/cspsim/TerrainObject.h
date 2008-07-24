@@ -42,7 +42,7 @@ namespace osg {
 	class LineSegment;
 }
 
-CSP_NAMESPACE
+namespace csp {
 
 class Projection;
 
@@ -135,7 +135,7 @@ protected:
 
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPSIM_TERRAINOBJECT_H__
 

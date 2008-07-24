@@ -45,7 +45,7 @@ namespace Demeter {
 namespace osg { class Node; }
 
 
-CSP_NAMESPACE
+namespace csp {
 
 /**
  * class DemeterTerrain
@@ -131,7 +131,7 @@ protected:
 	Demeter::TerrainTextureFactory * m_TerrainTextureFactory;
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPSIM_DEMETERTERRAIN_H__
 

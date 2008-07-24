@@ -19,7 +19,7 @@
 #include <csp/cspsim/sky/SolarSystem.h>
 #include <csp/cspsim/sky/Magnitude.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 // for typical fields of view (e.g. 60 degrees) on a standard monitor
 // the moon looks unrealistically (albeit accurately) small.  this
@@ -179,5 +179,5 @@ OrbitalBody *SolarSystem::body(unsigned i) {
 }
 
 
-CSP_NAMESPACE_END
+} // namespace csp
 

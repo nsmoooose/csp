@@ -24,7 +24,7 @@
 #include <iostream>
 
 
-CSP_NAMESPACE
+namespace csp {
 
 CSP_STATIC_CONST_DEF(int RecordCodec::MAX_MESSAGE_IDS);
 
@@ -110,5 +110,5 @@ bool RecordCodec::registerMessageId(TaggedRecord::Id id, int local_id) {
 	return true;
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

@@ -27,7 +27,7 @@
 
 #include <csp/cspsim/views/CameraKinematics.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 class CameraCommand {
 public:
@@ -203,7 +203,7 @@ struct CameraCommands {
 };
 
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPSIM_VIEWS_CAMERACOMMAND_H__
 

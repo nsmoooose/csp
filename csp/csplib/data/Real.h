@@ -31,7 +31,7 @@
 #include <string>
 #include <cmath>
 
-CSP_NAMESPACE
+namespace csp {
 
 
 /**
@@ -173,6 +173,6 @@ public:
 
 CSPLIB_EXPORT std::ostream &operator <<(std::ostream &o, Real const &r);
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPLIB_DATA_REAL_H__

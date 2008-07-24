@@ -50,7 +50,7 @@
 #include <limits>
 
 
-CSP_NAMESPACE
+namespace csp {
 
 // verify may be defined as a macro on macs
 #ifdef verify
@@ -158,7 +158,7 @@ inline void verify_floateq(const char *type, A const &lhs, A const &rhs, const c
 #	define CSP_ASSERT_FLOATEQ(A, B)  //< ASSERT floating point values equal
 #endif
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 
 #endif // __CSPLIB_UTIL_VERIFY_H__

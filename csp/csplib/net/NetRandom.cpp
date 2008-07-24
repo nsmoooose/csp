@@ -24,10 +24,10 @@
 
 #include <csp/csplib/net/NetRandom.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 uint32 NetRandom::RandSeed = 152L;
 uint32 NetRandom::NetClock = 0L;
 
-CSP_NAMESPACE_END
+} // namespace csp
 

@@ -25,7 +25,7 @@
 #include <csp/csplib/util/Log.h>
 #include <csp/cspsim/battlefield/Battlefield.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 
 Battlefield::Unit Battlefield::getNextUnit(Unit const &unit, int human, int local, int /*category*/) {
@@ -335,5 +335,5 @@ Battlefield::UnitWrapper::UnitWrapper(ObjectId id, Path const &path, PeerId owne
 	CSP_VERIFY_NE(owner, 0);
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

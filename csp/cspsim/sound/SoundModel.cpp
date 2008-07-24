@@ -37,7 +37,7 @@
 
 #include <cassert>
 
-CSP_NAMESPACE
+namespace csp {
 
 SoundModel::SoundModel(): m_SoundGroup(new osg::Group), m_InternalView(false) {
 }
@@ -164,5 +164,5 @@ void SoundModel::setInternalView(bool internal_view) {
 	}
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

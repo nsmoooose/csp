@@ -25,7 +25,7 @@
 
 %rename(hash_string) CSP(newhasht_cstring)(const char*);
 
-CSP_NAMESPACE
+namespace csp {
 
 %rename(__repr__) HashT::str;
 
@@ -45,5 +45,5 @@ typedef HashT hasht;
 
 HashT newhasht_cstring(const char*);
 
-CSP_NAMESPACE_END
+} // namespace csp
 

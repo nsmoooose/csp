@@ -30,7 +30,7 @@
 #include <csp/cspsim/FlightModel.h>
 #include <csp/csplib/data/LUT.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 /**
  * StabilityFlightModel implements an  aircraft flight model based on stability
@@ -100,7 +100,7 @@ protected:
 	double m_CY;
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif  // __STABILITYFLIGHTMODEL_H__
 

@@ -32,7 +32,7 @@
 #include <csp/csplib/data/ObjectInterface.h>
 #include <csp/csplib/data/DataManager.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 CSP_XML_BEGIN(MissileData)
 CSP_XML_END
@@ -41,5 +41,5 @@ Store *MissileData::createStore() const {
 	return new Missile(this);
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

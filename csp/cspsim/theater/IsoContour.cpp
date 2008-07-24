@@ -25,7 +25,7 @@
 #include <csp/cspsim/theater/IsoContour.h>
 #include <csp/csplib/data/ObjectInterface.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 CSP_XML_BEGIN(RectangularCurve)
 	CSP_DEF("width", m_Width, true)
@@ -36,5 +36,5 @@ CSP_XML_BEGIN(Circle)
 	CSP_DEF("radius", m_Radius, true)
 CSP_XML_END
 
-CSP_NAMESPACE_END
+} // namespace csp
 

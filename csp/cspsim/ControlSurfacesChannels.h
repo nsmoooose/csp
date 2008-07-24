@@ -28,7 +28,7 @@
 
 #include <csp/csplib/util/Namespace.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 namespace bus {
 
@@ -43,7 +43,7 @@ struct ControlSurfaces {
 
 } // namespace bus
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPSIM_CONTROLSURFACES_CHANNELS_H__
 

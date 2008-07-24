@@ -30,7 +30,7 @@
 
 #include <iostream>  // debugging only
 
-CSP_NAMESPACE
+namespace csp {
 
 static const char *StarFlareImage = "sky/star-flare.png";
 
@@ -279,5 +279,5 @@ osg::Geode *StarDome::makeGeode() {
 	return stars;
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

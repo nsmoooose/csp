@@ -48,7 +48,7 @@
 #include <csp/csplib/net/DispatchCache.h>
 
 
-CSP_NAMESPACE
+namespace csp {
 
 
 class DispatchTarget;
@@ -118,7 +118,7 @@ private:
 	Ref<NetworkMessage> m_Message;
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPLIB_NET_DISPATCHMANAGER_H__
 

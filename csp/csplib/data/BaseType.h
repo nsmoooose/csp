@@ -75,7 +75,7 @@
 #include <iosfwd>
 
 
-CSP_NAMESPACE
+namespace csp {
 
 class Reader;
 class Writer;
@@ -116,7 +116,7 @@ class UTM;
 class Vector3;
 
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 
 #endif // __CSPLIB_DATA_BASETYPE_H__

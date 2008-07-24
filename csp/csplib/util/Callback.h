@@ -72,7 +72,7 @@
 #include <csp/csplib/util/Namespace.h>
 #include <sigc++/sigc++.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 
 // callbacks --------------------------------------------------------------------------
@@ -175,7 +175,7 @@ struct callback<ret, arg1, arg2, arg3, arg4>: public callback4<ret, arg1, arg2, 
 	template <class obj> callback(obj *o, ret (obj::*m)(arg1, arg2, arg3, arg4)): callback4<ret, arg1, arg2, arg3, arg4>(sigc::mem_fun(*o, m)) { }
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPLIB_UTIL_CALLBACK_H__
 

@@ -26,7 +26,7 @@
 #include <csp/csplib/util/Log.h>
 
 
-CSP_NAMESPACE
+namespace csp {
 
 int UpdateProxy::update(double time) {
 	if (!m_Target) return DEAD;
@@ -140,5 +140,5 @@ UpdateMaster *UpdateTarget::getMaster() const {
 	return m_UpdateProxy->getMaster();
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

@@ -31,7 +31,7 @@
 #include <csp/csplib/data/DataManager.h>
 
 
-CSP_NAMESPACE
+namespace csp {
 
 CSP_XML_BEGIN(FuelTankData)
 	CSP_DEF("capacity", m_Capacity, true)
@@ -41,5 +41,5 @@ Store *FuelTankData::createStore() const {
 	return new FuelTank(this);
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

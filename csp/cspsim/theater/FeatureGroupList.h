@@ -32,7 +32,7 @@
 
 #include <csp/cspsim/theater/FeatureGroup.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 class Projection;
 
@@ -60,7 +60,7 @@ public:
 	void projectFeatureGroups(Projection const &map);
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPSIM_THEATER_FEATUREGROUPLIST_H__
 

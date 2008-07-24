@@ -47,7 +47,7 @@
 #include <csp/csplib/util/Timing.h>
 
 
-CSP_NAMESPACE
+namespace csp {
 
 
 class PeerInfo;
@@ -299,6 +299,6 @@ public:
 };
 
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPLIB_NET_CLIENTSERVER_H__

@@ -36,7 +36,7 @@
 #include <sstream>
 
 
-CSP_NAMESPACE
+namespace csp {
 
 
 void InterfaceProxy::globalRegister(const char *cname, const hasht chash) {
@@ -138,6 +138,6 @@ std::string InterfaceProxy::variableType(std::string const &varname) const {
 }
 
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 

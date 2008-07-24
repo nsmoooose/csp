@@ -34,7 +34,7 @@ namespace osg { class StateSet; }
 namespace osg { class Program; }
 namespace osg { class Uniform; }
 
-CSP_NAMESPACE
+namespace csp {
 
 /** A very basic interface for loading and applying shaders.  Shader
  *  is a singleton, and shader programs are loaded on demand from
@@ -125,7 +125,7 @@ private:
 };
 
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPSIM_SHADER_H__
 

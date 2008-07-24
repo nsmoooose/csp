@@ -47,7 +47,7 @@
 // converting a model to .ive format for faster loading).  --MR
 
 
-CSP_NAMESPACE
+namespace csp {
 
 void Shader::setShaderPath(const std::string& path) {
 	m_ShaderPath = path;
@@ -218,6 +218,6 @@ void Shader::Visitor::apply(osg::Geode &geode) {
 	m_Impl->pop();
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 

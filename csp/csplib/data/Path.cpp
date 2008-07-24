@@ -30,7 +30,7 @@
 #include <sstream>
 
 
-CSP_NAMESPACE
+namespace csp {
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -61,5 +61,5 @@ std::string Path::asString() const {
 std::ostream &operator <<(std::ostream &o, Path const &p) { return o << p.asString(); }
 
 
-CSP_NAMESPACE_END
+} // namespace csp
 

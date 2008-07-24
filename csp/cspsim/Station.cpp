@@ -29,7 +29,7 @@
 
 #include <csp/csplib/data/ObjectInterface.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 CSP_XML_BEGIN(Station)
 	CSP_DEF("name", m_Name, true)
@@ -46,5 +46,5 @@ SceneModelChild *Station::createDetailModel() const {
 	return !m_DetailModel ? 0 : new SceneModelChild(m_DetailModel);
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

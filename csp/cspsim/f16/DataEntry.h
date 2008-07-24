@@ -43,7 +43,7 @@
 #define snprintf _snprintf
 #endif
 
-CSP_NAMESPACE
+namespace csp {
 
 //////
 // todo
@@ -801,7 +801,7 @@ public:
 	}
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPSIM_F16_DATA_ENTRY_H__
 

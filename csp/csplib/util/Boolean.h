@@ -23,7 +23,7 @@
 #include <csp/csplib/util/Namespace.h>
 #include <csp/csplib/util/Uniform.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 /** A three-state boolean value.  The value can be false, true, or unspecified.
  *  Supports all normal boolean operations for all three state values, returning
@@ -113,7 +113,7 @@ public:
 	tribool operator !=(bool other) const { return *this != tribool(other); }
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPLIB_UTIL_BOOLEAN_H__
 

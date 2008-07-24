@@ -59,7 +59,7 @@
 #define snprintf _snprintf
 #endif
 
-CSP_NAMESPACE
+namespace csp {
 
 CSP_XML_BEGIN(F16HUD)
 	CSP_DEF("color", m_Color, false)
@@ -1229,5 +1229,5 @@ void F16HUD::updateMasterMode() {
 	}
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

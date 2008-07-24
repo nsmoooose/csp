@@ -27,7 +27,7 @@
 
 #include <csp/csplib/util/Namespace.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 /** NodeVisitor traversal mask bits that are set when rendering the scene.
  *
@@ -60,7 +60,7 @@ public:
 	} NodeMask;
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPSIM_SCENE_CONSTANTS_H__
 

@@ -30,7 +30,7 @@
 #include <csp/csplib/data/Enum.h>
 #include <csp/csplib/data/Vector3.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 class PageCNI: public DataEntryForm {
 public:
@@ -50,7 +50,7 @@ private:
 	SimpleCycle::RefT m_VHFPreset;
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPSIM_F16_PAGE_CNI_H__
 

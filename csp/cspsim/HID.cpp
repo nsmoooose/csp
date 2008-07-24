@@ -40,7 +40,7 @@
 #include <string>
 
 
-CSP_NAMESPACE
+namespace csp {
 
 /////////////////////////////////////////////////////////////////////////////
 // class HID
@@ -266,5 +266,5 @@ void VirtualHID::setScript(EventMapping::Script const *s, int x, int y, bool dra
 	onUpdate(0.0);
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

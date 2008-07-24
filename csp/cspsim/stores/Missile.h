@@ -27,7 +27,7 @@
 
 #include <csp/cspsim/stores/Stores.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 /** Data for a missiles.
  */
@@ -58,6 +58,6 @@ private:
 	Ref<const MissileData> m_Data;
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPSIM_STORES_MISSILE_H__

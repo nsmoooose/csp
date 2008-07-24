@@ -55,7 +55,7 @@
 #include <sigc++/sigc++.h>
 #include <map>  // TODO move to .cpp
 
-CSP_NAMESPACE
+namespace csp {
 
 class Bus;
 
@@ -718,7 +718,7 @@ public:
 	}
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPSIM_BUS_H__
 

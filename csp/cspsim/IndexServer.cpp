@@ -33,7 +33,7 @@
 #include <csp/csplib/util/Trace.h>
 
 
-CSP_NAMESPACE
+namespace csp {
 
 IndexServer::IndexServer() {
 	CSPLOG(INFO, APP) << "IndexServer()";
@@ -121,5 +121,5 @@ int IndexServer::main() {
 	return 0;
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

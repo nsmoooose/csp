@@ -71,7 +71,7 @@
 // TODO move to net (util/* shouldn't depend on net/*)
 #include <csp/csplib/net/TaggedRecord.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 // classname is not used currently, but it may be handy to have in the future.
 #define MESSAGE_DISPATCH(classname, superclass) \
@@ -110,7 +110,7 @@ public:
 	virtual ~MessageDispatcher() {}
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPLIB_UTIL_DISPATCH_H__
 

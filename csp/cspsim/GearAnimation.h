@@ -34,7 +34,7 @@
 #include <csp/csplib/data/Vector3.h>
 #include <csp/csplib/util/Math.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 /** Base class for driving landing gear animations.  Controls retract/extend
  *  motion, shock absorber compression, tire rotation, and steering.
@@ -170,7 +170,7 @@ public:
 	virtual void registerChannels(Bus* bus);
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPSIM_GEAR_ANIMATION_H__
 

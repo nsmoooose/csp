@@ -16,7 +16,10 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-/** Forward declarations of sigc::signal and sigc::slot wrappers.
+/** 
+ * @file Referenced.h
+ *
+ * Forward declarations of sigc::signal and sigc::slot wrappers.
  *
  *  libsigc++-2.0 signal and slot templates cannot be forward declared
  *  because default template arguments are specified in the class
@@ -64,7 +67,7 @@ namespace sigc { struct nil; }
 
 #include <csp/csplib/util/Namespace.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 // signals
 
@@ -118,7 +121,7 @@ class slot<ret, arg1, arg2, arg3, arg4, arg5, sigc::nil, sigc::nil>;
 template <class ret, class arg1, class arg2, class arg3, class arg4, class arg5, class arg6>
 class slot<ret, arg1, arg2, arg3, arg4, arg5, arg6, sigc::nil>;
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPLIB_UTIL_SIGNALFWD_H__
 

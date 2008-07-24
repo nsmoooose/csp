@@ -29,7 +29,7 @@
 #include <csp/cspsim/DynamicObject.h>
 #include <csp/csplib/util/Math.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 CameraAgent::CameraAgent(const ViewFactory& vf, ViewMode default_view):
 	m_EyePoint(Vector3::ZERO),
@@ -175,5 +175,5 @@ void CameraAgent::setObject(Ref<DynamicObject> object) {
 	if (m_ActiveView.valid()) m_ActiveView->setActiveObject(object);
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

@@ -29,7 +29,7 @@
 #include <csp/csplib/util/ScopedPointer.h>
 #include <csp/csplib/data/Vector3.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 class CameraAgent;
 class CameraKinematics;
@@ -91,7 +91,7 @@ public:
 	void attachAllView(CameraAgent* ca) const;
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPSIM_VIEWS_VIEW_H__
 

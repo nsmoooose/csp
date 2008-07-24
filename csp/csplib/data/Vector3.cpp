@@ -38,7 +38,7 @@
 #include <iomanip>
 #include <sstream>
 
-CSP_NAMESPACE
+namespace csp {
 
 
 /// Null vector
@@ -88,5 +88,5 @@ void Vector3::parseXML(const char* cdata) {
 
 std::ostream &operator <<(std::ostream &o, Vector3 const &v) { return o << v.asString(); }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

@@ -21,7 +21,7 @@
 
 #include <csp/cspsim/sky/Colorspace.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 /** Implements a variation of the sky shading model described in
  *  "A Practical Analytic Model for Daylight" by A. J. Preetham,
@@ -152,7 +152,7 @@ protected:
 };
 
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSP_CSPSIM_SKY_SKYSHADER_H__
 

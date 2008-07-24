@@ -32,7 +32,7 @@
 
 #include <cassert>
 
-CSP_NAMESPACE
+namespace csp {
 
 // Local log macro
 
@@ -132,5 +132,5 @@ void SoundEngine::unmute() {
 	}
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

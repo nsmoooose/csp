@@ -23,7 +23,7 @@
 
 %include "csp/csplib/util/Namespace.h"
 
-CSP_NAMESPACE
+namespace csp {
 
 namespace test {
 
@@ -38,5 +38,5 @@ public:
 
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

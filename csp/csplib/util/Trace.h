@@ -35,7 +35,7 @@
 #include <iosfwd>
 
 
-CSP_NAMESPACE
+namespace csp {
 
 
 class LogStream;
@@ -109,7 +109,7 @@ private:
 	static bool _abort;
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPLIB_UTIL_TRACE_H__
 

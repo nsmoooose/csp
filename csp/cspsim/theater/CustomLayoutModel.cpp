@@ -30,7 +30,7 @@
 
 #include <vector>
 
-CSP_NAMESPACE
+namespace csp {
 
 CSP_XML_BEGIN(CustomLayoutModel)
 	CSP_DEF("layout", m_FeatureLayout, true)
@@ -66,5 +66,5 @@ CustomLayoutModel::CustomLayoutModel() { m_FeatureCount = 0; }
 
 CustomLayoutModel::~CustomLayoutModel() {}
 
-CSP_NAMESPACE_END
+} // namespace csp
 

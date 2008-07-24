@@ -29,7 +29,7 @@
 #include <csp/cspsim/System.h>
 #include <csp/csplib/data/Vector3.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 class AircraftFlightSensors: public System {
 public:
@@ -58,7 +58,7 @@ private:
 	double m_Distance;
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPSIM_SYSTEMS_AIRCRAFTFLIGHTSENSORS_H__
 

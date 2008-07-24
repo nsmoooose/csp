@@ -34,7 +34,7 @@
 
 #include <cassert>
 
-CSP_NAMESPACE
+namespace csp {
 
 EventMapIndex::~EventMapIndex() {
 	OpenedJoysticks::const_iterator openedJoystickIt;
@@ -98,5 +98,5 @@ void EventMapIndex::openNewJoysticks(const EventMapping::UsedJoysticks & usedJoy
 	}
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

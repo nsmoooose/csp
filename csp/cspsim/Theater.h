@@ -40,7 +40,7 @@
 class TerrainObject;
 class FeatureGroup;
 
-CSP_NAMESPACE
+namespace csp {
 
 /**
  * class Theater
@@ -75,7 +75,7 @@ public:
 
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPSIM_THEATER_H__
 

@@ -23,7 +23,7 @@
 
 #include <csp/csplib/util/WeakReferenced.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 ReferenceValidator::ReferenceValidator() : counter(0), _valid(true) {
 }
@@ -68,4 +68,4 @@ ReferenceValidator* WeakReferencedBase::getReferenceValidator() {
 	return referenceValidator;
 }
 
-CSP_NAMESPACE_END
+} // namespace csp

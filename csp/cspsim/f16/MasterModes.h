@@ -29,7 +29,7 @@
 #include <csp/csplib/data/Enum.h>
 #include <csp/cspsim/Bus.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 namespace f16 {
 
@@ -127,7 +127,7 @@ private:
 
 } // namespace f16
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPSIM_F16_STORESMANAGEMENTPAGES_H__
 

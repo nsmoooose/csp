@@ -29,7 +29,7 @@
 
 #include <osg/Quat>
 
-CSP_NAMESPACE
+namespace csp {
 
 FeatureSceneModel::FeatureSceneModel(LayoutTransform const &transform) {
 	setPosition(transform());
@@ -45,5 +45,5 @@ FeatureSceneModel::FeatureSceneModel(LayoutTransform const &transform, Elevation
 	setAttitude(q);
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

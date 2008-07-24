@@ -27,7 +27,7 @@
 
 #include <csp/cspsim/battlefield/SceneManager.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 class VirtualScene;
 class FeatureGroup;
@@ -67,7 +67,7 @@ public:
 
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPSIM_SIMPLESCENEMANAGER_H__
 

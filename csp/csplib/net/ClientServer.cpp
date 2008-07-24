@@ -41,7 +41,7 @@
 #include <csp/csplib/util/Timing.h>
 
 
-CSP_NAMESPACE
+namespace csp {
 
 
 ClientServerBase::ClientServerBase(NetworkNode const &bind, bool isServer, int inbound_bw, int outbound_bw) {
@@ -256,4 +256,4 @@ void Client::setExternalNode(NetworkNode const &external_node) {
 	m_NetworkInterface->setExternalNode(external_node);
 }
 
-CSP_NAMESPACE_END
+} // namespace csp

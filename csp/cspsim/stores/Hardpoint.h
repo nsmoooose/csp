@@ -42,7 +42,7 @@
 
 #include <vector>
 
-CSP_NAMESPACE
+namespace csp {
 
 
 class Hardpoint;
@@ -133,7 +133,7 @@ private:
 	unsigned m_Index;
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPSIM_STORES_HARDPOINT_H__
 

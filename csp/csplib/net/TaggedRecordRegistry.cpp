@@ -27,7 +27,7 @@
 #include <csp/csplib/util/Log.h>
 
 
-CSP_NAMESPACE
+namespace csp {
 
 
 void TaggedRecordRegistry::registerFactory(TaggedRecordFactoryBase *factory) {
@@ -81,5 +81,5 @@ TaggedRecordRegistry::FactoryList TaggedRecordRegistry::getFactories() const {
 }
 
 
-CSP_NAMESPACE_END
+} // namespace csp
 

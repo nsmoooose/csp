@@ -29,7 +29,7 @@
 #include <csp/cspsim/FlightModel.h>
 #include <csp/csplib/data/LUT.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 /**
  * class F16FlightModel
@@ -120,7 +120,7 @@ protected:
 	double m_ScaleLEF;
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif  // __F16_FLIGHTMODEL_H__
 

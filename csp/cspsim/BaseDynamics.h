@@ -30,7 +30,7 @@
 
 #include <csp/cspsim/System.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 
 /**
@@ -186,7 +186,7 @@ public:
 };
 
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif //__BASEDYNAMICS_H__
 

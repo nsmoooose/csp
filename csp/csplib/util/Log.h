@@ -32,7 +32,7 @@
 #include <csp/csplib/util/LogStream.h>
 #include <csp/csplib/util/LogConstants.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 // Internal accessor for the main csp LogStream.  Use log() instead, which
 // is more efficient, or better yet the CSPLOG macros.
@@ -69,7 +69,7 @@ inline LogStream &log() {
 	else CSP(LogStream::LogEntry)(CSPLOG_, CSPLOG_PRIORITY(P), __FILE__, __LINE__)
 
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPLIB_UTIL_LOG_H__
 

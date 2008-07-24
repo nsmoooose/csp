@@ -31,7 +31,7 @@
 
 #include <vector>
 
-CSP_NAMESPACE
+namespace csp {
 
 class F16Radio: public System {
 public:
@@ -69,7 +69,7 @@ protected:
 	std::vector<int> m_VHFPresets;
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPSIM_F16_RADIO_H__
 

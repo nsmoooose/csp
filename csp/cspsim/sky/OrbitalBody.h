@@ -24,7 +24,7 @@
 
 #include <string>
 
-CSP_NAMESPACE
+namespace csp {
 
 class MagnitudeFunction;
 
@@ -264,6 +264,6 @@ private:
 };
 
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSP_CSPSIM_SKY_ORIBITALBODY_H__

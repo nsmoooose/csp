@@ -16,7 +16,6 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-
 /**
  * @file Quat.cpp
  *
@@ -30,7 +29,6 @@
  * Lesser Public  License Version 2 (clause 3).
  **/
 
-
 #include <csp/csplib/data/Quat.h>
 #include <csp/csplib/data/Vector3.h>
 #include <csp/csplib/data/Archive.h>
@@ -39,14 +37,7 @@
 #include <cmath>
 #include <sstream>
 
-
-/// Good introductions to Quaternions at:
-/// http://www.gamasutra.com/features/programming/19980703/quaternions_01.htm
-/// http://mathworld.wolfram.com/Quaternion.html
-
-
-CSP_NAMESPACE
-
+namespace csp {
 
 const Quat Quat::IDENTITY(0.0, 0.0, 0.0, 1.0);
 const Quat Quat::ZERO(0.0, 0.0, 0.0, 0.0);
@@ -356,5 +347,5 @@ void Quat::get(Matrix3& m) const {
 
 std::ostream &operator <<(std::ostream &o, Quat const &q) { return o << q.asString(); }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

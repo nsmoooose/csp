@@ -32,7 +32,7 @@
 
 #include <map>
 
-CSP_NAMESPACE
+namespace csp {
 
 /** An internal view that supports padlocking.
  */
@@ -85,7 +85,7 @@ private:
 	bool inVisualRange(Contact contact) const;
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPSIM_VIEWS_INTERNALVIEW_H__
 

@@ -33,7 +33,7 @@
 #include <algorithm>
 
 
-CSP_NAMESPACE
+namespace csp {
 
 /** Storage class used by PeerInfo to keep track of reliable packets
  *  until confirmation in received.
@@ -132,7 +132,7 @@ public:
 	};
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPLIB_NET_RELIABLEPACKET_H__
 

@@ -30,7 +30,7 @@
 
 #include <csp/csplib/util/Namespace.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 // H(s) = c * (s + a) / (s + b)
 /** A filter corresponding to the laplace transform H(s) = c * (s + a) / (s + b).
@@ -76,7 +76,7 @@ private:
 	double m_LastInput;
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPSIM_FILTERS_H__
 

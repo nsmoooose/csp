@@ -28,7 +28,7 @@
 #include <csp/csplib/data/LUT.h>
 #include <csp/csplib/data/Object.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 /** Static thrust data for an aircraft engine.  Data is stored in three tables:
  *  idle, military, and afterburner thrust.  Each table is a function of altitude
@@ -54,7 +54,7 @@ protected:
 	virtual void postCreate();
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPSIM_THRUSTDATA_H__
 

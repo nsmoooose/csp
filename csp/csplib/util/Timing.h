@@ -30,7 +30,7 @@
 #include <csp/csplib/util/Namespace.h>
 
 
-CSP_NAMESPACE
+namespace csp {
 
 /// Exception: Errors related to time measurement and syncronization.
 CSP_EXCEPTION(TimerError)
@@ -158,6 +158,6 @@ public:
 /////////////////////////////////////////////////////////////
 // end of timing routines
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPLIB_UTIL_TIMING_H__

@@ -41,7 +41,7 @@
 #include <csp/csplib/util/Export.h>
 #include <csp/csplib/util/HashUtility.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 /**
  * Basic exception class.
@@ -359,7 +359,7 @@ private:
 };
 
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPLIB_UTIL_SIMPLECONFIG_H__
 

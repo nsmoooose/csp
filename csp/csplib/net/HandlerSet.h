@@ -28,7 +28,7 @@
 #include <vector>
 #include <algorithm>
 
-CSP_NAMESPACE
+namespace csp {
 
 /** Class for managing a set of handlers.  Effectively this is just a
  *  thin wrapper around std::vector, with a few convenience methods
@@ -90,6 +90,6 @@ public:
 
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPLIB_NET_HANDLERSET_H__

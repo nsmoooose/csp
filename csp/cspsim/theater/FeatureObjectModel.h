@@ -33,7 +33,7 @@
 
 #include <vector>
 
-CSP_NAMESPACE
+namespace csp {
 
 class FeatureSceneGroup;
 class LayoutTransform;
@@ -85,7 +85,7 @@ public:
 	virtual void makeFeatures(std::vector<Feature> &features, int value) const;
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPSIM_THEATER_FEATUREOBJECTMODEL_H__
 

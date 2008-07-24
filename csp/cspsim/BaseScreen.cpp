@@ -24,7 +24,7 @@
 
 #include <csp/cspsim/BaseScreen.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 BaseScreen::BaseScreen() {
 }
@@ -36,5 +36,5 @@ Ref<VirtualHID> BaseScreen::getInterface() {
 	return m_Interface;
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

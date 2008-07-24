@@ -29,7 +29,7 @@
 #include <csp/cspsim/f16/DataEntryPage.h>
 #include <csp/csplib/util/Math.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 class PageSTPT: public DataEntryForm {
 public:
@@ -54,7 +54,7 @@ public:
 	}
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPSIM_F16_PAGE_STPT_H__
 

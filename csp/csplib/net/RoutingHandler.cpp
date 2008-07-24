@@ -28,7 +28,7 @@
 #include <csp/csplib/util/Verify.h>
 
 
-CSP_NAMESPACE
+namespace csp {
 
 CSP_STATIC_CONST_DEF(unsigned RoutingHandler::RoutingTableSize);
 
@@ -75,5 +75,5 @@ void RoutingHandler::removeAll() {
 	for (unsigned i = 0; i < RoutingTableSize; ++i) m_RoutingTable[i] = 0;
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

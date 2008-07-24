@@ -37,7 +37,7 @@
 #include <cmath>
 #include <queue>
 
-CSP_NAMESPACE
+namespace csp {
 
 InternalView::InternalView(size_t vm):
 	View(vm, true /*internal*/),
@@ -345,5 +345,5 @@ void InternalView::updateView(Vector3& ep, Vector3& lp, Vector3& up, double dt) 
 	if (!m_Padlocked) m_PadlockLossTime += dt;
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

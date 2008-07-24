@@ -62,7 +62,7 @@
 	}
 
 
-CSP_NAMESPACE
+namespace csp {
 
 class DispatchManager;
 
@@ -101,7 +101,7 @@ public:
 };
 
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPLIB_NET_DISPATCHTARGET_H__
 

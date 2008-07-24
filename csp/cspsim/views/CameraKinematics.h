@@ -27,7 +27,7 @@
 
 #include <csp/csplib/util/Ref.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 class CameraCommand;
 
@@ -93,7 +93,7 @@ public:
 	void setCameraParameters(double view_angle, double near_plane, double aspect);
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPSIM_VIEWS_CAMERAKINEMATICS_H__
 

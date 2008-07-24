@@ -30,7 +30,7 @@
 #include <string>
 
 
-CSP_NAMESPACE
+namespace csp {
 
 
 /** Reference ellipsoid parameters.
@@ -512,7 +512,7 @@ CSPLIB_EXPORT std::ostream &operator <<(std::ostream &o, LLA const &q);
 CSPLIB_EXPORT std::ostream &operator <<(std::ostream &o, UTM const &q);
 CSPLIB_EXPORT std::ostream &operator <<(std::ostream &o, ECEF const &q);
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 
 #endif // __CSPLIB_DATA_GEOPOS_H__

@@ -40,7 +40,7 @@
 #include <sstream>
 #include <iomanip>
 
-CSP_NAMESPACE
+namespace csp {
 
 CSP_XML_BEGIN(AircraftObject)
 CSP_XML_END
@@ -170,5 +170,5 @@ void AircraftObject::setDataRecorder(DataRecorder *recorder) {
 	recorder->addSource(b_Heading);
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

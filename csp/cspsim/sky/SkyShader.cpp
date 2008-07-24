@@ -3,7 +3,7 @@
 #include <csp/csplib/util/Math.h>
 #include <iostream>
 
-CSP_NAMESPACE
+namespace csp {
 
 #define CUSTOM_EYE
 #define CUSTOM_F
@@ -300,5 +300,5 @@ Color SkyShader::SkyColor(float elevation, float azimuth, float &intensity) {
 	return rgb;
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

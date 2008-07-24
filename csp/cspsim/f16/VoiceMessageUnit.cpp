@@ -30,7 +30,7 @@
 
 #include <osgAL/SoundState>
 
-CSP_NAMESPACE
+namespace csp {
 
 // TODO notes for generalizing the VMU interface:
 //   - Sounds triggered by channel events:
@@ -97,5 +97,5 @@ void VoiceMessageUnit::playMessage(Ref<SoundEffect> const &effect, bool active) 
 	}
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

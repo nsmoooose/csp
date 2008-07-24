@@ -38,7 +38,7 @@
 #include <assert.h>
 #endif
 
-CSP_NAMESPACE
+namespace csp {
 
 // This class duplicates some of the code in osg::State to track cumulative
 // state in a scene graph.  This is necessary because osg::State does not
@@ -189,7 +189,7 @@ private:
 	TextureAttributeMapList m_TextureAttributeMapList;
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif  // __CSPSIM_STATESTACK_H__
 

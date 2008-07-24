@@ -27,7 +27,7 @@
 #include <csp/csplib/util/Math.h>
 #include <csp/csplib/util/Testing.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 CSP_TESTFIXTURE(StringTools) {
 
@@ -324,6 +324,6 @@ CSP_TESTFIXTURE(StringTools) {
 	}
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 

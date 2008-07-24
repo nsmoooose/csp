@@ -38,7 +38,7 @@
 #include <assert.h>
 
 
-CSP_NAMESPACE
+namespace csp {
 
 EventMapping::EventMapping() {
 }
@@ -227,5 +227,5 @@ bool EventMapping::load(std::string const &path) {
 	return true;
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

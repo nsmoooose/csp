@@ -88,7 +88,7 @@
 #include <vector>
 
 
-CSP_NAMESPACE
+namespace csp {
 
 
 /** A MessageHandler that dispatches messages to callback handlers
@@ -158,7 +158,7 @@ private:
 };
 
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPLIB_NET_DISPATCHHANDLER_H__
 

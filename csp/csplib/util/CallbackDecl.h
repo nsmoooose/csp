@@ -30,7 +30,7 @@
 #include <csp/csplib/util/Namespace.h>
 #include <csp/csplib/util/ScopedPointer.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 class Callback0;
 template <typename M> class Callback1;
@@ -61,7 +61,7 @@ struct ScopedCallback0R: public ScopedPointer<Callback0R<R> > {
 	template <class C> ScopedCallback0R(C *instance, R (C::*method)());
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPLIB_UTIL_CALLBACKDECL_H__
 

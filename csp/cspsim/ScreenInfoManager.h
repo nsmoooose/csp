@@ -29,7 +29,7 @@
 
 #include <osg/Projection>
 
-CSP_NAMESPACE
+namespace csp {
 
 class ScreenInfoManager: public osg::Projection {
 public:
@@ -44,6 +44,6 @@ private:
 	ScreenInfo* getScreenInfo(std::string const &name);
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPSIM_SCREENINFOMANAGER_H__

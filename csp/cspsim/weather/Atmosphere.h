@@ -32,7 +32,7 @@
 
 #include <vector>
 
-CSP_NAMESPACE
+namespace csp {
 
 namespace weather {
 
@@ -187,7 +187,7 @@ inline float Atmosphere::getCAS(double mach, double altitude) const {
 
 } // end namespace weather
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPSIM_ATMOSPHERE_H__
 

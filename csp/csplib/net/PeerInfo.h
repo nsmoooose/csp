@@ -42,7 +42,7 @@
 #include <deque>
 
 
-CSP_NAMESPACE
+namespace csp {
 
 class NetworkInterface;
 
@@ -460,7 +460,7 @@ public:
 	void removePeer(PeerInfo *peer);
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPLIB_NET_PEERINFO_H__
 

@@ -97,7 +97,7 @@
 
 #include <csp/csplib/util/undef.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 // For network testing on a single box it's convenient to disable rendering on
 // one of the sims.  Using a global here just because we're lazy.
@@ -902,5 +902,5 @@ Ref<EventMapIndex> CSPSim::getInterfaceMaps() const {
 	return m_InterfaceMaps;
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

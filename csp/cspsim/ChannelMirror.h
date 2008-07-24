@@ -56,7 +56,7 @@
 #include <csp/csplib/data/Object.h>
 #include <string>
 
-CSP_NAMESPACE
+namespace csp {
 
 class Bus;
 
@@ -113,7 +113,7 @@ public:
 	virtual ChannelSlave *createSlave() const = 0;
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPSIM_CHANNEL_MIRROR_H__
 

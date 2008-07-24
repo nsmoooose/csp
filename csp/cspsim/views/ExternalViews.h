@@ -28,7 +28,7 @@
 #include <csp/cspsim/views/View.h>
 #include <csp/csplib/data/Vector3.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 class ExternalViewBody: public View {
 public:
@@ -79,7 +79,7 @@ public:
 	virtual ~SatelliteView() { }
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPSIM_EXTERNAL_VIEWS_H__
 

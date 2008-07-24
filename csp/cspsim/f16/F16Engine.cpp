@@ -27,7 +27,7 @@
 #include <csp/cspsim/FuelManagementSystem.h>
 #include <csp/csplib/data/ObjectInterface.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 CSP_XML_BEGIN(F16Engine)
 	CSP_DEF("wind_spin", m_WindSpin, false)
@@ -452,5 +452,5 @@ double F16Engine::getAltitudeFactor() {
 	return getDensity() * 0.78125;  // approx 1.0 at sea level
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

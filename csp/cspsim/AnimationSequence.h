@@ -30,7 +30,7 @@
 #include <csp/csplib/data/Object.h>
 #include <string>
 
-CSP_NAMESPACE
+namespace csp {
 
 /** A virtual base class for driving a shared animation path.  A
  *  shared animation path is a series of quasi-independent animations
@@ -193,7 +193,7 @@ private:
 	double m_Offset;
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPSIM_ANIMATION_SEQUENCE_H__
 

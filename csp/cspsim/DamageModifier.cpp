@@ -25,7 +25,7 @@
 #include <csp/cspsim/DamageModifier.h>
 #include <csp/csplib/data/ObjectInterface.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 CSP_XML_BEGIN(DamageModifier)
 	CSP_DEF("incediary", m_Incendiary, false)
@@ -35,5 +35,5 @@ CSP_XML_BEGIN(DamageModifier)
 	CSP_DEF("small_arms", m_SmallArms, false)
 CSP_XML_END
 
-CSP_NAMESPACE_END
+} // namespace csp
 

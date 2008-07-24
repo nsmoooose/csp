@@ -32,7 +32,7 @@
 #include <csp/csplib/util/Math.h>
 #include <csp/csplib/data/ObjectInterface.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 CSP_XML_BEGIN(F16FlightModel)
 	CSP_DEF("cd_m_a", m_CD_m_a, true)
@@ -232,5 +232,5 @@ void F16FlightModel::calculateForceAndMoment(Vector3 &force, Vector3 &moment) {
 	moment.set(calculatePitchMoment(), calculateRollMoment(), calculateYawMoment());
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

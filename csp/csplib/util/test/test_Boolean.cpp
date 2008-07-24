@@ -26,7 +26,7 @@
 #include <csp/csplib/util/Boolean.h>
 #include <csp/csplib/util/Testing.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 CSP_TESTFIXTURE(TriBool) {
 
@@ -108,6 +108,6 @@ CSP_TESTFIXTURE(TriBool) {
 	}
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 

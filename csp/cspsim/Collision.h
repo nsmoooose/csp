@@ -32,7 +32,7 @@
 #include <csp/csplib/data/Vector3.h>
 
 
-CSP_NAMESPACE
+namespace csp {
 
 /**
  * Dynamics class for vehicle-ground collisions.
@@ -113,7 +113,7 @@ public:
 	}
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __COLLISION_H__
 

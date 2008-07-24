@@ -30,11 +30,11 @@
 #include <csp/csplib/util/Properties.h>
 #include <csp/csplib/util/Exception.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 CSP_EXCEPTION(ThreadException)
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPLIB_THREAD_THREADUTIL_H__
 

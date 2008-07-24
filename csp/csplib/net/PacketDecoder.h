@@ -31,7 +31,7 @@
 #include <csp/csplib/net/RecordCodec.h>
 #include <csp/csplib/net/HandlerSet.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 /** Packet handler for decoding raw packets to NetworkMessage subclasses.
  *  @ingroup net
@@ -91,6 +91,6 @@ public:
 	}
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPLIB_NET_PACKETDECODER_H__

@@ -52,7 +52,7 @@
 #include <set>
 
 
-CSP_NAMESPACE
+namespace csp {
 
 CSP_XML_BEGIN(HardpointData)
 	CSP_DEF("name", m_Name, true)
@@ -136,5 +136,5 @@ void Hardpoint::addModel(osg::Group *group) const {
 	group->addChild(hp);
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

@@ -93,7 +93,7 @@
 #endif
 
 
-CSP_NAMESPACE
+namespace csp {
 
 ///////////////////////////////////////////////////////////////////////
 // testing
@@ -1074,6 +1074,6 @@ bool VirtualScene::pick(int x, int y) {
 	return false;
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 

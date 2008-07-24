@@ -32,7 +32,7 @@
 #include <csp/csplib/util/HashUtility.h>
 #include <map>
 
-CSP_NAMESPACE
+namespace csp {
 
 class EventMapIndex: public Referenced {
 public:
@@ -53,7 +53,7 @@ protected:
 	OpenedJoysticks m_openedJoysticks;
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPSIM_EVENTMAPINDEX_H__
 

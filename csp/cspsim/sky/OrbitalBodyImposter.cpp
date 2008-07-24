@@ -28,7 +28,7 @@
 
 #include <iostream> // XXX
 
-CSP_NAMESPACE
+namespace csp {
 
 OrbitalBodyImposter::OrbitalBodyImposter(osg::Image *core, double image_fraction, osg::Image *flare, double flare_scale) {
 	assert(core);
@@ -104,5 +104,5 @@ osg::Geometry *OrbitalBodyImposter::makeImposter(osg::Image *image, double size,
 	return geometry;
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

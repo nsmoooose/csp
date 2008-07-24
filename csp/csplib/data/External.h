@@ -27,7 +27,7 @@
 #include <string>
 #include <csp/csplib/data/BaseType.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 /** Holds the file system path to an external data source.
  *
@@ -107,7 +107,7 @@ public:
 CSPLIB_EXPORT std::ostream &operator <<(std::ostream &o, External const &e);
 
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPLIB_DATA_EXTERNAL_H__
 

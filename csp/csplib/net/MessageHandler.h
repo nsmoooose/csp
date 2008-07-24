@@ -28,7 +28,7 @@
 #include <csp/csplib/net/NetworkMessage.h>
 #include <csp/csplib/util/Ref.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 
 
@@ -81,7 +81,7 @@ inline Ref<MessageHandler> MessageHandler::Callback(CLASS *instance, void (CLASS
 }
 
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPLIB_NET_MESSAGEHANDLER_H__
 

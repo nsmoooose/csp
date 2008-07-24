@@ -29,7 +29,7 @@
 #include <csp/csplib/util/Namespace.h>
 #include <osg/PositionAttitudeTransform>
 
-CSP_NAMESPACE
+namespace csp {
 
 /**
  * Scene graph class to encapsulate and position and orientation
@@ -40,7 +40,7 @@ class FeatureSceneGroup: public osg::PositionAttitudeTransform {
 public:
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPSIM_THEATER_FEATURESCENEGROUP_H__
 

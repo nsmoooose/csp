@@ -29,7 +29,7 @@
 #include <vector>
 #include <algorithm>
 
-CSP_NAMESPACE
+namespace csp {
 
 
 template <unsigned int MILLISECONDS>
@@ -383,5 +383,5 @@ void ActivePeerList::removePeer(PeerInfo *peer) {
 	m_ActivePeers.erase(iter);
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

@@ -27,7 +27,7 @@
 #include <csp/csplib/util/Random.h>
 
 
-CSP_NAMESPACE
+namespace csp {
 
 
 namespace rng { // random number generators
@@ -183,5 +183,5 @@ template class CSPLIB_EXPORT RandomDistribution<rd::Gauss>;
 template class CSPLIB_EXPORT RandomNumberGenerator<rng::MT19937>;
 template class CSPLIB_EXPORT RandomNumberGenerator<rng::Taus2>;
 
-CSP_NAMESPACE_END
+} // namespace csp
 

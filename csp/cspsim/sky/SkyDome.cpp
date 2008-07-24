@@ -32,7 +32,7 @@
 
 #include <iostream>  // debugging only
 
-CSP_NAMESPACE
+namespace csp {
 
 
 SkyDome::SkyDome(double radius): m_SkyShader(new SkyShader), m_Radius(radius), m_NextSunAzimuth(0), m_NextSunElevation(0), m_SunAzimuth(0), m_SunElevation(0), m_UpdateRow(0), m_UpdateInProgress(false), m_AverageIntensity(0) {
@@ -373,5 +373,5 @@ osg::Vec4 SkyDome::getHorizonColor(double angle) const {
 	return (*m_HorizonColors)[index_0] * (1.0 - dx) + (*m_HorizonColors)[index_1] * dx;
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

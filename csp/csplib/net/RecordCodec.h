@@ -54,7 +54,7 @@
 #include <csp/csplib/net/TaggedRecord.h>
 #include <vector>
 
-CSP_NAMESPACE
+namespace csp {
 
 
 class TaggedRecordFactoryBase;
@@ -105,7 +105,7 @@ private:
 
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPLIB_NET_RECORDCODEC_H__
 

@@ -31,7 +31,7 @@
 
 #include <iostream> //XXX
 
-CSP_NAMESPACE
+namespace csp {
 
 Sky::Sky(double radius):
 		m_Radius(radius),
@@ -202,5 +202,5 @@ void Sky::updateMoonlight(double sky_magnitude) {
 	}
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

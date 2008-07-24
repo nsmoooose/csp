@@ -39,7 +39,7 @@
 
 #include <map>
 
-CSP_NAMESPACE
+namespace csp {
 
 /**
  * class SimObject - Base class for all objects in the simulation.
@@ -364,7 +364,7 @@ inline std::ostream &operator << (std::ostream &os, SimObject &object) {
 	return os << object._debugId();
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPSIM_BATTLEFIELD_SIMOBJECT_H__
 

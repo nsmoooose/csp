@@ -22,7 +22,7 @@
 #include <csp/csplib/util/Math.h>
 #include <csp/csplib/util/StringTools.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 inline double MeanSiderealTime(double time, double longitude) {
 	double GMST0 = toRadians(282.9404 + 356.0470 + 180.0) + toRadians(4.70935E-5 + 0.9856002585) * time;
@@ -34,7 +34,7 @@ inline std::string FormatSiderealTime(double angle) {
 	return stringprintf("%02d:%02d:%02d", int(hours) % 24, int(hours * 60) % 60, int(hours * 3600) % 60);
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSP_CSPSIM_SKY_COMMON_H__
 

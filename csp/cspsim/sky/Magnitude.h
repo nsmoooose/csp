@@ -22,7 +22,7 @@
 #include <csp/csplib/util/Referenced.h>
 #include <csp/csplib/data/Vector3.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 
 /** Interface for functions that compute the magnitude of a celestial
@@ -90,6 +90,6 @@ private:
 };
 
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSP_CSPSIM_SKY_MAGNITUDE_H__

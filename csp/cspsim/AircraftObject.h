@@ -29,7 +29,7 @@
 #include <csp/cspsim/DynamicObject.h>
 #include <csp/cspsim/HID.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 class TimedSequence;
 
@@ -85,7 +85,7 @@ protected:
 	DataChannel<double>::RefT b_Heading;
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPSIM_AIRCRAFTOBJECT_H__
 

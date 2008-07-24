@@ -22,14 +22,14 @@
 %}
 
 
-CSP_NAMESPACE
+namespace csp {
 %rename(__repr__) Date::asString() const;
 %rename(__repr__) Zulu::asString() const;
 %rename(__repr__) DateZulu::asString() const;
 %rename(__repr__) SimDate::asString() const;
 %rename(__cmp__) Date::compare(Date const &) const;
 %rename(__cmp__) SimDate::compare(SimDate const &) const;
-CSP_NAMESPACE_END
+} // namespace csp
 
 %exception {
 	try {

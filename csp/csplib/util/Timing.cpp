@@ -35,7 +35,7 @@
 #endif
 
 
-CSP_NAMESPACE
+namespace csp {
 
 
 #ifdef _WIN32
@@ -170,5 +170,5 @@ CSP_NAMESPACE
 #endif
 
 
-CSP_NAMESPACE_END
+} // namespace csp
 

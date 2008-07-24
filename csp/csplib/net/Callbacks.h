@@ -33,7 +33,7 @@
 #include <csp/csplib/util/Ref.h>
 
 
-CSP_NAMESPACE
+namespace csp {
 
 /** Base class for callbacks used by DispatchHandler.  The callbacks take
  *  a single network message as input, as well as a message queue that can
@@ -84,7 +84,7 @@ private:
 
 
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPLIB_NET_CALLBACKS_H__
 

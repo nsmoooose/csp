@@ -37,7 +37,7 @@
 #include <csp/csplib/data/Real.h>
 #include <csp/csplib/data/Vector3.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 /*  currently we search for all stores at runtime, but it might be better
     to list stores explicitly.  alternatively, we could cache the store
@@ -172,5 +172,5 @@ void StoresDatabase::populateRackMatrix(RackData const *rack) {
 	}
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

@@ -32,7 +32,7 @@
 
 #include <csp/csplib/util/undef.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 class OggLoader: public SoundFileLoader {
 public:
@@ -78,5 +78,5 @@ void __registerOgg() {
 }
 
 
-CSP_NAMESPACE_END
+} // namespace csp
 

@@ -42,7 +42,7 @@ using std::setw;
 using std::fixed;
 using std::setfill;
 
-CSP_NAMESPACE
+namespace csp {
 
 /*
   NOTE: as of OSG 0.9.4, updating text is a costly operation since
@@ -286,4 +286,4 @@ void MessageList::update() {
 	}
 }
 
-CSP_NAMESPACE_END
+} // namespace csp

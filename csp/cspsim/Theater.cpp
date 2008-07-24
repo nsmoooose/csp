@@ -33,7 +33,7 @@
 #include <csp/csplib/data/Path.h>
 #include <csp/csplib/util/Ref.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 CSP_XML_BEGIN(Theater)
 	CSP_DEF("feature_group_list", m_FeatureGroupList, true)
@@ -68,5 +68,5 @@ Ref<TerrainObject> Theater::getTerrain() {
 	return m_Terrain;
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

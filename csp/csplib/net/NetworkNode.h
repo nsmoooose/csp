@@ -44,7 +44,7 @@
 
 #include <string>
 
-CSP_NAMESPACE
+namespace csp {
 
 
 /** Class representing a remote host address (ip address and receive port)
@@ -160,6 +160,6 @@ inline std::ostream &operator<<(std::ostream &os, ConnectionPoint const &point) 
 	return os << NetworkNode(point);
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPLIB_NET_NETWORKNODE_H__

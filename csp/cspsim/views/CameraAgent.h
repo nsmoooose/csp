@@ -30,7 +30,7 @@
 
 #include <map>
 
-CSP_NAMESPACE
+namespace csp {
 
 class CameraCommand;
 class DynamicObject;
@@ -73,7 +73,7 @@ private:
 	void notifyCameraKinematicsToViews();
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif //__CAMERAAGENT_H__
 

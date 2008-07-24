@@ -27,7 +27,7 @@
 
 #include <csp/csplib/util/CircularBuffer.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 
 /** A single-threaded circular buffer that encapsulates rules for
@@ -184,7 +184,7 @@ public:
 
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPLIB_NET_PACKETQUEUE_H__
 

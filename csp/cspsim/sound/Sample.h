@@ -37,7 +37,7 @@ namespace openalpp { class Sample; }
 namespace osgAL { class SoundState; }
 
 
-CSP_NAMESPACE
+namespace csp {
 
 /** Object class for representing openAL sound samples.  Allows the sound
  *  file as well as standard openAL parameters to be specified using XML.
@@ -82,7 +82,7 @@ private:
 };
 
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPLIB_SOUND_SAMPLE_H__
 

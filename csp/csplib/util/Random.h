@@ -16,25 +16,9 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-
 /**
  * @file Random.h
  * @brief Random number generators and distributions.
- */
-
-/**
- * @namespace random
- * @brief Random number generators and distributions.
- */
-
-/**
- * @namespace rng
- * @brief Low-level random number generator interfaces.
- */
-
-/**
- * @namespace rd
- * @brief Low-level random number distribution interfaces.
  */
 
 #ifndef __CSPLIB_UTIL_RANDOM_H__
@@ -46,13 +30,13 @@
 #include <cmath>
 
 
-CSP_NAMESPACE
-
+namespace csp {
 
 ///////////////////////////////////////////////////////////////////////////////////
 // Random Number Generators
 
-namespace rng { // random number generators
+/** Low-level random number generator interfaces. */
+namespace rng {
 
 /**
  *  @brief Mersenne Twister random number generator.
@@ -547,7 +531,8 @@ public:
 ///////////////////////////////////////////////////////////////////////////////////
 // Random Distributions
 
-namespace rd { // random distributions
+/** Low-level random number distribution interfaces. */
+namespace rd { 
 
 /** Gaussian random number distribution.
  */
@@ -724,7 +709,7 @@ std::string RandomDistribution<RD>::getName() const {
 	return _dist.getName();
 }
 
-
+/** Random number generators and distributions. */
 namespace random { // generators and distributions
 	typedef RandomDistribution<rd::Gauss> Gauss;
 	typedef RandomNumberGenerator<rng::MT19937> MersenneTwister;
@@ -742,7 +727,7 @@ namespace random { // generators and distributions
 extern CSPLIB_EXPORT random::Taus2 g_Random;
 
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPLIB_UTIL_RANDOM_H__
 

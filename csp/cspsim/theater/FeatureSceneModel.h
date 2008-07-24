@@ -29,7 +29,7 @@
 #include <csp/csplib/util/Namespace.h>
 #include <osg/PositionAttitudeTransform>
 
-CSP_NAMESPACE
+namespace csp {
 
 class LayoutTransform;
 class ElevationCorrection;
@@ -46,7 +46,7 @@ public:
 	FeatureSceneModel(LayoutTransform const & transform, ElevationCorrection const & correction);
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPSIM_THEATER_FEATURESCENEMODEL_H__
 

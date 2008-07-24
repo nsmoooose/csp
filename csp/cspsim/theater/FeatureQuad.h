@@ -39,7 +39,7 @@ namespace osg {
 	class StateSet;
 }
 
-CSP_NAMESPACE
+namespace csp {
 
 /**
  * class FeatureQuad (STATIC)
@@ -74,7 +74,7 @@ public:
 
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPSIM_THEATER_FEATUREQUAD_H__
 

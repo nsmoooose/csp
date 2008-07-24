@@ -38,7 +38,7 @@
 #include <osg/Matrix>
 #include <osg/Quat>
 
-CSP_NAMESPACE
+namespace csp {
 
 /**
  * @defgroup Adapters Class adapter utilities
@@ -91,7 +91,7 @@ inline Quat fromOSG(osg::Quat const &q) {
 //@}
 
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPLIB_UTIL_OSG_H__
 

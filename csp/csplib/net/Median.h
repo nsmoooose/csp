@@ -25,7 +25,7 @@
 #ifndef __CSPLIB_NET_MEDIAN9HISTORY_H__
 #define __CSPLIB_NET_MEDIAN9HISTORY_H__
 
-CSP_NAMESPACE
+namespace csp {
 
 template<class T>
 class Median9History {
@@ -78,6 +78,6 @@ private:
 
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPLIB_NET_MEDIAN9HISTORY_H__

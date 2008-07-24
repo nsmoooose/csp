@@ -85,7 +85,7 @@
     #define CSP_XMLCHAR char
 //#endif
 
-CSP_NAMESPACE
+namespace csp {
 
 // Enumeration for XML parse errors.
 typedef enum XMLError
@@ -498,7 +498,7 @@ private:
 	void alloc(int newsize);
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPLIB_XML_XMLPARSER_H__
 

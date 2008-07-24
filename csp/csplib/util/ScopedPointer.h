@@ -31,7 +31,7 @@
 #include <csp/csplib/util/Verify.h>
 
 
-CSP_NAMESPACE
+namespace csp {
 
 
 /** A smart pointer class that automatically deletes the
@@ -151,7 +151,7 @@ public:
 
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPLIB_UTIL_SCOPEDPOINTER_H__
 

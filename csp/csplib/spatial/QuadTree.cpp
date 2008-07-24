@@ -26,7 +26,7 @@
 #include <csp/csplib/spatial/QuadTree.h>
 #include <iostream>
 
-CSP_NAMESPACE
+namespace csp {
 
 namespace spatial {
 
@@ -361,5 +361,5 @@ std::ostream & operator << (std::ostream &os, Region const &r) {
 
 } // namespace spatial
 
-CSP_NAMESPACE_END
+} // namespace csp
 

@@ -42,7 +42,7 @@
 #define OSG_OLD_FONT_INTERFACE
 #endif
 
-CSP_NAMESPACE
+namespace csp {
 
 
 namespace {
@@ -274,7 +274,7 @@ osgText::Font::Glyph* ScaledAltFont::getGlyph(unsigned int charcode) {
 	return 0;
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 
 /*

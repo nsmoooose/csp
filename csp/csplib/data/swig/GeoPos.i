@@ -23,7 +23,7 @@
 #include <csp/csplib/data/GeoPos.h>
 %}
 
-CSP_NAMESPACE
+namespace csp {
 %rename(__repr__) LLA::asString() const;
 %rename(__repr__) UTM::asString() const;
 %rename(__repr__) ECEF::asString() const;
@@ -33,7 +33,7 @@ CSP_NAMESPACE
 %ignore LLA::operator=(ECEF const&);
 %ignore ECEF::operator=(UTM const&);
 %ignore ECEF::operator=(LLA const&);
-CSP_NAMESPACE_END
+} // namespace csp
 
 %include <csp/csplib/data/GeoPos.h>
 

@@ -30,7 +30,7 @@
 class DemeterException;
 
 
-CSP_NAMESPACE
+namespace csp {
 
 // Some common CSP exception classes
 CSP_EXCEPTION(DataError)
@@ -41,7 +41,7 @@ void FatalException(Exception &e, std::string const &location);
 void DemeterFatalException(DemeterException &e,  std::string const &location);
 void OtherFatalException(std::string const &location);
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 
 #endif // __CSP_EXCEPTION_H__

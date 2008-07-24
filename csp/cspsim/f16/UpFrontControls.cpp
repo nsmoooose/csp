@@ -34,7 +34,7 @@
 #include <csp/csplib/data/ObjectInterface.h>
 #include <csp/csplib/data/Enum.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 CSP_XML_BEGIN(UpFrontControls)
 CSP_XML_END
@@ -205,5 +205,5 @@ void UpFrontControls::updateActivePage() {
 	}
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

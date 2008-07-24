@@ -34,7 +34,7 @@
 #include <sstream>
 #include <iomanip>
 
-CSP_NAMESPACE
+namespace csp {
 
 CSP_XML_BEGIN(AircraftSimpleFCS)
 	CSP_DEF("elevator_limit0", m_ElevatorLimit0, false)
@@ -177,5 +177,5 @@ void AircraftSimpleFCS::getInfo(InfoList &info) const {
 	info.push_back(line.str());
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

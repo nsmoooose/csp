@@ -26,11 +26,11 @@
 #include <csp/cspsim/battlefield/SceneManager.h>
 #include <csp/cspsim/battlefield/SimObject.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 void SceneManager::setVisible(ObjectRef const& object, bool visible) {
 	object->setVisibleFlag(visible);
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

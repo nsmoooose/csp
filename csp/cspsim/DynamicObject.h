@@ -41,7 +41,7 @@ namespace osgParticle {
 	class ParticleSystemUpdater;
 }
 
-CSP_NAMESPACE
+namespace csp {
 
 class DataRecorder;
 class LocalController;
@@ -245,7 +245,7 @@ private:
 	Path m_RemoteModel;
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPSIM_DYNAMICOBJECT_H__
 

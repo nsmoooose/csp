@@ -28,7 +28,7 @@
 
 #include <csp/cspsim/f16/DataEntryPage.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 class PageALOW: public DataEntryForm {
 	CycleCallback::RefT m_Steerpoint;
@@ -52,7 +52,7 @@ public:
 	}
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPSIM_F16_PAGE_ALOW_H__
 

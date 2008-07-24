@@ -34,7 +34,7 @@
 #include <csp/cspsim/HID.h>
 #include <csp/csplib/util/Namespace.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 /** BaseScreen represents a generic view of the simulation or GUI.  Each screen
  *  within the game / sim should subclass this class.  The active screen receives
@@ -58,7 +58,7 @@ protected:
 	Ref<VirtualHID> m_Interface;
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPSIM_BASESCREEN_H__
 

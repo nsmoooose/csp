@@ -36,7 +36,7 @@
 #include <csp/csplib/data/ObjectInterface.h>
 
 
-CSP_NAMESPACE
+namespace csp {
 
 CSP_XML_BEGIN(System)
 	CSP_DEF("subsystems", m_Subsystems, false)
@@ -133,5 +133,5 @@ void System::InitVisitor::apply(System &s) {
 	traverse(s);
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

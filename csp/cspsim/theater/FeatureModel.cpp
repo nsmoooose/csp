@@ -25,7 +25,7 @@
 
 #include <csp/cspsim/theater/FeatureModel.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 void FeatureModel::addSceneModel(FeatureSceneGroup *, LayoutTransform const &, ElevationCorrection const &) {
 }
@@ -33,5 +33,5 @@ void FeatureModel::addSceneModel(FeatureSceneGroup *, LayoutTransform const &, E
 void FeatureModel::makeFeatures(std::vector<Feature> &, int) const {
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

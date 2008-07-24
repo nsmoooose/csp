@@ -28,7 +28,7 @@ namespace osg { class Image; }
 namespace osg { class NodeCallback; }
 namespace osg { class Texture2D; }
 
-CSP_NAMESPACE
+namespace csp {
 
 /** PhaseShader shades the 2D image of a spherical body to approximate
  *  directional illumination.  This is used to render the appropriate
@@ -121,7 +121,7 @@ private:
 	osg::ref_ptr<osg::Image> m_Shaded;
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSP_CSPSIM_SKY_PHASESHADER_H__
 

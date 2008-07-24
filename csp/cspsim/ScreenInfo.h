@@ -35,7 +35,7 @@ namespace osgText {
 #include <osg/Geode>
 #include <osg/Switch>
 
-CSP_NAMESPACE
+namespace csp {
 
 class DynamicObject;
 
@@ -108,7 +108,7 @@ protected:
 	virtual ~MessageList();
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif  // __SCREENINFO_H__
 

@@ -26,7 +26,7 @@
 #include <csp/csplib/net/DispatchTarget.h>
 
 
-CSP_NAMESPACE
+namespace csp {
 
 
 bool DispatchTarget::dispatch(DispatchManager *manager) {
@@ -38,5 +38,5 @@ bool DispatchTarget::dispatchChildren(DispatchManager *) {
 }
 
 
-CSP_NAMESPACE_END
+} // namespace csp
 

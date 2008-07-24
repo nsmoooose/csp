@@ -27,7 +27,7 @@
 #include <csp/cspsim/views/CameraKinematics.h>
 #include <csp/cspsim/views/CameraCommand.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 void CameraKinematics::scale(double dt) {
 	double scale_factor = 1.0 + m_ZoomRate * dt;
@@ -189,5 +189,5 @@ void CameraKinematics::accept(CameraCommand* cc) {
 	if (cc) cc->execute(this);
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

@@ -31,7 +31,7 @@
 #include <csp/csplib/util/HashUtility.h>
 
 
-CSP_NAMESPACE
+namespace csp {
 
 
 /** DispatchCache provides a cache of most-frequently-called message disptach
@@ -107,7 +107,7 @@ public:
 };
 
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPLIB_NET_DISPATCHCACHE_H__
 

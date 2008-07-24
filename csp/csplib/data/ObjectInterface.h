@@ -40,7 +40,7 @@
 #include <sstream>
 
 
-CSP_NAMESPACE
+namespace csp {
 
 class Object;
 
@@ -617,7 +617,7 @@ public:
 };
 
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPLIB_DATA_OBJECTINTERFACE_H__
 

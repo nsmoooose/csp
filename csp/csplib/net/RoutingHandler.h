@@ -83,7 +83,7 @@
 #include <csp/csplib/util/Ref.h>
 
 
-CSP_NAMESPACE
+namespace csp {
 
 
 /** A MessageHandler for distributing messages based on the routing-type
@@ -136,7 +136,7 @@ public:
 };
 
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPLIB_NET_ROUTINGHANDLER_H__
 

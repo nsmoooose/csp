@@ -28,7 +28,7 @@
 
 #include <csp/csplib/util/Namespace.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 namespace bus {
 
@@ -55,7 +55,7 @@ struct Kinetics {
 
 } // namespace bus
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPSIM_KINETICS_CHANNELS_H__
 

@@ -104,7 +104,7 @@
 #include <memory.h>
 #include <string>
 
-CSP_NAMESPACE
+namespace csp {
 
 inline int mmin( const int t1, const int t2 ) { return t1 < t2 ? t1 : t2; }
 
@@ -2593,5 +2593,5 @@ unsigned char *XMLParserBase64Tool::decode(CSP_XMLCSTR data, int *outlen, XMLErr
 	return (unsigned char*)buf;
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

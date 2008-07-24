@@ -25,7 +25,7 @@
 
 #include <csp/cspsim/f16/DataEntryPage.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 DataEntryForm::DataEntryForm(): m_EntryIndex(0), m_CycleIndex(0) { }
 
@@ -165,5 +165,5 @@ void DataEntryGroup::reset() { m_ActivePage = 0; }
 void DataEntryGroup::setActivePage(DataEntryPage::RefT page) { m_ActivePage = page; }
 std::string DataEntryGroup::onNumber(int) { return ""; }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

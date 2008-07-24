@@ -28,7 +28,7 @@
 
 #include <csp/csplib/data/Object.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 class JetFuelStarter: public Object {
 public:
@@ -67,7 +67,7 @@ private:
 	double m_MaxFuelFlow;
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __JETFUELSTARTER_H__
 

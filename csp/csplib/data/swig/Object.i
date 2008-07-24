@@ -28,10 +28,10 @@
 
 %rename(__repr__) CSP(Object)::asString() const;
 
-CSP_NAMESPACE
+namespace csp {
 	%ignore Referenced;
 	class Referenced {};
-CSP_NAMESPACE_END
+} // namespace csp
 
 %include <csp/csplib/data/Object.h>
 

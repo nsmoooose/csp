@@ -27,7 +27,7 @@
 #include <csp/csplib/util/Random.h>
 
 
-CSP_NAMESPACE
+namespace csp {
 
 
 Perlin1D::Perlin1D(double persistence, int octaves, Interpolation interpolation) {
@@ -115,5 +115,5 @@ std::vector<float> Perlin1D::generate(int n, bool periodic, double timescale, do
 }
 
 
-CSP_NAMESPACE_END
+} // namespace csp
 

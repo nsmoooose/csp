@@ -24,7 +24,7 @@
 
 %include <csp/csplib/util/Namespace.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 
 class RandomInterface {
@@ -128,5 +128,5 @@ public:
 %template(MersenneTwister) RandomNumberGenerator<csp::rng::MT19937>;
 %template(Taus2) RandomNumberGenerator<csp::rng::Taus2>;
 
-CSP_NAMESPACE_END
+} // namespace csp
 

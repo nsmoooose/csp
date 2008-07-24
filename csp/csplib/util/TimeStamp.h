@@ -32,7 +32,7 @@
 #include <cmath>
 
 
-CSP_NAMESPACE
+namespace csp {
 
 /// Network event time, which is a rolling counter with 1us granularity
 typedef int32 TimeStamp;
@@ -53,6 +53,6 @@ inline TimeStamp getTimeStamp(SimTime time) {
 }
 
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPLIB_UTIL_TIMESTAMP_H__

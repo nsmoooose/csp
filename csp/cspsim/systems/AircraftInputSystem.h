@@ -31,7 +31,7 @@
 #include <csp/csplib/util/Math.h>
 #include <csp/csplib/util/ScopedPointer.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 class AircraftInputSystem: public System {
 public:
@@ -125,7 +125,7 @@ private:
 	bool m_WheelBrakes;
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPSIM_SYSTEMS_AIRCRAFTINPUTSYSTEM_H__
 

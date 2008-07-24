@@ -33,7 +33,7 @@
 #include <vector>
 
 
-CSP_NAMESPACE
+namespace csp {
 
 
 /** Interface for nodes that can accept visitors.
@@ -547,7 +547,7 @@ private:
 };
 
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPLIB_UTIL_COMPOSITE_H__
 

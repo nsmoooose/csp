@@ -37,7 +37,7 @@
 #include <cassert>
 
 
-CSP_NAMESPACE
+namespace csp {
 
 class Mutex;
 class StackTrace;
@@ -278,7 +278,7 @@ private:
 };
 
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 
 #endif // __CSPLIB_UTIL_LOGSTREAM_H__

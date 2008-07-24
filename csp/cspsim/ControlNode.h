@@ -31,7 +31,7 @@
 #include <csp/csplib/data/Object.h>
 #include <map>
 
-CSP_NAMESPACE
+namespace csp {
 
 class Bus;
 class DataRecorder;
@@ -182,7 +182,7 @@ private:
 
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPSIM_CONTROL_NODE_H__
 

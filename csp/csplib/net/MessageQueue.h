@@ -30,7 +30,7 @@
 #include <csp/csplib/net/TaggedRecordRegistry.h>
 #include <deque>
 
-CSP_NAMESPACE
+namespace csp {
 
 /** A packet source that encodes NetworkMessages to binary packets.
  *  @ingroup net
@@ -184,7 +184,7 @@ public:
 	}
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPLIB_NET_MESSAGEQUEUE_H__
 

@@ -31,7 +31,7 @@
 #include <sigc++/slot.h>
 
 
-CSP_NAMESPACE
+namespace csp {
 
 /** A utility class for coordinating infrequest events within a SynchronousUpdate
  *  handler.  An UpdateTarget can register to receive updates at a given interval,
@@ -117,7 +117,7 @@ private:
 	void dispatch();
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPLIB_UTIL_LOCALUPDATE_H__
 

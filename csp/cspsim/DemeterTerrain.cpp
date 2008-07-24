@@ -38,7 +38,7 @@
 #include <osg/Geode>
 #include <osg/StateSet>
 
-CSP_NAMESPACE
+namespace csp {
 
 CSP_XML_BEGIN(DemeterTerrain)
 	CSP_DEF("detail_texture_file", m_DetailTextureFile, true)
@@ -423,5 +423,5 @@ void DemeterTerrain::endDraw() {
 	Demeter::Settings::GetInstance()->LogStats();
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

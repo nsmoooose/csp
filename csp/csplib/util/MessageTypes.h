@@ -51,7 +51,7 @@
 #include <cmath>
 
 
-CSP_NAMESPACE
+namespace csp {
 
 class GlobalPosition {
 	float x;
@@ -239,7 +239,7 @@ inline std::ostream & operator << (std::ostream &o, Vector4f const &p) {
 	return o << p.asQuat();
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif  // __CSPLIB_UTIL_MESSAGETYPES_H__
 

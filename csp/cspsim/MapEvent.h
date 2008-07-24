@@ -29,7 +29,7 @@
 
 #include <string>
 
-CSP_NAMESPACE
+namespace csp {
 
 
 /** Event wrapper struct that can hold parameters for a command, axis, or mouse event.
@@ -117,7 +117,7 @@ struct MapEvent {
 };
 
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __MAPEVENT_H__
 

@@ -23,7 +23,7 @@
 #include <csp/csplib/data/Vector3.h>
 #include <osg/MatrixTransform>
 
-CSP_NAMESPACE
+namespace csp {
 
 class OrbitalBody;
 class OrbitalBodyImposter;
@@ -117,7 +117,7 @@ private:
 };
 
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSP_CSPSIM_SKY_ORIBITALBODYMODEL_H__
 

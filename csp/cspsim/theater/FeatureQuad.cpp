@@ -39,7 +39,7 @@
 #include <osg/CullFace>
 #include <osg/Material>
 
-CSP_NAMESPACE
+namespace csp {
 
 CSP_XML_BEGIN(FeatureQuad)
 	CSP_DEF("texture", m_Texture, true)
@@ -139,5 +139,5 @@ osg::StateSet * FeatureQuad::getStateSet() const {
 	return m_StateSet.get();
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

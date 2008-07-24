@@ -62,7 +62,7 @@
 #include <sstream>
 #include <stdexcept>
 
-CSP_NAMESPACE
+namespace csp {
 
 CSP_XML_BEGIN(LandingGear)
 	CSP_DEF("gear_name", m_Name, true)
@@ -866,5 +866,5 @@ void GearDynamics::onGearCommand() {
 	}
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

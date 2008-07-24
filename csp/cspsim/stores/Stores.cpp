@@ -43,7 +43,7 @@
 
 #include <osg/PositionAttitudeTransform>
 
-CSP_NAMESPACE
+namespace csp {
 
 CSP_XML_BEGIN(StoreData)
 	CSP_DEF("name", m_Name, true)
@@ -116,5 +116,5 @@ void StoreData::sumDynamics(StoresDynamics &dynamics, Vector3 const &offset, Qua
 	}
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

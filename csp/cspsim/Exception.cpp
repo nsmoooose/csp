@@ -29,7 +29,7 @@
 #include <iostream>
 #include <stdlib.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 void FatalException(Exception &e, std::string const &location) {
 	DataError *pDataError = dynamic_cast<DataError*> (&e);
@@ -80,6 +80,6 @@ void OtherFatalException(std::string const &location) {
 	::exit(1);
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 

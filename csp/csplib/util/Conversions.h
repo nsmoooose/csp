@@ -36,7 +36,7 @@
 
 #include <csp/csplib/util/Namespace.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 /**
  * @defgroup Conversions Unit conversions
@@ -132,7 +132,7 @@ CSP_CVT(l_gal)
 
 //@}
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 
 #endif // __CSPLIB_UTIL_CONVERSIONS_H__

@@ -35,7 +35,7 @@
 #include <csp/cspsim/LandingGearChannels.h>
 #include <csp/cspsim/NavigationChannels.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 namespace bus {
 
@@ -108,5 +108,5 @@ namespace bus {
 	std::string LandingGear::selectSteeringCommand(std::string const &gearname) { return "LandingGear." + gearname + ".SteeringCommand"; }
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

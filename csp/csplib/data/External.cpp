@@ -26,7 +26,7 @@
 #include <csp/csplib/util/FileUtility.h>
 
 
-CSP_NAMESPACE
+namespace csp {
 
 
 bool External::operator==(External const &path) {
@@ -73,5 +73,5 @@ std::string External::asString() const {
 std::ostream &operator <<(std::ostream &o, External const &e) { return o << e.asString(); }
 
 
-CSP_NAMESPACE_END
+} // namespace csp
 

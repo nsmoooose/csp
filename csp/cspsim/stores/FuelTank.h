@@ -31,7 +31,7 @@
 #include <csp/cspsim/stores/Stores.h>
 #include <csp/cspsim/stores/StoresDynamics.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 /** Data for a fuel tank (internal or external).
  */
@@ -109,7 +109,7 @@ private:
 	Ref<const FuelTankData> m_Data;
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPSIM_STORES_FUELTANK_H__
 

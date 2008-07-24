@@ -28,7 +28,7 @@
 #include <iomanip>
 
 
-CSP_NAMESPACE
+namespace csp {
 
 
 const Key &Key::operator=(std::string const &id) {
@@ -57,5 +57,5 @@ std::string Key::asString() const {
 
 std::ostream &operator <<(std::ostream &o, Key const &k) { return o << k.asString(); }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

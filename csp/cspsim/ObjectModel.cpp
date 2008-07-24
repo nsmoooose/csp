@@ -64,7 +64,7 @@
 #include <utility>
 
 
-CSP_NAMESPACE
+namespace csp {
 
 const Enumeration ObjectModel::EffectItems("None SpecularHighlights");
 
@@ -785,5 +785,5 @@ private:
 	}
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 

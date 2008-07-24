@@ -28,7 +28,7 @@
 
 #include <sstream>
 
-CSP_NAMESPACE
+namespace csp {
 
 
 const char *TypeAdapter::TypeNames[] = {
@@ -119,5 +119,5 @@ std::ostream &operator <<(std::ostream &o, TypeAdapter const &t) {
 }
 
 
-CSP_NAMESPACE_END
+} // namespace csp
 

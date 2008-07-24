@@ -32,7 +32,7 @@
 
 #include <csp/csplib/data/ObjectInterface.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 CSP_XML_BEGIN(FeatureLayout)
 	CSP_DEF("model", m_FeatureModel, true)
@@ -67,5 +67,5 @@ Ref<FeatureModel const> FeatureLayout::getFeatureModel() const {
 	return m_FeatureModel;
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

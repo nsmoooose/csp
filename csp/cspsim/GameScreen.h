@@ -36,7 +36,7 @@
 namespace osg { class Group; }
 namespace osgUtil { class SceneView; }
 
-CSP_NAMESPACE
+namespace csp {
 
 class DynamicObject;
 class MouseCommand;
@@ -202,7 +202,7 @@ private:
 	bool onMouseMove(SDL_MouseMotionEvent const &event);
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPSIM_GAMESCREEN_H__
 

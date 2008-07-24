@@ -34,7 +34,7 @@
 #include <csp/csplib/data/Date.h>
 #include <csp/csplib/util/TimeStamp.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 class NetworkMessage;
 
@@ -163,7 +163,7 @@ public:
 	double onUpdate(double dt);
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CONTROLLER_H__
 

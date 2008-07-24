@@ -26,7 +26,7 @@
 #include <csp/cspsim/theater/Objective.h>
 #include <csp/csplib/data/ObjectInterface.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 CSP_XML_BEGIN(Objective)
 	CSP_DEF("strategic_value_modifier", m_StrategicValueModifier, true)
@@ -39,5 +39,5 @@ Objective::Objective() {
 Objective::~Objective() {
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

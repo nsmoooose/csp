@@ -39,7 +39,7 @@
 #include <csp/csplib/data/ObjectInterface.h>
 #include <csp/csplib/data/Vector3.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 class LeadingEdgeFlapControl: public ControlNode {
 public:
@@ -403,5 +403,5 @@ void YawLimiterControl::importChannels(Bus* bus) {
 	b_ManualPitchOverrideActive = bus->getChannel(bus::F16::ManualPitchOverrideActive);
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

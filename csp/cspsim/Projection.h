@@ -34,7 +34,7 @@
 #include <csp/csplib/data/LUT.h>
 #include <csp/csplib/util/Ref.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 /** An interface for converting between geospatial coordinates and 2D world
  *  coordinates.
@@ -126,7 +126,7 @@ public:
 	virtual Vector3 getUp(Vector3 const &pos) const;
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPSIM_PROJECTION_H__
 

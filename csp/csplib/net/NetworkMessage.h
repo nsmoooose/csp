@@ -29,7 +29,7 @@
 #include <csp/csplib/net/NetBase.h>
 #include <csp/csplib/net/TaggedRecord.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 
 /** TaggedRecord subclass used as a base class for all network messages.
@@ -159,7 +159,7 @@ template <>
 inline Ref<NetworkMessage> NetworkMessage::FastCast(Ref<NetworkMessage> const &record) { return record; }
 
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPLIB_NET_NETWORKMESSAGE_H__
 

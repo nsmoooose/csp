@@ -29,7 +29,7 @@
 
 #include <csp/csplib/util/WeakReferenced.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 template<class T> class WeakRef {
 public:
@@ -136,6 +136,6 @@ private:
 	ReferenceValidator* validator; 
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
   
 #endif // __CSPLIB_UTIL_WEAKREF_H__

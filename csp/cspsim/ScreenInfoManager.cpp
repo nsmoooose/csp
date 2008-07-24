@@ -28,7 +28,7 @@
 #include <osg/MatrixTransform>
 #include <osgText/Text>
 
-CSP_NAMESPACE
+namespace csp {
 
 void set2dScene(osg::Group *root_node, int screen_width, int screen_height) {
 	const unsigned short offsetpos = 11;
@@ -132,5 +132,5 @@ void ScreenInfoManager::addMessage(std::string const &line) {
 	}
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

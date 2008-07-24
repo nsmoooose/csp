@@ -25,7 +25,7 @@
 #include <csp/cspsim/f16/Radio.h>
 #include <csp/csplib/data/ObjectInterface.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 CSP_XML_BEGIN(F16Radio)
 	// TODO presets
@@ -89,5 +89,5 @@ F16Radio::F16Radio():
 	m_VHFPresets.push_back(11400);
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

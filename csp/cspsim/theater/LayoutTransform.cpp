@@ -26,7 +26,7 @@
 #include <csp/cspsim/theater/LayoutTransform.h>
 #include <csp/csplib/util/osg.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 LayoutTransform::LayoutTransform() {
 	m_X = 0.0;
@@ -63,5 +63,5 @@ osg::Vec3 LayoutTransform::operator()(osg::Vec3 const &offset) const {
 	return osg::Vec3(m_X + offset.x() * c - offset.y() * s, m_Y + offset.x() * s + offset.y() * c, 0.0);
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

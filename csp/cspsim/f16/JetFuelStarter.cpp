@@ -29,7 +29,7 @@
 #include <csp/csplib/util/Random.h>
 #include <csp/csplib/data/ObjectInterface.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 CSP_XML_BEGIN(JetFuelStarter)
 	CSP_DEF("power", m_Power, true)
@@ -163,5 +163,5 @@ void JetFuelStarter::enable(bool on) {
 	m_Enabled = on;
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

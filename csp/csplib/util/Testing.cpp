@@ -31,7 +31,7 @@
 #include <cc++/file.h>
 #include <csp/csplib/util/undef.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 namespace test {
 
@@ -260,5 +260,5 @@ void TestReporter::Log::clear() {
 
 } // namespace test
 
-CSP_NAMESPACE_END
+} // namespace csp
 

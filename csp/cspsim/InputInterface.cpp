@@ -29,7 +29,7 @@
 #include <csp/cspsim/InputInterface.h>
 #include <sigc++/adaptors/hide.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 
 InputInterfaceDispatch::~InputInterfaceDispatch() {
@@ -95,4 +95,4 @@ void RuntimeDispatch::bindAxis(std::string const &id, AxisEventSlot const &callb
 }
 
 
-CSP_NAMESPACE_END
+} // namespace csp

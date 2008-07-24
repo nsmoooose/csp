@@ -28,7 +28,7 @@
 
 #include <csp/csplib/util/Namespace.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 namespace bus {
 
@@ -48,7 +48,7 @@ struct F16 {
 
 } // namespace bus
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPSIM_F16CHANNELS_H__
 

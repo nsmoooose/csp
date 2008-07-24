@@ -29,7 +29,7 @@
 #include <csp/cspsim/System.h>
 #include <csp/csplib/data/Enum.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 class PanelHUD: public System {
 public:
@@ -70,7 +70,7 @@ protected:
 	static const Enumeration AltitudeSwitchSettings;
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPSIM_F16_PANEL_HUD_H__
 

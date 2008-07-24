@@ -32,7 +32,7 @@
 #endif
 
 
-CSP_NAMESPACE
+namespace csp {
 
 const char *getVersion() {
 	return CSPLIB_VERSION;
@@ -72,5 +72,5 @@ public:
 #endif // CSPLIB_NOLOADCHECK
 
 
-CSP_NAMESPACE_END
+} // namespace csp
 

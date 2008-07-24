@@ -46,7 +46,7 @@
 #define OSG_OLD_CONTROL_POINT_INTERFACE
 #endif
 
-CSP_NAMESPACE
+namespace csp {
 
 CSP_XML_BEGIN(Animation)
 	CSP_DEF("model_id", m_NodeLabel, true)
@@ -1603,5 +1603,5 @@ CSP_XML_BEGIN(DisplayScreen)
 CSP_XML_END
 
 
-CSP_NAMESPACE_END
+} // namespace csp
 

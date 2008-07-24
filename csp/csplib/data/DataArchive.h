@@ -36,7 +36,7 @@
 #include <cstdlib>
 
 
-CSP_NAMESPACE
+namespace csp {
 
 
 /// Exception: Input file does not appear to be a valid data archive.
@@ -399,7 +399,7 @@ private:
 };
 
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPLIB_DATA_DATAARCHIVE_H__
 

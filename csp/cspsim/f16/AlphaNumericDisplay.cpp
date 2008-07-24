@@ -27,7 +27,7 @@
 #include <cassert>
 #include <iostream>
 
-CSP_NAMESPACE
+namespace csp {
 
 AlphaNumericDisplay::AlphaNumericDisplay(unsigned width, unsigned height): m_Width(width), m_Height(height), m_DirtyCount(0) {
 	m_Width = width;
@@ -100,5 +100,5 @@ const char* AlphaNumericDisplay::getLine(unsigned i) const {
 	return m_Lines[i];
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

@@ -34,7 +34,7 @@
 #include <csp/csplib/util/HashUtility.h>
 #include <string>
 
-CSP_NAMESPACE
+namespace csp {
 
 
 class DataArchive;
@@ -137,7 +137,7 @@ public:
 
 CSPLIB_EXPORT std::ostream &operator <<(std::ostream &o, Path const &p);
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPLIB_DATA_PATH_H__
 

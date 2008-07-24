@@ -22,7 +22,7 @@
 
 #include <cmath>
 
-CSP_NAMESPACE
+namespace csp {
 
 const double OrbitalBody::cG = 6.67e-11; // Nm^2/kg^2
 const double OrbitalBody::cMs = 1.99e+30;  // kg
@@ -175,5 +175,5 @@ void OrbitalBody::logInterpolationError(double time) const {
 	CSPLOG(ERROR, PHYSICS) << label() << " interpolation outside interval: " << time << ", [" << m_OrbitalState[0].time << ", " << m_OrbitalState[1].time << ", " << m_OrbitalState[2].time << "]";
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

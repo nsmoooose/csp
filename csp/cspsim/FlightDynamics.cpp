@@ -40,7 +40,7 @@
 #include <iomanip> // for getInfo
 #include <algorithm>
 
-CSP_NAMESPACE
+namespace csp {
 
 CSP_XML_BEGIN(FlightDynamics)
 	CSP_DEF("flight_model", m_FlightModel, true)
@@ -182,5 +182,5 @@ void FlightDynamics::getInfo(InfoList &info) const {
 	*/
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

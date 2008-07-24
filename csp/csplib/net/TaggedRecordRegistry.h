@@ -35,7 +35,7 @@
 #include <vector>
 
 
-CSP_NAMESPACE
+namespace csp {
 
 
 /** Abstract interface for TaggedRecord factories.
@@ -153,7 +153,7 @@ public:
 };
 
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif //  __CSPLIB_NET_TAGGEDRECORDREGISTRY_H__
 

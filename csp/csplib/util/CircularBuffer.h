@@ -34,7 +34,7 @@
 #include <cassert>
 #include <algorithm>
 
-CSP_NAMESPACE
+namespace csp {
 
 
 /** A simple ring queue class for passing arbitrary types between
@@ -414,7 +414,7 @@ public:
 };
 
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPLIB_UTIL_CIRCULARBUFFER_H__
 

@@ -30,7 +30,7 @@
 #include <sstream>
 
 
-CSP_NAMESPACE
+namespace csp {
 
 
 // class Enum
@@ -112,5 +112,5 @@ std::string Enumeration::__repr__() const {
 
 std::ostream &operator <<(std::ostream &o, EnumLink &e) { return o << e.asString(); }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

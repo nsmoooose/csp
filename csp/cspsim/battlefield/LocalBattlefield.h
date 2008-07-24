@@ -34,7 +34,7 @@
 
 #include <sigc++/signal.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 class Client;
 class DataManager;
@@ -200,6 +200,6 @@ private:
 	ScopedPointer<sigc::signal<void, int, const std::string&> > m_PlayerQuitSignal;
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPSIM_BATTLEFIELD_LOCALBATTLEFIELD_H__

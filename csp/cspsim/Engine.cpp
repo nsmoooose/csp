@@ -42,7 +42,7 @@
 #include <iomanip>
 #include <sstream>
 
-CSP_NAMESPACE
+namespace csp {
 
 CSP_XML_BEGIN(Engine)
 	CSP_DEF("thrust_data", m_ThrustData, true)
@@ -269,5 +269,5 @@ void EngineDynamics::getInfo(InfoList &info) const {
 	info.push_back(line.str());
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

@@ -24,7 +24,7 @@
 #include <sigc++/signal.h>
 #include <sigc++/functors/slot.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 template <class ret>
 class signal<ret, sigc::nil, sigc::nil, sigc::nil, sigc::nil, sigc::nil, sigc::nil, sigc::nil>: public sigc::signal<ret> { };
@@ -107,7 +107,7 @@ public:
 	template <class functor> slot(const functor &f): sigc::slot<ret>(f) {}
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif  // __CSPLIB_UTIL_SIGNAL_H__
 

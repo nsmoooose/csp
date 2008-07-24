@@ -28,7 +28,7 @@
 #include <csp/csplib/data/Link.h>
 #include <csp/csplib/data/Object.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 class Bus;
 class SceneModel;
@@ -83,7 +83,7 @@ public:
 	SceneModelChild *createDetailModel() const;
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPSIM_STATION_H__
 

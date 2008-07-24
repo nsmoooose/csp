@@ -41,7 +41,7 @@
 #include <set>
 #include <vector>
 
-CSP_NAMESPACE
+namespace csp {
 
 class StoreData;
 class StoresDynamics;
@@ -408,7 +408,7 @@ private:
 inline Key Store::key() const { return data()->key(); }
 inline std::string const &Store::name() const { return data()->name(); }
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPSIM_STORES_STORES_H__
 

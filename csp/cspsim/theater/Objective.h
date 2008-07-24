@@ -28,7 +28,7 @@
 
 #include <csp/cspsim/theater/FeatureGroup.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 /**
  * class Objective.
@@ -48,7 +48,7 @@ public:
 
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPSIM_THEATER_OBJECTIVE_H__
 

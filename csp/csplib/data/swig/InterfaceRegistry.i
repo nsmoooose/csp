@@ -27,7 +27,7 @@
 %import <csp/csplib/swig/vector.i>
 %include <csp/csplib/util/Namespace.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 %newobject InterfaceProxy::createObject;
 
@@ -37,7 +37,7 @@ template <class T> class Singleton;
 %template(SingletonInterfaceRegistry) Singleton<InterfaceRegistry>;
 %warnfilter(402) InterfaceRegistry;
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 
 %exception {

@@ -35,7 +35,7 @@
 #define snprintf _snprintf
 #endif
 
-CSP_NAMESPACE
+namespace csp {
 
 class AlphaNumericDisplay: public Referenced {
 public:
@@ -71,7 +71,7 @@ private:
 	int *m_DirtyLineCount;
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPSIM_F16_ALPHA_NUMERIC_DISPLAY_H__
 

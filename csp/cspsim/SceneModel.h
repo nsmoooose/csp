@@ -40,7 +40,7 @@ namespace osg { class Switch; }
 namespace osg { class PositionAttitudeTransform; }
 namespace osgText { class Text; }
 
-CSP_NAMESPACE
+namespace csp {
 
 class AnimationCallback;
 class Bus;
@@ -134,7 +134,7 @@ public:
 	void pick(int x, int y);
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPSIM_SCENEMODEL_H__
 

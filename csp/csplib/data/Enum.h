@@ -82,7 +82,7 @@
 #include <map>
 
 
-CSP_NAMESPACE
+namespace csp {
 
 
 class EnumLink;
@@ -724,7 +724,7 @@ inline EnumLink Enumeration::first() const {
 
 CSPLIB_EXPORT std::ostream &operator <<(std::ostream &o, EnumLink &e);
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPLIB_DATA_ENUM_H__
 

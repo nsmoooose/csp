@@ -32,7 +32,7 @@ namespace osg {
 	class State;
 }
 
-CSP_NAMESPACE
+namespace csp {
 
 namespace wf {
 	class WindowManager;
@@ -61,6 +61,6 @@ private:
 	Ref<wf::Serialization> m_Serializer;
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPSIM_MENUSCREEN_H__

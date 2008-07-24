@@ -32,7 +32,7 @@
 
 #include <vector>
 
-CSP_NAMESPACE
+namespace csp {
 
 class AlphaNumericDisplay;
 class Bus;
@@ -160,7 +160,7 @@ private:
 	DataEntryPage::RefT m_ActivePage;
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPSIM_F16_DATA_ENTRY_PAGE_H__
 

@@ -45,7 +45,7 @@
 
 #include <osg/Group>
 
-CSP_NAMESPACE
+namespace csp {
 
 CSP_XML_BEGIN(DynamicObject)
 	CSP_DEF("model", m_Model, false)
@@ -584,5 +584,5 @@ void DynamicObject::toggleMarkers() {
 	m_Model->showDebugMarkers(!m_Model->getDebugMarkersVisible());
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

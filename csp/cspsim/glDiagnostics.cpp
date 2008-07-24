@@ -40,7 +40,7 @@
 #include <OpenGL/gl.h>
 #endif
 
-CSP_NAMESPACE
+namespace csp {
 
 namespace {
 	enum {
@@ -421,5 +421,5 @@ bool GlStateSnapshot::hasChanged(GlStateSnapshot const *other) {
 	}
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

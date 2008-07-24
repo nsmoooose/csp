@@ -28,7 +28,7 @@ namespace osg { class Geometry; }
 namespace osg { class Image; }
 namespace osg { class Texture2D; }
 
-CSP_NAMESPACE
+namespace csp {
 
 class PhaseShader;
 
@@ -98,7 +98,7 @@ private:
 	Ref<PhaseShader> m_PhaseShader;
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSP_CSPSIM_SKY_ORIBITALBODYIMPOSTER_H__
 

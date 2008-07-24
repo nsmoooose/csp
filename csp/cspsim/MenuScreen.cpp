@@ -28,7 +28,7 @@
 #include <csp/cspsim/MenuScreen.h>
 #include <csp/cspwf/WindowManager.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 MenuScreen::MenuScreen(osg::State* state) : m_State(state) {
 }
@@ -77,5 +77,5 @@ wf::Serialization* MenuScreen::getSerializer() {
 	return m_Serializer.get();
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

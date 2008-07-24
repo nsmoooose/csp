@@ -38,7 +38,7 @@
 #include <osg/Geode>
 #include <osg/StateSet>
 
-CSP_NAMESPACE
+namespace csp {
 
 CSP_XML_BEGIN(RandomForestModel)
 	CSP_DEF("models", m_Models, true)
@@ -186,5 +186,5 @@ void RandomForestModel::addSceneModel(FeatureSceneGroup *group, LayoutTransform 
 	group->addChild(scene_model);
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

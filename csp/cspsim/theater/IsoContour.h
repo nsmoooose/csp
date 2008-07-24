@@ -29,7 +29,7 @@
 #include <csp/csplib/data/Object.h>
 #include <csp/csplib/util/Log.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 class IsoContour: public Object {
 protected:
@@ -91,7 +91,7 @@ public:
 	virtual ~RectangularCurve(){}
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPSIM_THEATER_ISOCONTOUR_H__
 

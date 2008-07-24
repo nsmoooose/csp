@@ -31,7 +31,7 @@
 
 namespace osgAL { class SoundState; }
 
-CSP_NAMESPACE
+namespace csp {
 
 class SoundModel;
 class SoundSample;
@@ -64,7 +64,7 @@ private:
 	osg::ref_ptr<osgAL::SoundState> m_SoundState;
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __SOUNDEFFECT_H__
 

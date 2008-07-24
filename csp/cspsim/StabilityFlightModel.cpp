@@ -28,7 +28,7 @@
 #include <csp/csplib/data/ObjectInterface.h>
 #include <csp/csplib/data/Quat.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 CSP_XML_BEGIN(StabilityFlightModel)
 	CSP_DEF("stall_aoa", m_stallAOA, true)
@@ -161,5 +161,5 @@ void StabilityFlightModel::calculateForceAndMoment(Vector3 &force, Vector3 &mome
 	moment.set(calculatePitchMoment(), calculateRollMoment(), calculateYawMoment());
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

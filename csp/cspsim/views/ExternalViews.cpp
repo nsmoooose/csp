@@ -34,7 +34,7 @@
 
 #include <cmath>
 
-CSP_NAMESPACE
+namespace csp {
 
 void ExternalViewBody::activate() {
 	View::activate();
@@ -140,5 +140,5 @@ void SatelliteView::updateView(Vector3& ep, Vector3& lp, Vector3& up, double /*d
 	updateWorld(ep, lp, up);
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

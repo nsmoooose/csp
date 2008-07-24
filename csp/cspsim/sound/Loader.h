@@ -34,7 +34,7 @@
 namespace openalpp { class Sample; }
 
 
-CSP_NAMESPACE
+namespace csp {
 
 
 void CSPSIM_EXPORT __registerOgg();
@@ -73,7 +73,7 @@ private:
 };
 
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPLIB_SOUND_LOADER_H__
 

@@ -30,7 +30,7 @@
 #include <csp/csplib/data/LUT.h>
 #include <csp/csplib/data/Object.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 /** Aerodynamic drag profile for a vehicle store or projectile.  Currently individual
  *  stores do not use DragProfile directly.  When attached to an aircraft, all stores
@@ -54,7 +54,7 @@ private:
 	Table2 m_Drag;
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPSIM_DRAGPROFILE_H__
 

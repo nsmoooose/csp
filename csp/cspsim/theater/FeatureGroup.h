@@ -42,7 +42,7 @@
 
 #include <vector>
 
-CSP_NAMESPACE
+namespace csp {
 
 class FeatureSceneGroup;
 class TerrainObject;
@@ -132,7 +132,7 @@ public:
 
 typedef Ref<FeatureGroup> FeatureGroupRef;
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPSIM_THEATER_FEATUREGROUP_H__
 

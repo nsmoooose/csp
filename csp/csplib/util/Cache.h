@@ -61,7 +61,7 @@
 #include <csp/csplib/util/Properties.h>
 
 
-CSP_NAMESPACE
+namespace csp {
 
 
 /** A cache of most recently used (MRU) key-value pairs.
@@ -161,7 +161,7 @@ public:
 };
 
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPLIB_UTIL_CACHE_H__
 

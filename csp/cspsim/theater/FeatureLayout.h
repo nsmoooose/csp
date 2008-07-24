@@ -35,7 +35,7 @@
 
 #include <vector>
 
-CSP_NAMESPACE
+namespace csp {
 
 class FeatureModel;
 class FeatureSceneGroup;
@@ -104,7 +104,7 @@ public:
 
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPSIM_THEATER_FEATURELAYOUT_H__
 

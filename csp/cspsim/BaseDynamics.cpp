@@ -25,7 +25,7 @@
 #include <csp/cspsim/BaseDynamics.h>
 #include <csp/cspsim/PhysicsModel.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 BaseDynamics::BaseDynamics():
 	m_Force(Vector3::ZERO),
@@ -56,5 +56,5 @@ void BaseDynamics::preSimulationStep(double /*dt*/) {
 }
 
 
-CSP_NAMESPACE_END
+} // namespace csp
 

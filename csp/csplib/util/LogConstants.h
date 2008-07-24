@@ -27,7 +27,7 @@
 
 #include <csp/csplib/util/Namespace.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 /** Log message priorities
  *
@@ -83,7 +83,7 @@ enum {
 	cLogCategory_ALL          = 0x7fffffff
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPLIB_UTIL_LOGCONSTANTS_H__
 

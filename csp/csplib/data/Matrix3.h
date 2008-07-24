@@ -42,7 +42,7 @@
 #include <cmath>
 #include <string.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 
 class Quat;
@@ -672,7 +672,7 @@ inline Vector3 Matrix3::preMult(const Vector3& v) const {
 CSPLIB_EXPORT std::ostream &operator <<(std::ostream &o, Matrix3 const &m);
 
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 
 #endif // __CSPLIB_DATA_MATRIX3_H__

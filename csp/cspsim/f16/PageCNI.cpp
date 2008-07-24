@@ -56,7 +56,7 @@
 // coded.
 
 
-CSP_NAMESPACE
+namespace csp {
 
 PageCNI::PageCNI() {
 	m_Steerpoint = new SimpleCycle(1, 1, 99, true);
@@ -123,5 +123,5 @@ std::string PageCNI::onNumber(int x) {
 	return "";
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

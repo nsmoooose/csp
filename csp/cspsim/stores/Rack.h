@@ -35,7 +35,7 @@
 #include <set>
 #include <vector>
 
-CSP_NAMESPACE
+namespace csp {
 
 /** A class for specifying the mount point of a single store.  RackData
  *  defines one or more RackMount points, each with a specific location
@@ -218,7 +218,7 @@ private:
 	Ref<const RackData> m_Data;
 	Store::RefT *m_Children;
 };
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPSIM_STORES_RACK_H__
 

@@ -39,7 +39,7 @@
 
 #include <cmath>
 
-CSP_NAMESPACE
+namespace csp {
 
 /** Storage class for information about remote players.
  */
@@ -884,5 +884,5 @@ LocalBattlefield::LocalUnitWrapper* LocalBattlefield::findLocalUnitWrapper(Objec
 	return static_cast<LocalUnitWrapper*>(findUnitWrapper(id));
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

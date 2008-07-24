@@ -26,7 +26,7 @@
 #include <csp/cspsim/AnimationSequence.h>
 #include <csp/csplib/data/ObjectInterface.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 CSP_XML_BEGIN(SharedSequence)
 	CSP_DEF("sequence_channel", m_SequenceChannel, false)
@@ -96,5 +96,5 @@ void SharedSequence::update() {
 	b_SequenceKey->value() = m_SequenceKey;
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

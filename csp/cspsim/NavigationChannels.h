@@ -28,7 +28,7 @@
 
 #include <csp/csplib/util/Namespace.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 namespace bus {
 
@@ -38,7 +38,7 @@ struct Navigation {
 
 } // namespace bus
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPSIM_NAVIGATION_CHANNELS_H__
 

@@ -34,7 +34,7 @@
 #define GL_ALL_CLIENT_ATTRIB_BITS 0xFFFFFFFF
 #endif
 
-CSP_NAMESPACE
+namespace csp {
 
 /** Tool for capturing (most of) the current glState, and logging
  *  state differences.
@@ -79,6 +79,6 @@ public:
 	bool hasChanged(GlStateSnapshot const *other=0);
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPSIM_GLDIAGNOSTICS_H__

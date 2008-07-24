@@ -32,7 +32,7 @@
 #include <csp/csplib/data/Vector3.h>
 #include <csp/csplib/data/GeoPos.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 /** Base class for representing steerpoints / waypoints.  It is intended to contain both
  *  standard steerpoint data (e.g. position) and AI cues (e.g. formation, action).  Very
@@ -94,6 +94,6 @@ private:
 	OffsetPoint m_VisualReferencePoint;
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPSIM_STEERPOINT_H__

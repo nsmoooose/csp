@@ -38,7 +38,7 @@
 #include <string>
 #include <vector>
 
-CSP_NAMESPACE
+namespace csp {
 
 class DataManager;
 class RackData;
@@ -126,7 +126,7 @@ private:
 	RackMatrix m_ChildMatrix;   // rack to compatible stores
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPSIM_STOREDATABASE_H__
 

@@ -46,7 +46,7 @@ namespace osg { class DisplaySettings; }
 namespace osgUtil { class SceneView; }
 
 
-CSP_NAMESPACE
+namespace csp {
 
 class DynamicObject;
 class FeatureTile;
@@ -268,7 +268,7 @@ protected:
 	osg::ref_ptr<osg::Group> m_CloudGroup;
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPSIM_VIRTUALBATTLEFIELDSCENE_H__
 

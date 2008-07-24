@@ -33,7 +33,7 @@
 #include <sigc++/sigc++.h>
 #include <string>
 
-CSP_NAMESPACE
+namespace csp {
 
 /** Base class for elements of the cockpit that can receive input events
  *  and control data channels.
@@ -98,7 +98,7 @@ private:
 	std::vector<CockpitElement::RefT> m_Elements;
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __COCKPIT_INTERFACE_H__
 

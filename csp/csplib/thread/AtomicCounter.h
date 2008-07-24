@@ -35,7 +35,7 @@
 #include <csp/csplib/util/undef.h>
 
 
-CSP_NAMESPACE
+namespace csp {
 
 
 /** An atomic counter that can be used with ReferenceBase to implement thread-safe
@@ -81,7 +81,7 @@ public:
 
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPLIB_THREAD_ATOMICCOUNTER_H__
 

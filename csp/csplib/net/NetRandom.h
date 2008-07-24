@@ -28,7 +28,7 @@
 #include <csp/csplib/util/Export.h>
 #include <csp/csplib/util/Uniform.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 /*
  *  Borrowed/adapted from linux-2.4.25/net/core/utils.c
@@ -69,7 +69,7 @@ public:
 	}
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPLIB_NET_NETRANDOM_H__
 

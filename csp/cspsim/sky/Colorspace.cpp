@@ -40,7 +40,7 @@
 #include <ostream>
 
 
-CSP_NAMESPACE
+namespace csp {
 
 static const float wpPI = 3.14159265358979f;
 
@@ -1133,5 +1133,5 @@ void Color::check() {
 	}
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

@@ -18,7 +18,7 @@
 
 #include <csp/cspsim/sky/Magnitude.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 MagnitudeFunction::~MagnitudeFunction() {
 }
@@ -40,5 +40,5 @@ double DiffuseReflector::compute(double sun_body_distance, double body_observer_
 	return m_AbsoluteMagnitude + 2.5 * log10(dbs2 * dbo2 * inv_d0_4 / phase_integral);
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

@@ -27,7 +27,7 @@
 #include <csp/csplib/net/DispatchTarget.h>
 
 
-CSP_NAMESPACE
+namespace csp {
 
 
 DispatchManager::DispatchManager(Ref<MessageQueue> queue, unsigned cache_size)
@@ -58,5 +58,5 @@ void DispatchManager::invalidateCache() {
 	m_Cache->invalidate();
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

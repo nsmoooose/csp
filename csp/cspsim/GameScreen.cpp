@@ -54,7 +54,7 @@
 #include <ctime>
 #include <iomanip>
 
-CSP_NAMESPACE
+namespace csp {
 
 /*
  * TODO
@@ -537,5 +537,5 @@ bool GameScreen::onMouseMove(SDL_MouseMotionEvent const &event) {
 	return getWindowManager()->onMouseMove(event.x, event.y, event.xrel, event.yrel);
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

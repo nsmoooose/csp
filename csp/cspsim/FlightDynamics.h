@@ -31,7 +31,7 @@
 #include <csp/cspsim/Filters.h>
 #include <csp/cspsim/stores/StoresDynamics.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 class DragProfile;
 class FlightModel;
@@ -108,7 +108,7 @@ protected:
 	LagFilter m_FilterLateralG;
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif  // __FLIGHTDYNAMICS_H__
 

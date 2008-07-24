@@ -34,7 +34,7 @@ namespace osg { class AnimationPath; }
 namespace osg { class AnimationPathCallback; }
 namespace osg { class Node; }
 
-CSP_NAMESPACE
+namespace csp {
 
 class Bus;
 
@@ -121,7 +121,7 @@ private:
 	int m_LOD;
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPSIM_ANIMATION_H__
 

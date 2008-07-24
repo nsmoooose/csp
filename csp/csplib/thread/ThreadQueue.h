@@ -34,7 +34,7 @@
 #include <queue>
 
 
-CSP_NAMESPACE
+namespace csp {
 
 /** Base class for implementing a thread-safe queue that supports multiple
  *  producers and consumers.
@@ -222,7 +222,7 @@ private:
 };
 
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPLIB_THREAD_THREADQUEUE_H__
 

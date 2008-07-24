@@ -33,7 +33,7 @@
 
 #include <cassert>
 
-CSP_NAMESPACE
+namespace csp {
 
 SoundEffect::SoundEffect(Ref<const SoundSample> const &sample, Ref<SoundModel> const &model, Mode mode) {
 	assert(sample.valid() && model.valid());
@@ -73,5 +73,5 @@ SoundEffect* SoundEffect::ExternalSound(Ref<const SoundSample> const &sample, Re
 	return (!sample || !model) ? 0 : new SoundEffect(sample, model, EXTERNAL);
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

@@ -37,7 +37,7 @@
 #include <vector>
 #include <set>
 
-CSP_NAMESPACE
+namespace csp {
 
 class EventMapping: public Referenced
 {
@@ -145,7 +145,7 @@ private:
 };
 
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPSIM_EVENTMAPPING_H__
 

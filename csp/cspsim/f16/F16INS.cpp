@@ -31,7 +31,7 @@
 #include <csp/csplib/data/Quat.h>
 #include <csp/csplib/data/Vector3.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 class F16INS: public System {
 public:
@@ -74,5 +74,5 @@ CSP_XML_BEGIN(F16INS)
 	CSP_DEF("ins_attitude_response_time", m_ResponseTime, false)
 CSP_XML_END
 
-CSP_NAMESPACE_END
+} // namespace csp
 

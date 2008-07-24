@@ -37,7 +37,7 @@
 #include <csp/csplib/util/undef.h>
 
 
-CSP_NAMESPACE
+namespace csp {
 
 
 /** Base class for referenced counted objects that are shared between
@@ -300,7 +300,7 @@ private:
 };
 
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPLIB_THREAD_THREAD_H__
 

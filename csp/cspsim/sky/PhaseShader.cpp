@@ -26,7 +26,7 @@
 #include <osg/NodeVisitor>
 #include <osg/Texture2D>
 
-CSP_NAMESPACE
+namespace csp {
 
 
 class PhaseShader::Callback: public osg::NodeCallback {
@@ -137,5 +137,5 @@ osg::NodeCallback *PhaseShader::makeCallback(osg::Texture2D *target, osg::Vec3 c
 }
 
 
-CSP_NAMESPACE_END
+} // namespace csp
 

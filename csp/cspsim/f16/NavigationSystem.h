@@ -32,7 +32,7 @@
 
 #include <vector>
 
-CSP_NAMESPACE
+namespace csp {
 
 class NavigationSystem: public Referenced {
 public:
@@ -56,7 +56,7 @@ protected:
 	Ref<const Projection> m_Projection;
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPSIM_NAVIGATION_SYSTEM_H__
 

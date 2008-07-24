@@ -36,7 +36,7 @@
 #include <csp/csplib/util/Referenced.h>
 
 
-CSP_NAMESPACE
+namespace csp {
 
 
 class DataArchive;
@@ -220,7 +220,7 @@ public:
 CSPLIB_EXPORT std::ostream &operator <<(std::ostream &o, Object const &obj);
 
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 
 #endif // __CSPLIB_DATA_OBJECT_H__

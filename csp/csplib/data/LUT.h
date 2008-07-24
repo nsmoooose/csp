@@ -38,7 +38,7 @@
 #include <csp/csplib/util/Exception.h>
 
 
-CSP_NAMESPACE
+namespace csp {
 
 CSP_EXCEPTION(InterpolationInput)
 CSP_EXCEPTION(InterpolationError)
@@ -747,7 +747,7 @@ CSPLIB_EXPORT std::ostream &operator <<(std::ostream &o, Table1 const &t);
 CSPLIB_EXPORT std::ostream &operator <<(std::ostream &o, Table2 const &t);
 CSPLIB_EXPORT std::ostream &operator <<(std::ostream &o, Table3 const &t);
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPLIB_DATA_LUT_H__
 

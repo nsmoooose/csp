@@ -34,7 +34,7 @@
 #include <csp/csplib/util/Namespace.h>
 
 
-CSP_NAMESPACE
+namespace csp {
 
 class DataRecorder;
 class SoundModel;
@@ -132,7 +132,7 @@ private:
 };
 
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPSIM_SYSTEMSMODEL_H__
 

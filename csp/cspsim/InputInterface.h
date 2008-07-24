@@ -51,7 +51,7 @@
 #include <cassert>
 
 
-CSP_NAMESPACE
+namespace csp {
 
 
 // forward declaration
@@ -471,7 +471,7 @@ protected: \
 	_map.bindEventHandler(id, new MotionAdapterT<TARGET>(&TARGET::method));
 
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __INPUTINTERFACE_H__
 

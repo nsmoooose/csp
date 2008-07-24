@@ -37,7 +37,7 @@
 #include <osg/Vec3>
 #include <osg/Quat>
 
-CSP_NAMESPACE
+namespace csp {
 
 CSP_XML_BEGIN(FeatureGroup)
 	CSP_DEF("model", m_Model, true)
@@ -106,5 +106,5 @@ void FeatureGroup::project(Projection const &map) {
 	m_Y = place.y();
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

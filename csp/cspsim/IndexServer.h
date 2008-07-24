@@ -28,7 +28,7 @@
 #include <csp/csplib/util/Ref.h>
 #include <csp/cspsim/Export.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 class Server;
 class GlobalBattlefield;
@@ -52,6 +52,6 @@ private:
 	IndexServer const &operator=(const IndexServer&);
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPSIM_INDEXSERVER_H__

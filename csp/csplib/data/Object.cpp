@@ -29,7 +29,7 @@
 #include <sstream>
 
 
-CSP_NAMESPACE
+namespace csp {
 
 
 void Object::serialize(Reader &reader) {
@@ -63,5 +63,5 @@ hasht Object::getPath() const {
 
 std::ostream &operator <<(std::ostream &o, Object const &obj) { return o << obj.asString(); }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

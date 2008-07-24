@@ -33,7 +33,7 @@
 #include <csp/csplib/util/Math.h>
 #include <csp/csplib/data/ObjectInterface.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 CSP_XML_BEGIN(GroundAvoidanceAdvisory)
 CSP_XML_END
@@ -146,5 +146,5 @@ void GroundAvoidanceAdvisory::updateDescentWarning(const double descent_velocity
 	}
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

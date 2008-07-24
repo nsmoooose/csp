@@ -29,7 +29,7 @@ namespace osg { class Light; }
 namespace osg { class MatrixTransform; }
 namespace osg { class Texture2D; }
 
-CSP_NAMESPACE
+namespace csp {
 
 class SkyShader;
 
@@ -163,7 +163,7 @@ private:
 	unsigned m_HorizonSlice;
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSP_CSPSIM_SKY_SKYDOME_H__
 

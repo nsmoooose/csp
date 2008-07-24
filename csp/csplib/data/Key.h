@@ -30,7 +30,7 @@
 #include <string>
 
 
-CSP_NAMESPACE
+namespace csp {
 
 /**
  * @brief A 32-bit hash key identifier.
@@ -117,7 +117,7 @@ public:
 CSPLIB_EXPORT std::ostream &operator <<(std::ostream &o, Key const &k);
 
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 
 #endif // __CSPLIB_DATA_KEY_H__

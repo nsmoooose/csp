@@ -25,7 +25,7 @@
 %include <csp/csplib/util/Namespace.h>
 %include <csp/csplib/util/LogConstants.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 class LogStream
 {
@@ -55,7 +55,7 @@ public:
 
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 %include <csp/csplib/util/LogConstants.h>
 %include <csp/csplib/util/Log.h>

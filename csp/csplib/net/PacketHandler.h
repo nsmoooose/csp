@@ -28,7 +28,7 @@
 #include <csp/csplib/net/NetBase.h>
 #include <csp/csplib/util/Ref.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 /** Abstract interface for handling incoming packets.
  *
@@ -66,7 +66,7 @@ public:
 	virtual void handlePacket(PacketHeader const *header, uint8 *payload, uint32 payload_length)=0;
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPLIB_NET_PACKETHANDLER_H__
 

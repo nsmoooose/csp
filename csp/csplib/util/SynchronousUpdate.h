@@ -37,7 +37,7 @@
 #include <functional>
 
 
-CSP_NAMESPACE
+namespace csp {
 
 class UpdateProxy;
 class UpdateMaster;
@@ -237,7 +237,7 @@ public:
 
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPLIB_UTIL_SYNCHRONOUSUPDATE_H__
 

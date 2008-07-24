@@ -29,7 +29,7 @@
 #include <csp/csplib/util/Properties.h>
 #include <csp/csplib/numeric/Vector.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 namespace numeric {
 
@@ -55,7 +55,7 @@ protected:
 
 } // namespace numeric
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPLIB_NUMERIC_VECTORFIELD_H__
 

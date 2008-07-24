@@ -33,7 +33,7 @@
 #include <csp/csplib/data/ObjectInterface.h>
 
 
-CSP_NAMESPACE
+namespace csp {
 
 CSP_XML_BEGIN(SystemsModel)
 	CSP_DEF("physics_model", m_PhysicsModel, false)
@@ -214,5 +214,5 @@ void SystemsModel::detachSceneModel(SceneModel* model) {
 	m_SoundModel->unbind(model);
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

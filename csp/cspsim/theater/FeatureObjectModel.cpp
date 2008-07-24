@@ -34,7 +34,7 @@
 
 #include <csp/csplib/data/ObjectInterface.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 CSP_XML_BEGIN(FeatureObjectModel)
 	CSP_DEF("model", m_ObjectModel, false)
@@ -68,5 +68,5 @@ FeatureObjectModel::FeatureObjectModel(): m_HitPoints(10), m_Value(0) {
 FeatureObjectModel::~FeatureObjectModel() {
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

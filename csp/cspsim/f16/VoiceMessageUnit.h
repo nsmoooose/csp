@@ -28,7 +28,7 @@
 
 #include <csp/cspsim/System.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 /** Implements the F-16 Voice Message Unit (aka Bitchin' Betty).
  *
@@ -59,7 +59,7 @@ private:
 };
 
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __F16_VOICEMESSAGEUNIT_H__
 

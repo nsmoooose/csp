@@ -33,7 +33,7 @@
 namespace osgAL { class SoundManager; }
 namespace osgAL { class SoundRoot; }
 
-CSP_NAMESPACE
+namespace csp {
 
 /** A singleton that provides access to global osgAL state.
  */
@@ -56,7 +56,7 @@ private:
 	bool m_SoundEnabled;
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __SOUNDENGINE_H__
 

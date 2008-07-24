@@ -30,7 +30,7 @@
 #include <csp/csplib/data/ObjectInterface.h>
 #include <csp/csplib/data/DataManager.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 CSP_XML_BEGIN(RackData)
 	CSP_DEF("mounts", m_Mounts, true)
@@ -137,5 +137,5 @@ unsigned Rack::mountStores(StoreData const *data, unsigned count) {
 	return added;
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

@@ -27,7 +27,7 @@
 
 #include <iostream>  // XXX
 
-CSP_NAMESPACE
+namespace csp {
 
 OrbitalBodyModel::OrbitalBodyModel(OrbitalBodyImposter *imposter, double minimum_visible_angle, OrbitalBody *body, OrbitalBody *earth, double accuracy):
 	m_Transform(new osg::MatrixTransform),
@@ -221,5 +221,5 @@ void OrbitalBodyModel::bindLightSource(osg::LightSource *light_source) {
 	m_LightSource = light_source;
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

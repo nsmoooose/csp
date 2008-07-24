@@ -16,11 +16,6 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-
-/** @namespace numeric
- *  @brief Numerical integration and related utilities
- */
-
 #ifndef __CSPLIB_NUMERIC_VECTOR_H__
 #define __CSPLIB_NUMERIC_VECTOR_H__
 
@@ -31,8 +26,9 @@
 #include <ostream>
 #include <valarray>
 
-CSP_NAMESPACE
+namespace csp {
 
+/** Numerical integration and related utilities */
 namespace numeric {
 
 typedef std::valarray<double> Vectord;
@@ -67,7 +63,7 @@ inline std::ostream &operator<<(std::ostream& os, const numeric::Vectord& v) {
 	return os << ')';
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPLIB_NUMERIC_VECTOR_H__
 

@@ -29,7 +29,7 @@
 #include <csp/csplib/data/Vector3.h>
 #include <csp/csplib/data/Matrix3.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 /** Dynamical properties model for stores carried by a vehicle.
  *
@@ -133,7 +133,7 @@ private:
 	bool valid;
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPSIM_STORESDYNAMICS_H__
 

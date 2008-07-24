@@ -39,7 +39,7 @@
 %import "csp/csplib/util/Properties.h"
 #endif
 
-CSP_NAMESPACE
+namespace csp {
 
 template <class T> class Ref;
 
@@ -88,7 +88,7 @@ private:
 typedef ReferencedBase<int> Referenced;
 
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 
 #endif // __CSPLIB_UTIL_REFERENCED_H__

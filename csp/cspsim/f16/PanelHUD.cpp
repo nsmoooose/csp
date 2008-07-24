@@ -26,7 +26,7 @@
 #include <csp/cspsim/f16/PanelHUD.h>
 #include <csp/csplib/data/ObjectInterface.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 CSP_XML_BEGIN(PanelHUD)
 CSP_XML_END
@@ -73,5 +73,5 @@ const Enumeration PanelHUD::ScalesSwitchSettings("OFF VAH VV/VAH");
 const Enumeration PanelHUD::VelocitySwitchSettings("GND TAS CAS");
 const Enumeration PanelHUD::AltitudeSwitchSettings("AUTO BARO RADAR");
 
-CSP_NAMESPACE_END
+} // namespace csp
 

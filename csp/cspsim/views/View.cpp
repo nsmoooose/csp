@@ -41,7 +41,7 @@
 #include <cmath>
 #include <queue>
 
-CSP_NAMESPACE
+namespace csp {
 
 namespace {
 struct ContactSorter {
@@ -195,5 +195,5 @@ void ViewFactory::attachAllView(CameraAgent* ca) const {
 	ca->attach(9, createView_9());
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

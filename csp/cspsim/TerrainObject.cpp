@@ -33,7 +33,7 @@
 
 #include <osg/LineSegment>
 
-CSP_NAMESPACE
+namespace csp {
 
 CSP_XML_BEGIN(TerrainObject)
 	CSP_DEF("name", m_Name, true)
@@ -87,5 +87,5 @@ void TerrainObject::Intersection::setHit(float ratio, Vector3 const &normal) {
 	_normal = normal;
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

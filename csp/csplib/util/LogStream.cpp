@@ -37,7 +37,7 @@
 #include <map>
 
 
-CSP_NAMESPACE
+namespace csp {
 
 
 CSPLIB_EXPORT LogStream& internal_log() {
@@ -372,5 +372,5 @@ void CSPLIB_EXPORT _log_reference_conversion_error() {
 	CSPLOG(ERROR, ALL) << "Ref() assignment: incompatible types (dynamic cast failed).";
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

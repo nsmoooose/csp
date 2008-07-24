@@ -39,7 +39,7 @@
 #endif
 
 #include <iostream> // XXX
-CSP_NAMESPACE
+namespace csp {
 
 void ConvertStringToUpper(std::string &str) {
 	std::transform(str.begin(), str.end(), str.begin(), ::toupper);
@@ -541,5 +541,5 @@ bool FormatArg::format(formatspec &spec, stringbuf &out) const {
 	return true;
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

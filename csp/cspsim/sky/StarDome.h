@@ -25,7 +25,7 @@
 
 namespace osg { class Geode; }
 
-CSP_NAMESPACE
+namespace csp {
 
 // An OSG Drawable that renders a set of stars as points on the
 // surface of a sphere.  The position, color, and magnitude of
@@ -77,7 +77,7 @@ private:
 	std::vector<BrightStar> *m_BrightStars;
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPSIM_SKY_STARDOME_H__
 

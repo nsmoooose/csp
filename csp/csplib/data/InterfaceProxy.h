@@ -35,7 +35,7 @@
 #include <csp/csplib/util/Namespace.h>
 
 
-CSP_NAMESPACE
+namespace csp {
 
 
 class Object;
@@ -509,7 +509,7 @@ inline hasht classhash_helper(std::string const &class_name, const fprint32 sign
 	}
 
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPLIB_DATA_INTERFACEPROXY_H__
 

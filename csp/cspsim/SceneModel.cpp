@@ -47,7 +47,7 @@
 #include <utility>
 
 
-CSP_NAMESPACE
+namespace csp {
 
 
 /**
@@ -493,5 +493,5 @@ void SceneModelChild::bindAnimationChannels(Bus* bus) {
 	std::for_each(m_AnimationCallbacks.begin(), m_AnimationCallbacks.end(), binder);
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

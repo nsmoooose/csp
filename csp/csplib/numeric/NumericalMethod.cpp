@@ -23,7 +23,7 @@
 #include <cmath>
 #include <iostream> // XXX
 
-CSP_NAMESPACE
+namespace csp {
 
 namespace numeric {
 
@@ -648,4 +648,4 @@ bool RKCK_VS_VO::enhancedSolve(Vectord const &y0, Vectord &y, double t0, double 
 
 } // namespace numeric
 
-CSP_NAMESPACE_END
+} // namespace csp

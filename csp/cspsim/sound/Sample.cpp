@@ -34,7 +34,7 @@
 #include <csp/csplib/util/undef.h>
 
 
-CSP_NAMESPACE
+namespace csp {
 
 
 CSP_XML_BEGIN(SoundSample)
@@ -116,5 +116,5 @@ SoundSample::SoundSample():
 }
 
 
-CSP_NAMESPACE_END
+} // namespace csp
 

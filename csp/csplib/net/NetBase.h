@@ -43,7 +43,7 @@
 #include <ostream>
 
 
-CSP_NAMESPACE
+namespace csp {
 
 /** UDP/TCP port number.
  */
@@ -214,7 +214,7 @@ inline std::ostream &operator <<(std::ostream &os, PacketReceiptHeader const &he
 }
 
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPLIB_NET_NETBASE_H__
 

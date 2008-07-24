@@ -32,7 +32,7 @@
 #include <csp/csplib/util/HashUtility.h>
 
 
-CSP_NAMESPACE
+namespace csp {
 
 
 // The mixing step
@@ -147,5 +147,5 @@ std::ostream & operator<<(std::ostream &o, const hasht &x) {
 }
 
 
-CSP_NAMESPACE_END
+} // namespace csp
 

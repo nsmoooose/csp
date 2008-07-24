@@ -31,7 +31,7 @@
 
 #include <csp/csplib/data/Real.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 class F16Engine: public Engine {
 public:
@@ -139,7 +139,7 @@ private:
 	Real m_FuelDepressurizationRate;
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPSIM_F16_F16ENGINE_H__
 

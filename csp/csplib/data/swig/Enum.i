@@ -23,11 +23,11 @@
 
 %import "csp/csplib/util/Ref.h"
 
-CSP_NAMESPACE
+namespace csp {
 
 %template(RefEnumerationCore) Ref<CSP(EnumerationCore) const>;
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 %typemap(out) std::vector<CSP(EnumLink)>
        "{

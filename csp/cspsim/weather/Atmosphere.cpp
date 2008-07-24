@@ -38,7 +38,7 @@ namespace {
 }
 
 
-CSP_NAMESPACE
+namespace csp {
 
 namespace weather {
 
@@ -372,7 +372,7 @@ void Atmosphere::tabulateCAS() {
 
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 
 /*

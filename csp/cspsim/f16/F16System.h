@@ -39,7 +39,7 @@
 
 #include <vector>
 
-CSP_NAMESPACE
+namespace csp {
 
 class FuelManagementSystem;
 class JetFuelStarter;
@@ -150,7 +150,7 @@ protected:
 	void disengageMPO();
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPSIM_F16_F16SYSTEM_H__
 

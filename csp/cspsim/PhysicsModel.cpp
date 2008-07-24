@@ -65,7 +65,7 @@
 
 #include <iostream>
 
-CSP_NAMESPACE
+namespace csp {
 
 using bus::Kinetics;
 
@@ -295,5 +295,5 @@ void PhysicsModel::importChannels(Bus *bus) {
 }
 
 
-CSP_NAMESPACE_END
+} // namespace csp
 

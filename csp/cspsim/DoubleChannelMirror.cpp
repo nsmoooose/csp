@@ -28,7 +28,7 @@
 #include <csp/csplib/util/Math.h>
 #include <csp/csplib/data/ObjectInterface.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 class DoubleChannelSlave: public ChannelSlave {
 	DataChannel<double>::RefT m_Channel;
@@ -158,4 +158,4 @@ CSP_XML_BEGIN(DoubleChannelMirror)
 	CSP_DEF("rate_limit", m_RateLimit, true)
 CSP_XML_END
 
-CSP_NAMESPACE_END
+} // namespace csp

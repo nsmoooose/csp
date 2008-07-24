@@ -30,7 +30,7 @@
 #include <csp/csplib/util/Log.h>
 #include <csp/csplib/data/ObjectInterface.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 CSP_XML_BEGIN(TankObject)
 	CSP_DEF("forward_speed", forward_speed, false)
@@ -83,5 +83,5 @@ void TankObject::onRender() {
 	DynamicObject::onRender();
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

@@ -34,7 +34,7 @@ namespace osg { class LightSource; }
 namespace osg { class MatrixTransform; }
 namespace osg { class StateSet; }
 
-CSP_NAMESPACE
+namespace csp {
 
 class OrbitalBodyModel;
 class SkyDome;
@@ -147,7 +147,7 @@ private:
 	int m_LastMoonIntensity;
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSP_CSPSIM_SKY_SKY_H__
 

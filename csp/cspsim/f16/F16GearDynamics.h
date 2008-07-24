@@ -29,7 +29,7 @@
 #include <csp/cspsim/LandingGear.h>
 #include <csp/csplib/util/Callback.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 class F16GearDynamics: public GearDynamics {
 public:
@@ -59,7 +59,7 @@ private:
 	callback<bool, bool const &> m_GearHandleRequest;
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPSIM_F16_GEARDYNAMICS_H__
 

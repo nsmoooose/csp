@@ -30,7 +30,7 @@
 #include <csp/cspsim/f16/MasterModes.h>
 #include <csp/cspsim/System.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 // At the one extreme, each system defines its own DataEntryPage and exports registers
 // it with the UFC.  The UFC simply forwards ICP events on the active page, which holds
@@ -117,7 +117,7 @@ private:
 	double m_UpdateTime;
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPSIM_F16_UP_FRONT_CONTROLS_H__
 

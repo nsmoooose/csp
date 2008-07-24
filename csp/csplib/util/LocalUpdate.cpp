@@ -28,7 +28,7 @@
 #include <cassert>
 
 
-CSP_NAMESPACE
+namespace csp {
 
 /** Internal helper class for managing update callbacks.  Stores the callback
  *  and tracks update intervals.
@@ -91,5 +91,5 @@ void LocalUpdate::dispatch() {
 	if (!m_Queue.empty()) m_Next = m_Queue.front()->next();
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

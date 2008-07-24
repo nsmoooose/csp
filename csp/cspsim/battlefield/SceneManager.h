@@ -27,7 +27,7 @@
 
 #include <csp/csplib/util/Ref.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 class SimObject;
 class Vector3;
@@ -114,7 +114,7 @@ private:
 	virtual void setCamera(Vector3 const &eye_point, Vector3 const &look_pos, Vector3 const &up_vec) = 0;
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __SIMCORE_BATTLEFIELD_SCENEMANAGER_H__
 

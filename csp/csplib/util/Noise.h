@@ -33,7 +33,7 @@
 #include <vector>
 
 
-CSP_NAMESPACE
+namespace csp {
 
 
 /**
@@ -201,7 +201,7 @@ private:
 };
 
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 
 #endif // __CSPLIB_UTIL_NOISE_H__

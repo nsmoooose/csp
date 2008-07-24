@@ -29,8 +29,7 @@
 #include <csp/csplib/util/Namespace.h>
 #include <string>
 
-CSP_NAMESPACE
-
+namespace csp {
 namespace bus {
 
 struct LandingGear {
@@ -48,8 +47,7 @@ struct LandingGear {
 };
 
 } // namespace bus
-
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPSIM_LANDINGGEAR_CHANNELS_H__
 

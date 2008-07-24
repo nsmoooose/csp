@@ -30,7 +30,7 @@
 #include <csp/csplib/util/SimpleConfig.h>
 #include <string>
 
-CSP_NAMESPACE
+namespace csp {
 
 // TODO move to CSPSim?
 /**
@@ -89,7 +89,7 @@ extern CSPSIM_EXPORT void setUILanguage(const std::string& language);
 extern CSPSIM_EXPORT std::string getUITheme();
 extern CSPSIM_EXPORT void setUITheme(const std::string& themeName);
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPSIM_CONFIG_H__
 

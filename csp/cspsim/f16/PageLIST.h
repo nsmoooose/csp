@@ -28,7 +28,7 @@
 
 #include <csp/cspsim/f16/DataEntryPage.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 class PageLIST: public DataEntryForm {
 	static const char *const LIST[];
@@ -59,7 +59,7 @@ public:
 	}
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPSIM_F16_PAGE_LIST_H__
 

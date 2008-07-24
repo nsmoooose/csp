@@ -30,7 +30,7 @@
 #include <cc++/file.h>
 #include <csp/csplib/util/undef.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 namespace {
 
@@ -86,6 +86,6 @@ bool ModuleLoader::isLoaded(std::string const &path) {
 	return (getModuleRegistry()->find(path) != getModuleRegistry()->end());
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 

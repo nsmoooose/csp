@@ -60,7 +60,7 @@
 #include <csp/csplib/util/Uniform.h>
 
 
-CSP_NAMESPACE
+namespace csp {
 
 
 #define CSP_F1p0_60p0      0.016666666666666667
@@ -937,7 +937,7 @@ CSPLIB_EXPORT std::ostream &operator <<(std::ostream &o, DateZulu const &d);
 CSPLIB_EXPORT std::ostream &operator <<(std::ostream &o, SimDate const &d);
 
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPLIB_DATA_DATE_H__
 

@@ -31,7 +31,7 @@
 
 #include <cstdio>
 
-CSP_NAMESPACE
+namespace csp {
 
 class Bus;
 class DataChannelBase;
@@ -142,7 +142,7 @@ private:
 };
 
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPSIM_DATARECORDER_H__
 

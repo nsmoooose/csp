@@ -35,7 +35,7 @@
 
 namespace osg { class Group; }
 
-CSP_NAMESPACE
+namespace csp {
 
 class Hardpoint;
 class SceneModel;
@@ -111,7 +111,7 @@ private:
 	std::vector<Ref<DynamicObject> > m_ReleasedObjects;
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPSIM_STORESMANAGEMENTSYSTEM_H__
 

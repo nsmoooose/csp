@@ -29,7 +29,7 @@
 #include <csp/csplib/data/Path.h>
 #include <csp/csplib/data/Object.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 class Feature;
 class LayoutTransform;
@@ -71,7 +71,7 @@ public:
 	virtual void makeFeatures(std::vector<Feature> &features, int value) const;
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPSIM_THEATER_FEATUREMODEL_H__
 

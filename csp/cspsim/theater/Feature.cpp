@@ -25,7 +25,7 @@
 #include <csp/cspsim/theater/Feature.h>
 #include <csp/cspsim/theater/FeatureObjectModel.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 Feature::Feature(FeatureObjectModel const *model, char value_) :
 	m_Damage(0),
@@ -34,5 +34,5 @@ Feature::Feature(FeatureObjectModel const *model, char value_) :
 {
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

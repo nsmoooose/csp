@@ -36,7 +36,7 @@
 #include <osgText/Font>
 #include <string>
 
-CSP_NAMESPACE
+namespace csp {
 
 /** A specialized font for rendering normal and reverse video text.  Character
  *  codes 128-255 are reverse video representations of the glyphs for glyphs
@@ -90,7 +90,7 @@ private:
 	bool m_VCenter;
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __SPECIAL_FONTS__
 

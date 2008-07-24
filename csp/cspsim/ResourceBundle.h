@@ -34,7 +34,7 @@
 #include <map>
 #include <string>
 
-CSP_NAMESPACE
+namespace csp {
 
 class SoundSample;
 
@@ -55,7 +55,7 @@ private:
 	Link<SoundSample>::vector m_SoundSamples;
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __RESOURCEBUNDLE_H__
 

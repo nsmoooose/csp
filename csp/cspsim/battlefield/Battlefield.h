@@ -37,7 +37,7 @@
 #include <map>
 #include <vector>
 
-CSP_NAMESPACE
+namespace csp {
 
 // TODO
 //  move unitupdateproxy and associated code to localbattlefield.  this may require
@@ -559,7 +559,7 @@ private:
 	ScopedPointer<QuadTree> m_MotionIndex;
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPSIM_BATTLEFIELD_BATTLEFIELD_H__
 

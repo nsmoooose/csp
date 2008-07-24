@@ -38,7 +38,7 @@
 #include <osgText/Text>
 
 
-CSP_NAMESPACE
+namespace csp {
 
 CSP_XML_BEGIN(DataEntryDisplay)
 	CSP_DEF("color", m_Color, false)
@@ -118,5 +118,5 @@ double DataEntryDisplay::onUpdate(double) {
 	return (m_LineCount > 0) ? 0.1 : -1;
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

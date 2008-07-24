@@ -27,7 +27,7 @@
 #include <csp/cspsim/stores/Stores.h>
 #include <csp/csplib/data/ObjectInterface.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 CSP_XML_BEGIN(StoresDefinition)
 	CSP_DEF("hardpoints", m_Hardpoints, true)
@@ -48,5 +48,5 @@ void StoresDefinition::postCreate() {
 	}
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

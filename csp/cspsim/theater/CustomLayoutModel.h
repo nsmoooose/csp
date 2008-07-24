@@ -28,7 +28,7 @@
 #include <csp/cspsim/theater/FeatureGroupModel.h>
 #include <csp/csplib/data/Link.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 class FeatureLayout;
 
@@ -69,7 +69,7 @@ public:
 
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPSIM_THEATER_CUSTOMLAYOUTMODEL_H__
 

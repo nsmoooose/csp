@@ -28,7 +28,7 @@
 #include <csp/csplib/net/NetBase.h>
 #include <csp/csplib/util/Ref.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 class NetworkInterface;
 
@@ -86,6 +86,6 @@ public:
 	virtual void skipPacket()=0;
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPLIB_NET_PACKETSOURCE_H__

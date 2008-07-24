@@ -33,7 +33,7 @@
 #include <csp/csplib/util/Namespace.h>
 #include <iosfwd>
 
-CSP_NAMESPACE
+namespace csp {
 
 /*
  * Colorspace conversions and corrections.
@@ -302,7 +302,7 @@ private:
 
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPSIM_SKY_COLORSPACE_H__
 

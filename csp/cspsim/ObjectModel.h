@@ -48,7 +48,7 @@ namespace osgText {
 	class Text;
 }
 
-CSP_NAMESPACE
+namespace csp {
 
 class Animation;
 class Bus;
@@ -159,7 +159,7 @@ private:
 	osg::ref_ptr<osg::Switch> m_ContactMarkers;
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPSIM_OBJECTMODEL_H__
 

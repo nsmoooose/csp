@@ -26,10 +26,10 @@
 #include <csp/cspsim/stores/DragProfile.h>
 #include <csp/csplib/data/ObjectInterface.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 CSP_XML_BEGIN(DragProfile)
 	CSP_DEF("drag", m_Drag, true)
 CSP_XML_END
 
-CSP_NAMESPACE_END
+} // namespace csp

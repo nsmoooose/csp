@@ -41,7 +41,7 @@
 
 #include <ctime>
 
-CSP_NAMESPACE
+namespace csp {
 
 //extern OpenThreads::Barrier bar;
 
@@ -244,5 +244,5 @@ void LogoScreen::stop() {
 }
 
 
-CSP_NAMESPACE_END
+} // namespace csp
 

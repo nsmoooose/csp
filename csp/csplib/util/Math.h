@@ -40,7 +40,7 @@
     #include <float.h>
 #endif
 
-CSP_NAMESPACE
+namespace csp {
 
 
 #ifdef PI
@@ -124,7 +124,7 @@ inline void swap(T &a, T &b) { T t = a; a = b; b = t; }
 #endif
 
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPLIB_UTIL_MATH_H__
 

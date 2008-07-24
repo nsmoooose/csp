@@ -33,7 +33,7 @@
 #include <map>
 #include <set>
 
-CSP_NAMESPACE
+namespace csp {
 
 CSP_XML_BEGIN(ChannelMirrorSet)
 	CSP_DEF("mirrors", m_Mirrors, true)
@@ -371,5 +371,5 @@ double LocalController::onUpdate(double dt) {
 	return 0.0;
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

@@ -33,7 +33,7 @@
 #include <fstream>
 #include <memory>
 
-CSP_NAMESPACE
+namespace csp {
 
 
 class Handle {
@@ -81,7 +81,7 @@ public:
 	}
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPSIM_INPUTEVENT_H__
 

@@ -30,7 +30,7 @@
 
 #include <csp/cspsim/systems/AircraftInputSystem.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 class F16InputSystem: public AircraftInputSystem {
 public:
@@ -47,7 +47,7 @@ public:
 
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPSIM_F16_F16INPUTSYSTEM_H__
 

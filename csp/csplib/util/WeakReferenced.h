@@ -29,7 +29,7 @@
 #include <csp/csplib/util/Namespace.h>
 #include <csp/csplib/util/Export.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 class CSPLIB_EXPORT ReferenceValidator {
 public:
@@ -56,6 +56,6 @@ private:
 
 typedef WeakReferencedBase WeakReferenced;
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPLIB_UTIL_WEAKREFERENCED_H__

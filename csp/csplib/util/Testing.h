@@ -107,7 +107,7 @@
 #include <string>
 #include <vector>
 
-CSP_NAMESPACE
+namespace csp {
 
 namespace test {
 
@@ -581,7 +581,7 @@ TestCaseT<tFIXTURE>::TestCaseT(std::string const &name, void (tFIXTURE::*test)()
 
 } // namespace test
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPLIB_UTIL_TESTING_H__
 

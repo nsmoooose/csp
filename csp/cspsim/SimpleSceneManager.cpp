@@ -30,7 +30,7 @@
 
 #include <csp/csplib/data/Vector3.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 // random optimization note.  iterating through all elements of a map is
 // about 10 times slower than using a vector, when compiled with g++ -O2.
@@ -123,5 +123,5 @@ void SimpleSceneManager::setCamera(Vector3 const &eye_point, Vector3 const &look
 	m_Scene->_setLookAt(eye_point, look_pos, up_vec);
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

@@ -35,7 +35,7 @@
 #include <sstream>
 
 
-CSP_NAMESPACE
+namespace csp {
 
 
 /*
@@ -494,5 +494,5 @@ void DataArchive::dump() const {
 	}
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

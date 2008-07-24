@@ -44,7 +44,7 @@
 #include <csp/csplib/util/Math.h>
 
 
-CSP_NAMESPACE
+namespace csp {
 
 CSP_XML_BEGIN(F16System)
 	CSP_DEF("fuel_door_sequence", m_FuelDoorSequence, false)
@@ -250,5 +250,5 @@ void F16System::updateWarnings(double) {
 	}
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

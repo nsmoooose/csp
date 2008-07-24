@@ -62,7 +62,7 @@
 #include <osg/Group>
 #include <cassert>
 
-CSP_NAMESPACE
+namespace csp {
 
 CSP_XML_BEGIN(StoresManagementSystem)
 	CSP_DEF("stores_definition", m_StoresDefinition, true)
@@ -466,5 +466,5 @@ double StoresManagementSystem::onUpdate(double /*dt*/) {
 	return -1;
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

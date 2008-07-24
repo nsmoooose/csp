@@ -41,7 +41,7 @@
 #include <cmath>
 
 
-CSP_NAMESPACE
+namespace csp {
 
 
 const Matrix3 Matrix3::ZERO(0,0,0,0,0,0,0,0,0);
@@ -369,5 +369,5 @@ void Matrix3::parseXML(const char* cdata) {
 
 std::ostream &operator <<(std::ostream &o, Matrix3 const &m) { return o << m.asString(); }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

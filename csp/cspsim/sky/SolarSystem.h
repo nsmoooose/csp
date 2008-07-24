@@ -21,7 +21,7 @@
 
 #include <csp/cspsim/sky/OrbitalBody.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 
 class Moon: public OrbitalBody {
@@ -99,7 +99,7 @@ private:
 };
 
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSP_CSPSIM_SKY_SOLARSYSTEM_H__
 

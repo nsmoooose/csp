@@ -91,7 +91,7 @@
 #include <csp/csplib/data/Object.h>
 #include <csp/csplib/data/Link.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 
 class DataRecorder;
@@ -336,7 +336,7 @@ private:
 };
 
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPSIM_SYSTEM_H__
 

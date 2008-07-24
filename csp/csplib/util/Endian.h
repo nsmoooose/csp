@@ -276,7 +276,7 @@
 #define CSP_HTONS(val) (CSP_UINT16_TO_BE (val))
 
 
-CSP_NAMESPACE
+namespace csp {
 
 /** Template wrappers for endian macros.
  */
@@ -308,7 +308,7 @@ CSP_ENDIAN_TEMPLATE(float, UINT32)
 CSP_ENDIAN_TEMPLATE(double, UINT64)
 #undef CSP_ENDIAN_TEMPLATE
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif  // __CSPLIB_UTIL_ENDIAN_H__
 

@@ -90,7 +90,7 @@
 
 using namespace csp::weather;
 
-CSP_NAMESPACE
+namespace csp {
 
 namespace fx {
 
@@ -513,5 +513,5 @@ void SmokeTrailSystem::update(double dt, Vector3 const &position, Quat const &at
 
 } // namespace fx
 
-CSP_NAMESPACE_END
+} // namespace csp
 

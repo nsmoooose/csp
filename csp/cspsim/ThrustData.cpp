@@ -24,7 +24,7 @@
 #include <csp/cspsim/ThrustData.h>
 #include <csp/csplib/data/ObjectInterface.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 CSP_XML_BEGIN(ThrustData)
 	CSP_DEF("idle_thrust", m_IdleThrust, true)
@@ -56,5 +56,5 @@ void ThrustData::postCreate() {
 	m_HasAfterburner = !m_AfterburnerThrust.empty();
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

@@ -28,7 +28,7 @@
 
 #include <sstream>
 
-CSP_NAMESPACE
+namespace csp {
 
 SimObject::SimObject(TypeId type):
 	m_Id(0),
@@ -72,5 +72,5 @@ std::string SimObject::_debugId() const {
 	return ss.str();
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

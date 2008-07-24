@@ -27,7 +27,7 @@
 #include <csp/cspsim/sound/Sample.h>
 #include <csp/csplib/data/ObjectInterface.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 
 CSP_XML_BEGIN(ResourceBundle)
@@ -62,5 +62,5 @@ SoundSample const *ResourceBundle::getSoundSample(std::string const &name) const
 }
 
 
-CSP_NAMESPACE_END
+} // namespace csp
 

@@ -37,7 +37,7 @@
 #include <csp/csplib/data/Quat.h>
 #include <csp/csplib/data/Vector3.h>
 
-CSP_NAMESPACE
+namespace csp {
 
 namespace hud {
 	class DisplayFont;
@@ -189,7 +189,7 @@ protected:
 	hud::display::SymbolMaker m_CaretSymbol;
 };
 
-CSP_NAMESPACE_END
+} // namespace csp
 
 #endif // __CSPSIM_F16_F16HUD_H__
 

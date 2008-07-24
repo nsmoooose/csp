@@ -46,7 +46,7 @@
 
 
 
-CSP_NAMESPACE
+namespace csp {
 
 
 #ifdef _WIN32
@@ -222,5 +222,5 @@ ospath::DirectoryContents ospath::getDirectoryContents(std::string const &path) 
 	return entries;
 }
 
-CSP_NAMESPACE_END
+} // namespace csp
 

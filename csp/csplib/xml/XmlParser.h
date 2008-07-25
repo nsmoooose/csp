@@ -37,6 +37,7 @@
  */
 
 /**
+ * @file XmlParser.h
  * This file is derived from V2.14 of xmlParser by Frank Vanden Berghen:
  *   http://www.applied-mathematics.net/tools/xmlParser.html
  *

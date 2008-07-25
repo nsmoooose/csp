@@ -1,4 +1,5 @@
 /**
+ * @file XmlParser.cpp
  ****************************************************************************
  * <P> XML.c - implementation file for basic XML parser written in ANSI C++
  * for portability. It works by using recursion and a node tree for breaking
@@ -69,9 +70,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  ****************************************************************************
- */
-
-/**
+ *
+ *
  * This file is derived from V2.14 of xmlParser by Frank Vanden Berghen:
  *   http://www.applied-mathematics.net/tools/xmlParser.html
  *

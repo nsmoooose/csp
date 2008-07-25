@@ -36,9 +36,7 @@
 #include <cc++/thread.h>
 #include <csp/csplib/util/undef.h>
 
-
 namespace csp {
-
 
 /** Base class for referenced counted objects that are shared between
  *  multiple threads.  Thread-safe, supporting atomic updates of the
@@ -63,9 +61,7 @@ private:
 
 
 /**
- * @namespace thread
- *
- * @brief Global functions for manipulating threads.
+ * Global functions for manipulating threads.
  */
 namespace thread {
 

@@ -298,7 +298,7 @@ protected:
 	CSP_TESTCASE(SpinningPlate) {
 		// I1 = 1, I2 = 2*I1, I3 = I1 + I2
 		object->setInertia(Matrix3(1.0, 0.0, 0.0, 0.0, 2.0, 0.0, 0.0, 0.0, 3.0));
-		object->setAngularVelocity(Vector3(sqrt(3), 0, 1));  // 30 degrees (a) from the plane, |w|=2
+		object->setAngularVelocity(Vector3(sqrt(3.0), 0, 1));  // 30 degrees (a) from the plane, |w|=2
 
 		// with no forces and torques, w_body_y(t) should be |w| cos(a) tanh(|w| t sin(a)).
 		// a = 30 degrees, so cos(a) = sqrt(3)/2 and sin(a) = 1/2.  the expected result is
@@ -309,7 +309,7 @@ protected:
 		double t = 0.0;
 		for (int i = 0; i < 1000; ++i) {
 			physics->doSimStep(dt); t += dt;
-			CSP_ENSURE_GT(0.0001, fabs(object->angularVelocityBody().y() - sqrt(3) * tanh(t)));
+			CSP_ENSURE_GT(0.0001, fabs(object->angularVelocityBody().y() - sqrt(3.0) * tanh(t)));
 		}
 	}
 
@@ -329,12 +329,12 @@ protected:
 
 	CSP_TESTCASE(ForceFreeTop) {
 		// force free motion of a symmetric top, with I3 / I12 = sqrt(7) / 2.
-		object->setInertia(Matrix3(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.5 * sqrt(7)));
+		object->setInertia(Matrix3(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.5 * sqrt(7.0)));
 		// w(0) is 30 degrees from z, in the x-z plane.
-		object->setAngularVelocity(Vector3(0.5, 0, 1) * sqrt(5));
+		object->setAngularVelocity(Vector3(0.5, 0, 1) * sqrt(5.0));
 		// w should precess about z with angular frequency omega, and |w|
 		// should remain constant.
-		double omega = (0.5 * sqrt(7) - 1.0) * sqrt(5);
+		double omega = (0.5 * sqrt(7.0) - 1.0) * sqrt(5.0);
 
 		const double dt = 5.0 / 1000.0;
 		double t = 0.0;
@@ -343,7 +343,7 @@ protected:
 			Vector3 w = object->angularVelocityBody();
 			double phase = atan2(w.y(), w.x());
 			CSP_ENSURE_GT(0.00001, fabs(fmod(phase - omega * t, 2*PI)));
-			CSP_ENSURE_GT(0.00001, fabs(w.z() - sqrt(5)));
+			CSP_ENSURE_GT(0.00001, fabs(w.z() - sqrt(5.0)));
 		}
 	}
 

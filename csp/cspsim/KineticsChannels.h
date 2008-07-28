@@ -22,39 +22,36 @@
  *
  **/
 
+#include <csp/cspsim/Export.h>
 
 #ifndef __CSPSIM_KINETICS_CHANNELS_H__
 #define __CSPSIM_KINETICS_CHANNELS_H__
 
-#include <csp/csplib/util/Namespace.h>
-
 namespace csp {
-
 namespace bus {
 
 struct Kinetics {
-	static const char *NearGround;
-	static const char *ModelPosition;
-	static const char *Position;  // center of mass position
-	static const char *Velocity;
-	static const char *AngularVelocity;
-	static const char *AngularVelocityBody;
-	static const char *AccelerationBody;
-	static const char *Attitude;
-	static const char *Mass;
-	static const char *Inertia;
-	static const char *InertiaInverse;
-	static const char *GroundN;
-	static const char *GroundZ;
-	static const char *Heading;
-	static const char *Roll;
-	static const char *Pitch;
-	static const char *CenterOfMassOffset;  // body coordinates
-	static const char *StoresDynamics;
+	static CSPSIM_EXPORT const char *NearGround;
+	static CSPSIM_EXPORT const char *ModelPosition;
+	static CSPSIM_EXPORT const char *Position;  // center of mass position
+	static CSPSIM_EXPORT const char *Velocity;
+	static CSPSIM_EXPORT const char *AngularVelocity;
+	static CSPSIM_EXPORT const char *AngularVelocityBody;
+	static CSPSIM_EXPORT const char *AccelerationBody;
+	static CSPSIM_EXPORT const char *Attitude;
+	static CSPSIM_EXPORT const char *Mass;
+	static CSPSIM_EXPORT const char *Inertia;
+	static CSPSIM_EXPORT const char *InertiaInverse;
+	static CSPSIM_EXPORT const char *GroundN;
+	static CSPSIM_EXPORT const char *GroundZ;
+	static CSPSIM_EXPORT const char *Heading;
+	static CSPSIM_EXPORT const char *Roll;
+	static CSPSIM_EXPORT const char *Pitch;
+	static CSPSIM_EXPORT const char *CenterOfMassOffset;  // body coordinates
+	static CSPSIM_EXPORT const char *StoresDynamics;
 };
 
 } // namespace bus
-
 } // namespace csp
 
 #endif // __CSPSIM_KINETICS_CHANNELS_H__

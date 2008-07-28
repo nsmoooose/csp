@@ -41,7 +41,7 @@ namespace csp {
  * simulation step.  See documentation associated with this method for
  * important details.
  */
-class BaseDynamics: public System {
+class CSPSIM_EXPORT BaseDynamics: public System {
 public:
 	typedef Ref<BaseDynamics> RefT;
 

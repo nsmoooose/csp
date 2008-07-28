@@ -396,7 +396,7 @@ private:
  *  by the CSP_TESTCASE macro.
  */
 template <class tFIXTURE>
-class CSPLIB_EXPORT TestCaseT: public TestCase {
+class TestCaseT: public TestCase {
 	void (tFIXTURE::*m_test)();
 
 public:

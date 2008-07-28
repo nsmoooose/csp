@@ -50,7 +50,7 @@ namespace numeric { class NumericalMethod; }
  * the position, velocity, and attitude of the object as functions
  * of time.
  */
-class PhysicsModel: public System, protected numeric::VectorField {
+class CSPSIM_EXPORT PhysicsModel: public System, protected numeric::VectorField {
 public:
 	CSP_DECLARE_OBJECT(PhysicsModel)
 

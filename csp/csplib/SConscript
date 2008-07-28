@@ -225,7 +225,7 @@ build.Test(env,
 		'data/test/test_Vector3.cpp',
 	],
 	deps = ['csplib'],
-        aliases = ['all'])
+	aliases = ['all'])
 
 build.Test(env,
 	name = 'test_util',
@@ -237,7 +237,7 @@ build.Test(env,
 		'util/test/test_Testing.cpp'
 	],
 	deps = ['csplib'],
-        aliases = ['all'])
+	aliases = ['all'])
 
 #build.Test(env,
 #	name = 'test_numeric',

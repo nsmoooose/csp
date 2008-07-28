@@ -140,7 +140,7 @@ class Environment(build.Environment):
 		if int(debug) == 0:
 			print('Building release configuration')
 			env.Replace(CXXFLAGS=Split('/GR /MD /O2 /EHsc /W3 /nologo'))
-			env.AppendUnique(CPPDEFINES=Split('WIN32 __WIN32__ _USRDLL _DLL NDEBUG _CRT_SECURE_NO_DEPRECATE'))
+			env.AppendUnique(CPPDEFINES=Split('WIN32 __WIN32__ _USRDLL _DLL NDEBUG _CRT_SECURE_NO_DEPRECATE _USE_MATH_DEFINES'))
 			env.AppendUnique(LINKFLAGS=Split('/INCREMENTAL:NO /RELEASE /nologo'))
 			env.AppendUnique(SHLINKFLAGS=Split('/INCREMENTAL:NO /RELEASE /nologo'))
 			env.AppendUnique(LIBPATH=[build.GetPythonLibrary()])
@@ -148,7 +148,7 @@ class Environment(build.Environment):
 		else:
 			print('Building debug configuration')
 			env.Replace(CXXFLAGS=Split('/GR /MD /Zi /EHsc /W3 /nologo'))
-			env.AppendUnique(CPPDEFINES=Split('WIN32 __WIN32__ _USRDLL _DLL NDEBUG _CRT_SECURE_NO_DEPRECATE'))
+			env.AppendUnique(CPPDEFINES=Split('WIN32 __WIN32__ _USRDLL _DLL NDEBUG _CRT_SECURE_NO_DEPRECATE _USE_MATH_DEFINES'))
 			env.AppendUnique(LINKFLAGS=Split('/INCREMENTAL:NO /DEBUG /nologo'))
 			env.AppendUnique(SHLINKFLAGS=Split('/INCREMENTAL:NO /DEBUG /nologo'))
 			env.AppendUnique(LIBPATH=[build.GetPythonLibrary()])

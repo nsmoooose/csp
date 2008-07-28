@@ -147,7 +147,7 @@ CSP_TESTFIXTURE(Vector3) {
 		CSP_EXPECT_EQ(0, Vector3::ZERO.length2());
 		CSP_EXPECT_EQ(1, Vector3::XAXIS.length());
 		CSP_EXPECT_EQ(1, Vector3::XAXIS.length2());
-		CSP_EXPECT_FEQ(sqrt(14), Vector3(1, -2, 3).length());
+		CSP_EXPECT_FEQ(sqrt(14.0), Vector3(1, -2, 3).length());
 		CSP_EXPECT_FEQ(14, Vector3(1, -2, 3).length2());
 	}
 
@@ -156,7 +156,7 @@ CSP_TESTFIXTURE(Vector3) {
 		CSP_EXPECT_LT(1.0, v.length());
 		CSP_EXPECT_FEQ(1.0, v.normalized().length());
 		Vector3 n = v.normalized();
-		CSP_EXPECT_FEQ(sqrt(14), v.normalize());
+		CSP_EXPECT_FEQ(sqrt(14.0), v.normalize());
 		CSP_EXPECT_FEQ(0, delta(v, n));
 		CSP_EXPECT_FEQ(1.0, v.length());
 		CSP_EXPECT_FEQ(v.y(), 2 * v.x());

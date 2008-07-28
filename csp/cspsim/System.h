@@ -130,7 +130,7 @@ typedef Composite<SystemVisitor> SystemNode;
  *  registered.  Use this method to bind to data channels provided
  *  by other systems over the bus.
  */
-class System: public Object, public SystemNode, public UpdateTarget, public InputInterface {
+class CSPSIM_EXPORT System: public Object, public SystemNode, public UpdateTarget, public InputInterface {
 friend class SystemsModel;
 
 public:

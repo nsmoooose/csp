@@ -166,7 +166,7 @@ CSP_TESTFIXTURE(Quaternion) {
 		CSP_EXPECT_EQ(0, Quat::ZERO.length2());
 		CSP_EXPECT_EQ(1, Quat::IDENTITY.length());
 		CSP_EXPECT_EQ(1, Quat::IDENTITY.length2());
-		CSP_EXPECT_FEQ(sqrt(30), Quat(1, -2, 3, 4).length());
+		CSP_EXPECT_FEQ(sqrt(30.0), Quat(1, -2, 3, 4).length());
 		CSP_EXPECT_FEQ(30, Quat(1, -2, 3, 4).length2());
 	}
 
@@ -269,7 +269,7 @@ CSP_TESTFIXTURE(Quaternion) {
 		CSP_EXPECT_FEQ(0.0, delta(Vector3::XAXIS, Z.invrotate(Vector3::YAXIS)));
 		CSP_EXPECT_FEQ(0.0, delta(Vector3::ZAXIS, Z.invrotate(Vector3::ZAXIS)));
 
-		Vector3 axis(-1.0, sqrt(2), 7.0);
+		Vector3 axis(-1.0, sqrt(2.0), 7.0);
 		Quat R(0.74 * PI, axis);
 		R.normalize();
 		CSP_EXPECT_FEQ(1.0, R.length());
@@ -338,8 +338,8 @@ CSP_TESTFIXTURE(Quaternion) {
 		convert.set(m);
 		CSP_EXPECT_FEQ(0, delta(q, convert));
 
-		q.makeRotate(toRadians(67), Vector3(1, -2, 3) / sqrt(14));
-		m.makeRotate(toRadians(67), Vector3(1, -2, 3) / sqrt(14));
+		q.makeRotate(toRadians(67), Vector3(1, -2, 3) / sqrt(14.0));
+		m.makeRotate(toRadians(67), Vector3(1, -2, 3) / sqrt(14.0));
 		convert.set(m);
 		CSP_EXPECT_FEQ(0, delta(q, convert));
 

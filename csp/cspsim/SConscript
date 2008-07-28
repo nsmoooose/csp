@@ -454,6 +454,6 @@ build.Program(env,
 build.Test(env,
 	name = 'test_PhysicsModel',
 	sources = [ 'test/test_PhysicsModel.cpp' ],
-	deps = ['cspsim'],
-        aliases = ['all'])
+	deps = ['csplib', 'cspsim'],
+	aliases = ['all'])
 

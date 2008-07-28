@@ -51,6 +51,7 @@
 #include <csp/csplib/util/Log.h>
 #include <csp/csplib/util/Callback.h>
 #include <csp/csplib/util/Ref.h>
+#include <csp/cspsim/Export.h>
 
 #include <sigc++/sigc++.h>
 #include <map>  // TODO move to .cpp
@@ -69,7 +70,7 @@ class Bus;
  *  channel involves some over- head, references to channels can be stored
  *  locally to provide low-overhead data and method sharing between components.
  */
-class ChannelBase: public Referenced {
+class CSPSIM_EXPORT ChannelBase: public Referenced {
 friend class Bus;
 
 	/// Identifier for this channel.
@@ -487,7 +488,7 @@ public:
  *  (compile-time) knowledge of the system class interfaces is required, which
  *  allows for a much more flexible design of system class hierarchies.
  */
-class Bus: public Referenced {
+class CSPSIM_EXPORT Bus: public Referenced {
 
 	/// name to channel map type
 	typedef std::map<std::string, ChannelBase::RefT> ChannelMap;

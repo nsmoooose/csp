@@ -31,9 +31,6 @@
 #include <csp/cspsim/PhysicsModel.h>
 #include <csp/cspsim/Controller.h>
 
-#include <csp/csplib/util/Namespace.h>
-
-
 namespace csp {
 
 class DataRecorder;
@@ -47,7 +44,7 @@ class StoresManagementSystem;
  *  model defines a data bus shared by all systems it contains,
  *  and serves as the external interface of the composite system.
  */
-class SystemsModel: public System {
+class CSPSIM_EXPORT SystemsModel: public System {
 	class BindRecorderVisitor;
 	class EventVisitor;
 	class FindSystemByNameVisitor;
@@ -130,7 +127,6 @@ private:
 
 	bool m_Bound;
 };
-
 
 } // namespace csp
 

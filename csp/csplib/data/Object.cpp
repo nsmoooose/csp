@@ -16,21 +16,17 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-
 /**
  * @file Object.cpp
  * @brief Object class and related boilerplate macros.
  */
-
 
 #include <csp/csplib/data/Object.h>
 #include <csp/csplib/data/Archive.h>
 
 #include <sstream>
 
-
 namespace csp {
-
 
 void Object::serialize(Reader &reader) {
 	_serialize(reader);
@@ -61,7 +57,62 @@ hasht Object::getPath() const {
 	return _path;
 }
 
-std::ostream &operator <<(std::ostream &o, Object const &obj) { return o << obj.asString(); }
+void Object::postCreate() {
+}
+
+void Object::_serialize(Writer&) const { 
+}
+
+void Object::_serialize(Reader&) { 
+}
+
+Object* Object::_new() const {
+	fatal(std::string("Attempt to construct csp::Object (") + getClassName());
+	return 0;
+}
+
+const char *Object::_getClassName() { 
+	return "Object"; 
+}
+
+const char *Object::getClassName() const { 
+	return "Object"; 
+}
+
+hasht Object::_getClassHash() { 
+	return hasht(1); 
+}
+
+hasht Object::getClassHash() const { 
+	return hasht(1); 
+}
+
+bool Object::_isClassStatic() { 
+	return false; 
+}
+
+bool Object::isClassStatic() const { 
+	return false; 
+}
+
+void Object::convertXML() {
+}
+
+void Object::parseXML(const char *cdata) { 
+	checkEmptyTag(cdata); 
+}
+
+std::string Object::typeString() const { 
+	return getClassName(); 
+}
+
+void Object::_postCreate() { 
+	postCreate(); 
+}
+
+std::ostream &operator <<(std::ostream &o, Object const &obj) { 
+	return o << obj.asString(); 
+}
 
 } // namespace csp
 

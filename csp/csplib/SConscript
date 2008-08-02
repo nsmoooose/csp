@@ -26,6 +26,7 @@ build.SourceGroup(expenv,
 	name = 'csplib',
 	sources = [
 		'data/Archive.h',
+                'data/Archive.cpp',
 		'data/BaseType.h',
 		'data/DataArchive.cpp',
 		'data/DataArchive.h',

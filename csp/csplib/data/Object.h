@@ -16,16 +16,13 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-
 /**
  * @file Object.h
  * @brief Object class and related boilerplate macros.
  */
 
-
 #ifndef __CSPLIB_DATA_OBJECT_H__
 #define __CSPLIB_DATA_OBJECT_H__
-
 
 #include <string>
 
@@ -35,13 +32,10 @@
 #include <csp/csplib/util/HashUtility.h>
 #include <csp/csplib/util/Referenced.h>
 
-
 namespace csp {
-
 
 class DataArchive;
 class LinkCore;
-
 
 /** Base class for all classes representing packable data objects.
  *
@@ -81,19 +75,19 @@ protected:
 	 *  Called after the newly created object has been deserialized.  Extend (not
 	 *  override) this method to do any initial processing of the external data.
 	 */
-	virtual void postCreate() {}
+	virtual void postCreate();
 
 	/** Internal methos for saving the objects via the xml interface.
 	 *  Automatically extended in subclasses by the CSP_DECLARE_*OBJECT
 	 *  macros.  Do not explicitly extend or call these methods.
 	 */
-	virtual void _serialize(Writer&) const { };
+	virtual void _serialize(Writer&) const;
 
 	/** Internal methos for loading the objects via the xml interface.
 	 *  Automatically extended in subclasses by the CSP_DECLARE_*OBJECT
 	 *  macros.  Do not explicitly extend or call these methods.
 	 */
-	virtual void _serialize(Reader&) { };
+	virtual void _serialize(Reader&);
 
 	/** Used by CSP_DECLARE_*OBJECT macros
 	 */
@@ -110,46 +104,43 @@ public:
 	 *  The method is automatically overridden by the CSP_OBJECT
 	 *  macro, so you should never need to extend it manually.
 	 */
-	virtual Object* _new() const {
-		fatal(std::string("Attempt to construct csp::Object (") + getClassName());
-		return 0;
-	}
+	virtual Object* _new() const;
 
 	/** Get the class name as a string.
 	 */
-	static const char *_getClassName() { return "Object"; }
+	static const char *_getClassName();
 
 	/** Get the class name as a string.
 	 */
-	virtual const char *getClassName() const { return "Object"; }
+	virtual const char *getClassName() const;
 
 	/** Get a fingerprint of the class and xml interface.
 	 */
-	static hasht _getClassHash() { return hasht(1); }
+	static hasht _getClassHash();
 
 	/** Get a fingerprint of the class and xml interface.
 	 */
-	virtual hasht getClassHash() const { return hasht(1); }
+	virtual hasht getClassHash() const;
 
 	/** Test if the object is marked as static (so that one instance will be
 	 *  cached and reused when loaded multiple times from a data archive).
 	 */
-	static bool _isClassStatic() { return false; }
+	static bool _isClassStatic();
 
 	/** Test if the object is marked as static (so that one instance will be
 	 *  cached and reused when loaded multiple times from a data archive).
 	 */
-	virtual bool isClassStatic() const { return false; }
+	virtual bool isClassStatic() const;
 
 	/** XML post processing prior to serialization.
 	 */
-	virtual void convertXML() {}
+	virtual void convertXML();
 
 	/** Parse the character data from an \<Object\> tag.  The default
 	 *  implementation throws an exception if any non-whitespace cdata
 	 *  is present.
 	 */
-	virtual void parseXML(const char *cdata) { checkEmptyTag(cdata); }
+	virtual void parseXML(const char *cdata);
 
 	/** Serialize additional state to a data target.
 	 *
@@ -195,7 +186,7 @@ public:
 	 *  so this method should not be overridden in derived
 	 *  classes.
 	 */
-	virtual std::string typeString() const { return getClassName(); }
+	virtual std::string typeString() const;
 
 	/** Get the path hash from which the object was instantiated.
 	 *
@@ -213,15 +204,11 @@ public:
 	 *  an object.  This method is intended to assist with object creation directly
 	 *  from XML data (typically in Python).
 	 */
-	void _postCreate() { postCreate(); }
+	void _postCreate();
 };
-
 
 CSPLIB_EXPORT std::ostream &operator <<(std::ostream &o, Object const &obj);
 
-
 } // namespace csp
 
-
 #endif // __CSPLIB_DATA_OBJECT_H__
-

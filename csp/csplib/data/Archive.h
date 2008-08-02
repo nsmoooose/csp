@@ -38,14 +38,11 @@
 
 namespace csp {
 
-
 class DataArchive;
-
 
 CSP_EXCEPTION(DataUnderflow)
 CSP_EXCEPTION(ConstViolation)
 CSP_EXCEPTION(SerializeError)
-
 
 /** A trivial FILE * wrapper to provide a uniform file interface for both C++
  *  and Python.
@@ -69,21 +66,11 @@ public:
 
 	/** Open a new file (fopen interface)
 	 */
-	PackFile(const char *fn, const char *mode) {
-		_f = (FILE*) fopen(fn, mode);
-		assert(_f); // XXX add error handling
-		_open = (_f != 0);
-	}
+	PackFile(const char *fn, const char *mode);
 
 	/** Close the current file, if open.
 	 */
-	void close() {
-		if (_open) {
-			if (_f) fclose(_f);
-			_f = 0;
-			_open = false;
-		}
-	}
+	void close();
 };
 
 
@@ -97,143 +84,35 @@ class CSPLIB_EXPORT Reader {
 	bool _load_all;
 
 protected:
-	Reader(uint8 const *buffer, uint32 length, DataArchive *data_archive=0, bool load_all=false) :
-		_buffer(buffer),
-		_read(buffer),
-		_end(buffer + length),
-		_data_archive(data_archive),
-		_load_all(load_all) { }
+	Reader(uint8 const *buffer, uint32 length, DataArchive *data_archive=0, bool load_all=false);
 
-	void bind(uint8 const *buffer, uint32 length) {
-		_buffer = buffer;
-		_read = buffer;
-		_end = buffer + length;
-	}
+	void bind(uint8 const *buffer, uint32 length);
 
 public:
-	virtual ~Reader() {}
+	virtual ~Reader();
 
-	DataArchive* _getArchive() { return _data_archive; }
-	bool _loadAll() const { return _load_all; }
-	bool isComplete() const { return _read >= _end; }
+	DataArchive* _getArchive();
+	bool _loadAll() const;
+	bool isComplete() const;
 
 #ifndef SWIG
-	Reader& operator>>(char &x) {
-		if (_read >= _end) throw DataUnderflow();
-		x = *_read++;
-		return *this;
-	}
-
-	Reader& operator>>(int8 &x) {
-		if (_read >= _end) throw DataUnderflow();
-		x = static_cast<int8>(*_read++);
-		return *this;
-	}
-
-	Reader& operator>>(uint8 &x) {
-		if (_read >= _end) throw DataUnderflow();
-		x = static_cast<uint8>(*_read++);
-		return *this;
-	}
-
-	Reader& operator>>(int16 &x) {
-		if (_read + sizeof(x) > _end) throw DataUnderflow();
-		const int16 le = *(reinterpret_cast<int16 const*>(_read));
-		x = CSP_INT16_FROM_LE(le);
-		_read += sizeof(x);
-		return *this;
-	}
-
-	Reader& operator>>(uint16 &x) {
-		if (_read + sizeof(x) > _end) throw DataUnderflow();
-		const uint16 le = *(reinterpret_cast<uint16 const*>(_read));
-		x = CSP_UINT16_FROM_LE(le);
-		_read += sizeof(x);
-		return *this;
-	}
-
-	Reader& operator>>(int32 &x) {
-		if (_read + sizeof(x) > _end) throw DataUnderflow();
-		const int32 le = *(reinterpret_cast<int32 const*>(_read));
-		x = CSP_INT32_FROM_LE(le);
-		_read += sizeof(x);
-		return *this;
-	}
-
-	Reader& operator>>(uint32 &x) {
-		if (_read + sizeof(x) > _end) throw DataUnderflow();
-		const uint32 le = *(reinterpret_cast<uint32 const*>(_read));
-		x = CSP_UINT32_FROM_LE(le);
-		_read += sizeof(x);
-		return *this;
-	}
-
-	Reader& operator>>(int64 &x) {
-		if (_read + sizeof(x) > _end) throw DataUnderflow();
-		const int64 le = *(reinterpret_cast<int64 const*>(_read));
-		x = CSP_INT64_FROM_LE(le);
-		_read += sizeof(x);
-		return *this;
-	}
-
-	Reader& operator>>(uint64 &x) {
-		if (_read + sizeof(x) > _end) throw DataUnderflow();
-		const uint64 le = *(reinterpret_cast<uint64 const*>(_read));
-		x = CSP_UINT64_FROM_LE(le);
-		_read += sizeof(x);
-		return *this;
-	}
-
-	Reader& operator>>(bool &x) {
-		if (_read >= _end) throw DataUnderflow();
-		char b = *_read++;
-		x = (b != 0);
-		return *this;
-	}
-
-	Reader& operator>>(float &x) {
-		if (_read + sizeof(x) > _end) throw DataUnderflow();
-		x = *(reinterpret_cast<float const*>(_read));
-		_read += sizeof(x);
-		return *this;
-	}
-
-	Reader& operator>>(double &x) {
-		if (_read + sizeof(x) > _end) throw DataUnderflow();
-		x = *(reinterpret_cast<double const*>(_read));
-		_read += sizeof(x);
-		return *this;
-	}
-
-	Reader& operator>>(hasht &x) {
-		uint64 val;
-		operator>>(val);
-		x = hasht(static_cast<uint32>(val >> 32), static_cast<uint32>(val));
-		return *this;
-	}
-
-	Reader& operator>>(std::string &x) {
-		int32 n = readLength();
-		if (_read + n > _end) throw DataUnderflow();
-		x.assign(reinterpret_cast<char const*>(_read), n);
-		_read += n;
-		return *this;
-	}
+	Reader& operator>>(char &x);
+	Reader& operator>>(int8 &x);
+	Reader& operator>>(uint8 &x);
+	Reader& operator>>(int16 &x);
+	Reader& operator>>(uint16 &x);
+	Reader& operator>>(int32 &x);
+	Reader& operator>>(uint32 &x);
+	Reader& operator>>(int64 &x);
+	Reader& operator>>(uint64 &x);
+	Reader& operator>>(bool &x);
+	Reader& operator>>(float &x);
+	Reader& operator>>(double &x);
+	Reader& operator>>(hasht &x);
+	Reader& operator>>(std::string &x);
 #endif // SWIG
 
-	// old, fixed-width length implementation (DISABLED)
-	// int32 _readLength() { int32 n; operator>>(n); return n; }
-
-	int32 readLength() {
-		if (_read >= _end) throw DataUnderflow();
-		const uint32 bytes = (static_cast<uint32>(*_read) & 3) + 1;
-		if (_read + bytes > _end) throw DataUnderflow();
-		uint8 val[4] = {0,0,0,0};
-		for (uint32 i=0; i < bytes; ++i) val[i] = *_read++;
-		const uint32 le = *(reinterpret_cast<uint32*>(val));
-		const uint32 length = CSP_UINT32_FROM_LE(le);
-		return static_cast<int32>(length >> 2);
-	}
+	int32 readLength();
 
 	// explicit methods for use from Python
 
@@ -321,93 +200,26 @@ protected:
 	virtual void write(void const* data, uint32 bytes)=0;
 
 public:
-	virtual ~Writer() {}
+	virtual ~Writer();
 
 #ifndef SWIG
-	Writer& operator<<(const char y) {
-		write(&y, sizeof(y));
-		return *this;
-	}
-	Writer& operator<<(const int8 y) {
-		write(&y, sizeof(y));
-		return *this;
-	}
-	Writer& operator<<(const uint8 y) {
-		write(&y, sizeof(y));
-		return *this;
-	}
-	Writer& operator<<(const int16 y) {
-		const int16 le = CSP_INT16_TO_LE(y);
-		write(&le, sizeof(le));
-		return *this;
-	}
-	Writer& operator<<(const uint16 y) {
-		const uint16 le = CSP_UINT16_TO_LE(y);
-		write(&le, sizeof(le));
-		return *this;
-	}
-	Writer& operator<<(const int32 y) {
-		const int32 le = CSP_INT32_TO_LE(y);
-		write(&le, sizeof(le));
-		return *this;
-	}
-	Writer& operator<<(const uint32 y) {
-		const uint32 le = CSP_UINT32_TO_LE(y);
-		write(&le, sizeof(le));
-		return *this;
-	}
-	Writer& operator<<(const int64 y) {
-		const int64 le = CSP_INT64_TO_LE(y);
-		write(&le, sizeof(le));
-		return *this;
-	}
-	Writer& operator<<(const uint64 y) {
-		const uint64 le = CSP_UINT64_TO_LE(y);
-		write(&le, sizeof(le));
-		return *this;
-	}
-	Writer& operator<<(const bool y) {
-		char b = y ? 1 : 0;
-		write(&b, sizeof(b));
-		return *this;
-	}
-	Writer& operator<<(const float y) {
-		write(&y, sizeof(y));
-		return *this;
-	}
-	Writer& operator<<(const double y) {
-		write(&y, sizeof(y));
-		return *this;
-	}
-
-	Writer& operator<<(const hasht &y) {
-		uint64 val = y.b;
-		val = (val << 32) | y.a;
-		return operator<<(val);
-	}
-	Writer& operator<<(const std::string &y) {
-		const int32 n = y.length();
-		writeLength(n);
-		write(y.data(), n);
-		return *this;
-	}
+	Writer& operator<<(const char y);
+	Writer& operator<<(const int8 y);
+	Writer& operator<<(const uint8 y);
+	Writer& operator<<(const int16 y);
+	Writer& operator<<(const uint16 y);
+	Writer& operator<<(const int32 y);
+	Writer& operator<<(const uint32 y);
+	Writer& operator<<(const int64 y);
+	Writer& operator<<(const uint64 y);
+	Writer& operator<<(const bool y);
+	Writer& operator<<(const float y);
+	Writer& operator<<(const double y);
+	Writer& operator<<(const hasht &y);
+	Writer& operator<<(const std::string &y);
 #endif // SWIG
 
-	void writeLength(int32 length) {
-		assert(length >= 0 && length <= 1073741823);
-		uint32 bf0 = static_cast<uint32>(length - 0x40) & 0x80000000;
-		uint32 bf1 = static_cast<uint32>(length - 0x4000) & 0x80000000;
-		// 0-63             : bf0=00b, 1 byte representation
-		// 64-16383         : bf0=01b, 2 byte representation
-		// 16384-1073741823 : bf0=11b, 4 byte representation
-		bf0 = (((bf0 >> 1) | bf1) >> 30) ^ 3;
-		uint32 output = static_cast<int32>((length << 2) | bf0);
-		// store little-endian so the bits indicating the number of bytes
-		// stored are in the first byte, and the length value is packed
-		// toward the front of the stream.
-		output = CSP_UINT32_TO_LE(output);
-		write(&output, bf0 + 1);
-	}
+	void writeLength(int32 length);
 
 	// explicit packing (use from python)
 
@@ -472,22 +284,19 @@ inline Writer& operator<<(Writer &writer, std::vector<T> const &x) {
  *  @author Mark Rose <mkrose@users.sourceforge.net>
  */
 class CSPLIB_EXPORT ArchiveWriter: public Writer {
-	FILE *_f;
-	int32 _n;
+public:
+	ArchiveWriter(PackFile f);
+
+	void resetCount();
+
+	int32 getCount();
 
 protected:
-	virtual void write(const void* x, uint32 n) {
-		fwrite(x, n, 1, _f);
-		_n += n;
-	}
+	virtual void write(const void* x, uint32 n);
 
-public:
-	ArchiveWriter(PackFile f): Writer(), _n(0) {
-		_f = static_cast<FILE*>(f);
-		assert(_f != 0);
-	}
-	void resetCount() { _n = 0; }
-	int32 getCount() { return _n; }
+private:
+	FILE *_f;
+	int32 _n;
 };
 
 
@@ -502,12 +311,9 @@ public:
  */
 class CSPLIB_EXPORT ArchiveReader: public Reader {
 public:
-	ArchiveReader(const char* data, int32 n, DataArchive* archive=0, bool loadall=true):
-		Reader(reinterpret_cast<const uint8*>(data), n, archive, loadall) { }
+	ArchiveReader(const char* data, int32 n, DataArchive* archive=0, bool loadall=true);
 };
 
 } // namespace csp
 
-
-#endif // __CSPLIB_DATA_PACK_H__
-
+#endif // __CSPLIB_DATA_ARCHIVE_H__

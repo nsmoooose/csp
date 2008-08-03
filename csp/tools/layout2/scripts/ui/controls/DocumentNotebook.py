@@ -1,8 +1,11 @@
 #!/usr/bin/env python
 import wx
 
+from csp.tools.layout2.scripts.document.ImageDocument import ImageDocument
 from csp.tools.layout2.scripts.document.OutputDocument import OutputDocument
+from csp.tools.layout2.scripts.document.ModelDocument import ModelDocument
 from csp.tools.layout2.scripts.document.SceneDocument import SceneDocument
+from ImageWindow import ImageWindow
 from OutputWindow import OutputWindow
 from SceneWindow import SceneWindow
 
@@ -53,6 +56,12 @@ class DocumentNotebook(wx.Notebook):
 			# Add simple text output window to handle any kind of 
 			# tool output.
 			page = OutputWindow(self, wx.ID_ANY)
+			page.SetDocument(document)
+			self.AddPage(page, document.GetName())
+		elif isinstance(document, ModelDocument):
+			pass
+		elif isinstance(document, ImageDocument):
+			page = ImageWindow(self, wx.ID_ANY)
 			page.SetDocument(document)
 			self.AddPage(page, document.GetName())
 		

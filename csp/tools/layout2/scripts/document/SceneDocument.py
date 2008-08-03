@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 from Document import Document
 
 class SceneDocument(Document):

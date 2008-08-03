@@ -2,6 +2,8 @@
 import os
 
 from OpenCustomLayoutModelFileCommand import OpenCustomLayoutModelFileCommand
+from OpenImageFileCommand import OpenImageFileCommand
+from OpenOsgModelFileCommand import OpenOsgModelFileCommand
 
 class FileCommandRegistry:
 	"""This is responsible for knowing what Command to execute
@@ -19,6 +21,10 @@ class FileCommandRegistry:
 		extension = os.path.splitext(fileName)[1].lower()
 		if extension == '.xml':
 			command = OpenCustomLayoutModelFileCommand()
+		elif extension == '.osg' or extension == '.ive':
+			command = OpenOsgModelFileCommand()
+		elif extension == '.png' or extension == '.jpg' or extension == '.tga':
+			command = OpenImageFileCommand()
 
 		# If we have found a command we set the fileName on it
 		# and returns it.

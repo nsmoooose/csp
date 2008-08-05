@@ -48,11 +48,9 @@ class SceneWindow(wx.glcanvas.GLCanvas):
 			event.RequestMore()
 	
 	def document_Closed(self, document):
-		print('document closed')
 		if document == self.document:
 			application = wx.GetApp()
 			application.GetIdleSignal().Disconnect(self.on_Idle)
-			print('disconnected idle signal')
 
 	def on_Size(self, event):
 		width, height = self.GetClientSizeTuple()

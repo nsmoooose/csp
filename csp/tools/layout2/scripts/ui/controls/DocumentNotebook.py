@@ -39,7 +39,6 @@ class DocumentNotebook(wx.Notebook):
 			self.documentAdded_Signal(document)
 			
 	def on_PageChanged(self, event):
-		print('page changed')
 		pass
 		
 	def documentAdded_Signal(self, document):
@@ -51,19 +50,19 @@ class DocumentNotebook(wx.Notebook):
 			# scene.
 			page = SceneWindow(self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.BORDER_NONE, "GLCanvas", 0, wx.NullPalette)
 			page.SetDocument(document)
-			self.AddPage(page, document.GetName())
+			self.AddPage(page, document.GetName(), True)
 		elif isinstance(document, OutputDocument):
 			# Add simple text output window to handle any kind of 
 			# tool output.
 			page = OutputWindow(self, wx.ID_ANY)
 			page.SetDocument(document)
-			self.AddPage(page, document.GetName())
+			self.AddPage(page, document.GetName(), True)
 		elif isinstance(document, ModelDocument):
 			pass
 		elif isinstance(document, ImageDocument):
 			page = ImageWindow(self, wx.ID_ANY)
 			page.SetDocument(document)
-			self.AddPage(page, document.GetName())
+			self.AddPage(page, document.GetName(), True)
 		
 	def documentClosed_Signal(self, document):
 		# We need to remove the page that is responsible for

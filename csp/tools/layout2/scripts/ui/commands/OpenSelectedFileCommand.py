@@ -35,7 +35,6 @@ class OpenSelectedFileCommand(Command):
 			return
 
 		if ProjectTree.Instance is None:
-			print('No project tree instance has been set')
 			return
 
 		fileName = ProjectTree.Instance.GetSelectedFile()

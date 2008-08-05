@@ -63,7 +63,6 @@ class ProjectTree(wx.TreeCtrl):
 
 	def on_ItemActivated(self, event):
 		if self.openCommand is None:
-			print('No open command object set')
 			return
 
 		if os.path.isfile(self.GetSelectedFile()):

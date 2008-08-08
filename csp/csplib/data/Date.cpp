@@ -382,7 +382,7 @@ void SimDate::serialize(Writer &writer) const {
 	writer << julian_;
 }
 
-void SimDate::parseXML(const char* cdata) {
+void SimDate::parseXML(const char* cdata) throw(ParseException) {
 	int dy=0,dm=0,dd=0,th=0,tm=0;
 	float ts=0.0;
 	int ok = 0;

@@ -400,5 +400,39 @@ CSP_TESTFIXTURE(Quaternion) {
 		CSP_EXPECT_EQ(0, q.z());
 		CSP_EXPECT_FEQ(0.6 / sqrt(0.52), q.w());
 	}
+
+	CSP_TESTCASE(ParseXMLWith4Values) {
+		// XML is using . as standard for decimals. Check if the parseXML
+		// method is independent of locale.
+		std::locale old = std::locale::global(std::locale("sv_SE"));
+		Quat q;
+		q.parseXML("0.2 0.5 0.7 0.8");
+		CSP_EXPECT_EQ(0.2, q.x());
+		CSP_EXPECT_EQ(0.5, q.y());
+		CSP_EXPECT_EQ(0.7, q.z());
+		CSP_EXPECT_EQ(0.8, q.w());
+		std::locale::global(old);
+	}
+
+	CSP_TESTCASE(ParseXMLWith9Values) {
+		// Arrange
+		// XML is using . as standard for decimals. Check if the parseXML
+		// method is independent of locale.
+		std::locale old = std::locale::global(std::locale("sv_SE"));
+
+		// Act
+		Quat q;
+		q.parseXML("0.2 0.5 0.7 0.8   0.9 1.1 1.2 1.3    1.4 ");
+
+		// Assert
+		Quat expectedResult;
+		expectedResult.set(Matrix3(0.2, 0.5, 0.7, 0.8, 0.9, 1.1, 1.2, 1.3, 1.4));
+		CSP_EXPECT_EQ(expectedResult.x(), q.x());
+		CSP_EXPECT_EQ(expectedResult.y(), q.y());
+		CSP_EXPECT_EQ(expectedResult.z(), q.z());
+		CSP_EXPECT_EQ(expectedResult.w(), q.w());
+
+		std::locale::global(old);
+	}
 };
 

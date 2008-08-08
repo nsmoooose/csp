@@ -50,23 +50,30 @@ void Quat::serialize(Writer &writer) const {
 	writer << _w << _x << _y << _z;
 }
 
-void Quat::parseXML(const char* cdata) {
+void Quat::parseXML(const char* cdata) throw(ParseException) {
 	std::stringstream ss(cdata);
-	std::string token;
+	ss.imbue(std::locale::classic());
 	double v[9];
 	for (int i = 0; i < 9; i++) {
-		if (!(ss >> token)) {
+		ss >> v[i];
+		if(ss.fail()) {
 			if (i == 4) {
 				set(v[0], v[1], v[2], v[3]);
 				return;
 			} else {
-				throw ParseException("Expect either four (4) or  nine (9) elements in quaternion");
+				std::stringstream message;
+				message << "Expect either four (4) or  nine (9) elements in quaternion. Parsed content: " << cdata;
+				throw ParseException(message.str());
 			}
 		}
-  		v[i] = atof(token.c_str());
 	}
+
+	// Test to see if we can parse more data.
+	std::string token;
 	if (ss >> token) {
-		throw ParseException("Expect exactly four (4) or nine (9) elements in quaternion");
+		std::stringstream message;
+		message << "Expect either four (4) or  nine (9) elements in quaternion. Parsed content: " << cdata;
+		throw ParseException(message.str());
 	}
 	set(Matrix3(v[0],v[1],v[2],v[3],v[4],v[5],v[6],v[7],v[8]));
 }

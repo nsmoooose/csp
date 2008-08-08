@@ -74,7 +74,7 @@ public: // BaseType
 	 *  The nine values should be separated by white-space
 	 *  and arranged in order (0,0), (0,1), (0,2), (1,0), etc.
 	 */
-	void parseXML(const char* cdata);
+	void parseXML(const char* cdata) throw(ParseException);
 
 	/// XML post processing.
 	void convertXML() {}

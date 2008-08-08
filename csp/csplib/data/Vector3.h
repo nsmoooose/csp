@@ -72,7 +72,7 @@ public: // BaseType
 	/** Parse the character data from an XML \<Vector\> tag.
 	 *  The three components must be separated by whitespace.
 	 */
-	void parseXML(const char*);
+	void parseXML(const char*) throw(ParseException);
 
 	/// XML post processing.
 	void convertXML() {}

@@ -80,7 +80,7 @@ public:  // BaseType
 	/** Internal method used by the XML parser.
 	 *  The format for Quats is "X Y Z W"
 	 */
-	void parseXML(const char* cdata);
+	void parseXML(const char* cdata) throw(ParseException);
 
 	/// XML post processing.
 	void convertXML() {}

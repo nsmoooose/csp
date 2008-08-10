@@ -200,5 +200,21 @@ CSP_TESTFIXTURE(Vector3) {
 		CSP_EXPECT_EQ(3.1, m(1, 0));
 		CSP_EXPECT_EQ(-3.1, m(0, 1));
 	}
+
+	CSP_TESTCASE(ParseXML) {
+		// Arrange
+		std::locale old = std::locale::global(std::locale("sv_SE"));
+		Vector3 v;
+		char cdata[] = "1.3 2.4 3.5";
+
+		// Act
+		v.parseXML(cdata);
+
+		// Assert
+		std::locale::global(old);
+		CSP_EXPECT_EQ(1.3, v.x());
+		CSP_EXPECT_EQ(2.4, v.y());
+		CSP_EXPECT_EQ(3.5, v.z());
+	}
 };
 

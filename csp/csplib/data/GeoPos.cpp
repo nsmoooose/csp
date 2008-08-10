@@ -503,14 +503,25 @@ void LLA::parseXML(const char* cdata) throw (ParseException) {
 		double X, Y, Z;
 		if (strchr(c, '\'')) {
 			int lat, latm, lon, lonm;
-			int n = sscanf(c, "%d'%d\"%lf %d'%d\"%lf %lf", &lat, &latm, &X, &lon, &lonm, &Y, &Z);
-			if (n != 7) throw ParseException("SYNTAX ERROR: expecting 'lat'min\"sec lon'min\"sec altitude'");
+			char separator;
+			std::istringstream stream(cdata);
+			stream.imbue(std::locale::classic());
+			stream >> lat >> separator >> latm >> separator >> X >> lon >> separator >> lonm >> separator >> Y >> Z;
+			if(stream.fail()) {
+				throw ParseException("SYNTAX ERROR: expecting 'lat'min\"sec lon'min\"sec altitude'");
+			}
 			_lat = toRadians(lat + latm / 60.0 + X / 3600.0);
 			_lon = toRadians(lon + lonm / 60.0 + Y / 3600.0);
 			_alt = Z;
 		} else {
-			int n = sscanf(c, "%lf %lf %lf", &X, &Y, &Z);
-			if (n != 3) throw ParseException("SYNTAX ERROR: expecting 'latitude longitude altitude'");
+			std::istringstream stream(cdata);
+			stream.imbue(std::locale::classic());
+			stream >> X >> Y >> Z;
+			if(stream.fail()) {
+				std::stringstream message;
+				message << "SYNTAX ERROR: expecting 'latitude longitude altitude'. But was: " << cdata;
+				ParseException(message.str());
+			}
 			_lat = toRadians(X);
 			_lon = toRadians(Y);
 			_alt = Z;

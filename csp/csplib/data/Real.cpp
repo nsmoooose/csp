@@ -53,17 +53,21 @@ void Real::serialize(Writer &writer) const {
 void Real::parseXML(const char* cdata) throw(ParseException) {
 	std::string s(cdata);
 	float mean, sigma = 0.0;
-	bool ok = true;
-	std::string::size_type pos = s.find(':');
-	if (pos == std::string::npos) {
-		int n = sscanf(s.c_str(), "%f", &mean);
-		if (n != 1) ok = false;
+	char separator;
+
+	std::istringstream stream(cdata);
+	stream.imbue(std::locale::classic());
+	if (s.find(':') == std::string::npos) {
+		stream >> mean;
 	} else {
-		int n = sscanf(s.c_str(), "%f:%f", &mean, &sigma);
-		if (n != 2) ok = false;
+		stream >> mean >> separator >> sigma;
 	}
+
+	if (stream.fail()) {
+		throw ParseException("SYNTAX ERROR: expect 'float' or 'float:float'");
+	}
+
 	set(mean, sigma);
-	if (!ok) throw ParseException("SYNTAX ERROR: expect 'float' or 'float:float'");
 }
 
 Real::Real(float mean, float sigma) {

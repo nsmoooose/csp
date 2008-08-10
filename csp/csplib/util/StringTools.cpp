@@ -171,7 +171,10 @@ bool parseDouble(const char *s, double &x) {
 			return false;
 	}
 
-	return sscanf(s, "%lf", &x) == 1;
+	std::stringstream stream(s);
+	stream.imbue(std::locale::classic());
+	stream >> x;
+	return !stream.fail();
 }
 
 // Helper class for stringprintf and friends.  Provides a fast, append-only string

@@ -25,6 +25,8 @@
 #include <csp/tools/layout2/cpp/LayoutNodes.h>
 #include <csp/tools/layout2/cpp/ModelLoader.h>
 #include <csp/tools/layout2/cpp/OsgGraphicsWindow.h>
+#include <csp/tools/layout2/cpp/OsgModelWindow.h>
+#include <csp/tools/layout2/cpp/OsgSceneWindow.h>
 %}
 
 %include "typemaps.i"
@@ -99,6 +101,8 @@ TYPEMAP_PYSLOT_IN(void)
 %include "csp/tools/layout2/cpp/FeatureGraph.h"
 %include "csp/tools/layout2/cpp/ModelLoader.h"
 %include "csp/tools/layout2/cpp/OsgGraphicsWindow.h"
+%include "csp/tools/layout2/cpp/OsgModelWindow.h"
+%include "csp/tools/layout2/cpp/OsgSceneWindow.h"
 
 %extend csp::layout::OsgGraphicsWindow {
 	void connectToSetCurrent(sigc::slot<void> slot) {
@@ -109,3 +113,5 @@ TYPEMAP_PYSLOT_IN(void)
 		$self->SwapBuffers.connect(slot);
 	}
 }
+
+%include "csp/tools/layout2/cpp/OsgModelWindow.h"

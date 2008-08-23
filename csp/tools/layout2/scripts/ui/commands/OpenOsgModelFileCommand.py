@@ -35,4 +35,5 @@ class OpenOsgModelFileCommand(FileCommand):
         # turn signal the document added signal that is caught in the gui.
         # This will create a 3D view.
         document = ModelDocument(fileName)
+        document.SetFileName(fileName)
         application.GetDocumentRegistry().Add(document)

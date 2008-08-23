@@ -11,11 +11,18 @@ from MainFrame import MainFrame
 from SelectDataDirectoryDialog import SelectDataDirectoryDialog
 
 class LayoutApplication(wx.App):
+	"""This is a singleton instance of the entire application. It contains information
+	about open documents and all other global things."""
+
 	def GetIdleSignal(self):
+		"""Returns the idle signal that can be used when you want to do things
+		in the background. It can be usefull to render the scene when used together
+		with 3D content."""
 		return self.idleSignal
 
-	# wxWindows calls this method to initialize the application
 	def OnInit(self):
+		"""wxWindows calls this method to initialize the application."""
+
 		# Create the idle signal that you can connect to for
 		# idle processing.
 		self.idleSignal = Signal()

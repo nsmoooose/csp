@@ -25,17 +25,17 @@
 #include <osgDB/ReadFile>
 #include <csp/tools/layout2/cpp/OsgGraphicsWindow.h>
 
-class csp::layout::OsgGraphicsWindow::Implementation : public osgViewer::GraphicsWindow {
+namespace csp {
+namespace layout {
+
+class OsgGraphicsWindow::Implementation : public osgViewer::GraphicsWindow {
 public:
 	OsgGraphicsWindow* m_Window;
 	osg::ref_ptr<osgViewer::Viewer> m_Viewer;
 	osg::ref_ptr<osgGA::TrackballManipulator> m_Manipulator;
-	Ref<Scene> m_Scene;
 
-	void init(OsgGraphicsWindow* window, Scene* scene) {
-	
+	void init(OsgGraphicsWindow* window) {
 		m_Window = window;
-		m_Scene = scene;
 
 		_traits = new GraphicsContext::Traits;
 		_traits->x = 50;
@@ -61,7 +61,6 @@ public:
 		m_Viewer->getCamera()->setViewport(0,0,300,300);
 		m_Viewer->addEventHandler(new osgViewer::StatsHandler);
 		m_Viewer->setThreadingModel(osgViewer::Viewer::SingleThreaded);
-		m_Viewer->setSceneData(m_Scene->getRootNode().get());
 
 		m_Manipulator = new osgGA::TrackballManipulator;
 		m_Viewer->setCameraManipulator(m_Manipulator.get());
@@ -100,15 +99,15 @@ public:
 	}
 };
 
-csp::layout::OsgGraphicsWindow::OsgGraphicsWindow() : m_Implementation(new Implementation()) {
-	m_Implementation->init(this, new Scene);
+OsgGraphicsWindow::OsgGraphicsWindow() : m_Implementation(new Implementation()) {
+	m_Implementation->init(this);
 }
 
-csp::layout::OsgGraphicsWindow::~OsgGraphicsWindow() {
+OsgGraphicsWindow::~OsgGraphicsWindow() {
 	delete m_Implementation;
 }
 
-osg::Vec3 csp::layout::OsgGraphicsWindow::getCameraPosition() const {
+osg::Vec3 OsgGraphicsWindow::getCameraPosition() const {
 	const osg::Matrix view_matrix = m_Implementation->m_Viewer->getCamera()->getViewMatrix();
 	osg::Matrix matrix(view_matrix);
 	osg::Vec3 offset(matrix(3, 0), matrix(3, 1), matrix(3, 2));
@@ -120,40 +119,37 @@ osg::Vec3 csp::layout::OsgGraphicsWindow::getCameraPosition() const {
 	return osg::Vec3(eye[0], eye[1], eye[2]);
 }
 
-void csp::layout::OsgGraphicsWindow::Frame() {
-	osgGA::TrackballManipulator* manipulator = dynamic_cast<osgGA::TrackballManipulator*>(m_Implementation->m_Viewer->getCameraManipulator());
-	 osg::Vec3 cameraTarget = manipulator->getCenter();
-	m_Implementation->m_Scene->updateDynamicGrid(cameraTarget, getCameraPosition());
+void OsgGraphicsWindow::Frame() {
 	m_Implementation->m_Viewer->frame();
 }
 
-void csp::layout::OsgGraphicsWindow::setSize(int width, int height) {
+void OsgGraphicsWindow::setSize(int width, int height) {
 	// update the window dimensions, in case the window has been resized.
 	m_Implementation->getEventQueue()->windowResize(0, 0, width, height);
 	m_Implementation->resized(0, 0, width, height);
 }
 
-void csp::layout::OsgGraphicsWindow::handleKeyDown(int key) {
+void OsgGraphicsWindow::handleKeyDown(int key) {
 	m_Implementation->getEventQueue()->keyPress(key);
 }
 
-void csp::layout::OsgGraphicsWindow::handleKeyUp(int key) {
+void OsgGraphicsWindow::handleKeyUp(int key) {
 	m_Implementation->getEventQueue()->keyRelease(key);
 }
 
-void csp::layout::OsgGraphicsWindow::handleMouseMotion(int x, int y) {
+void OsgGraphicsWindow::handleMouseMotion(int x, int y) {
 	m_Implementation->getEventQueue()->mouseMotion(x, y);
 }
 
-void csp::layout::OsgGraphicsWindow::handleMouseButtonDown(int x, int y, int button) {
+void OsgGraphicsWindow::handleMouseButtonDown(int x, int y, int button) {
 	m_Implementation->getEventQueue()->mouseButtonPress(x, y, button);
 }
 
-void csp::layout::OsgGraphicsWindow::handleMouseButtonUp(int x, int y, int button) {
+void OsgGraphicsWindow::handleMouseButtonUp(int x, int y, int button) {
 	m_Implementation->getEventQueue()->mouseButtonRelease(x, y, button);
 }
 
-std::string csp::layout::OsgGraphicsWindow::getTrackballInformation() {
+std::string OsgGraphicsWindow::getTrackballInformation() {
 	osgGA::TrackballManipulator* manipulator = dynamic_cast<osgGA::TrackballManipulator*>(m_Implementation->m_Viewer->getCameraManipulator());
 
 	std::stringstream stream;
@@ -167,12 +163,17 @@ std::string csp::layout::OsgGraphicsWindow::getTrackballInformation() {
 	return stream.str();
 }
 
-void csp::layout::OsgGraphicsWindow::moveCameraToHome() {
-	m_Implementation->m_Manipulator->setCenter(osg::Vec3(0, 0, 0));
-	m_Implementation->m_Manipulator->setDistance(700);
-	m_Implementation->m_Manipulator->setRotation(osg::Quat(0, 0, 0, 1));
+osg::ref_ptr<osgGA::TrackballManipulator> OsgGraphicsWindow::getManipulator() {
+	return m_Implementation->m_Manipulator;
 }
 
-csp::layout::FeatureGraph* csp::layout::OsgGraphicsWindow::graph() {
-	return m_Implementation->m_Scene->graph();
+osg::ref_ptr<osg::Node> OsgGraphicsWindow::getSceneData() {
+	return m_Implementation->m_Viewer->getSceneData();
 }
+
+void OsgGraphicsWindow::setSceneData(osg::Node* node) {
+	m_Implementation->m_Viewer->setSceneData(node);
+}
+
+} // namespace layout
+} // namespace csp

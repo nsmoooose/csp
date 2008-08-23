@@ -28,11 +28,13 @@
 #include <csp/csplib/util/Signal.h>
 #include <csp/tools/layout2/cpp/Scene.h>
 
+namespace osgGA {
+	class TrackballManipulator;
+}
+
 namespace csp {
 namespace layout {
 
-class FeatureGraph;
-	
 /* This is a graphical window that we can draw 3D into. It is called
 from a wxPython window (wx.glcanvas.GLCanvas inherited class). This 
 makes it possible to integrate wxPython and open scene graph. */
@@ -65,11 +67,13 @@ public:
 	void handleMouseButtonDown(int x, int y, int button);
 	void handleMouseButtonUp(int x, int y, int button);
 
-	std::string getTrackballInformation();
-	
-	void moveCameraToHome();
+	virtual std::string getTrackballInformation();
 
-	FeatureGraph* graph();
+protected:
+	virtual osg::ref_ptr<osgGA::TrackballManipulator> getManipulator();
+
+	osg::ref_ptr<osg::Node> getSceneData();
+	void setSceneData(osg::Node* node);	
 
 private:
 	class Implementation;
@@ -78,6 +82,5 @@ private:
 
 } // namespace layout
 } // namespace csp
-
 
 #endif // __CSP_LAYOUT_SCENEGRAPHICSWINDOW_H__

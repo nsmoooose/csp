@@ -56,7 +56,12 @@ class ProjectTree(wx.TreeCtrl):
 			selection = self.baseDirectory
 			for item in items:
 				selection = os.path.join(selection, item)
-			return selection
+
+			# Sometimes this will be unicode strings. We avoid this
+			# by converting back to strings. The reason is that our
+			# current swig binding doesn't handle the unicode
+			# character set.
+			return str(selection)
 	
 	def SetOpenCommand(self, command):
 		self.openCommand = command

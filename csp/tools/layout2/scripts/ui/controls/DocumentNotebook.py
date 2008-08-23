@@ -6,6 +6,7 @@ from csp.tools.layout2.scripts.document.OutputDocument import OutputDocument
 from csp.tools.layout2.scripts.document.ModelDocument import ModelDocument
 from csp.tools.layout2.scripts.document.SceneDocument import SceneDocument
 from ImageWindow import ImageWindow
+from ModelWindow import ModelWindow
 from OutputWindow import OutputWindow
 from SceneWindow import SceneWindow
 
@@ -58,7 +59,9 @@ class DocumentNotebook(wx.Notebook):
 			page.SetDocument(document)
 			self.AddPage(page, document.GetName(), True)
 		elif isinstance(document, ModelDocument):
-			pass
+			page = ModelWindow(self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.BORDER_NONE, "GLCanvas", 0, wx.NullPalette)
+			page.SetDocument(document)
+			self.AddPage(page, document.GetName(), True)
 		elif isinstance(document, ImageDocument):
 			page = ImageWindow(self, wx.ID_ANY)
 			page.SetDocument(document)

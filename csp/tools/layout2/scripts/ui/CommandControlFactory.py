@@ -14,9 +14,12 @@ class CommandControlFactory:
 		self.controlIdGenerator = controlIdGenerator
 
 	def GenerateMenuItems(self, parent, commands):
+		"""Creates a menu with all the commands specified in the commands array.
+		A None value in the array means that we want to add a separator."""
 		menu = wx.Menu()
 		for command in commands:
-			if command == None:
+			# Add a separator if the command is equal to None
+			if command is None:
 				menu.AppendSeparator()
 				continue
 			instance = command()
@@ -28,7 +31,14 @@ class CommandControlFactory:
 		return menu
 
 	def GenerateToolBarButtons(self, parent, toolbar, commands):
+		"""Creates a toolbar with all the commands specified in the commands array.
+		A None value in the array means that we want to add a separator."""
 		for command in commands:
+			# Add a separator if the command is equal to None
+			if command is None:
+				toolbar.AddSeparator()
+				continue
+
 			instance = command()
 			bitmap1 = wx.BitmapFromImage(wx.Image(os.path.join("images", instance.GetToolBarImageName())))
 			bitmap2 = wx.BitmapFromImage(wx.Image(os.path.join("images", instance.GetToolBarImageName())))

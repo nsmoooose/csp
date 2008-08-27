@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import os.path
 import wx
 from FileCommand import FileCommand
 from csp.tools.layout2.scripts.document.ModelDocument import ModelDocument
@@ -34,6 +35,6 @@ class OpenOsgModelFileCommand(FileCommand):
         # Create a document and add the root node to it. This will in
         # turn signal the document added signal that is caught in the gui.
         # This will create a 3D view.
-        document = ModelDocument(fileName)
+        document = ModelDocument(os.path.basename(fileName))
         document.SetFileName(fileName)
         application.GetDocumentRegistry().Add(document)

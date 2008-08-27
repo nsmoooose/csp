@@ -17,6 +17,13 @@ from commands.OpenSelectedFileCommand import OpenSelectedFileCommand
 from commands.QuitCommand import QuitCommand
 from commands.ReCompileDataArchiveCommand import ReCompileDataArchiveCommand
 
+from commands.PanDownCommand import PanDownCommand
+from commands.PanLeftCommand import PanLeftCommand
+from commands.PanRightCommand import PanRightCommand
+from commands.PanUpCommand import PanUpCommand
+from commands.ZoomInCommand import ZoomInCommand
+from commands.ZoomOutCommand import ZoomOutCommand
+
 class MainFrame(wx.Frame):
 	"""This is the top window that contains all controls used by the layout editor.
 	It contains the main menu, toolbar, tree control and the rendered scene.
@@ -45,9 +52,9 @@ class MainFrame(wx.Frame):
 		controlFactory = CommandControlFactory(self.controlIdGenerator)
 
 		fileMenuCommands = [CloseCurrentDocumentCommand, None, QuitCommand]
-		viewMenuCommands = [MoveCameraToHomeCommand]
+		viewMenuCommands = [MoveCameraToHomeCommand, None, ZoomInCommand, ZoomOutCommand, None, PanDownCommand, PanLeftCommand, PanRightCommand, PanUpCommand]
 		toolsMenuCommands = [ReCompileDataArchiveCommand]
-		toolbarCommands = [OpenSelectedFileCommand, CloseCurrentDocumentCommand, MoveCameraToHomeCommand, ReCompileDataArchiveCommand]
+		toolbarCommands = [OpenSelectedFileCommand, CloseCurrentDocumentCommand, MoveCameraToHomeCommand, ReCompileDataArchiveCommand, None, ZoomInCommand, ZoomOutCommand, None, PanDownCommand, PanLeftCommand, PanRightCommand, PanUpCommand]
 
 		# Menu items.
 		menuBar = wx.MenuBar()

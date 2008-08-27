@@ -56,9 +56,15 @@ class DocumentRegistry:
 		
 	def SetCurrentDocument(self, document):
 		"""Changes the current document to the specified one."""
+
+		# Make sure that there is a document change at all. Compare 
+		# with the existing document.
+		if document is self.currentDocument:
+			return
+
 		self.currentDocument = document
 		self.currentDocumentChangedSignal.Emit(document)
-		
+
 	def GetCurrentDocument(self):
 		return self.currentDocument
 

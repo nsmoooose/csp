@@ -38,3 +38,4 @@ class OpenImageFileCommand(FileCommand):
         document = ImageDocument(os.path.basename(fileName))
 	document.SetFileName(fileName)
         application.GetDocumentRegistry().Add(document)
+	application.GetDocumentRegistry().SetCurrentDocument(document)

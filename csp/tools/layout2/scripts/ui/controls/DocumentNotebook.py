@@ -42,7 +42,14 @@ class DocumentNotebook(wx.Notebook):
 			self.documentAdded_Signal(document)
 			
 	def on_PageChanged(self, event):
-		pass
+		application = wx.GetApp()
+		documentRegistry = application.GetDocumentRegistry()
+
+		currentPage = self.GetCurrentPage()
+		if currentPage is None:
+			return
+
+		documentRegistry.SetCurrentDocument(currentPage.GetDocument())
 		
 	def documentAdded_Signal(self, document):
 		# Depending on instance type of the document we choose
@@ -53,21 +60,21 @@ class DocumentNotebook(wx.Notebook):
 			# scene.
 			page = SceneWindow(self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.BORDER_NONE, "GLCanvas", 0, wx.NullPalette)
 			page.SetDocument(document)
-			self.AddPage(page, document.GetName(), True)
+			self.AddPage(page, document.GetName())
 		elif isinstance(document, OutputDocument):
 			# Add simple text output window to handle any kind of 
 			# tool output.
 			page = OutputWindow(self, wx.ID_ANY)
 			page.SetDocument(document)
-			self.AddPage(page, document.GetName(), True)
+			self.AddPage(page, document.GetName())
 		elif isinstance(document, ModelDocument):
 			page = ModelWindow(self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.BORDER_NONE, "GLCanvas", 0, wx.NullPalette)
 			page.SetDocument(document)
-			self.AddPage(page, document.GetName(), True)
+			self.AddPage(page, document.GetName())
 		elif isinstance(document, ImageDocument):
 			page = ImageWindow(self, wx.ID_ANY)
 			page.SetDocument(document)
-			self.AddPage(page, document.GetName(), True)
+			self.AddPage(page, document.GetName())
 		
 	def documentClosed_Signal(self, document):
 		# We need to remove the page that is responsible for
@@ -87,7 +94,7 @@ class DocumentNotebook(wx.Notebook):
 		# Lets change current active page.
 		pageCount = self.GetPageCount()
 		
-		# Make sure that we closes the page that is assigned the
+		# Make sure that we changes the page that is assigned the
 		# document.
 		for pageIndex in range(pageCount):
 			page = self.GetPage(pageIndex)

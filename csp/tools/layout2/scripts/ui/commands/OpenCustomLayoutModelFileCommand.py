@@ -71,6 +71,7 @@ class OpenCustomLayoutModelFileCommand(FileCommand):
 		document = SceneDocument('Scene')
 		document.SetRootNode(node)
 		application.GetDocumentRegistry().Add(document)
+		application.GetDocumentRegistry().SetCurrentDocument(document)
 		
 		node.thisown = 0
 		return 1

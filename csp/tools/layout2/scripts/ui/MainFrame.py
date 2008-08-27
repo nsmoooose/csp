@@ -80,6 +80,7 @@ class MainFrame(wx.Frame):
 		splitter1 = wx.SplitterWindow(self, wx.ID_ANY)
 		propertyNotebook = wx.Notebook(splitter1, wx.ID_ANY, style=wx.NB_TOP)
 		documentNotebook = DocumentNotebook(splitter1, wx.ID_ANY)
+		DocumentNotebook.Instance = documentNotebook
 		splitter1.SplitVertically(propertyNotebook, documentNotebook, 200)
 
 		# Add the first document to this window.
@@ -98,9 +99,6 @@ class MainFrame(wx.Frame):
 
 		propertyNotebook.AddPage(projectTreePage, "Project")
 		
-		# Store some variables for later use
-		self.scene = None
-
 		# Connect idle event.
 		wx.EVT_IDLE(self, self.on_Idle)
 		self.Bind(wx.EVT_CLOSE, self.on_Close)
@@ -124,6 +122,3 @@ class MainFrame(wx.Frame):
 		
 		# Destroy the window
 		self.Destroy()
-		
-	def GetSceneWindow(self):
-		return self.scene

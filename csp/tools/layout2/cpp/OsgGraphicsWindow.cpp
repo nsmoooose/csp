@@ -175,5 +175,33 @@ void OsgGraphicsWindow::setSceneData(osg::Node* node) {
 	m_Implementation->m_Viewer->setSceneData(node);
 }
 
+void OsgGraphicsWindow::zoomOut(double distance) {
+	osg::ref_ptr<osgGA::TrackballManipulator> manipulator = getManipulator();
+	if(!manipulator.valid()) {
+		return;
+	}
+	manipulator->setDistance(manipulator->getDistance() + distance);
+}
+
+void OsgGraphicsWindow::zoomIn(double distance) {
+	osg::ref_ptr<osgGA::TrackballManipulator> manipulator = getManipulator();
+	if(!manipulator.valid()) {
+		return;
+	}
+	manipulator->setDistance(manipulator->getDistance() - distance);
+}
+
+void OsgGraphicsWindow::panLeft(double /*distance*/) {
+}
+
+void OsgGraphicsWindow::panRight(double /*distance*/) {
+}
+
+void OsgGraphicsWindow::panUp(double /*distance*/) {
+}
+
+void OsgGraphicsWindow::panDown(double /*distance*/) {
+}
+
 } // namespace layout
 } // namespace csp

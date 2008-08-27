@@ -23,3 +23,6 @@ class SceneWindow(GraphicsWindow):
 	def SetDocument(self, document):
 		GraphicsWindow.SetDocument(self, document)
 		self.GetGraphicsWindow().graph().setRoot(document.GetRootNode())
+
+	def MoveCameraToHome(self):
+		self.GetGraphicsWindow().moveCameraToHome()

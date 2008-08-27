@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import dumbdbm
 import os.path
+import locale
 import wx
 import shelve
 
@@ -22,6 +23,10 @@ class LayoutApplication(wx.App):
 
 	def OnInit(self):
 		"""wxWindows calls this method to initialize the application."""
+
+		# Change the default language of the application to english.
+		loc = wx.Locale(wx.LANGUAGE_ENGLISH)
+		locale.setlocale(locale.LC_ALL, 'en_US')
 
 		# Create the idle signal that you can connect to for
 		# idle processing.

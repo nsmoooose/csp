@@ -67,6 +67,13 @@ public:
 	void handleMouseButtonDown(int x, int y, int button);
 	void handleMouseButtonUp(int x, int y, int button);
 
+	void zoomOut(double distance);
+	void zoomIn(double distance);
+	void panLeft(double distance);
+	void panRight(double distance);
+	void panUp(double distance);
+	void panDown(double distance);
+
 	virtual std::string getTrackballInformation();
 
 protected:

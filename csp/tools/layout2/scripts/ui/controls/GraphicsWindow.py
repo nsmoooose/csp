@@ -44,6 +44,27 @@ class GraphicsWindow(wx.glcanvas.GLCanvas):
 		
 	def SetDocument(self, document):
 		self.document = document
+
+
+	def ZoomIn(self, distance):
+		self.graphicsWindow.zoomIn(distance)
+
+	def ZoomOut(self, distance):
+		self.graphicsWindow.zoomOut(distance)
+
+	def PanLeft(self, distance):
+		self.graphicsWindow.panLeft(distance)
+
+	def PanRight(self, distance):
+		self.graphicsWindow.panRight(distance)
+
+	def PanUp(self, distance):
+		self.graphicsWindow.panUp(distance)
+
+	def PanDown(self, distance):
+		self.graphicsWindow.panDown(distance)
+
+
 		
 	def on_Idle(self, event):
 		# Only render when the scene is visible on screen.

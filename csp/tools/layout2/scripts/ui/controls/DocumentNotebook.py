@@ -20,6 +20,8 @@ class DocumentNotebook(wx.Notebook):
 	order to keep the UI consistent:
 		DocumentAdded, DocumentClosed"""
 
+	Instance = None
+
 	def __init__(self, parent, id):
 		wx.Notebook.__init__(self, parent, id)
 		

@@ -27,6 +27,7 @@ from commands.ZoomInCommand import ZoomInCommand
 from commands.ZoomOutCommand import ZoomOutCommand
 
 from commands.CreateModelXmlFileCommand import CreateModelXmlFileCommand
+from commands.CreateInterfaceInformationDocumentCommand import CreateInterfaceInformationDocumentCommand
 
 class MainFrame(wx.Frame):
 	"""This is the top window that contains all controls used by the layout editor.
@@ -57,7 +58,7 @@ class MainFrame(wx.Frame):
 
 		fileMenuCommands = [OpenSelectedFileCommand, CloseCurrentDocumentCommand, SaveCurrentDocumentCommand, SaveAllDocumentsCommand, None, QuitCommand]
 		viewMenuCommands = [MoveCameraToHomeCommand, None, ZoomInCommand, ZoomOutCommand, None, PanDownCommand, PanLeftCommand, PanRightCommand, PanUpCommand]
-		toolsMenuCommands = [ReCompileDataArchiveCommand, CreateModelXmlFileCommand]
+		toolsMenuCommands = [ReCompileDataArchiveCommand, CreateModelXmlFileCommand, CreateInterfaceInformationDocumentCommand]
 		toolbarCommands = [OpenSelectedFileCommand, SaveCurrentDocumentCommand, CloseCurrentDocumentCommand, None, MoveCameraToHomeCommand, ReCompileDataArchiveCommand, None, ZoomInCommand, ZoomOutCommand, None, PanDownCommand, PanLeftCommand, PanRightCommand, PanUpCommand]
 
 		# Menu items.

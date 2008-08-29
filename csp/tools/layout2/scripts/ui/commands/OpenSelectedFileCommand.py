@@ -13,10 +13,10 @@ class OpenSelectedFileCommand(Command):
 	executing the correct FileCommand."""
 
 	def GetCaption(self):
-		return "Open selected file in project"
+		return "Open selected file in project tree"
 
 	def GetToolTipText(self):
-		return "Open selected file in project"
+		return "Open selected file in project tree"
 
 	def GetToolBarImageName(self):
 		return "document-open.png"

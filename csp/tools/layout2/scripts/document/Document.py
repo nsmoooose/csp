@@ -18,3 +18,12 @@ class Document:
 	def Dispose(self):
 		self.changedSignal.Dispose()
 		self.changedSignal = None
+
+	def IsReadOnly(self):
+		"""Tests to see if the current document is read only or not."""
+		return True
+
+	def Save(self):
+		"""Saves the document. Inheriting classes should implement this
+		method."""
+		pass

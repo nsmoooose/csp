@@ -33,13 +33,14 @@
 #include <csp/csplib/data/GeoPos.h>
 #include <csp/csplib/data/LUT.h>
 #include <csp/csplib/util/Ref.h>
+#include <csp/cspsim/Export.h>
 
 namespace csp {
 
 /** An interface for converting between geospatial coordinates and 2D world
  *  coordinates.
  */
-class Projection: public Referenced {
+class CSPSIM_EXPORT Projection: public Referenced {
 public:
 	typedef Ref<Projection> RefT;
 	typedef Ref<const Projection> CRefT;
@@ -62,7 +63,7 @@ public:
  * origin in the case of a secant plane (distances are true at the
  * origin for a tangent plane).
  */
-class GnomonicProjection: public Projection {
+class CSPSIM_EXPORT GnomonicProjection: public Projection {
 	double m_Lat0, m_Lon0, m_R;
 	double m_S, m_C, m_W;
 
@@ -87,7 +88,7 @@ public:
  * A secant gnomonic projection for a theater, with fast North vector
  * lookups.
  */
-class SecantGnomonicProjection: public GnomonicProjection {
+class CSPSIM_EXPORT SecantGnomonicProjection: public GnomonicProjection {
 	typedef float value_t;
 private:
 	Table2 m_NorthX, m_NorthY;

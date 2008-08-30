@@ -23,7 +23,6 @@
  **/
 
 
-#include <csp/cspsim/DemeterTerrain.h>
 #include <csp/cspsim/Config.h>
 #include <csp/cspsim/Exception.h>
 
@@ -33,7 +32,8 @@
 
 #include <csp/modules/demeter/Terrain.h>
 #include <csp/modules/demeter/DemeterDrawable.h>
-#include <csp/modules/demeter/TerrainTextureFactory.h>
+#include <csp/modules/demeter/TerrainFileTextureFactory.h>
+#include <csp/modules/demeter/DemeterTerrain.h>
 #include <csp/csplib/util/undef.h>
 
 #include <osg/Geode>
@@ -51,6 +51,8 @@ CSP_XML_BEGIN(DemeterTerrain)
 	CSP_DEF("use_texture_factory", m_TextureFactory, false)
 	CSP_DEF("lattice_width", m_LatticeWidth, true)
 	CSP_DEF("lattice_height", m_LatticeHeight, true)
+    CSP_DEF("lattice_tiles_width", m_LatticeTilesWidth, false)
+    CSP_DEF("lattice_tiles_height", m_LatticeTilesHeight, false)
 	CSP_DEF("max_triangles", m_MaxTriangles, true)
 	CSP_DEF("detail_threshold", m_DetailThreshold, true)
 	CSP_DEF("vertex_height", m_VertexHeight, true)
@@ -60,6 +62,7 @@ CSP_XML_BEGIN(DemeterTerrain)
 	CSP_DEF("preload_textures", m_PreloadTextures, false)
 	CSP_DEF("lattice", m_Lattice, true)
 	CSP_DEF("test", m_ScreenHeight, false)
+    CSP_DEF("use_file_texture_factory", m_UseFileTextureFactory, false)
 CSP_XML_END
 
 
@@ -98,6 +101,8 @@ DemeterTerrain::DemeterTerrain() {
 	m_LatticeTexExt = "";
 	m_LatticeWidth = 0;
 	m_LatticeHeight = 0;
+    m_LatticeTilesWidth = 2;
+    m_LatticeTilesHeight = 2;
 
 	// arbitrary default
 	m_ScreenWidth = 1280;
@@ -288,7 +293,7 @@ int DemeterTerrain::createTerrainLattice() {
 
 	m_TerrainLattice = new Demeter::TerrainLattice(m_LatticeBaseName.c_str(),
 	                                               m_LatticeElevExt.c_str(), /*m_LatticeTexExt.c_str() */ NULL,
-	                                               m_DetailTextureFile.getSource().c_str(),
+	                                               m_DetailTextureFile.empty() ? NULL : m_DetailTextureFile.getSource().c_str(),
 	                                               m_VertexSpacing, m_VertexHeight, m_MaxTriangles,
 	                                               //NULL, m_VertexSpacing, m_VertexHeight, m_MaxTriangles,
 	                                               true, m_LatticeWidth, m_LatticeHeight);
@@ -296,9 +301,13 @@ int DemeterTerrain::createTerrainLattice() {
 	// just to catch your attention ;-)  it may be ok to just delete any
 	// pre-existing terraintexturefactory.
 	assert(!m_TerrainTextureFactory);
-	m_TerrainTextureFactory = new Demeter::TerrainTextureFactory();
+	if ( m_UseFileTextureFactory ) {
+        m_TerrainTextureFactory = new Demeter::TerrainFileTextureFactory(m_LatticeBaseName, m_LatticeTexExt);
+    } else {
+        m_TerrainTextureFactory = new Demeter::TerrainTextureFactory();
+    }
 	m_TerrainTextureFactory->SetTerrainLattice(m_TerrainLattice.get());
-	m_TerrainLattice->SetTextureFactory(m_TerrainTextureFactory, 2, 2);
+	m_TerrainLattice->SetTextureFactory(m_TerrainTextureFactory, m_LatticeTilesWidth, m_LatticeTilesHeight);
 
 	m_TerrainLattice->SetDetailThreshold(m_DetailThreshold);
 	CSPLOG(DEBUG, TERRAIN) << "Terrain size: " << m_TerrainLattice->GetWidth() << "(" << m_Width << "), " << m_TerrainLattice->GetHeight() << "(" << m_Height << ")";

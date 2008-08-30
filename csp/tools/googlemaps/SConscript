@@ -1,6 +1,6 @@
 # -*-python-*-
 #
-# Copyright 2004-2005 Mark Rose <mkrose@users.sourceforge.net>
+# Copyright 2003-2005 Mark Rose <mkrose@users.sourceforge.net>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -18,20 +18,19 @@
 
 Import('env build')
 
-env = env.Clone()
-env.AppendUnique(CPPDEFINES=Split('TERRAIN_EXPORTS'))
-
 build.SharedLibrary(env,
-	name = 'demeter',
+	name = 'googlemaps_module',
 	sources = [
-		'DemeterDrawable.cpp',
-		'DemeterTerrain.cpp',
-		'Terrain.cpp',
-		'TerrainTextureFactory.cpp',
-        'TerrainFileTextureFactory.cpp',
+		'googlemaps.i',
+		'cpp/TextureImageGenerator.cpp',
+		'cpp/TextureImageGenerator.h',
+		'cpp/Progress.cpp',
+		'cpp/Progress.h',
+		'cpp/Projection.cpp',
+		'cpp/Projection.h',
+		'cpp/Pixel.cpp',
+		'cpp/Pixel.h',
 	],
-	deps = ['cspsim'],
-	aliases = 'all',
-	SHLIBPREFIX='')
-
-
+	deps = ['osg', 'csplib', 'cspsim'],
+	aliases = 'googlemaps',
+	SHLIBPREFIX = '_')

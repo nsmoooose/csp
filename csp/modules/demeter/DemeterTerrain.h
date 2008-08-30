@@ -100,10 +100,13 @@ protected:
 	std::string m_LatticeTexExt;
 	int m_LatticeWidth;
 	int m_LatticeHeight;
+    int m_LatticeTilesWidth;
+    int m_LatticeTilesHeight;
 	Vector3 m_Offset;
 	float m_CellWidth, m_CellHeight;
 	int m_ScreenWidth;
 	int m_ScreenHeight;
+    bool m_UseFileTextureFactory;
 
 protected:
 	virtual void postCreate();

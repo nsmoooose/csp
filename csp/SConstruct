@@ -34,6 +34,7 @@ PACKAGES = [
 	'tools/canopy',
 	'tools/layout',
 	'tools/layout2',
+	'tools/googlemaps',
 ]
 
 build.ExternalLibrary(
@@ -117,6 +118,7 @@ class Environment(build.Environment):
 	  scons indexserver      build the master server needed for multiplayer
 	  scons layout           build the theater layout tool version 1
 	  scons layout2          build the theater layout tool version 2
+	  scons googlemaps       build the googlemaps tool
 
 	  scons dox              generate doxygen documentation
 

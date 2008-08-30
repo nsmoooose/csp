@@ -11,7 +11,9 @@
 	<Int name="lattice">1</Int>
 	<Int name="lattice_width">16</Int>
 	<Int name="lattice_height">16</Int>
-	<External name="detail_texture_file">Stone4.bmp</External>
+    <Int name="lattice_tiles_width">2</Int>
+    <Int name="lattice_tiles_height">2</Int>
+	<External name="detail_texture_file"></External>
 	<String name="lattice_basename">balkanMap</String>
 	<String name="lattice_elevation_extension">bmp</String>
 	<String name="lattice_texture_extension">bmp</String>
@@ -24,5 +26,6 @@
 	<Float name="width">1024000</Float>
 	<Float name="height">1024000</Float>
 	<String name="shader">terrain-demeter</String>
+    <Int name="use_file_texture_factory">1</Int>
 </Object>
 

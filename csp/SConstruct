@@ -138,10 +138,15 @@ class Environment(build.Environment):
 		env.Replace(SWIGINCLUDES=self.INCLUDE)
 
 	def customize_win(self, env):
+		# The following compiler warnings has been disabled:
+		# warning C4251: 'X' : struct 'Y' needs to have dll-interface to be used by clients of class 'Z' 
+		# warning C4275: non dll-interface class 'X' used as base for dll-interface class 'Y'
+		# warning C4290: C++ exception specification ignored except to indicate a function is not __declspec(nothrow)
+	
 		debug = ARGUMENTS.get('debug', 0)
 		if int(debug) == 0:
 			print('Building release configuration')
-			env.Replace(CXXFLAGS=Split('/GR /MD /O2 /EHsc /W3 /nologo'))
+			env.Replace(CXXFLAGS=Split('/GR /MD /O2 /EHsc /W3 /nologo /wd4251 /wd4275 /wd4290'))
 			env.AppendUnique(CPPDEFINES=Split('WIN32 __WIN32__ _USRDLL _DLL NDEBUG _CRT_SECURE_NO_DEPRECATE _USE_MATH_DEFINES'))
 			env.AppendUnique(LINKFLAGS=Split('/INCREMENTAL:NO /RELEASE /nologo'))
 			env.AppendUnique(SHLINKFLAGS=Split('/INCREMENTAL:NO /RELEASE /nologo'))
@@ -149,7 +154,7 @@ class Environment(build.Environment):
 			env.CopyEnvironment(Split('PATH INCLUDE LIB'))
 		else:
 			print('Building debug configuration')
-			env.Replace(CXXFLAGS=Split('/GR /MD /Zi /EHsc /W3 /nologo'))
+			env.Replace(CXXFLAGS=Split('/GR /MD /Zi /EHsc /W3 /nologo /wd4251 /wd4275 /wd4290'))
 			env.AppendUnique(CPPDEFINES=Split('WIN32 __WIN32__ _USRDLL _DLL NDEBUG _CRT_SECURE_NO_DEPRECATE _USE_MATH_DEFINES'))
 			env.AppendUnique(LINKFLAGS=Split('/INCREMENTAL:NO /DEBUG /nologo'))
 			env.AppendUnique(SHLINKFLAGS=Split('/INCREMENTAL:NO /DEBUG /nologo'))

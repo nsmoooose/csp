@@ -16,11 +16,6 @@
 *  THE SOFTWARE.
 */
 
-#pragma comment(lib, "osg")
-#pragma comment(lib, "osgDB")
-#pragma comment(lib, "osgGA")
-#pragma comment(lib, "osgViewer")
-
 #include <iostream>
 
 #include <osg/Node>
@@ -41,13 +36,14 @@
 #include <osgViewer/Viewer>
 #include <osgViewer/ViewerEventHandlers>
 
-#include "CloudBox.h"
-#include "CloudMath.h"
-#include "CloudRegistry.h"
+#include <csp/cspsim/ObjectModel.h>
+#include <csp/cspsim/weather/clouds/CloudBox.h>
+#include <csp/cspsim/weather/clouds/CloudMath.h>
+#include <csp/cspsim/weather/clouds/CloudRegistry.h>
 
 typedef std::vector< osg::ref_ptr<osg::Image> > ImageList;
 
-using namespace csp::clouds;
+using namespace csp::weather::clouds;
 
 /** create quad at specified position. */
 osg::Drawable* createSquare(const osg::Vec3& corner,const osg::Vec3& width,const osg::Vec3& height)
@@ -228,6 +224,9 @@ private:
 };
 
 int main(int, char**) {
+	std::string search_path = "./data/images/";
+	csp::ObjectModel::setDataFilePathList(search_path);
+
 	/* Ellipsoid tests. */
 	Assert::IsFalse(CloudMath::InsideEllipsoid(osg::Vec3(1, 1, 1), osg::Vec3(0.5, 0.5, 0.5)), "Point shall be outside of sphere");
 	Assert::IsFalse(CloudMath::InsideEllipsoid(osg::Vec3(1, 0, 0), osg::Vec3(0.5, 0.5, 0.5)), "Point shall be outside of sphere");

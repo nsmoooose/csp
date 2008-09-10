@@ -35,6 +35,7 @@ PACKAGES = [
 	'tools/layout',
 	'tools/layout2',
 	'tools/googlemaps',
+	'tools/cloud_prototype',
 ]
 
 build.ExternalLibrary(

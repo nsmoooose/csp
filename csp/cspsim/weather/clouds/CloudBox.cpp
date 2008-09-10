@@ -123,7 +123,7 @@ osg::ref_ptr<osg::Geometry> CloudBox::CreateCloudSprite(const float& alpha, cons
 	geometry->addPrimitiveSet(new osg::DrawArrays(GL_QUADS, 0, 4));
 
 	osg::ref_ptr<osg::StateSet> stateset = new osg::StateSet;
-	osg::ref_ptr<osg::Texture2D> texture = CloudTextureFactory::Instance()->getTexture("cloud_texture02.png");
+	osg::ref_ptr<osg::Texture2D> texture = CloudTextureFactory::Instance()->getTexture("weather/clouds/cloud_texture02.png");
 	stateset->setTextureAttributeAndModes(0, texture.get(), osg::StateAttribute::ON);
 	geometry->setStateSet(stateset.get());
 

@@ -28,7 +28,8 @@
 
 %include "std_string.i"
 
-%feature("pythonappend") csp::googlemaps::MercatorProjection %{
+%extend csp::googlemaps::MercatorProjection {
+%pythoncode %{
     zoomLevels = range(zoomLevelBegin, zoomLevelEnd)
     
     def tileUrl(self, tile, googlemapsServer):
@@ -37,6 +38,7 @@
         fileName = urlSuffix + ".jpg"
         return url, fileName
 %}
+};
 
 %ignore csp::googlemaps::MercatorTilePixel::MercatorTilePixel( std::div_t const & column, std::div_t const & row );
 

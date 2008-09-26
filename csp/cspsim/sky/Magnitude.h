@@ -21,9 +21,9 @@
 
 #include <csp/csplib/util/Referenced.h>
 #include <csp/csplib/data/Vector3.h>
+#include <csp/cspsim/Export.h>
 
 namespace csp {
-
 
 /** Interface for functions that compute the magnitude of a celestial
  *  body as a function of its heliocentric and geocentric distances and
@@ -31,7 +31,7 @@ namespace csp {
  *  Schlyter (http://www.stjarnhimlen.se/comp/ppcomp.html) for details
  *  on computing the phase angle.
  */
-class MagnitudeFunction: public Referenced {
+class CSPSIM_EXPORT MagnitudeFunction: public Referenced {
 public:
 	virtual ~MagnitudeFunction();
 
@@ -40,12 +40,11 @@ public:
 	virtual double compute(double sun_body_distance, double body_observer_distance, double phase_angle) const = 0;
 };
 
-
 /** Compute the apparent magnitude of a celestial body using a polynomial
  *  approximation of the phase integral.  Terms up to the fourth power of
  *  the phase angle are included.
  */
-class PolynomialReflector: public MagnitudeFunction {
+class CSPSIM_EXPORT PolynomialReflector: public MagnitudeFunction {
 public:
 	PolynomialReflector(double absolute_magnitude, double phase1, double phase2=0.0, double phase3=0.0, double phase4=0.0):
 		m_AbsoluteMagnitude(absolute_magnitude),
@@ -69,7 +68,7 @@ private:
 /** Function for the apparent magnitude of a diffuse reflecting sphere.
  *  See http://en.wikipedia.org/wiki/Absolute_magnitude.
  */
-class DiffuseReflector: public MagnitudeFunction {
+class CSPSIM_EXPORT DiffuseReflector: public MagnitudeFunction {
 public:
 	/** Initialize the function with the absolute magnitude of the body.
 	 *  This is the apparent magnitude the body would have if it were
@@ -88,7 +87,6 @@ public:
 private:
 	double m_AbsoluteMagnitude;
 };
-
 
 } // namespace csp
 

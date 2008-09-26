@@ -21,6 +21,7 @@
 
 #include <csp/csplib/util/Ref.h>
 #include <csp/csplib/data/Vector3.h>
+#include <csp/cspsim/Export.h>
 #include <osg/MatrixTransform>
 
 namespace csp {
@@ -35,7 +36,7 @@ class Sky;
  *  of the observer is handled externally using a common transform for
  *  all models.
  */
-class OrbitalBodyModel: public Referenced {
+class CSPSIM_EXPORT OrbitalBodyModel: public Referenced {
 public:
 	OrbitalBodyModel(OrbitalBodyImposter *imposter, double minimum_visible_angle, OrbitalBody *body, OrbitalBody *earth, double accuracy=0.01);
 	virtual ~OrbitalBodyModel();

@@ -22,6 +22,7 @@
 #include <osg/Array>
 #include <csp/csplib/util/Referenced.h>
 #include <csp/csplib/util/ScopedPointer.h>
+#include <csp/cspsim/Export.h>
 
 namespace osg { class Geometry; }
 namespace osg { class Image; }
@@ -44,7 +45,7 @@ class SkyShader;
  * SkyShader based on the current sun position.  The osg::Light representing
  * the sun is also managed by this class.
  */
-class SkyDome: public Referenced {
+class CSPSIM_EXPORT SkyDome: public Referenced {
 
 	// The size of the sky dome texture.  Also the number of frame across
 	// which updates are spread.  Assuming 50 fps a 256 pixel texture

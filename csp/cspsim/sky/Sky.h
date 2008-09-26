@@ -63,7 +63,7 @@ class StarDome;
  *  is fairly expensive, so each update is spread out over many subsequent
  *  frames.
  */
-class Sky: public osg::Referenced {
+class CSPSIM_EXPORT Sky: public osg::Referenced {
 public:
 	Sky(double radius=1.0);
 	~Sky();

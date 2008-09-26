@@ -22,15 +22,15 @@
 #include <csp/csplib/util/Ref.h>
 #include <csp/csplib/data/Vector3.h>
 #include <osg/Geode>
+#include <osg/Geometry>
+#include <osg/Texture2D>
 #include <osg/Vec4>
+#include <csp/cspsim/sky/PhaseShader.h>
 
-namespace osg { class Geometry; }
 namespace osg { class Image; }
 namespace osg { class Texture2D; }
 
 namespace csp {
-
-class PhaseShader;
 
 /** 2D imposter for images of celestial bodies.  Supports tinting the
  *  images to simulate atmospheric scattering at low elevation, and
@@ -41,7 +41,7 @@ class PhaseShader;
  *  in the daytime sky is nearly transparent on the dark side, so
  *  that only the sky color is visible.
  */
-class OrbitalBodyImposter: public osg::Geode {
+class CSPSIM_EXPORT OrbitalBodyImposter: public osg::Geode {
 public:
 	/** Construct a new imposter.
 	 *

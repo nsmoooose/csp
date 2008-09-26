@@ -21,6 +21,7 @@
 
 #include <osg/Drawable>
 #include <csp/csplib/util/Ref.h>
+#include <csp/cspsim/Export.h>
 #include <vector>
 
 namespace osg { class Geode; }
@@ -30,7 +31,7 @@ namespace csp {
 // An OSG Drawable that renders a set of stars as points on the
 // surface of a sphere.  The position, color, and magnitude of
 // the stars is hard-coded in an associated header file.
-class StarDome: public osg::Drawable {
+class CSPSIM_EXPORT StarDome: public osg::Drawable {
 	struct Star;
 
 public:

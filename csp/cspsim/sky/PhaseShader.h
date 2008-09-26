@@ -23,6 +23,7 @@
 #include <osg/Vec3>
 
 #include <csp/csplib/util/Ref.h>
+#include <csp/cspsim/Export.h>
 
 namespace osg { class Image; }
 namespace osg { class NodeCallback; }
@@ -37,7 +38,7 @@ namespace csp {
  *  darkened.  It is expected that the body will be rendered on a
  *  billboard in front of the sky dome.
  */
-class PhaseShader: public Referenced {
+class CSPSIM_EXPORT PhaseShader: public Referenced {
 public:
 	/** Construct a new PhaseShader, optionally setting the source
 	 *  image.  The source image may also be set after construction

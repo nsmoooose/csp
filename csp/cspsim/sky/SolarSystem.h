@@ -23,8 +23,7 @@
 
 namespace csp {
 
-
-class Moon: public OrbitalBody {
+class CSPSIM_EXPORT Moon: public OrbitalBody {
 public:
 	Moon(OrbitalBody *earth);
 
@@ -39,8 +38,7 @@ private:
 	virtual void addPerturbations(OrbitalState const &state, double &lng, double &lat) const;
 };
 
-
-class Planet: public OrbitalBody {
+class CSPSIM_EXPORT Planet: public OrbitalBody {
 public:
 	Planet(
 			std::string const &label,
@@ -64,8 +62,7 @@ private:
 	double m_M0, m_dM;
 };
 
-
-class SolarSystem: public Referenced {
+class CSPSIM_EXPORT SolarSystem: public Referenced {
 public:
 	SolarSystem();
 	void update(double time);
@@ -97,7 +94,6 @@ private:
 	Ref<OrbitalBody> m_Mars;
 	Ref<OrbitalBody> m_Venus;
 };
-
 
 } // namespace csp
 

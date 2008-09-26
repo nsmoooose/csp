@@ -21,13 +21,13 @@
 
 #include <csp/csplib/util/Ref.h>
 #include <csp/csplib/data/Vector3.h>
+#include <csp/cspsim/Export.h>
 
 #include <string>
 
 namespace csp {
 
 class MagnitudeFunction;
-
 
 /** Base class for planets and moons.  Subclasses need to implement one or
  *  two virtual methods to define the base orbit and perturbations to that
@@ -40,7 +40,7 @@ class MagnitudeFunction;
  *  @see OrbitalBodyModel
  *  @see Sky
  */
-class OrbitalBody: public Referenced {
+class CSPSIM_EXPORT OrbitalBody: public Referenced {
 public:
 	static const double cG;  // gravitational constant (Nm^2/kg^2)
 	static const double cMs;  // mass of the sun (kg)
@@ -262,7 +262,6 @@ private:
 	 */
 	virtual void addPerturbations(OrbitalState const &state, double &ecliptic_longitude, double &ecliptic_latitude) const;
 };
-
 
 } // namespace csp
 

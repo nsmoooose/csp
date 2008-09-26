@@ -19,6 +19,7 @@
 #ifndef __CSP_CSPSIM_SKY_SKYSHADER_H__
 #define __CSP_CSPSIM_SKY_SKYSHADER_H__
 
+#include <csp/cspsim/Export.h>
 #include <csp/cspsim/sky/Colorspace.h>
 
 namespace csp {
@@ -27,7 +28,7 @@ namespace csp {
  *  "A Practical Analytic Model for Daylight" by A. J. Preetham,
  *  P. Shirley, and B. Smits.
  */
-class SkyShader {
+class CSPSIM_EXPORT SkyShader {
 public:
 	SkyShader();
 

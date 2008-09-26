@@ -1,6 +1,7 @@
 #ifndef __CSPSIM_CLOUDS_CLOUDBOX_H__
 #define __CSPSIM_CLOUDS_CLOUDBOX_H__
 
+#include <csp/cspsim/Export.h>
 #include <osg/Billboard>
 #include <osg/Geometry>
 #include <osg/LOD>
@@ -25,7 +26,7 @@ At the bottom or at the top. The threshold for each color level is a value betwe
 
 Opacity levels controls alpha value depending on distance from center of cloud. The
 threshold is a value between 0 and 1.0. */
-class CloudBox : public osg::LOD
+class CSPSIM_EXPORT CloudBox : public osg::LOD
 {
 public:
 	typedef std::pair<float, osg::Vec3> ColorLevel;

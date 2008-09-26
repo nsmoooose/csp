@@ -1,6 +1,7 @@
 #ifndef __CSPSIM_CLOUDS_CLOUDTEXTUREFACTORY_H__
 #define __CSPSIM_CLOUDS_CLOUDTEXTUREFACTORY_H__
 
+#include <csp/cspsim/Export.h>
 #include <osg/ref_ptr>
 #include <osg/Texture2D>
 
@@ -11,7 +12,7 @@ namespace clouds {
 /* This class holds cloud textures with the filename of the texture
 as a key. This singleton will keep all textures in memory until the
 Reset method is called. */
-class CloudTextureFactory
+class CSPSIM_EXPORT CloudTextureFactory
 {
 public:
 	static CloudTextureFactory* Instance();

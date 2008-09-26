@@ -1,6 +1,7 @@
 #ifndef __CSPSIM_CLOUDS_CLOUD_H__
 #define __CSPSIM_CLOUDS_CLOUD_H__
 
+#include <csp/cspsim/Export.h>
 #include <osg/Group>
 
 namespace csp {
@@ -9,7 +10,7 @@ namespace clouds {
 
 /* A cloud is a group of cloud boxes. Each cloud box contains several cloud sprites.
 Together these forms a single cloud. */
-class Cloud : public osg::Group
+class CSPSIM_EXPORT Cloud : public osg::Group
 {
 public:
 	Cloud(void);

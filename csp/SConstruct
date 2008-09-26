@@ -32,11 +32,11 @@ PACKAGES = [
 	'cspwf',
 	'modules',
 	'examples/sky',
+	'examples/clouds',
 	'tools/canopy',
 	'tools/layout',
 	'tools/layout2',
 	'tools/googlemaps',
-	'tools/cloud_prototype',
 ]
 
 build.ExternalLibrary(

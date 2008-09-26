@@ -4,6 +4,7 @@ import os.path
 import locale
 import wx
 import shelve
+import sys
 
 from csp.base.signals import Signal
 from csp.tools.layout2.layout_module import *
@@ -24,9 +25,13 @@ class LayoutApplication(wx.App):
 	def OnInit(self):
 		"""wxWindows calls this method to initialize the application."""
 
-		# Change the default language of the application to english.
-		loc = wx.Locale(wx.LANGUAGE_ENGLISH)
-		locale.setlocale(locale.LC_ALL, 'en_US')
+		if sys.platform == "linux2":
+			# Change the default language of the application to english.
+			loc = wx.Locale(wx.LANGUAGE_ENGLISH)
+			locale.setlocale(locale.LC_ALL, 'en_US')
+		elif sys.platform == "win32":
+			# Locale names is different in windows. What to use?
+			pass
 
 		# Create the idle signal that you can connect to for
 		# idle processing.

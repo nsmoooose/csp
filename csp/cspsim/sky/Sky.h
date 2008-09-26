@@ -96,7 +96,7 @@ public:
 	 *  local coordinate transformation due to rotation of the Earth, the
 	 *  sky dome, the star dome, and the planets.
 	 */
-	void update(double time);
+	void update(double time, bool forceFullUpdate = false);
 
 	/** Get the root scene graph node of the view.
 	 */

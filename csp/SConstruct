@@ -31,6 +31,7 @@ PACKAGES = [
 	'cspsim',
 	'cspwf',
 	'modules',
+	'examples/sky',
 	'tools/canopy',
 	'tools/layout',
 	'tools/layout2',
@@ -128,6 +129,8 @@ class Environment(build.Environment):
 	  scons tests            build all unittests
 	  scons runtests         build and run all unittests
 	  scons csplib.runtests  build and run all unittests in csplib
+
+	  scons examples         build all examples
 	"""
 
 	INCLUDE = ['#/..', build.GetPythonInclude()]

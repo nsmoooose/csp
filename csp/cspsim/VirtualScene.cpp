@@ -203,27 +203,6 @@ private:
 	osg::ref_ptr<Sky> m_Sky;
 };
 
-
-class VirtualScene::DynamicObjectCallback: public osg::NodeCallback {
-public:
-	DynamicObjectCallback(DynamicObject *object, SceneState *state):
-			m_Object(object),
-			m_State(state) {
-		assert(object);
-		assert(state);
-	}
-	virtual void operator()(osg::Node* node, osg::NodeVisitor* nv) {
-		if (nv && nv->getVisitorType() == osg::NodeVisitor::UPDATE_VISITOR) {
-			m_Object->updateScene(m_State->getOrigin());  // position relative to camera
-		}
-		traverse(node, nv);
-	}
-private:
-	DynamicObject *m_Object;
-	SceneState *m_State;
-};
-
-
 class VirtualScene::FeatureGroupCallback: public osg::NodeCallback {
 public:
 	//FeatureGroupCallback(FeatureGroup *object, SceneState *state):

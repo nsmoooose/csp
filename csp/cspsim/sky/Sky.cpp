@@ -95,7 +95,11 @@ void Sky::getSunPositionAndSkyMagnitude(double time, double &elevation, double &
 	magnitude = 1.0 / sin(std::max((elevation + toRadians(22.0)), 0.14) * 0.5) - 6.0;
 }
 
-void Sky::update(double time) {
+void Sky::update(double time, bool forceFullUpdate) {
+	if(forceFullUpdate) {
+		m_LastFullUpdate = 0.0;
+	}
+
 	double angle = -PI_2 - MeanSiderealTime(time, m_Longitude);
 	m_Transform->setMatrix(osg::Matrixd::rotate(angle, 0, 0, 1) * osg::Matrixd::rotate(m_Latitude - PI_2, 1, 0, 0));
 	const bool first_update = (m_LastFullUpdate == 0.0);

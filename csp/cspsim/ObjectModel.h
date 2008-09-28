@@ -72,13 +72,27 @@ public:
 
 	CSP_DECLARE_STATIC_OBJECT(ObjectModel)
 
+	/** This class is responsible for loading all models within the
+	 * simulator. By using this method call you can add all paths
+	 * used to find images and model files. */
+	static void setDataFilePathList(std::string search_path);
+
 	ObjectModel();
 	virtual ~ObjectModel();
+
+	std::string getModelPath() const;
+	void setModelPath(const External& path);
+
+	bool getSmooth() const;
+	void setSmooth(bool smooth);
+
+	/** Loads the;3P scenegraph model from disc. */
+	virtual void loadModel();
+
 
 	osg::ref_ptr<osg::Node> getModel();
 	osg::ref_ptr<osg::Node> getDebugMarkers();
 	osg::ref_ptr<osg::Node> getGroundShadow();
-	std::string getModelPath() const;
 
 	const Vector3 &getAxis0() const { return m_Axis0; }
 	const Vector3 &getAxis1() const { return m_Axis1; }
@@ -103,8 +117,6 @@ public:
 	void showDebugMarkers(bool on);
 	bool getDebugMarkersVisible() const;
 
-	static void setDataFilePathList(std::string search_path);
-
 	unsigned numStations() const { return m_Stations.size(); }
 	const Station *station(unsigned i) const {
 		assert(i < numStations());
@@ -112,7 +124,6 @@ public:
 	}
 
 protected:
-
 	std::string m_Label;
 	External m_ModelPath;
 	External m_GroundShadowPath;
@@ -141,7 +152,6 @@ protected:
 	Link<Station>::vector m_Stations;
 
 	virtual void postCreate();
-	virtual void loadModel();
 	void processModel();
 	void addDebugMarkers();
 	void generateStationMasks(std::map<std::string, unsigned> const &interior_map) const;

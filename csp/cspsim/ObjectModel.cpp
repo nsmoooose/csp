@@ -660,6 +660,18 @@ std::string ObjectModel::getModelPath() const {
 	return m_ModelPath.getSource();
 }
 
+void ObjectModel::setModelPath(const External& path) {
+	m_ModelPath = path;
+}
+
+bool ObjectModel::getSmooth() const {
+	return m_Smooth;
+}
+
+void ObjectModel::setSmooth(bool smooth) {
+	m_Smooth = smooth;
+}
+
 osg::ref_ptr<osg::Node> ObjectModel::getGroundShadow() {
 	return m_GroundShadow.get();
 }

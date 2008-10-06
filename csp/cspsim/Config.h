@@ -67,6 +67,8 @@ extern CSPSIM_EXPORT std::string getDataPath();
  * Get the specific data path.
  */
 extern CSPSIM_EXPORT std::string getDataPath(std::string const &);
+extern CSPSIM_EXPORT void setDataPath(const std::string& key, const std::string& value);
+
 
 struct ScreenSettings {
 	ScreenSettings() : width(1024), height(768), fullScreen(false) {}

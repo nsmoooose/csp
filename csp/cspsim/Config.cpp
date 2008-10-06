@@ -78,6 +78,10 @@ std::string getDataPath(std::string const &pathname) {
 	return path;
 }
 
+void setDataPath(const std::string& key, const std::string& value) {
+	g_Config.setPath("Paths", key, value);
+}
+
 ScreenSettings getScreenSettings() {
 	ScreenSettings settings;
 	settings.width = g_Config.getInt("Screen", "Width", 1024, true);

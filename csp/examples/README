@@ -1,6 +1,8 @@
 This folder examples showing how classes should be used.
 
 Examples:
-sky == Smalles possible application to show the sky dome, stars, moon and the sun. 
-	Step back and forth in date/time with arrow right or arrow left.
-clouds == Displays a layer of clouds that you can move around in.
+sky 		== Smalles possible application to show the sky dome, stars, moon and the sun. 
+			   Step back and forth in date/time with arrow right or arrow left.
+clouds 		== Displays a layer of clouds that you can move around in.
+objectmodel == 
+terrain-demeter == A simple example that is displaying the demeter terrain engine.

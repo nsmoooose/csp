@@ -82,6 +82,68 @@ public:
 
 	virtual void setScreenSizeHint(int width, int height);
 
+	void setUseDynamicTextures(bool value) { m_DynamicTextures = value; }
+	bool getUseDynamicTextures() { return m_DynamicTextures; }
+
+	void setUseTextureCompression(bool value) { m_TextureCompression = value; }
+	bool getUseTextureCompression() { return m_TextureCompression; }
+
+	void setPreloadTextures(bool value) { m_PreloadTextures = value; }
+	bool getPreloadTextures() { return m_PreloadTextures; }
+
+	void setUseFileTextureFactory(bool value) { m_UseFileTextureFactory = value; }
+	bool getUseFileTextureFactory() { return m_UseFileTextureFactory; }
+
+	void setUseTextureFactory(bool value) { m_TextureFactory = value; }
+	bool getUseTextureFactory() { return m_TextureFactory; }
+
+	void setMaxTriangles(int value) { m_MaxTriangles = value; }
+	int getMaxTriangles() { return m_MaxTriangles; }
+
+	void setLattice(bool value) { m_Lattice = value; }
+	bool getLattice() { return m_Lattice; }
+
+	void setLatticeWidth(int value) { m_LatticeWidth = value; }
+	int getLatticeWidth() { return m_LatticeWidth; }
+
+	void setLatticeHeight(int value) { m_LatticeHeight = value; }
+	int getLatticeHeight() { return m_LatticeHeight; }
+
+	void setLatticeTilesWidth(int value) { m_LatticeTilesWidth = value; }
+	int getLatticeTilesWidth() { return m_LatticeTilesWidth; }
+
+	void setLatticeTilesHeight(int value) { m_LatticeTilesHeight = value; }
+	int getLatticeTilesHeight() { return m_LatticeTilesHeight; }
+	
+	void setDetailTextureFile(External value) { m_DetailTextureFile = value; }
+	External getDetailTextureFile() { return m_DetailTextureFile; }
+
+	void setLatticeBaseName(const char* value) { m_LatticeBaseName = value; }
+	std::string getLatticeBaseName() { return m_LatticeBaseName; }
+
+	void setLatticeElevationExtension(const char* value) { m_LatticeElevExt = value; }
+	std::string getLatticeElevationExtension() { return m_LatticeElevExt; }
+
+	void setLatticeTextureExtension(const char* value) { m_LatticeTexExt = value; }
+	std::string getLatticeTextureExtension() { return m_LatticeTexExt; }
+
+	void setTextureFile(External value) { m_TextureFile = value; }
+	External getTextureFile() { return m_TextureFile; }
+
+	void setElevationFile(External value) { m_ElevationFile = value; }
+	External getElevationFile() { return m_ElevationFile; }
+
+	void setVertexSpacing(float value) { m_VertexSpacing = value; }
+	float getVertexSpacing() { return m_VertexSpacing; }
+
+	void setVertexHeight(float value) { m_VertexHeight = value; }
+	float getVertexHeight() { return m_VertexHeight; }
+
+	void setDetailThreshold(float value) { m_DetailThreshold = value; }
+	float getDetailThreshold() { return m_DetailThreshold; }
+
+	virtual void postCreate();
+
 protected:
 	bool m_DynamicTextures;
 	bool m_TextureCompression;
@@ -109,7 +171,6 @@ protected:
     bool m_UseFileTextureFactory;
 
 protected:
-	virtual void postCreate();
 
 	int createTerrainLattice();
 	int createTerrain();

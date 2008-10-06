@@ -42,6 +42,8 @@ protected:
 	std::string _native_path;
 
 public: // BaseType
+	External();
+	External(const char* data);
 
 	/// String representation.
 	std::string asString() const;

@@ -227,6 +227,7 @@ def loadExtensionModules():
 	
 	for module in modules:
 		module_path = os.path.join('..', 'modules', module, '.bin', prefix + module) + extension
+
 		# for windows demos, the modules are instead placed in the current directory.
 		# TODO move them to ../modules/*.dll?
 		if not os.path.exists(module_path):

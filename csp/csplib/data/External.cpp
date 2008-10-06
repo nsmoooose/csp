@@ -28,6 +28,12 @@
 
 namespace csp {
 
+External::External() {
+}
+
+External::External(const char* data) {
+	setSource(data);
+}
 
 bool External::operator==(External const &path) {
 	return _path == path._path;

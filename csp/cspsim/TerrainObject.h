@@ -46,7 +46,6 @@ namespace csp {
 
 class Projection;
 
-
 /**
  * Abstract base class for all terrain modules.
  */
@@ -100,30 +99,59 @@ public:
 	TerrainObject();
 	virtual ~TerrainObject();
 
+	/** These members provides the interface that need to be implemented for a 
+	 * 	terrain engine. */
+	/* @{ */
+
 	virtual void activate() = 0;
+
 	virtual void deactivate() = 0;
+
 	virtual bool isActive() = 0;
+
 	virtual void setScreenSizeHint(int, int) {}
+
 	virtual void setCameraPosition(double, double, double) = 0;
+
 	virtual void testLineOfSight(Intersection &, IntersectionHint &) = 0;
+
 	virtual float getGroundElevation(double x, double y, Vector3 &normal, IntersectionHint &) const = 0;
+
 	virtual float getGroundElevation(double x, double y, IntersectionHint &) const = 0;
 
 	virtual int getTerrainPolygonsRendered() const = 0;
+
 	virtual osg::Node *getNode() = 0;
 
-	LLA const & getCenter() const { return m_Center; }
-	inline float getWidth() const { return m_Width; }
-	inline float getHeight() const { return m_Height; }
-	inline std::string const &getName() const { return m_Name; }
-	inline std::string const &getShader() const { return m_Shader; }
-	inline int getVersion() const { return m_Version; }
-	const Projection* getProjection() const { return m_Map.get(); }
 	virtual Vector3 getOrigin(Vector3 const &) const = 0;
-	virtual void endDraw() {}
 
-protected:
+	virtual void endDraw() = 0;
+	/* @} */
+
+	/** Getters and setters for data members. */
+	/* @{ */
+	LLA const & getCenter() const { return m_Center; }
+	void setCenter(const LLA& center) { m_Center = center; }
+
+	inline float getWidth() const { return m_Width; }
+	void setWidth(float width) { m_Width = width; }
+
+	inline float getHeight() const { return m_Height; }
+	void setHeight(float height) { m_Height = height; }
+
+	inline std::string const &getName() const { return m_Name; }
+	void setName(const std::string& name) { m_Name = name; }
+
+	inline std::string const &getShader() const { return m_Shader; }
+	void setShader(const std::string& shader) { m_Shader = shader; }
+
+	inline int getVersion() const { return m_Version; }
+	void setVersion(int version) { m_Version = version; }
+	/* @} */
+
+	const Projection* getProjection() const { return m_Map.get(); }
 	
+protected:
 	LLA m_Center;
 	float m_Width, m_Height;
 	Ref<Projection> m_Map;
@@ -132,7 +160,6 @@ protected:
 	int m_Version;
 
 	virtual void postCreate();
-
 };
 
 } // namespace csp

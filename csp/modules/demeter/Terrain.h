@@ -40,17 +40,6 @@ Boston, MA  02111-1307, USA.
 // not worry about clamping values. If external callers can be trusted to keep all parameters within
 // legal extents, then disable this option for performance gains.
 
-#ifdef _WIN32
-#ifdef TERRAIN_EXPORTS
-#define TERRAIN_API __declspec(dllexport)
-#else
-#define TERRAIN_API __declspec(dllimport)
-#endif
-#else
-#define TERRAIN_API
-#endif
-
-
 typedef unsigned char   Uint8;
 typedef signed char     Sint8;
 typedef unsigned short  Uint16;
@@ -81,6 +70,7 @@ typedef signed int      Sint32;
 
 //#include "mmgr.h"
 
+#include "Export.h"
 #include "DemeterException.h"
 #include "BitArray.h"
 
@@ -116,7 +106,7 @@ namespace Demeter
     class Vector;
 
     /// An abstract factory that allows applications to provide and manage their own terrain textures, rather than letting Demeter manage textures. This is most useful for procedural texture algorithms.
-    class TERRAIN_API TextureFactory
+    class DEMETER_EXPORT TextureFactory
     {
     public:
         virtual ~TextureFactory() { }
@@ -133,7 +123,7 @@ namespace Demeter
     };
 
     /// An extremely basic 3D plane class.
-    class TERRAIN_API Plane
+    class DEMETER_EXPORT Plane
     {
     public:
                             Plane() {}
@@ -144,7 +134,7 @@ namespace Demeter
     };
 
     /// An extremely basic 3D vector class. Demeter does not rely on all of the bells and whistles of most public vector classes
-    class TERRAIN_API Vector
+    class DEMETER_EXPORT Vector
     {
     public:
                             Vector() {}
@@ -156,7 +146,7 @@ namespace Demeter
         float               x,y,z;
     };
 
-    class TERRAIN_API Ray
+    class DEMETER_EXPORT Ray
     {
     public:
                             Ray() {}
@@ -165,7 +155,7 @@ namespace Demeter
         Vector              m_Direction;
     };
 
-    class TERRAIN_API Box
+    class DEMETER_EXPORT Box
     {
     public:
                             Box() {}
@@ -174,7 +164,7 @@ namespace Demeter
         Vector              m_Min;
     };
 
-    class TERRAIN_API Texture
+    class DEMETER_EXPORT Texture
     {
     public:
                         Texture(const Uint8* pBuffer,int width,int height,int stride,int borderSize,bool bClamp,bool useCompression,bool useAlpha = false);
@@ -219,7 +209,7 @@ namespace Demeter
         static int      m_MaskTextureFormat;
     };
 
-    class TERRAIN_API DetailTexture
+    class DEMETER_EXPORT DetailTexture
     {
     public:
                         DetailTexture(Texture* pTexture = NULL);
@@ -243,7 +233,7 @@ namespace Demeter
 
 	//class   vpDetailTexture:public vector<DetailTexture*>{};
 
-    class TERRAIN_API TextureCell
+    class DEMETER_EXPORT TextureCell
     {
     public:
                                 TextureCell();
@@ -263,13 +253,13 @@ namespace Demeter
         void                    FlipVertical();
     private:
         Texture*                m_pTexture;
-		vector<TERRAIN_API DetailTexture*>  m_DetailTextures;
+		vector<DEMETER_EXPORT DetailTexture*>  m_DetailTextures;
 		//vpDetailTexture         m_DetailTextures;
 
     };
  
 	
-    class TERRAIN_API TextureSet
+    class DEMETER_EXPORT TextureSet
     {
     public:
                                 TextureSet();
@@ -284,7 +274,7 @@ namespace Demeter
     };
  
     /// This class represents a single, contiguous chunk of terrain and is the primary public interface to Demeter. Most applications will create a single instance of this class to represent the terrain in the application, but multiple instances can be used to stitch together a very large world comprised of multiple terrains using the TerrainLattice class.
-    class TERRAIN_API Terrain: public osg::Referenced
+    class DEMETER_EXPORT Terrain: public osg::Referenced
     {
     public:
                     /// Constructs a new terrain from image files representing grayscale elevation and texture data. 
@@ -440,7 +430,7 @@ namespace Demeter
     };
 
     /// The Settings class is simply a manager of global variables. It provides a single place to set and retrieve all of the global settings that affect Demeter as a whole.
-    class TERRAIN_API Settings
+    class DEMETER_EXPORT Settings
     {
     public:
                         /// Destructor.
@@ -532,7 +522,7 @@ namespace Demeter
 
     };
 
-    class TERRAIN_API TriangleFan
+    class DEMETER_EXPORT TriangleFan
     {
     public:
                         TriangleFan();
@@ -556,7 +546,7 @@ namespace Demeter
         friend class Terrain;
     };
 
-    class TERRAIN_API TriangleStrip
+    class DEMETER_EXPORT TriangleStrip
     {
     public:
                         TriangleStrip();
@@ -576,7 +566,7 @@ namespace Demeter
         friend class Terrain;
     };
 
-    class TERRAIN_API Triangle
+    class DEMETER_EXPORT Triangle
     {
     public:
                             Triangle();
@@ -642,7 +632,7 @@ namespace Demeter
         virtual ~TerrainLoadListener() { }
     };
 
-    class TERRAIN_API TerrainLattice: public osg::Referenced
+    class DEMETER_EXPORT TerrainLattice: public osg::Referenced
     {
     public:
                                         TerrainLattice(const char* szBaseName,const char* szExtensionElev,const char* szExtensionTex,const char* szDetailTextureName,float vertexSpacing,float elevationScale,int maxNumTriangles,bool bUseBorders,int widthTerrains,int heightTerrains);

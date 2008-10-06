@@ -37,7 +37,7 @@ Boston, MA  02111-1307, USA.
 
 namespace Demeter
 {
-    class TERRAIN_API DemeterDrawable : public osg::Drawable
+    class DEMETER_EXPORT DemeterDrawable : public osg::Drawable
     {
         public:
 
@@ -79,7 +79,7 @@ namespace Demeter
 	// classes like group so that the latticeDrawable object can
 	// handle the draw/drawImmediateMode method.
 	// 
-    class TERRAIN_API DemeterLatticeDrawable : public osg::Drawable
+    class DEMETER_EXPORT DemeterLatticeDrawable : public osg::Drawable
     {
         public:
 
@@ -122,7 +122,7 @@ namespace Demeter
 
 
 
-class TERRAIN_API DemeterLatticeDrawableLoadListener : public TerrainLoadListener
+class DEMETER_EXPORT DemeterLatticeDrawableLoadListener : public TerrainLoadListener
 {
 public:
 

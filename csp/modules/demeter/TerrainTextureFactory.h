@@ -45,7 +45,7 @@
 namespace Demeter
 {
 
-class TERRAIN_API TerrainTextureFactory : public TextureFactory
+class DEMETER_EXPORT TerrainTextureFactory : public TextureFactory
 {
 public:
 

@@ -6,7 +6,7 @@
 namespace Demeter
 {
 
-class TERRAIN_API TerrainFileTextureFactory : public TerrainTextureFactory
+class DEMETER_EXPORT TerrainFileTextureFactory : public TerrainTextureFactory
 {
 public:
 	TerrainFileTextureFactory(std::string const & latticeBaseName, std::string const & latticeTexExt);

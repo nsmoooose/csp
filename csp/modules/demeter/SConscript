@@ -19,13 +19,14 @@
 Import('env build')
 
 env = env.Clone()
-env.AppendUnique(CPPDEFINES=Split('TERRAIN_EXPORTS'))
+env.AppendUnique(CPPDEFINES=Split('DEMETER_EXPORTS'))
 
 build.SharedLibrary(env,
 	name = 'demeter',
 	sources = [
 		'DemeterDrawable.cpp',
 		'DemeterTerrain.cpp',
+		'Export.h',
 		'Terrain.cpp',
 		'TerrainTextureFactory.cpp',
         'TerrainFileTextureFactory.cpp',

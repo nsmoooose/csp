@@ -25,6 +25,8 @@
 #ifndef __CSPSIM_DEMETERTERRAIN_H__
 #define __CSPSIM_DEMETERTERRAIN_H__
 
+#include <csp/modules/demeter/Export.h>
+
 #include <csp/cspsim/TerrainObject.h>
 
 #include <csp/csplib/data/External.h>
@@ -51,8 +53,7 @@ namespace csp {
  * class DemeterTerrain
  *
  */
-
-class DemeterTerrain: public TerrainObject {
+class DEMETER_EXPORT DemeterTerrain: public TerrainObject {
 public:
 	CSP_DECLARE_OBJECT(DemeterTerrain)
 

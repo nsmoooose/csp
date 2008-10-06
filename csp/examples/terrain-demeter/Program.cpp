@@ -1,3 +1,4 @@
+#include <csp/cspsim/Config.h>
 #include <csp/cspsim/ObjectModel.h>
 #include <osgViewer/Viewer>
 #include <osgViewer/ViewerEventHandlers>
@@ -9,8 +10,10 @@ int main(int, char**) {
 	std::string search_path = "./data/images/";
 	csp::ObjectModel::setDataFilePathList(search_path);
 
+	setDataPath("TerrainPath", "data/terrain");
+	
+	// These parameters is normally serialized from an xml file.
 	Ref<DemeterTerrain> terrain = new DemeterTerrain();
-
 	terrain->setName("Balkan Terrain");
 	terrain->setVersion(0);
 	terrain->setUseDynamicTextures(false);
@@ -42,6 +45,10 @@ int main(int, char**) {
 	// populating the object manually we also need to call this function.
 	terrain->postCreate();
 
+	terrain->activate();
+	
+	terrain->setCameraPosition(-29495, -10530, 91.3);
+	
     // construct the viewer
     osgViewer::Viewer viewer;
     viewer.addEventHandler(new osgViewer::StatsHandler());

@@ -32,6 +32,5 @@ build.SharedLibrary(env,
 	],
 	deps = ['cspsim'],
 	aliases = 'all',
-	SHLIBPREFIX='')
-
+	softlink = 1)
 

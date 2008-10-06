@@ -40,6 +40,6 @@ build.SharedLibrary(env,
 	],
 	deps = ['cspsim', 'jpeg'],
 	aliases = ['all', 'clod'],
-	SHLIBPREFIX='')
+	softlink = 1)
 
 

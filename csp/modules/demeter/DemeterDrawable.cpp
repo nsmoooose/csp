@@ -41,8 +41,6 @@ extern std::ofstream m_Logfile;
 namespace Demeter
 {
 
-
-
 DemeterDrawable::DemeterDrawable()
 {
 	// force the support of display list off for this Drawable
@@ -273,5 +271,31 @@ osg::BoundingBox DemeterLatticeDrawable::computeBound() const {
 	return bbox;
 }
 #endif
+
+DemeterLatticeDrawableLoadListener::DemeterLatticeDrawableLoadListener() : m_pLatticeDrawable(NULL){
+}
+
+void DemeterLatticeDrawableLoadListener::TerrainLoaded(Terrain* pTerrain) {
+	int x,y;
+	pTerrain->GetLatticePosition(x,y);
+	std::cout << "Terrain at " << x << "," << y << " loaded!" << std::endl;
+
+	m_pLatticeDrawable->addTerrain(pTerrain);
+	// We could do application-specific actions here, such as loading
+	// application objects for this region of the world
+}
+
+void DemeterLatticeDrawableLoadListener::TerrainUnloading(Terrain* pTerrain) {
+	int x,y;
+	pTerrain->GetLatticePosition(x,y);
+	std::cout << "Terrain at " << x << "," << y << " unloading!" << std::endl;
+	m_pLatticeDrawable->removeTerrain(pTerrain);
+	// We could do application-specific actions here, such as unloading
+	// application objects for this region of the world
+}
+
+void DemeterLatticeDrawableLoadListener::setLatticeDrawable(DemeterLatticeDrawable * pLatticeDrawable) {
+	m_pLatticeDrawable = pLatticeDrawable;
+}
 
 }

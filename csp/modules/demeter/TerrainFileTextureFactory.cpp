@@ -17,7 +17,7 @@ TerrainFileTextureFactory::TerrainFileTextureFactory(std::string const & lattice
 {
 	if (Settings::GetInstance()->IsVerbose())
 	{
-		m_Logfile << "TerrainFileTextureFactory::TerrainFileTextureFactory()" << endl;
+		m_Logfile << "TerrainFileTextureFactory::TerrainFileTextureFactory()" << std::endl;
 	}
 }
 
@@ -40,7 +40,7 @@ Texture* TerrainFileTextureFactory::GetTexture(int index,float originX,float ori
         
 		if (Settings::GetInstance()->IsVerbose())
 		{
-			m_Logfile << "Loading texture file " << szTexName << endl;
+			m_Logfile << "Loading texture file " << szTexName << std::endl;
 		}
         
     	char szFullTexName[MAX_FILENAME_LENGTH];
@@ -54,7 +54,7 @@ Texture* TerrainFileTextureFactory::GetTexture(int index,float originX,float ori
         {
     		if (Settings::GetInstance()->IsVerbose())
     		{
-    			m_Logfile << "Texture file " << szTexName << " doesn't exist !" << endl;
+    			m_Logfile << "Texture file " << szTexName << " doesn't exist !" << std::endl;
     		}
             
             return TerrainTextureFactory::GetTexture(index, originX, originY, width, height);
@@ -72,7 +72,7 @@ Texture* TerrainFileTextureFactory::GetTexture(int index,float originX,float ori
         
 		if (Settings::GetInstance()->IsVerbose())
 		{
-			m_Logfile << "Finished loading texture file" << endl;
+			m_Logfile << "Finished loading texture file" << std::endl;
 		}
 	}
 

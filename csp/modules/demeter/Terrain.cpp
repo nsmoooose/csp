@@ -23,6 +23,7 @@ Boston, MA  02111-1307, USA.
 #endif
 
 #include <fstream>
+#include <iostream>
 
 #ifdef _WIN32
 	#include <crtdbg.h>
@@ -136,7 +137,7 @@ int Texture::m_AlphaTextureFormat = GL_ALPHA;
 
 
 #ifdef _WIN32
-vector<HGLRC> Terrain::m_SharedContexts;
+std::vector<HGLRC> Terrain::m_SharedContexts;
 #endif
 
 std::ofstream m_Logfile("Demeter.log");
@@ -182,7 +183,7 @@ TerrainBlock::TerrainBlock(int homeVertex,int stride,Terrain* pTerrain,TerrainBl
 	{
 		if (hashDelta <= numBlocksBuilt++)
 		{
-			m_Logfile  << "#" << flush;
+			m_Logfile  << "#" << std::flush;
 			numBlocksBuilt = 0;
 		}
 	}
@@ -742,10 +743,10 @@ Terrain::Terrain(const char* szElevationsFilename,const char* szTextureFilename,
 		LoadImage(szTextureFilename,texWidth,texHeight,&pTextureImage,false);
 		if (texWidth == 0)
 		{
-			string msg("Failed to load texture image file '");
+			std::string msg("Failed to load texture image file '");
 			msg += szTextureFilename;
 			msg += "'; This means that the file was not found or it is not an image type that Demeter can read.";
-			throw new DemeterException(msg);
+			throw DemeterException(msg);
 		}
 	}
 	
@@ -758,10 +759,10 @@ Terrain::Terrain(const char* szElevationsFilename,const char* szTextureFilename,
 		LoadImage(szDetailTextureFilename,detailWidth,detailHeight,&pDetailImage,false);
 		if (detailWidth == 0)
 		{
-			string msg("Failed to load detail texture image file '");
+			std::string msg("Failed to load detail texture image file '");
 			msg += szDetailTextureFilename;
 			msg += "'; This means that the file was not found or it is not an image type that Demeter can read.";
-			throw new DemeterException(msg);
+			throw DemeterException(msg);
 		}
 	}
 
@@ -870,12 +871,12 @@ void Terrain::SetAllElevations(const char* szElevationsFilename,float vertexSpac
 		GDALAllRegister();
 		poDataset = (GDALDataset*)GDALOpen(szFullFilename,GA_ReadOnly);
 		if (poDataset == NULL)
-			m_Logfile  << "TERRAIN: Failed to load DEM data" << endl;
-		m_Logfile  << "TERRAIN: Input size is " << poDataset->GetRasterXSize() << "x" << poDataset->GetRasterYSize() << "x" << poDataset->GetRasterCount() << endl;
+			m_Logfile  << "TERRAIN: Failed to load DEM data" << std::endl;
+		m_Logfile  << "TERRAIN: Input size is " << poDataset->GetRasterXSize() << "x" << poDataset->GetRasterYSize() << "x" << poDataset->GetRasterCount() << std::endl;
 		int dataWidth = poDataset->GetRasterXSize();
 		int dataHeight = poDataset->GetRasterYSize();
 		DimensionPowerOf2(poDataset->GetRasterXSize(),poDataset->GetRasterYSize(),elevWidth,elevHeight);
-		m_Logfile  << "TERRAIN: Changing size to " << elevWidth << "," << elevHeight << endl;
+		m_Logfile  << "TERRAIN: Changing size to " << elevWidth << "," << elevHeight << std::endl;
 		
 		GDALRasterBand *poBand;
 		int nBlockXSize, nBlockYSize;
@@ -925,22 +926,22 @@ void Terrain::SetAllElevations(const char* szElevationsFilename,float vertexSpac
 		LoadImage(szFullFilename,imageWidth,imageHeight,&pPixels);
 		if (imageWidth == 0)
 		{
-			string msg("Failed to load elevations image file '");
+			std::string msg("Failed to load elevations image file '");
 			msg += szElevationsFilename;
 			msg += "'; This means that the file was not found or it is not an image type that Demeter can read.";
-			throw new DemeterException(msg);
+			throw DemeterException(msg);
 		}
 		int j,k;
 		// Force the input data to be a power of 2 in width and height by zero-filling up to the next power of 2.
 		DimensionPowerOf2(imageWidth,imageHeight,elevWidth,elevHeight);
 		pImageData = new float[elevWidth * elevHeight];
-	if (pImageData == 0) {
-		 cout << "TERRAIN: out of memory allocating new terrain elevation map\n";
-		 exit(1);
-	}
-		if (imageWidth != elevWidth || imageHeight != elevHeight)
-		{
-			m_Logfile  << "TERRAIN: WARNING! Input elevations file is not a power of 2 in width and height - forcing to power of 2 by zero filling! You should fix your input data!" << endl;
+		if (pImageData == 0) {
+			std::cout << "TERRAIN: out of memory allocating new terrain elevation map\n";
+			exit(1);
+		}
+		
+		if (imageWidth != elevWidth || imageHeight != elevHeight) {
+			m_Logfile  << "TERRAIN: WARNING! Input elevations file is not a power of 2 in width and height - forcing to power of 2 by zero filling! You should fix your input data!" << std::endl;
 			int size = elevWidth * elevHeight;
 			for (i = 0; i < size; i++)
 				pImageData[i] = 0.0f;
@@ -987,8 +988,8 @@ void Terrain::SetAllElevations(const float* pElevations,int elevWidth,int elevHe
 
 	if (!IsPowerOf2(elevWidth) || !IsPowerOf2(elevHeight))
 	{
-		string msg("The elevation data is NOT a power of 2 in both width and height. Elevation data must be a power of 2 in both width and height.");
-		throw new DemeterException(msg);
+		std::string msg("The elevation data is NOT a power of 2 in both width and height. Elevation data must be a power of 2 in both width and height.");
+		throw DemeterException(msg);
 		//m_pTriangleStrips = NULL;
 		//m_pTriangleFans = NULL;
 	}
@@ -1322,21 +1323,21 @@ void Terrain::BuildBlocks()
 		numBlocks += powf(4,j);
 	if (Settings::GetInstance()->IsVerbose())
 	{
-		m_Logfile  << "TERRAIN: Building " << numBlocks << " blocks; please wait..." << endl;
+		m_Logfile  << "TERRAIN: Building " << numBlocks << " blocks; please wait..." << std::endl;
 #ifdef _USE_RAYTRACING_SUPPORT_
-		m_Logfile  << "TERRAIN: Memory required at runtime for blocks = " << numBlocks * (sizeof(TerrainBlock) + 8 * sizeof(Triangle)) << " bytes" << endl;
+		m_Logfile  << "TERRAIN: Memory required at runtime for blocks = " << numBlocks * (sizeof(TerrainBlock) + 8 * sizeof(Triangle)) << " bytes" << std::endl;
 #else
-		m_Logfile  << "TERRAIN: Memory required at runtime for blocks = " << numBlocks * sizeof(TerrainBlock) << " bytes" << endl;
+		m_Logfile  << "TERRAIN: Memory required at runtime for blocks = " << numBlocks * sizeof(TerrainBlock) << " bytes" << std::endl;
 #endif
-		m_Logfile  << ".............................." << endl;
+		m_Logfile  << ".............................." << std::endl;
 		hashDelta = static_cast<float>(numBlocks / 30.0);
-		m_Logfile  << "#" << flush;
+		m_Logfile  << "#" << std::flush;
 	}
 	m_pVertexStatus = new BitArray(m_WidthVertices * m_HeightVertices);
 	// We assume that the terrain's width is always a power of 2 + 1!
 	m_pRootBlock = new TerrainBlock(0,m_WidthVertices - 1,this,NULL);
 	if (Settings::GetInstance()->IsVerbose())
-		m_Logfile  << endl;
+		m_Logfile  << std::endl;
 }
 
 void Terrain::SetVertexStatus(int vertexIndex,bool status)
@@ -1362,18 +1363,18 @@ int Terrain::Tessellate()
 			if (m_MaxNumberOfPrimitives < maxNumStrips)
 				maxNumStrips = m_MaxNumberOfPrimitives;
 			if (Settings::GetInstance()->IsVerbose())
-				m_Logfile << "TERRAIN: Allocating " << maxNumStrips << " triangle strips and fans (" << maxNumStrips * sizeof(TriangleStrip) + maxNumStrips * sizeof(TriangleFan) << " bytes)\n" << endl;
+				m_Logfile << "TERRAIN: Allocating " << maxNumStrips << " triangle strips and fans (" << maxNumStrips * sizeof(TriangleStrip) + maxNumStrips * sizeof(TriangleFan) << " bytes)\n" << std::endl;
 			m_pTriangleStrips = new TriangleStrip[maxNumStrips];
 			m_pTriangleFans = new TriangleFan[maxNumStrips];
 			if (m_pTriangleStrips == NULL || m_pTriangleFans == NULL)
 			{
-				m_Logfile << "TERRAIN: " << "Not enough memory to build terrain triangles" << endl;
+				m_Logfile << "TERRAIN: " << "Not enough memory to build terrain triangles" << std::endl;
 				exit(1);
 			}
 		}
 		catch(...)
 		{
-			m_Logfile << "TERRAIN: " << "Not enough memory to build terrain triangles" << endl;
+			m_Logfile << "TERRAIN: " << "Not enough memory to build terrain triangles" << std::endl;
 			exit(1);
 		}
 	}
@@ -1399,13 +1400,13 @@ bool Terrain::SetCommonTexture(const Uint8* pBuffer,int width,int height)
 	// Test to see if the image is a power of 2 in both width and height.
 	if (!IsPowerOf2(width) || !IsPowerOf2(height))
 	{
-		string msg("The detail texture image file is NOT a power of 2 in both width and height.\nTexture files must be a power of 2 in both width and height.");
-		throw new DemeterException(msg);
+		std::string msg("The detail texture image file is NOT a power of 2 in both width and height.\nTexture files must be a power of 2 in both width and height.");
+		throw DemeterException(msg);
 	}
 	m_pCommonTexture = new Texture(pBuffer,width,height,width,0,false,Settings::GetInstance()->IsTextureCompression());
 	bSuccess = true;
 	if (Settings::GetInstance()->IsVerbose())
-		m_Logfile << "TERRAIN: Common texture set successfully" << endl;
+		m_Logfile << "TERRAIN: Common texture set successfully" << std::endl;
 	return bSuccess;
 }
 
@@ -1417,32 +1418,32 @@ bool Terrain::SetCommonTexture(const char* szFilename)
 	if (!Settings::GetInstance()->IsCompilerOnly())
 	{
 		if (Settings::GetInstance()->IsVerbose())
-				m_Logfile << "TERRAIN: Setting common texture to " << szFilename << endl;
+				m_Logfile << "TERRAIN: Setting common texture to " << szFilename << std::endl;
 		int width,height;
 		Uint8* pBuffer;
 		LoadImage(szFullFilename,width,height,&pBuffer);
 		if (width == 0)
 		{
-			string msg("Failed to load detail texture image file '");
+			std::string msg("Failed to load detail texture image file '");
 			msg += szFullFilename;
 			msg += "'; This means that the file was not found or it is not an image type that Demeter can read.";
-			throw new DemeterException(msg);
+			throw DemeterException(msg);
 		}
 		else
 		{
 			// Test to see if the image is a power of 2 in both width and height.
 			if (!IsPowerOf2(width) || !IsPowerOf2(height))
 			{
-				string msg("The detail texture image file '");
+				std::string msg("The detail texture image file '");
 				msg += szFullFilename;
 				msg += "' is NOT a power of 2 in both width and height.\nTexture files must be a power of 2 in both width and height.";
-				throw new DemeterException(msg);
+				throw DemeterException(msg);
 			}
 			m_pCommonTexture = new Texture(pBuffer,width,height,width,0,false,Settings::GetInstance()->IsTextureCompression());
 			delete[] pBuffer;
 			bSuccess = true;
 			if (Settings::GetInstance()->IsVerbose())
-				m_Logfile << "TERRAIN: Common texture set successfully" << endl;
+				m_Logfile << "TERRAIN: Common texture set successfully" << std::endl;
 		}
 	}
 	else
@@ -1465,13 +1466,13 @@ bool Terrain::SetTexture(const Uint8* pBuffer,int width,int height,bool bUseBord
 	// Test to see if the image is a power of 2 in both width and height.
 	if (!IsPowerOf2(width) || !IsPowerOf2(height))
 	{
-		string msg("The texture is NOT a power of 2 in both width and height.\nTextures must be a power of 2 in both width and height.");
-		throw new DemeterException(msg);
+		std::string msg("The texture is NOT a power of 2 in both width and height.\nTextures must be a power of 2 in both width and height.");
+		throw DemeterException(msg);
 	}
 	ChopTexture(pBuffer,width,height,256,bUseBorders);
 	bSuccess = true;
 	if (Settings::GetInstance()->IsVerbose())
-		m_Logfile << "TERRAIN: Texture set successfully" << endl;
+		m_Logfile << "TERRAIN: Texture set successfully" << std::endl;
 	FlipTexturesForMapping();
 	if (Settings::GetInstance()->GetPreloadTextures())
 		PreloadTextures();
@@ -1492,16 +1493,16 @@ bool Terrain::SetTexture(const char* szFilename,bool bUseBorders)
 	if (!Settings::GetInstance()->IsCompilerOnly())
 	{
 		if (Settings::GetInstance()->IsVerbose())
-			m_Logfile << "TERRAIN: Setting texture to '" << szFullFilename << "'" << endl;
+			m_Logfile << "TERRAIN: Setting texture to '" << szFullFilename << "'" << std::endl;
 		int width,height;
 		Uint8* pBuffer;
 		LoadImage(szFullFilename,width,height,&pBuffer);
 		if (width == 0)
 		{
-			string msg("Failed to load texture image file '");
+			std::string msg("Failed to load texture image file '");
 			msg += szFullFilename;
 			msg += "'; This means that the file was not found or it is not an image type that Demeter can read.";
-			throw new DemeterException(msg);
+			throw DemeterException(msg);
 		}
 		else
 		{
@@ -2042,7 +2043,7 @@ void Terrain::Read(char* szFilename)
 		if (strcmp(szDemeter,"Demeter") != 0)
 		{
 			fclose(file);
-			throw new DemeterException("The specified file is not a Demeter surface file");
+			throw DemeterException("The specified file is not a Demeter surface file");
 		}
 		
 		if (m_pTextureSet)
@@ -2055,7 +2056,7 @@ void Terrain::Read(char* szFilename)
 			PreloadTextures();
 	}
 	else
-		throw new DemeterException("The specified file could not be opened");
+		throw DemeterException("The specified file could not be opened");
 }
 
 void Terrain::FlipTexturesForMapping()
@@ -2121,7 +2122,7 @@ bool Terrain::Pick(int mouseX,int mouseY,float& pickedX,float& pickedY,float& pi
 	float elev = GetElevation(pickedX,pickedY);
 	bPickedTerrain = Settings::GetInstance()->GetPickThreshold() < 0.0f || (pickedZ - elev < Settings::GetInstance()->GetPickThreshold()); // Look for a "fudge factor" difference between the unprojected point and the actual terrain elevation to see if some application object was picked instead of the terrain
 	if (!bPickedTerrain)
-		m_Logfile << "TERRAIN: Picked point is not on terrain *" << (pickedZ - elev) << ")" << endl;
+		m_Logfile << "TERRAIN: Picked point is not on terrain *" << (pickedZ - elev) << ")" << std::endl;
 	return bPickedTerrain;
  }
  
@@ -2523,11 +2524,11 @@ void LoadImage(const char* szShortFilename, int& width, int &height, Uint8** ppB
 	else
 		Settings::GetInstance()->PrependMediaPath(szShortFilename, szFullFilename);
 
-	m_Logfile  << "TERRAIN: Loading texture " << szFullFilename << endl;
+	m_Logfile  << "TERRAIN: Loading texture " << szFullFilename << std::endl;
 	osg::ref_ptr<osg::Image> image = osgDB::readImageFile(szFullFilename);
 
 	if (!image.valid()) {
-		m_Logfile << "TERRAIN: Error reading image" << endl;
+		m_Logfile << "TERRAIN: Error reading image" << std::endl;
 		return;
 	}
 
@@ -2535,12 +2536,12 @@ void LoadImage(const char* szShortFilename, int& width, int &height, Uint8** ppB
 	// texture data used in CSP.
 	const GLenum pixel_format = image->getPixelFormat();
 	if (pixel_format != GL_RGB && pixel_format != GL_RGBA) {
-		m_Logfile << "TERRAIN: Can't handle pixel format " << image->getPixelFormat() << endl;
+		m_Logfile << "TERRAIN: Can't handle pixel format " << image->getPixelFormat() << std::endl;
 		return;
 	}
 
 	if (image->getDataType() != GL_UNSIGNED_BYTE) {
-		m_Logfile << "TERRAIN: Can't handle data type " << image->getDataType() << endl;
+		m_Logfile << "TERRAIN: Can't handle data type " << image->getDataType() << std::endl;
 		return;
 	}
 
@@ -2952,7 +2953,7 @@ void Settings::LogStats()
 	{
 		m_Logfile << "Counts - Blocks: " << TerrainBlock::GetCount() <<
 			", Strips: " << TriangleStrip::GetCount() <<
-			", Fans: " << TriangleFan::GetCount() << endl;
+			", Fans: " << TriangleFan::GetCount() << std::endl;
 	}
 
 
@@ -3265,7 +3266,7 @@ Terrain* TerrainLattice::GetTerrainRelative(Terrain* pTerrain,Terrain::DIRECTION
 			offsetY = 1;
 			break;
 		default:
-			throw new DemeterException("Demeter: Terrain::GetTerrainRelative: Invalid direction");
+			throw DemeterException("Demeter: Terrain::GetTerrainRelative: Invalid direction");
 	}
 	return GetTerrainRelative(pTerrain,offsetX,offsetY);
 }
@@ -3325,7 +3326,7 @@ void TerrainLattice::SetCameraPosition(float x,float y,float /*z*/)
 			active = (i == m_CurrentTerrainIndex[dir]);
 		if (!active && m_pTerrains[i] != NULL)
 		{
-			vector<TerrainLoadListener*>::iterator iter = m_TerrainLoadListeners.begin();
+			std::vector<TerrainLoadListener*>::iterator iter = m_TerrainLoadListeners.begin();
 			while (iter != m_TerrainLoadListeners.end())
 			{
 				TerrainLoadListener* pListener = *iter;
@@ -3338,7 +3339,7 @@ void TerrainLattice::SetCameraPosition(float x,float y,float /*z*/)
 		else if (active && m_pTerrains[i] == NULL)
 		{
 			LoadTerrain(i);
-			vector<TerrainLoadListener*>::iterator iter = m_TerrainLoadListeners.begin();
+			std::vector<TerrainLoadListener*>::iterator iter = m_TerrainLoadListeners.begin();
 			while (iter != m_TerrainLoadListeners.end())
 			{
 				TerrainLoadListener* pListener = *iter;
@@ -3451,7 +3452,7 @@ Terrain::DIRECTION TerrainLattice::GetOppositeDirection(Terrain::DIRECTION direc
 			oppositeDirection = Terrain::DIR_CENTER;
 			break;
 		default:
-			throw new DemeterException("Demeter: Terrain::GetOppositeDirection: Invalid direction");
+			throw DemeterException("Demeter: Terrain::GetOppositeDirection: Invalid direction");
 	}
 	return oppositeDirection;
 }
@@ -3544,7 +3545,7 @@ void TerrainLattice::AddTerrainLoadListener(TerrainLoadListener& listener)
 void TerrainLattice::RemoveTerrainLoadListener(TerrainLoadListener& listener)
 {
 	bool found = false;
-	vector<TerrainLoadListener*>::iterator iter = m_TerrainLoadListeners.begin();
+	std::vector<TerrainLoadListener*>::iterator iter = m_TerrainLoadListeners.begin();
 	while (iter != m_TerrainLoadListeners.end() && !found)
 	{
 		TerrainLoadListener* pListener = *iter;
@@ -3643,7 +3644,7 @@ GLuint Texture::UploadTexture()
 			textureFormat = m_UseCompression ? m_CompressedTextureFormat : m_DefaultTextureFormat;
 		m_TextureID = CreateTexture(m_pBuffer,m_Width,m_Height,m_Width,m_BorderSize,textureFormat,m_bClamp,m_bAlpha);
 		if (m_TextureID < 1)
-			m_Logfile << "TERRAIN: Warning - failed to create texture (possibly out of texture memory)" << endl;
+			m_Logfile << "TERRAIN: Warning - failed to create texture (possibly out of texture memory)" << std::endl;
 		if (!Settings::GetInstance()->IsEditor() && !Settings::GetInstance()->UseDynamicTextures())
 		{
 			delete[] m_pBuffer;
@@ -3953,7 +3954,7 @@ TextureCell::~TextureCell()
 		delete m_pTexture;
 	while (!m_DetailTextures.empty())
 	{
-		vector<DetailTexture*>::iterator iter = m_DetailTextures.begin();
+		std::vector<DetailTexture*>::iterator iter = m_DetailTextures.begin();
 		DetailTexture* pDetailTexture = *iter;
 		m_DetailTextures.erase(iter);
 		delete pDetailTexture;
@@ -4055,7 +4056,7 @@ TextureSet::~TextureSet()
 {
 	 while (!m_Textures.empty())
 	 {
-		 vector<Texture*>::iterator iter = m_Textures.begin();
+		 std::vector<Texture*>::iterator iter = m_Textures.begin();
 		 Texture* pTexture = *iter;
 		 m_Textures.erase(iter);
 		 delete pTexture;
@@ -4148,7 +4149,7 @@ void LoadGLExtensions()
 	if(!glClientActiveTextureARB_ptr || !glActiveTextureARB_ptr || !glMultiTexCoord2fARB_ptr)
 	{
 		bMultiTextureSupported = false;
-		throw new DemeterException("TERRAIN: ERROR: Multitexture extensions not supported by this OpenGL vendor!");
+		throw DemeterException("TERRAIN: ERROR: Multitexture extensions not supported by this OpenGL vendor!");
 	}
 }
 

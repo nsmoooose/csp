@@ -21,40 +21,22 @@ Boston, MA  02111-1307, USA.
 #ifndef _DEMETEREXCEPTION_H_
 #define _DEMETEREXCEPTION_H_
 
-#include <iostream>
+#include <exception>
 #include <string>
 
-//#include "mmgr.h"
-
-using namespace std;
-
-class DemeterException
+class DemeterException : public std::exception
 {
 public:
-							DemeterException(const char* szErrorMessage)
-							{
-								m_pErrorMessage = new string("TERRAIN ERROR: ");
-								m_pErrorMessage->append(szErrorMessage);
-							}
+	DemeterException(const std::string& errorMessage) {
+		m_ErrorMessage = std::string("TERRAIN ERROR: ") + errorMessage;
+	}
 
-							DemeterException(string& errorMessage)
-							{
-								m_pErrorMessage = new string("TERRAIN ERROR: ");
-								m_pErrorMessage->append(errorMessage);
-							}
-
-							~DemeterException()
-							{
-								delete m_pErrorMessage;
-							}
-
-	const char* 			GetErrorMessage()
-							{
-								return m_pErrorMessage->c_str();
-							}
+	const char* what() const {
+		return m_ErrorMessage.c_str();
+	}
+	
 private:
-	string*					m_pErrorMessage;
+	std::string	m_ErrorMessage;
 };
 
 #endif
-

@@ -726,8 +726,8 @@ void CSPSim::run() {
 		}
 		//m_Battlefield->dumpObjectHistory();
 	}
-	catch (DemeterException *e) {
-		std::string msg = e->GetErrorMessage();
+	catch (DemeterException& e) {
+		std::string msg = e.what();
 		CSPLOG(ERROR, APP) << "Caught demeter exception: " << msg;
 		cleanup();
 		::exit(1);

@@ -253,7 +253,7 @@ namespace Demeter
         void                    FlipVertical();
     private:
         Texture*                m_pTexture;
-		vector<DEMETER_EXPORT DetailTexture*>  m_DetailTextures;
+		std::vector<DEMETER_EXPORT DetailTexture*>  m_DetailTextures;
 		//vpDetailTexture         m_DetailTextures;
 
     };
@@ -270,7 +270,7 @@ namespace Demeter
         void                    Read(FILE* file,Terrain* pTerrain);
         void                    Write(FILE* file,Terrain* pTerrain);
     private:
-        vector<Texture*>        m_Textures;
+        std::vector<Texture*>        m_Textures;
     };
  
     /// This class represents a single, contiguous chunk of terrain and is the primary public interface to Demeter. Most applications will create a single instance of this class to represent the terrain in the application, but multiple instances can be used to stitch together a very large world comprised of multiple terrains using the TerrainLattice class.
@@ -393,7 +393,7 @@ namespace Demeter
         TerrainBlock*   m_pRootBlock;
         BitArray*       m_pVertexStatus;
         int             m_NumberOfVertices;
-        vector<TextureCell*> m_TextureCells;
+        std::vector<TextureCell*> m_TextureCells;
         float           m_TextureTileWidth,m_TextureTileHeight;
         int             m_NumberOfTextureTilesWidth;
         int             m_NumberOfTextureTilesHeight;
@@ -419,7 +419,7 @@ namespace Demeter
         float*          m_pTextureDetail;
 		Vector*			m_pNormals;
 #ifdef _WIN32
-		static vector<HGLRC> m_SharedContexts;
+		static std::vector<HGLRC> m_SharedContexts;
 #endif
 
         friend class    Triangle;
@@ -659,7 +659,7 @@ namespace Demeter
 
         
     private:
-        vector<TerrainLoadListener*>    m_TerrainLoadListeners;
+        std::vector<TerrainLoadListener*>    m_TerrainLoadListeners;
         Terrain::DIRECTION              GetOppositeDirection(Terrain::DIRECTION direction);
         Terrain*                        GetTerrainRelative(Terrain* pTerrain,int positionX,int positionY);
         Terrain*                        GetTerrainRelative(Terrain* pTerrain,Terrain::DIRECTION direction);
@@ -671,7 +671,7 @@ namespace Demeter
         int                             m_CurrentTerrainIndex[9];
 		int                             m_OffsetIndexX[9];
 		int								m_OffsetIndexY[9];
-        string                          m_BaseName;
+        std::string m_BaseName;
         int                             m_MaxNumTriangles;
         bool                            m_bUseBorders;
         float                           m_VertexSpacing;

@@ -111,7 +111,7 @@ TerrainTextureFactory::TerrainTextureFactory()
 {
 	if (Settings::GetInstance()->IsVerbose())
 	{
-		m_Logfile << "TerrainTextureFactory::TerrainTextureFactory()" << endl;
+		m_Logfile << "TerrainTextureFactory::TerrainTextureFactory()" << std::endl;
 	}
 
 	
@@ -183,7 +183,7 @@ Texture* TerrainTextureFactory::GetTexture(int index,float originX,float originY
 
 		if (Settings::GetInstance()->IsVerbose())
 		{
-			m_Logfile << "Generating Texture" << latticeX << ":" << latticeY << endl;
+			m_Logfile << "Generating Texture" << latticeX << ":" << latticeY << std::endl;
 		}
 
 
@@ -204,7 +204,7 @@ Texture* TerrainTextureFactory::GetTexture(int index,float originX,float originY
 			Uint8* pTex5 = m_BaseTextures[4];
 			Uint8* pTex6 = m_BaseTextures[5];
 
-			//std::cout << "Generating Texture" << latticeX << ":" << latticeY << endl;
+			//std::cout << "Generating Texture" << latticeX << ":" << latticeY << std::endl;
 			//std::cout << originX << "," << originY << "  " << width << "," << height << "  " << textureSize << "\n";
 
 			Uint8* pImage = new Uint8[(int)((textureSize + 1.0f) * (textureSize + 1.0f)) * 3];
@@ -267,7 +267,7 @@ Texture* TerrainTextureFactory::GetTexture(int index,float originX,float originY
 
 		if (Settings::GetInstance()->IsVerbose())
 		{
-			m_Logfile << "Finished Generating Texture" << endl;
+			m_Logfile << "Finished Generating Texture" << std::endl;
 		}
 
 
@@ -286,7 +286,7 @@ void TerrainTextureFactory::UnloadTexture(int index)
 
 	if (Settings::GetInstance()->IsVerbose())
 	{
-		m_Logfile << "TextureFactory:: Unload Texture" << endl;
+		m_Logfile << "TextureFactory:: Unload Texture" << std::endl;
 	}
 
 	Texture* pTexture = m_Textures[combinedIndex]; 

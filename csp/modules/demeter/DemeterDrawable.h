@@ -125,37 +125,10 @@ namespace Demeter
 class DEMETER_EXPORT DemeterLatticeDrawableLoadListener : public TerrainLoadListener
 {
 public:
-
-	DemeterLatticeDrawableLoadListener()
-	{
-		m_pLatticeDrawable = NULL;
-	}
-
-    virtual void TerrainLoaded(Terrain* pTerrain)
-    {
-        int x,y;
-        pTerrain->GetLatticePosition(x,y);
-        cout << "Terrain at " << x << "," << y << " loaded!" << endl;
-
-		m_pLatticeDrawable->addTerrain(pTerrain);
-        // We could do application-specific actions here, such as loading
-        // application objects for this region of the world
-    }
-
-    virtual void TerrainUnloading(Terrain* pTerrain)
-    {
-        int x,y;
-        pTerrain->GetLatticePosition(x,y);
-        cout << "Terrain at " << x << "," << y << " unloading!" << endl;
-		m_pLatticeDrawable->removeTerrain(pTerrain);
-        // We could do application-specific actions here, such as unloading
-        // application objects for this region of the world
-    }
-
-	void setLatticeDrawable(DemeterLatticeDrawable * pLatticeDrawable)
-	{
-		m_pLatticeDrawable = pLatticeDrawable;
-	}
+	DemeterLatticeDrawableLoadListener();
+    virtual void TerrainLoaded(Terrain* pTerrain);
+    virtual void TerrainUnloading(Terrain* pTerrain);
+	void setLatticeDrawable(DemeterLatticeDrawable * pLatticeDrawable);
 
 protected:
 	DemeterLatticeDrawable * m_pLatticeDrawable;

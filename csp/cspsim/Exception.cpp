@@ -58,7 +58,7 @@ void FatalException(Exception &e, std::string const &location) {
 }
 
 void DemeterFatalException(DemeterException &e,  std::string const &location) {
-	CSPLOG(ERROR, APP) << "CSPSim: caught Demeter exception in " << location << ": " << e.GetErrorMessage();
+	CSPLOG(ERROR, APP) << "CSPSim: caught Demeter exception in " << location << ": " << e.what();
 	std::cerr << "\n"
 		<< "CSPSim: caught an Demeter exception.  Please report this along\n"
 		<< "with as much information as possible about what was happening at \n"

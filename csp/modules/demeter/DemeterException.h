@@ -30,8 +30,9 @@ public:
 	DemeterException(const std::string& errorMessage) {
 		m_ErrorMessage = std::string("TERRAIN ERROR: ") + errorMessage;
 	}
+	~DemeterException() throw () {}
 
-	const char* what() const {
+	const char* what() const throw () {
 		return m_ErrorMessage.c_str();
 	}
 	

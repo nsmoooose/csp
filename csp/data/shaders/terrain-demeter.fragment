@@ -39,7 +39,10 @@ void main() {
 	vec4 light = gl_LightSource[0].ambient + diffuse0 + diffuse1;
 
 	const vec4 fog_color = tc2;
-	const vec4 mesh_color = tc0 * tc1 * light;
+	// We don't have a detail texture file any longer. Remove it from the 
+	// calculation. Keeping this comment if we reenable this again.
+	// const vec4 mesh_color = tc0 * tc1 * light;
+	const vec4 mesh_color = tc0 * light;
 
 	gl_FragColor = vec4(mix(mesh_color.rgb, fog_color.rgb, gl_FogFragCoord), 1.0);
 }

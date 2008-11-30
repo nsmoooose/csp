@@ -1,8 +1,30 @@
 This folder examples showing how classes should be used.
 
-Examples:
-sky 		== Smalles possible application to show the sky dome, stars, moon and the sun. 
-			   Step back and forth in date/time with arrow right or arrow left.
-clouds 		== Displays a layer of clouds that you can move around in.
-objectmodel == 
-terrain-demeter == A simple example that is displaying the demeter terrain engine.
+=========================================================================================
+TO BUILD:
+Issue the following to build all examples:
+  scons examples
+
+=========================================================================================
+IMPORTANT NOTE:
+All examples expect that you run them from the csp folder. So to run the sky 
+example you must do the following:
+
+  examples/sky/.bin/sky
+
+For windows users you must also have added paths to the the csplib.dll and cspsim.dll. 
+This is normally done from sim.py. These examples are pure c++ and will need this path
+assigned. On linux it simply works.
+
+=========================================================================================
+EXAMPLES:
+sky 		    Smalles possible application to show the sky dome, stars, moon and the sun. 
+			    Step back and forth in date/time with arrow right or arrow left.
+
+clouds 		    Displays a layer of clouds that you can move around in.
+
+objectmodel     Displays a single 3d model.
+
+terrain-demeter A simple example that is displaying the demeter terrain engine.
+
+wf-window       Displays a simple window with a single label on it.

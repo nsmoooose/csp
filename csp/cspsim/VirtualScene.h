@@ -55,6 +55,7 @@ class Sky;
 
 namespace wf {
 	class WindowManager;
+	class WindowManagerSceneView;
 }
 
 /**
@@ -213,7 +214,7 @@ protected:
 	osg::ref_ptr<osg::FrameStamp> m_FrameStamp;
 	Ref<ContextIDFactory> m_ContextIDFactory;
 	
-	Ref<wf::WindowManager> m_WindowManager;
+	Ref<wf::WindowManagerSceneView> m_WindowManager;
 
 	float m_ViewDistance;
 	float m_ViewAngle;

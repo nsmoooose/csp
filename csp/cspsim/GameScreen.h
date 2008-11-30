@@ -48,6 +48,7 @@ struct CameraCommands;
 
 namespace wf {
 	class WindowManager;
+	class WindowManagerSceneView;
 }
 
 class GameScreen : public BaseScreen {

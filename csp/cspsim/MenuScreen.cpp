@@ -26,7 +26,7 @@
 #include <csp/cspsim/CSPSim.h>
 #include <csp/cspsim/EventMapIndex.h>
 #include <csp/cspsim/MenuScreen.h>
-#include <csp/cspwf/WindowManager.h>
+#include <csp/cspwf/WindowManagerSceneView.h>
 
 namespace csp {
 
@@ -39,7 +39,7 @@ MenuScreen::~MenuScreen() {
 void MenuScreen::onInit() {
 	const int screenWidth = CSPSim::theSim->getSDLScreen()->w;
 	const int screenHeight = CSPSim::theSim->getSDLScreen()->h;
-	m_WindowManager = new wf::WindowManager(m_State.get(), screenWidth, screenHeight);
+	m_WindowManager = new wf::WindowManagerSceneView(m_State.get(), screenWidth, screenHeight);
 	m_Serializer = new wf::Serialization();
 
 	// We need some kindo of keyboard binding for this screen.

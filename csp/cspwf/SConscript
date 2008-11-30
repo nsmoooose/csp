@@ -78,6 +78,10 @@ build.SourceGroup(expenv,
 		'Window.h',
 		'WindowManager.cpp',
 		'WindowManager.h',
+                'WindowManagerSceneView.cpp',
+                'WindowManagerSceneView.h',
+                'WindowManagerViewer.cpp',
+                'WindowManagerViewer.h',
 	],
 	deps = ['csplib', 'opengl', 'osg', 'sdl', 'sound'])
 

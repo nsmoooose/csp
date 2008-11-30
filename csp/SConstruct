@@ -35,6 +35,7 @@ PACKAGES = [
 	'examples/objectmodel',
 	'examples/sky',
 	'examples/terrain-demeter',
+	'examples/wf-window',
 	'tools/canopy',
 	'tools/layout',
 	'tools/layout2',

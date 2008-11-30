@@ -1,5 +1,5 @@
 // Combat Simulator Project
-// Copyright (C) 2002-2005 The Combat Simulator Project
+// Copyright (C) 2002 The Combat Simulator Project
 // http://csp.sourceforge.net
 //
 // This program is free software; you can redistribute it and/or
@@ -18,50 +18,36 @@
 
 
 /**
- * @file MenuScreen.h
+ * @file WindowManagerSceneView.h
  *
  **/
 
-#ifndef __CSPSIM_MENUSCREEN_H__
-#define __CSPSIM_MENUSCREEN_H__
+#include <csp/cspwf/WindowManager.h>
 
-#include <csp/cspsim/BaseScreen.h>
-
-namespace osg {
-	class State;
-}
+#ifndef __CSPSIM_WF_WINDOWMANAGERSCENEVIEW_H__
+#define __CSPSIM_WF_WINDOWMANAGERSCENEVIEW_H__
 
 namespace csp {
-
 namespace wf {
-	class Serialization;
-	class WindowManager;
-	class WindowManagerSceneView;
-}
 
-class CSPSIM_EXPORT MenuScreen : public BaseScreen { 
+class CSPWF_EXPORT WindowManagerSceneView : public WindowManager {
 public:
-	MenuScreen(osg::State* state);
-	virtual ~MenuScreen();
- 
-	virtual void onInit();
-	virtual void onExit();
+	WindowManagerSceneView(osg::State* state, int screenWidth, int screenHeight);
+	virtual ~WindowManagerSceneView();
 
+	virtual osgUtil::SceneView* getSceneView();
+
+	virtual Control* getControlAtPosition(int x, int y);
+
+	virtual void onUpdate(float dt);
 	virtual void onRender();
-	virtual void onUpdate(double dt);
-	
-	virtual bool onMouseMove(SDL_MouseMotionEvent const &);
-	virtual bool onMouseButton(SDL_MouseButtonEvent const &);
-	
-	virtual wf::WindowManager* getWindowManager();
-	virtual wf::Serialization* getSerializer();
 
 private:
-	osg::ref_ptr<osg::State> m_State;
-	Ref<wf::WindowManagerSceneView> m_WindowManager;
-	Ref<wf::Serialization> m_Serializer;
+	osg::ref_ptr<osgUtil::SceneView> m_View;
+
 };
 
+} // namespace wf
 } // namespace csp
 
-#endif // __CSPSIM_MENUSCREEN_H__
+#endif // __CSPSIM_WF_WINDOWMANAGERSCENEVIEW_H__

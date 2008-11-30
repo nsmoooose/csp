@@ -50,11 +50,9 @@ class Serialization;
 
 class CSPWF_EXPORT WindowManager : public Referenced, public WeakReferenced {
 public:
-	WindowManager(osg::State* state, int screenWidth, int screenHeight);
+	WindowManager();
 	virtual ~WindowManager();
 	
-	virtual osgUtil::SceneView* getSceneView();
-
 	virtual bool onClick(int x, int y);
 	virtual bool onMouseMove(int x, int y, int dx, int dy);
 	
@@ -66,11 +64,8 @@ public:
 	
 	virtual Window* getById(const std::string& id);
 
-	virtual void onUpdate(float dt);
-	virtual void onRender();
-	
 	virtual Point getMousePosition() const;
-	virtual Control* getControlAtPosition(int x, int y);
+	virtual Control* getControlAtPosition(int x, int y)=0;
 	
 	template <class Type> 
 	bool windowIsOpen() const {
@@ -105,10 +100,9 @@ public:
 		return m_Windows.size() > 0;
 	}
 		
-private:
+protected:
 	int m_ScreenWidth;
 	int m_ScreenHeight;
-	osg::ref_ptr<osgUtil::SceneView> m_View;
 	osg::ref_ptr<osg::Group> m_Group;
 
 	WindowVector m_Windows;

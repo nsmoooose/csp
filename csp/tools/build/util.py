@@ -46,7 +46,21 @@ def AddPhonyTarget(env, target, message=''):
 
 def CompareVersions(a, b):
 	if (a.find('.') < 0) or (b.find('.') < 0): return -1
-	return cmp(map(int, a.split('.')), map(int, b.split('.')))
+
+	# We compare number by number. And we do the string to int conversion
+	# as late as possible. This due to the fact that some version numbers
+	# contains dates and other characters in the end. For example (from a 
+	# scons release):
+	#    1.0.0.d20080826
+	# Hopefully we will find out if the version is good to use before we
+	# get to the 'd' character.
+	aa = a.split('.')
+	bb = b.split('.')
+	for index in range(min(len(aa), len(bb))):
+		result = cmp(int(aa[index]), int(bb[index]))
+		if result != 0:
+			return result
+	return 0
 
 
 def IsWindows(env):

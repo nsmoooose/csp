@@ -579,7 +579,9 @@ void CSPSim::loadSimulation() {
 	Ref<GameScreen> gameScreen = new GameScreen;
 	gameScreen->onInit();
 
+	CSPLOG(DEBUG, APP) << "About to change screen to gameScreen";
 	changeScreen(gameScreen.get());
+	CSPLOG(DEBUG, APP) << "gamescreen successfully initialized";
 }
 
 void CSPSim::unloadSimulation() {

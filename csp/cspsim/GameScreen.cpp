@@ -170,9 +170,11 @@ GameScreen::~GameScreen() {
 
 void GameScreen::onInit() {
 	// add a layer for overlay text on screen
+	CSPLOG(DEBUG, APP) << "Inside GameScreen::onInit()";
 	const int ScreenWidth = CSPSim::theSim->getSDLScreen()->w;
 	const int ScreenHeight = CSPSim::theSim->getSDLScreen()->h;
 
+	CSPLOG(DEBUG, APP) << "creating ScreenInfoManager";
 	m_ScreenInfoManager = new ScreenInfoManager(ScreenWidth, ScreenHeight);
 	m_ScreenInfoManager->setName("ScreenInfoManager");
 	m_ScreenInfoManager->setStatus("RECORD", false);
@@ -181,19 +183,24 @@ void GameScreen::onInit() {
 	m_ScreenInfoManager->setStatus("GENERAL STATS", false);
 	m_ScreenInfoManager->setStatus("OBJECT STATS", false);
 
+	CSPLOG(DEBUG, APP) << "attach ScreenInfoManager to scene";
 	osg::Group *info = CSPSim::theSim->getScene()->getInfoGroup();
 	info->removeChild(0, info->getNumChildren());
 	info->addChild(m_ScreenInfoManager.get());
 
+	CSPLOG(DEBUG, APP) << "trying to set ActiveObject";
 	Ref<DynamicObject> ao = CSPSim::theSim->getActiveObject();
 	if (ao.valid()) {
 		setActiveObject(ao);
+		CSPLOG(DEBUG, APP) << "successfully set ActiveObject";
 	}
 
+	CSPLOG(DEBUG, APP) << "trying to get Battlefield";
 	LocalBattlefield *bf = CSPSim::theSim->getBattlefield();
 	if (bf) {
 		bf->registerPlayerJoinCallback(m_OnPlayerJoin);
 		bf->registerPlayerQuitCallback(m_OnPlayerQuit);
+		CSPLOG(DEBUG, APP) << "Battlefield available";
 	}
 }
 

@@ -33,9 +33,9 @@
     zoomLevels = range(zoomLevelBegin, zoomLevelEnd)
     
     def tileUrl(self, tile, googlemapsServer):
-        urlSuffix = self.tileUrlSuffix( tile )
-        url = googlemapsServer % ( (tile.column + tile.row) % 4 ) + MercatorProjectionUrlPrefix + urlSuffix
-        fileName = urlSuffix + ".jpg"
+        coords = { "x": tile.column, "y": tile.row, "z": self.zoomLevel }
+        url = googlemapsServer % ( (tile.column + tile.row) % 4 ) + MercatorProjectionUrl % coords
+        fileName = MercatorProjectionFile % coords + ".jpg"
         return url, fileName
 %}
 };

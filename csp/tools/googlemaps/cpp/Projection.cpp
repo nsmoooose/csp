@@ -94,36 +94,5 @@ MercatorTilePixel MercatorProjection::llaToTilePixel(csp::LLA const & lla) const
     return pixelToTilePixel( llaToPixel( lla ) );
 }
 
-std::string MercatorProjection::tileUrlSuffix(MercatorTile const & tile) const {
-    std::string suffix = "t";
-    int nbTilesInLevel = nbTiles;
-    int column = tile.column;
-    int row = tile.row;
-    for ( int unused = zoomLevelBegin; unused != zoomLevel; ++unused ) {
-        nbTilesInLevel /= 2;
-        
-        std::div_t divResult = std::div( column, nbTilesInLevel );
-        int quadrantX = divResult.quot;
-        column = divResult.rem;
-        
-        divResult = std::div( row, nbTilesInLevel );
-        int quadrantY = divResult.quot;
-        row = divResult.rem;
-        
-        if ( quadrantX )
-            if ( quadrantY )
-                suffix += 's';
-            else
-                suffix += 'r';
-        else
-            if ( quadrantY )
-                suffix += 't';
-            else
-                suffix += 'q';
-    }
-    
-    return suffix;
-}
-
 }	// end namespace googlemaps
 }	// end namespace csp

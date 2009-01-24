@@ -42,7 +42,8 @@ public:
     Pixel pixel;
 };
 
-#define MercatorProjectionUrlPrefix "/kh?v=30&t="
+#define MercatorProjectionUrl "/kh?v=36&x=%(x)d&y=%(y)d&z=%(z)d"
+#define MercatorProjectionFile "z%(z)d-x%(x)d-y%(y)d"
 
 class MercatorProjection {
 public:
@@ -57,7 +58,6 @@ public:
     Pixel llaToPixel(csp::LLA const & lla) const;
     MercatorTilePixel pixelToTilePixel(Pixel const & pixel) const;
     MercatorTilePixel llaToTilePixel(csp::LLA const & lla) const;
-    std::string tileUrlSuffix(MercatorTile const & tile) const;
     
     int const zoomLevel;
     int const nbTiles;

@@ -39,10 +39,6 @@ namespace osg {
 	class State;
 }
 
-namespace osgUtil {
-	class SceneView;
-}
-
 namespace csp {
 namespace wf {
 
@@ -50,7 +46,7 @@ class Serialization;
 
 class CSPWF_EXPORT WindowManager : public Referenced, public WeakReferenced {
 public:
-	WindowManager();
+	WindowManager(int width, int height);
 	virtual ~WindowManager();
 	
 	virtual bool onClick(int x, int y);
@@ -115,6 +111,8 @@ protected:
 	void addStateAndRebuildGeometry(const std::string& state, Control* control);
 	
 	void calculateScreenSizeAndScale(Size& size, float& scale) const;
+
+	virtual osg::Group* getWindowNode();
 };
 
 } // namespace wf

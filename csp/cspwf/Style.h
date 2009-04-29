@@ -30,6 +30,7 @@
 
 #include <csp/csplib/util/Optional.h>
 #include <csp/csplib/util/Referenced.h>
+#include <csp/cspwf/Export.h>
 #include <csp/cspwf/Serialization.h>
 
 namespace csp {
@@ -46,7 +47,7 @@ class StyleBuilder;
  * in use. Many things isn't set directly on a control. They are set globaly
  * instead. The basic strategy is something that resembles html and css
  */
-class Style : public Referenced {
+class CSPWF_EXPORT Style : public Referenced {
 public:
 	friend class Control;
 	friend class StyleBuilder;

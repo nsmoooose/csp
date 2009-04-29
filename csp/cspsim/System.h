@@ -81,7 +81,7 @@
 #define __CSPSIM_SYSTEM_H__
 
 #include <csp/cspsim/Bus.h>  // could be forward declared, but most Bus users will need it in the header anyway.
-#include <csp/cspsim/InputInterface.h>
+#include <csp/cspsim/input/InputInterface.h>
 #include <csp/cspsim/sound/SoundEffect.h>  // for SoundEffect::Mode
 
 #include <csp/csplib/util/Namespace.h>
@@ -130,7 +130,7 @@ typedef Composite<SystemVisitor> SystemNode;
  *  registered.  Use this method to bind to data channels provided
  *  by other systems over the bus.
  */
-class CSPSIM_EXPORT System: public Object, public SystemNode, public UpdateTarget, public InputInterface {
+class CSPSIM_EXPORT System: public Object, public SystemNode, public UpdateTarget, public input::InputInterface {
 friend class SystemsModel;
 
 public:

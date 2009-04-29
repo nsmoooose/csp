@@ -31,7 +31,14 @@ csp::Ref<csp::wf::ResourceLocator> defaultResourceLocator;
 namespace csp {
 namespace wf {
 
+ResourceLocator::ResourceLocator() {
+}
+
 ResourceLocator::ResourceLocator(const StringVector& includeFolders) : m_IncludeFolders(includeFolders) {
+}
+
+void ResourceLocator::addFolder(const std::string& folder) {
+	m_IncludeFolders.push_back(folder);
 }
 	
 bool ResourceLocator::locateResource(std::string& file) const {

@@ -1,0 +1,17 @@
+General usage:
+- Run sdl-viewer without arguments: Loads a default scene (hard coded).
+- Add [Theater_Name] as argument: Load a scene from XML data. There must be a corresponding Theater_Name.xml file in /csp/data/xml/theater. "sdl-viewer.exe balkan" should always work.
+
+Hint for Windows users:
+This example application must be run from the CSP root directory in order to find the correct data file paths. To make this a little bit easier, the scripts below can be used (run them from the CSP root directory).
+
+Set the required paths:
+
+set WORKING_DIRECTORY=%cd%
+set PATH=%PATH%;%CSPDEVPACK%\bin
+set PATH=%PATH%;%WORKING_DIRECTORY%\csplib\.bin\;%WORKING_DIRECTORY%\cspsim\.bin;%WORKING_DIRECTORY%\cspwf\.bin
+set PATH=%PATH%;%WORKING_DIRECTORY%\modules\demeter\.bin
+
+Run the SDL Viewer example application:
+
+examples\sdl-viewer\.bin\sdl-viewer.exe %1 %2 %3

@@ -27,20 +27,28 @@
 
 #include <csp/cspwf/WindowManager.h>
 
+namespace osg {
+	class Camera;
+}
+
 namespace csp {
 namespace wf {
 
 class CSPWF_EXPORT WindowManagerViewer : public WindowManager {
 public:
-	WindowManagerViewer();
+	WindowManagerViewer(int width=1024, int height=768);
 	virtual ~WindowManagerViewer();
 
 	virtual osg::ref_ptr<osg::Group> getRootNode();
 
 	virtual Control* getControlAtPosition(int x, int y);
+
+private:
+	osg::ref_ptr<osg::Camera> m_Camera;
 };
 
 } // namespace wf
 } // namespace csp
 
 #endif // __CSPSIM_WF_WINDOWMANAGERVIEWER_H__
+

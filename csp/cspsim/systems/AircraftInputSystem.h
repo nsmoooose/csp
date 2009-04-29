@@ -73,12 +73,12 @@ public:
 public:
 	AircraftInputSystem();
 
-	virtual void setThrottle(MapEvent::AxisEvent const &event);
-	virtual void setRudder(MapEvent::AxisEvent const &event);
-	virtual void setRoll(MapEvent::AxisEvent const &event);
-	virtual void setPitch(MapEvent::AxisEvent const &event);
-	virtual void setWheelBrake(MapEvent::AxisEvent const &event);
-	virtual void setAirbrake(MapEvent::AxisEvent const &event);
+	virtual void setThrottle(input::MapEvent::AxisEvent const &event);
+	virtual void setRudder(input::MapEvent::AxisEvent const &event);
+	virtual void setRoll(input::MapEvent::AxisEvent const &event);
+	virtual void setPitch(input::MapEvent::AxisEvent const &event);
+	virtual void setWheelBrake(input::MapEvent::AxisEvent const &event);
+	virtual void setAirbrake(input::MapEvent::AxisEvent const &event);
 	virtual void IncPitch();
 	virtual void noIncPitch();
 	virtual void DecPitch();

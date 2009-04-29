@@ -55,6 +55,7 @@
 
 #include <csp/cspsim/Config.h>
 #include <csp/cspsim/Export.h>
+#include <csp/cspsim/SDLViewer.h>
 #include <csp/csplib/util/Ref.h>
 #include <csp/csplib/util/ScopedPointer.h>
 #include <csp/csplib/data/Date.h>
@@ -75,17 +76,22 @@ class BaseScreen;
 class Client;
 class DataManager;
 class DynamicObject;
-class EventMapIndex;
 class GameScreen;
-class InputEvent;
 class LocalBattlefield;
 class TerrainObject;
 class Theater;
-class VirtualHID;
 class VirtualScene;
+
+namespace input {
+	class EventMapIndex;
+	class InputEvent;
+	class VirtualHID;
+}
 
 namespace config { class Configuration; }
 namespace weather { class Atmosphere; }
+
+namespace wf { class WindowManager; }
 
 /** The primary simulation engine for CSP.  Also acts as a singleton to provide
  *  direct access to shared simulation state.  Do not abuse this access point;
@@ -109,6 +115,8 @@ public:
 	virtual void quit();
 	virtual void cleanup();
 	
+	virtual osg::Group* getSceneData();
+	virtual wf::WindowManager* getWindowManager();
 	virtual wf::Signal* getConfigurationChangedSignal();
 	virtual config::Configuration* getConfiguration();
 	virtual void setConfiguration(config::Configuration* config); 
@@ -132,7 +140,7 @@ public:
 	VirtualScene * getScene();
 	VirtualScene const * getScene() const;
 	Ref<Theater> getTheater() const;
-	Ref<EventMapIndex> getInterfaceMaps() const;
+	Ref<input::EventMapIndex> getInterfaceMaps() const;
 
 	void togglePause();
 	bool isPaused() { return m_Paused; }
@@ -152,6 +160,8 @@ protected:
 	void setWfResourceLocator();
 
 private:
+	Ref<SDLViewer> m_Viewer;
+	Ref<wf::WindowManager> m_WindowManager;
 	Ref<wf::Signal> m_ConfigurationChanged;
 	
 	SDL_Surface *m_SDLScreen;
@@ -177,8 +187,8 @@ private:
 	void updateTime();
 
 	// The current input device interface
-	Ref<VirtualHID> m_Interface;
-	Ref<EventMapIndex> m_InterfaceMaps;
+	Ref<input::VirtualHID> m_Interface;
+	Ref<input::EventMapIndex> m_InterfaceMaps;
 	Ref<DynamicObject> m_ActiveObject;
 
 	// The virtual battlefield
@@ -196,7 +206,7 @@ private:
 	// Shared state used by all SceneViews.
 	osg::ref_ptr<osg::State> m_GlobalState;
 
-	ScopedPointer<InputEvent> m_InputEvent;
+	ScopedPointer<input::InputEvent> m_InputEvent;
 };
 
 } // namespace csp

@@ -92,6 +92,7 @@ public:
 	virtual ~VirtualScene();
 
 	void buildScene();
+	void buildSceneNew();
 	void buildSky();
 
 	int drawScene();
@@ -154,14 +155,14 @@ public:
 
 	bool pick(int x, int y);
 
-	wf::WindowManager* getWindowManager();
-
 	void drawPlayerInterface();
 
-	osg::Group *getInfoGroup();
-	
 	// TODO: Cloud experiments. 
 	osg::Group *getCloudGroup() { return m_CloudGroup.get(); }
+
+	osg::Group *getVeryFarGroup() { return m_VeryFarGroup.get(); }
+	osg::Group *getFarGroup() { return m_FarGroup.get(); }
+	osg::Group *getNearGroup() { return m_NearGroup.get(); }
 
 private:
 
@@ -189,20 +190,30 @@ private:
 	void createVeryFarView();
 	void createFarView();
 	void createNearView();
-	void createInfoView();
-	void createWindowView();
 
 	void drawVeryFarView();
 	void drawFarView();
 	void drawNearView();
 	void drawInfoView();
 
+	void createSceneViewsNew();
+
+	void createVeryFarViewNew();
+	void createFarViewNew();
+	void createNearViewNew();
+/*	void createInfoViewNew();
+	void createWindowViewNew();*/
+
+
+/*	void drawVeryFarViewNew();
+	void drawFarViewNew();
+	void drawNearViewNew();*/
+
 protected:
 	void _updateFog(Vector3 const &lookPos, Vector3 const &eyePos);
 
 	Ref<TerrainObject> m_Terrain;
 
-	osg::ref_ptr<osgUtil::SceneView> m_InfoView;
 	osg::ref_ptr<osgUtil::SceneView> m_NearView;
 	osg::ref_ptr<osgUtil::SceneView> m_FarView;
 	osg::ref_ptr<osgUtil::SceneView> m_VeryFarView;
@@ -214,8 +225,6 @@ protected:
 	osg::ref_ptr<osg::FrameStamp> m_FrameStamp;
 	Ref<ContextIDFactory> m_ContextIDFactory;
 	
-	Ref<wf::WindowManagerSceneView> m_WindowManager;
-
 	float m_ViewDistance;
 	float m_ViewAngle;
 	float m_NearPlane; // of the near view
@@ -248,7 +257,6 @@ protected:
 	osg::ref_ptr<osg::Group> m_VeryFarGroup;
 	osg::ref_ptr<osg::Group> m_FarGroup;
 	osg::ref_ptr<osg::Group> m_NearGroup;
-	osg::ref_ptr<osg::Group> m_InfoGroup;
 
 	osg::ref_ptr<osg::Group> m_NearObjectGroup;
 	osg::ref_ptr<osg::Group> m_FogGroup;

@@ -34,6 +34,8 @@ namespace csp {
 
 namespace {
 
+typedef void (*INITMODULE_FUNCTION)();
+
 struct ModuleWrapper: public Referenced {
 	inline ModuleWrapper(std::string const &path);
 	inline ~ModuleWrapper() { CSPLOG(INFO, REGISTRY) << "Unloading module " << m_path; }
@@ -55,6 +57,14 @@ ModuleWrapper::ModuleWrapper(std::string const &path): m_path(path) {
 	CSPLOG(INFO, REGISTRY) << "Loading module " << path;
 	m_dso.reset(new ost::DSO(path.c_str(), /*bindnow=*/false));
 	getModuleRegistry()->insert(std::make_pair(path, this));
+	
+	INITMODULE_FUNCTION initModule = (INITMODULE_FUNCTION) ((*m_dso)["initModule"]);
+	if(initModule) {
+		initModule();
+	}
+	else {
+		std::cout << "Failed to find initModule function in: " << path.c_str() << std::endl;
+	}
 }
 
 } // namespace
@@ -87,5 +97,3 @@ bool ModuleLoader::isLoaded(std::string const &path) {
 }
 
 } // namespace csp
-
-

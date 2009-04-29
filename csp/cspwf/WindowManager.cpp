@@ -33,7 +33,6 @@
 #include <osg/LightModel>
 #include <osg/MatrixTransform>
 #include <osg/TexEnv>
-#include <osgUtil/SceneView>
 #include <osgUtil/IntersectVisitor>
 
 #include <SDL/SDL.h>
@@ -41,7 +40,10 @@
 namespace csp {
 namespace wf {
 
-WindowManager::WindowManager() {
+WindowManager::WindowManager(int width, int height) : 
+	m_ScreenWidth(width), m_ScreenHeight(height) {
+
+	m_Group = new osg::Group;
 }
 
 WindowManager::~WindowManager() {
@@ -158,7 +160,7 @@ void WindowManager::show(Window* window) {
 
 	// Add the window into the tree of nodes in osg. This will make
 	// the window visible for the user in the next render.
-	m_Group->addChild(window->getNode());
+	getWindowNode()->addChild(window->getNode());
 
 	// Also store a reference to the window.
 	m_Windows.push_back(window);
@@ -170,7 +172,7 @@ void WindowManager::close(Window* window) {
 	// Lets remove the node that represents the window. This will
 	// remove the window on the next rendering.
 	osg::Group* windowGroup = window->getNode();
-	m_Group->removeChild(windowGroup);
+	getWindowNode()->removeChild(windowGroup);
 
 	// We must also remove our reference to the Window object.
 	WindowVector::iterator iteratedWindow = m_Windows.begin();
@@ -225,6 +227,10 @@ void WindowManager::calculateScreenSizeAndScale(Size& size, float& scale) const 
 		size.height *= (1024.0 / screenSize.width);
 		scale = screenSize.width / 1024.0;
 	}
+}
+
+osg::Group* WindowManager::getWindowNode() {
+	return m_Group.get();
 }
 
 } // namespace wf

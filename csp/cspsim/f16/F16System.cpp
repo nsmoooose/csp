@@ -27,7 +27,7 @@
 #include <csp/cspsim/AnimationSequence.h>
 #include <csp/cspsim/FlightDynamicsChannels.h>
 #include <csp/cspsim/FuelManagementSystem.h>
-#include <csp/cspsim/InputEventChannel.h>
+#include <csp/cspsim/input/InputEventChannel.h>
 #include <csp/cspsim/KineticsChannels.h>
 #include <csp/cspsim/LandingGearChannels.h>
 #include <csp/cspsim/NavigationChannels.h>

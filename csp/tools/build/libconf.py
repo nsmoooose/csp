@@ -149,10 +149,10 @@ class DevpackConfig:
 		try:
 			v = map(int, re.search(r'([0-9.]+)"?$', path).group(1).split('.'))
 		except Exception:
-			print 'CSPDEVPACK environment variable (%s) does not look like a valid devpack path.' % path
+			print('ERROR: CSPDEVPACK environment variable (%s) does not look like a valid devpack path.' % path)
 			sys.exit(1)
 		if v < map(int, DevpackConfig.VERSION.split('.')):
-			print 'The installed devpack (%s) is too old; need version %s' % (path, version)
+			print('ERROR: The installed devpack (%s) is too old; need version %s' % (path, DevpackConfig.VERSION))
 			sys.exit(1)
 		DevpackConfig._checkPath(path)
 		DevpackConfig._checkPath(path, 'bin')

@@ -457,8 +457,7 @@ inline hasht classhash_helper(std::string const &class_name, const fprint32 sign
 	}; \
 	typedef __csp_interface_proxy__M_classname __csp_interface_proxy; \
 	virtual void _serialize(CSP(Writer) &writer) const; \
-	virtual void _serialize(CSP(Reader) &reader); \
-	static __csp_interface_proxy__M_classname __csp_interface_proxy__M_classname_instance;
+	virtual void _serialize(CSP(Reader) &reader);
 
 #define CSP_EXPORT_OBJECT(_M_export_spec) \
 	class _M_export_spec __csp_interface_proxy__M_classname;
@@ -488,7 +487,6 @@ inline hasht classhash_helper(std::string const &class_name, const fprint32 sign
 		return hash; \
 	} \
 	CSP(ObjectInterface)<_M_classname> *_M_classname::__csp_interface_proxy__M_classname::_interface = 0; \
-	_M_classname::__csp_interface_proxy__M_classname _M_classname::__csp_interface_proxy__M_classname_instance; \
 	CSP(fprint32) _M_classname::__csp_interface_proxy__M_classname::signature() { return _interface->signature(); } \
 	void _M_classname::__csp_interface_proxy__M_classname::serialize(_M_classname *object, CSP(Reader) &reader) { _interface->serialize(object, reader); } \
 	void _M_classname::__csp_interface_proxy__M_classname::serialize(_M_classname const *object, CSP(Writer) &writer) { _interface->serialize(object, writer); } \

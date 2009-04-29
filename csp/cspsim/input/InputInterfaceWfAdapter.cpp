@@ -22,11 +22,12 @@
  *
  **/
 
-#include <csp/cspsim/InputInterface.h>
-#include <csp/cspsim/InputInterfaceWfAdapter.h>
+#include <csp/cspsim/input/InputInterface.h>
+#include <csp/cspsim/input/InputInterfaceWfAdapter.h>
 #include <csp/cspwf/SignalData.h>
 
 namespace csp {
+namespace input {
 
 // An adapter class for binding a wf::Signal to an InputInterface action.
 // This signal is owned by the adapter class, and fires whenever the action
@@ -81,4 +82,5 @@ wf::Signal* InputInterfaceWfAdapter::registerActionSignal(const std::string& id)
 	return actionToSignalSlot->getSignal();
 }
 
+} // namespace input
 } // namespace csp

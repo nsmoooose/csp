@@ -26,11 +26,11 @@
 #pragma warning(disable : 4786)
 # endif
 
-#include <csp/cspsim/InputInterface.h>
+#include <csp/cspsim/input/InputInterface.h>
 #include <sigc++/adaptors/hide.h>
 
 namespace csp {
-
+namespace input {
 
 InputInterfaceDispatch::~InputInterfaceDispatch() {
 	for (EventHandlerMap::iterator iter = m_EventHandlers.begin(); iter != m_EventHandlers.end(); ++iter) {
@@ -94,5 +94,5 @@ void RuntimeDispatch::bindAxis(std::string const &id, AxisEventSlot const &callb
 	m_AxisCallbacks[id].connect(callback);
 }
 
-
+} // namespace input
 } // namespace csp

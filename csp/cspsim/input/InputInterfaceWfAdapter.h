@@ -32,12 +32,15 @@
 #include <csp/cspwf/Signal.h>
 
 namespace csp {
-	class InputInterface;
 
 namespace wf {
 	class Signal;
 	class Slot;
 }
+
+namespace input {
+
+class InputInterface;
 
 /// An adapter class for binding InputInterface action events to window
 /// framework signals.
@@ -66,6 +69,7 @@ private:
 	InputInterface* m_InputInterface;  // not owned
 };
 
+} // namespace input
 } // namespace csp
 
 #endif // __CSPSIM_INPUTINTERFACEWFADAPTER_H__

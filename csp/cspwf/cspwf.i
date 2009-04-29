@@ -23,12 +23,13 @@
 #include <csp/cspwf/ListBox.h>
 #include <csp/cspwf/ListBoxItem.h>
 #include <csp/cspwf/Model.h>
+#include <csp/cspwf/ResourceLocator.h>
 #include <csp/cspwf/Serialization.h>
 #include <csp/cspwf/Signal.h>
 #include <csp/cspwf/SignalData.h>
 #include <csp/cspwf/Slot.h>
 #include <csp/cspwf/Window.h>
-#include <csp/cspwf/WindowManager.h>
+#include <csp/cspwf/WindowManagerViewer.h>
 %}
 
 namespace csp
@@ -268,10 +269,26 @@ public:
 
 // ***************** SERIALIZATION *****************************
 
+class ResourceLocator : public Referenced {
+public:
+	ResourceLocator();
+	virtual void addFolder(const std::string& folder);
+};
+
+void setDefaultResourceLocator(ResourceLocator* locator);
+
+class SerializationException : public std::exception {
+public:
+	SerializationException(const char* message);
+	virtual ~SerializationException() throw();
+
+	const char* what();
+};
+
 class Serialization : public Referenced {
 public:
 	Serialization();
-	virtual void load(Window* window, const std::string& file);
+	virtual void load(Window* window, const std::string& file) throw (SerializationException);
 };
 
 %newobject WindowManager::getById();
@@ -284,6 +301,18 @@ public:
 	virtual void closeAll();
 private:
 	WindowManager();
+};
+
+class WindowManagerViewer : public WindowManager {
+public:
+	WindowManagerViewer();
+	virtual ~WindowManagerViewer();
+};
+
+%extend WindowManagerViewer {
+	osg::Node* getRootNode() {
+		return self->getRootNode().get();
+	}
 };
 
 class Window : public SingleControlContainer {

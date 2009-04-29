@@ -34,43 +34,43 @@ namespace csp {
 const float TURBIDITY = 2.8f;
 
 SkyShader::SkyShader() {
-	m_OverLuminescence = 1.2;
-	m_HaloSharpness = 0.3; //0.5;
-	m_SunsetSharpness = 50.0;
-	m_SunsetElevation = -5.0 * (PI/180.0);  // half-intensity elevation
-	m_NightBase = 0.01;
-	//m_DarkSkyColor = Color(0.008, 0.035, 0.140, Color::RGB);
-	//m_DarkSkyColor = Color(0.008, 0.086, 0.183, Color::RGB);
-	m_DarkSkyColor = Color(0.008, 0.016, 0.183, Color::RGB);
-	//m_DarkSkyColor = Color(0.004, 0.008, 0.0915, Color::RGB);
-	m_DarkAdjustment = 0.0;
+	m_OverLuminescence = 1.2f;
+	m_HaloSharpness = 0.3f; //0.5f;
+	m_SunsetSharpness = 50.0f;
+	m_SunsetElevation = static_cast<float>( -5.0 * (PI/180.0) );  // half-intensity elevation
+	m_NightBase = 0.01f;
+	//m_DarkSkyColor = Color(0.008f, 0.035f, 0.140f, Color::RGB);
+	//m_DarkSkyColor = Color(0.008f, 0.086f, 0.183f, Color::RGB);
+	m_DarkSkyColor = Color(0.008f, 0.016f, 0.183f, Color::RGB);
+	//m_DarkSkyColor = Color(0.004f, 0.008f, 0.0915f, Color::RGB);
+	m_DarkAdjustment = 0.0f;
 	setTurbidity(TURBIDITY);
 	setSunElevation(0.0);
 }
 
 void SkyShader::getSkyCoefficients(float T, sky_c &skylight) {
-	skylight.x[0] = -0.01925 * T - 0.25922;
-	skylight.x[1] = -0.06651 * T + 0.00081;
-	skylight.x[2] = -0.00041 * T + 0.21247;
-	skylight.x[3] = -0.06409 * T - 0.89887;
-	skylight.x[4] = -0.00325 * T + 0.04517;
-	skylight.y[0] = -0.01669 * T - 0.26078;
-	skylight.y[1] = -0.09496 * T + 0.00921;
-	skylight.y[2] = -0.00792 * T + 0.21023;
-	skylight.y[3] = -0.04405 * T - 1.65369;
-	skylight.y[4] = -0.01092 * T + 0.05291;
-	skylight.Y[0] =  0.17872 * T - 1.46303;
-	skylight.Y[1] = -0.35540 * T + 0.42749;
-	skylight.Y[2] = -0.02266 * T + 5.32505;
-	skylight.Y[3] =  0.12064 * T - 2.57705;
-	skylight.Y[4] = -0.06696 * T + 0.37027;
+	skylight.x[0] = -0.01925f * T - 0.25922f;
+	skylight.x[1] = -0.06651f * T + 0.00081f;
+	skylight.x[2] = -0.00041f * T + 0.21247f;
+	skylight.x[3] = -0.06409f * T - 0.89887f;
+	skylight.x[4] = -0.00325f * T + 0.04517f;
+	skylight.y[0] = -0.01669f * T - 0.26078f;
+	skylight.y[1] = -0.09496f * T + 0.00921f;
+	skylight.y[2] = -0.00792f * T + 0.21023f;
+	skylight.y[3] = -0.04405f * T - 1.65369f;
+	skylight.y[4] = -0.01092f * T + 0.05291f;
+	skylight.Y[0] =  0.17872f * T - 1.46303f;
+	skylight.Y[1] = -0.35540f * T + 0.42749f;
+	skylight.Y[2] = -0.02266f * T + 5.32505f;
+	skylight.Y[3] =  0.12064f * T - 2.57705f;
+	skylight.Y[4] = -0.06696f * T + 0.37027f;
 }
 
 float SkyShader::FasterF(float cos_theta, float gamma, float cos_gamma, coeff &p) {
 #ifdef CUSTOM_F
-	cos_theta = fabs(cos_theta) + 0.09;
+	cos_theta = fabs(cos_theta) + 0.09f;
 #endif
-	return (1.0 + p[0]*exp(p[1]/cos_theta))*(1.0+p[2]*exp(p[3]*gamma)+p[4]*cos_gamma*cos_gamma);
+	return (1.0f + p[0]*exp(p[1]/cos_theta))*(1.0f+p[2]*exp(p[3]*gamma)+p[4]*cos_gamma*cos_gamma);
 }
 
 
@@ -78,24 +78,24 @@ float SkyShader::F(float theta, float gamma, coeff &p) {
 	float cos_g = cos(gamma);
 	//gamma *= std::max(1.0, 10.0 * std::min(1.0, 10.0 * sin(m_SunElevation)));
 #ifdef CUSTOM_F
-	float cos_t = fabs(cos(theta)) + 0.09;
+	float cos_t = fabs(cos(theta)) + 0.09f;
 #else
 	float cos_t = cos(theta);
 #endif
-	return (1.0 + p[0]*exp(p[1]/cos_t))*(1.0+p[2]*exp(p[3]*gamma)+p[4]*cos_g*cos_g);
+	return (1.0f + p[0]*exp(p[1]/cos_t))*(1.0f+p[2]*exp(p[3]*gamma)+p[4]*cos_g*cos_g);
 }
 
 float SkyShader::FastPerez(float theta, float gamma, float factor, float z, coeff &p) {
-	if (theta > 1.57) theta = 1.57;
+	if (theta > 1.57f) theta = 1.57f;
 	return factor * z * F(theta, gamma, p);
 }
 
 float SkyShader::Perez(float theta, float gamma, float theta_s, float z, coeff &p) {
-	if (theta > 1.57) theta = 1.57;
-	//if (theta_s > 1.57) theta_s = 1.57;
-	//if (theta_s >  1.50) theta_s = 1.50 + ((theta_s-1.50) * 0.5);
-	float denom = F(0.0, theta_s, p);
-	if (denom != 0.0) z /= denom;
+	if (theta > 1.57f) theta = 1.57f;
+	//if (theta_s > 1.57f) theta_s = 1.57f;
+	//if (theta_s >  1.50f) theta_s = 1.50f + ((theta_s-1.50f) * 0.5f);
+	float denom = F(0.0f, theta_s, p);
+	if (denom != 0.0f) z /= denom;
 	return z * F(theta, gamma, p);
 }
 
@@ -105,16 +105,16 @@ Color SkyShader::getZenith(float T, float theta_s) {
 	float s3 = s2*s;
 	float t = T;
 	float t2 = t*t;
-	float xa =  0.00166 * s3 - 0.00375 * s2 + 0.00209 * s;
-	float xb = -0.02903 * s3 + 0.06377 * s2 - 0.03202 * s + 0.00394;
-	float xc =  0.11693 * s3 - 0.21196 * s2 + 0.06052 * s + 0.25886;
+	float xa =  0.00166f * s3 - 0.00375f * s2 + 0.00209f * s;
+	float xb = -0.02903f * s3 + 0.06377f * s2 - 0.03202f * s + 0.00394f;
+	float xc =  0.11693f * s3 - 0.21196f * s2 + 0.06052f * s + 0.25886f;
 	float xz = xa * t2 + xb * t + xc;
-	float ya =  0.00275 * s3 - 0.00610 * s2 + 0.00317 * s;
-	float yb = -0.04214 * s3 + 0.08970 * s2 - 0.04153 * s + 0.00516;
-	float yc =  0.15346 * s3 - 0.26756 * s2 + 0.06670 * s + 0.26688;
+	float ya =  0.00275f * s3 - 0.00610f * s2 + 0.00317f * s;
+	float yb = -0.04214f * s3 + 0.08970f * s2 - 0.04153f * s + 0.00516f;
+	float yc =  0.15346f * s3 - 0.26756f * s2 + 0.06670f * s + 0.26688f;
 	float yz = ya * t2 + yb * t + yc;
-	float chi = (0.4444444 - T * 0.008333333) * (PI - 2.0*s);
-	float Yz = (4.0453 * T - 4.9710) * tan(chi) - 0.2155 * T + 2.4192;
+	float chi = static_cast<float>( (0.4444444 - T * 0.008333333) * (PI - 2.0*s) );
+	float Yz = (4.0453f * T - 4.9710f) * tan(chi) - 0.2155f * T + 2.4192f;
 	// Yz is in units of kcd/m^2
 
 #ifdef CUSTOM_SUNSET_OLD
@@ -136,29 +136,29 @@ void SkyShader::setTurbidity(float T) {
 void SkyShader::setSunElevation(float h) {
 	m_AzimuthCorrection = 0.0;
 	if (h < -PI) {
-		h += 2.0 * PI * int((PI - h) / (2.0 * PI));
+		h += static_cast<float>( 2.0 * PI * int((PI - h) / (2.0 * PI)) );
 	} else
 	if (h > PI) {
-		h -= 2.0 * PI * int((PI + h) / (2.0 * PI));
+		h -= static_cast<float>( 2.0 * PI * int((PI + h) / (2.0 * PI)) );
 	}
 	if (h > 0.5 *PI) {
-		h = PI - h;
-		m_AzimuthCorrection = PI;
+		h = static_cast<float>( PI - h );
+		m_AzimuthCorrection = static_cast<float>( PI );
 	} else
 	if (h < -0.5*PI) {
-		h = -PI - h;
-		m_AzimuthCorrection =  -PI;
+		h = static_cast<float>( -PI - h );
+		m_AzimuthCorrection =  static_cast<float>( -PI );
 	}
 	m_SunElevation = h;
-	m_DarkAdjustment = clampTo(6.0 * (m_SunElevation - toRadians(-25.0)), 0.0, 1.0);
+	m_DarkAdjustment = clampTo(6.0f * (m_SunElevation - toRadians(-25.0f)), 0.0f, 1.0f);
 	m_Dirty = true;
 }
 
 void SkyShader::_computeBase() {
 	m_Dirty = false;
 
-	m_SunTheta = 0.5*PI - m_SunElevation;
-	m_SunVector[0] = 0.0;
+	m_SunTheta = static_cast<float>( 0.5*PI - m_SunElevation );
+	m_SunVector[0] = 0.0f;
 	m_SunVector[1] = sin(m_SunTheta);
 	m_SunVector[2] = cos(m_SunTheta);
 
@@ -167,18 +167,18 @@ void SkyShader::_computeBase() {
 	float theta = m_SunTheta;
 	//if (theta >  1.50) theta = 1.50 + ((m_SunTheta-1.50) * 0.5);
 	float denom;
-	denom = F(0.0, theta, m_Coefficients.x);
-	if (denom == 0.0) denom = 1.0;
-	m_PerezFactor.x = 1.0 / denom;
-	denom = F(0.0, theta, m_Coefficients.y);
-	if (denom == 0.0) denom = 1.0;
-	m_PerezFactor.y = 1.0 / denom;
-	denom = F(0.0, theta, m_Coefficients.Y);
-	if (denom == 0.0) denom = 1.0;
-	m_PerezFactor.Y = 1.0 / denom;
+	denom = F(0.0f, theta, m_Coefficients.x);
+	if (denom == 0.0f) denom = 1.0f;
+	m_PerezFactor.x = 1.0f / denom;
+	denom = F(0.0f, theta, m_Coefficients.y);
+	if (denom == 0.0f) denom = 1.0f;
+	m_PerezFactor.y = 1.0f / denom;
+	denom = F(0.0f, theta, m_Coefficients.Y);
+	if (denom == 0.0f) denom = 1.0f;
+	m_PerezFactor.Y = 1.0f / denom;
 
 	m_Zenith = getZenith(m_Turbidity, m_SunTheta);
-	m_MaxY = 1.0;
+	m_MaxY = 1.0f;
 
 #ifdef CUSTOM_EYE
 	m_PupilFactor = 0.5f / std::min(std::max(m_Zenith.getC(), 0.0175f), 0.5f);
@@ -217,22 +217,22 @@ void _XYZ_to_RGB709(float X, float Y, float Z, float &R, float &G, float &B) {
 
 void _xyY_to_XYZ(float x, float y, float Y_, float &X, float &Y, float &Z) {
 	Y = Y_;
-	if (Y_ == 0.0) {
-		X = Z = 0.0;
+	if (Y_ == 0.0f) {
+		X = Z = 0.0f;
 	} else {
 		// any check for y == 0.0?
 		X = x * Y / y;
-		if (X < 0.0) X = 0.0;
+		if (X < 0.0f) X = 0.0f;
 		float z = 1.0f - x - y;
 		Z = z * Y / y;
-		if (Z < 0.0) Z = 0.0;
+		if (Z < 0.0f) Z = 0.0f;
 	}
 }
 
 
 Color SkyShader::SkyColor(float elevation, float azimuth, float &intensity) {
 	if (m_Dirty) _computeBase();
-	float theta = 0.5f*PI - elevation;
+	float theta = static_cast<float>( 0.5*PI - elevation );
 	float A = azimuth + m_AzimuthCorrection;
 	float v[3] = {sin(A)*sin(theta), cos(A)*sin(theta), cos(theta)};
 	float dot = v[0]*m_SunVector[0]+v[1]*m_SunVector[1]+v[2]*m_SunVector[2];
@@ -281,19 +281,19 @@ Color SkyShader::SkyColor(float elevation, float azimuth, float &intensity) {
 #endif
 
 	float X_, Y_, Z_, r_, g_, b_;
-	_xyY_to_XYZ(ciex, ciey, 1.0, X_, Y_, Z_);
+	_xyY_to_XYZ(ciex, ciey, 1.0f, X_, Y_, Z_);
 	_XYZ_to_RGB709(X_, Y_, Z_, r_, g_, b_);
 
 	double f = std::min(1.0f, cieY) / getY709(r_, g_, b_);
-	r_ = std::min(1.0, std::max(0.0, f * r_));
-	g_ = std::min(1.0, std::max(0.0, f * g_));
-	b_ = std::min(1.0, std::max(0.0, f * b_));
+	r_ = static_cast<float>( std::min(1.0, std::max(0.0, f * r_)) );
+	g_ = static_cast<float>( std::min(1.0, std::max(0.0, f * g_)) );
+	b_ = static_cast<float>( std::min(1.0, std::max(0.0, f * b_)) );
 
 	Color rgb(r_, g_, b_, Color::RGB, true);
 
 	intensity = cieY;
 
-	if (m_DarkAdjustment > 0.0) {
+	if (m_DarkAdjustment > 0.0f) {
 		rgb.composite(m_DarkSkyColor, 1.0f, m_DarkAdjustment);
 		rgb.check();
 	}

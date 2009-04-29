@@ -318,13 +318,13 @@ protected:
 		object->setAngularVelocity(Vector3(1, 2, 3));
 		object->setPosition(Vector3(-10, -20, -30));
 		for (int i = 0; i < 1000; ++i) physics->doSimStep(0.01);
-		CSP_EXPECT_FEQ(-10, object->position().x());
-		CSP_EXPECT_FEQ(-20, object->position().y());
-		CSP_EXPECT_FEQ(-30 - 0.5 * 9.8 * (10*10), object->position().z());
-		CSP_EXPECT_FEQ(0, object->velocity().x());
-		CSP_EXPECT_FEQ(0, object->velocity().y());
-		CSP_EXPECT_FEQ(-9.8 * 10, object->velocity().z());
-		CSP_EXPECT_FEQ(0, vdiff(object->angularVelocity(), Vector3(1, 2, 3)));
+		CSP_EXPECT_DEQ(-10, object->position().x());
+		CSP_EXPECT_DEQ(-20, object->position().y());
+		CSP_EXPECT_DEQ(-30 - 0.5 * 9.8 * (10*10), object->position().z());
+		CSP_EXPECT_DEQ(0, object->velocity().x());
+		CSP_EXPECT_DEQ(0, object->velocity().y());
+		CSP_EXPECT_DEQ(-9.8 * 10, object->velocity().z());
+		CSP_EXPECT_DEQ(0, vdiff(object->angularVelocity(), Vector3(1, 2, 3)));
 	}
 
 	CSP_TESTCASE(ForceFreeTop) {

@@ -63,14 +63,19 @@ void ControlGeometryBuilder::getNextLayer(float& z) const {
 }
 
 osgText::Text* ControlGeometryBuilder::buildText(const std::string& text, const std::string& fontFamily, float fontSize, osg::Vec4& color) const {
-    osg::ref_ptr<osgText::Text> textNode = new osgText::Text;
-    textNode->setText(text, osgText::String::ENCODING_UTF8);
-    textNode->setColor(color);
-    textNode->setFont(fontFamily.c_str());
-    textNode->setCharacterSize(fontSize);
-	textNode->setAxisAlignment(osgText::Text::XY_PLANE);
-	textNode->setRotation(osg::Quat(PI/2, 0, 0, 0));
-	return textNode.release();
+	Ref<ResourceLocator> resourceLocator = getDefaultResourceLocator();
+	std::string fontFilePath = fontFamily;
+	if(resourceLocator->locateResource(fontFilePath)) {
+		osg::ref_ptr<osgText::Text> textNode = new osgText::Text;
+		textNode->setText(text, osgText::String::ENCODING_UTF8);
+		textNode->setColor(color);
+		textNode->setFont(fontFilePath.c_str());
+		textNode->setCharacterSize(fontSize);
+		textNode->setAxisAlignment(osgText::Text::XY_PLANE);
+		textNode->setRotation(osg::Quat(PI/2, 0, 0, 0));
+		return textNode.release();
+	}
+	return NULL;
 }
 
 osg::Geometry* ControlGeometryBuilder::buildRectangle(

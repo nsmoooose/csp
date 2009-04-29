@@ -90,7 +90,7 @@ public:
 
 	void bindSystems();
 
-	virtual bool onMapEvent(MapEvent const &event);
+	virtual bool onMapEvent(input::MapEvent const &event);
 	virtual void registerChannels(Bus *);
 	virtual void importChannels(Bus *);
 

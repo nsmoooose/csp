@@ -27,7 +27,7 @@
 #pragma warning(disable : 4786)
 # endif
 
-#include <csp/cspsim/EventMapping.h>
+#include <csp/cspsim/input/EventMapping.h>
 
 #include <SDL/SDL_events.h>
 
@@ -39,6 +39,7 @@
 
 
 namespace csp {
+namespace input {
 
 EventMapping::EventMapping() {
 }
@@ -227,5 +228,6 @@ bool EventMapping::load(std::string const &path) {
 	return true;
 }
 
+} // namespace input
 } // namespace csp
 

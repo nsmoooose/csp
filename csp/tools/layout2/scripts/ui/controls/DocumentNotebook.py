@@ -45,11 +45,12 @@ class DocumentNotebook(wx.Notebook):
 		application = wx.GetApp()
 		documentRegistry = application.GetDocumentRegistry()
 
-		currentPage = self.GetCurrentPage()
-		if currentPage is None:
+		newSelection = event.GetSelection()
+		if newSelection == -1:
 			return
-
-		documentRegistry.SetCurrentDocument(currentPage.GetDocument())
+		
+		newPage = self.GetPage(newSelection)
+		documentRegistry.SetCurrentDocument(newPage.GetDocument())
 		
 	def documentAdded_Signal(self, document):
 		# Depending on instance type of the document we choose
@@ -86,7 +87,7 @@ class DocumentNotebook(wx.Notebook):
 		for pageIndex in range(pageCount):
 			page = self.GetPage(pageIndex)
 			if page.GetDocument() == document:
-				self.RemovePage(pageIndex)
+				self.DeletePage(pageIndex)
 				break
 		
 	def currentDocumentChanged_Signal(self, document):

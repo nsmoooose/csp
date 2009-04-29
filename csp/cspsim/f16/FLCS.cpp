@@ -23,6 +23,7 @@
  **/
 
 #include <csp/cspsim/f16/F16Channels.h>
+#include <csp/cspsim/f16/FLCS.h>
 #include <csp/cspsim/ControlNode.h>
 #include <csp/cspsim/Bus.h>
 #include <csp/cspsim/ConditionsChannels.h>
@@ -401,6 +402,14 @@ void YawLimiterControl::importChannels(Bus* bus) {
 	b_Alpha = bus->getChannel(bus::FlightDynamics::Alpha);
 	b_QBar = bus->getChannel(bus::FlightDynamics::QBar);
 	b_ManualPitchOverrideActive = bus->getChannel(bus::F16::ManualPitchOverrideActive);
+}
+
+void registerFLCSObjects() {
+	{ static LeadingEdgeFlapControl::__csp_interface_proxy instance; }
+	{ static TrailingEdgeFlapControl::__csp_interface_proxy instance; }
+	{ static PitchLimiterControl::__csp_interface_proxy instance; }
+	{ static RollLimiterControl::__csp_interface_proxy instance; }
+	{ static YawLimiterControl::__csp_interface_proxy instance; }
 }
 
 } // namespace csp

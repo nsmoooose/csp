@@ -21,9 +21,6 @@ Import('env build')
 env = env.Clone()
 env.AppendUnique(CPPDEFINES=Split('OSGCHUNKLOD_LIBRARY'))
 
-# cspchunklod generates lots of warnings; feel free to clean it up and then remove this line
-#env.RemoveFlags(CXXFLAGS=Split('-pedantic -W /W3'))
-
 # to remove conflicts with MSVCRT
 if env['PLATFORM'].startswith('win'):
 	env.AppendUnique(SHLINKFLAGS=Split('/NODEFAULTLIB:LIBCMT'))
@@ -34,6 +31,7 @@ build.SharedLibrary(env,
 		'ChunkLod.cpp',
 		'ChunkLodDrawable.cpp',
 		'ChunkLodLoader.cpp',
+		'Module.cpp',
 		'RayStrip.cpp',
 		'TextureQuadTree.cpp',
 		'Version.cpp',
@@ -41,5 +39,4 @@ build.SharedLibrary(env,
 	deps = ['cspsim', 'jpeg'],
 	aliases = ['all', 'clod'],
 	softlink = 1)
-
 

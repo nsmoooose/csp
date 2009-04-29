@@ -65,6 +65,8 @@ public:
 	virtual void quit();
 	virtual void cleanup();
 
+	virtual wf::WindowManager* getWindowManager();
+
 	void changeScreen(csp::BaseScreen * newScreen);
 	csp::BaseScreen* getCurrentScreen();
 	

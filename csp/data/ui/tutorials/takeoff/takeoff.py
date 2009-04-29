@@ -39,8 +39,7 @@ class Mission:
         return "No theatre set"
 
     def startMission(self):
-        currentScreen = self.cspsim.getCurrentScreen()
-        windowManager = currentScreen.getWindowManager()
+        windowManager = self.cspsim.getWindowManager()
         windowManager.closeAll()
         self.cspsim.displayLogoScreen()
         self.cspsim.loadSimulation()
@@ -75,8 +74,7 @@ class TakeOff(Mission):
         self.cspsim.setCurrentTime(date)
         
     def onStart(self):
-        currentScreen = self.cspsim.getCurrentScreen()
-        windowManager = currentScreen.getWindowManager()
+        windowManager = self.cspsim.getWindowManager()
         
         window = csp.cspsim.Window()
         serializer = csp.cspsim.Serialization()

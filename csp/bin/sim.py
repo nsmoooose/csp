@@ -364,6 +364,8 @@ if __name__ == '__main__':
 	checkModuleSpace()
 	checkData()
 	importModules()
+	# Make all objects available for introspection and serialization
+	csp.cspsim.registerAllObjectInterfaces()
 
 	import csp.base.app
 	csp.base.app.addOption('--ini', metavar='INIFILE', default=None, help='specify the .ini file path')

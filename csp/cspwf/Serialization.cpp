@@ -44,8 +44,17 @@
 #include <csp/cspwf/Window.h>
 
 namespace csp {
-
 namespace wf {
+
+SerializationException::SerializationException(const char* message) : 
+	m_Message(message) {
+}
+
+SerializationException::~SerializationException() throw() {}
+
+const char* SerializationException::what() {
+	return m_Message.c_str();
+}
 
 void ToValue(XMLNode& node, const std::string& src, osg::Vec4* dst);
 void ToValue(XMLNode& node, const std::string& src, bool* dst);
@@ -184,11 +193,14 @@ Serialization::Serialization() {
 Serialization::~Serialization() {
 }
 
-void Serialization::load(Window* window, const std::string& file) {
+void Serialization::load(Window* window, const std::string& file) throw (SerializationException) {
 	std::string absoluteFilePath = file;
 	Ref<ResourceLocator> resourceLocator = getDefaultResourceLocator();
+	if(!resourceLocator) {
+		throw SerializationException("No default resource allocator defined.");
+	}
 	if(!resourceLocator->locateResource(absoluteFilePath)) {
-		CSPLOG(ERROR, APP) << "UI Window document not found.";
+		CSPLOG(ERROR, APP) << "UI Window document: " << file.c_str() << " not found.";
 		return;
 	}
 

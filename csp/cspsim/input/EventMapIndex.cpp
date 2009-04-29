@@ -23,7 +23,7 @@
  **/
 
 
-#include <csp/cspsim/EventMapIndex.h>
+#include <csp/cspsim/input/EventMapIndex.h>
 #include <csp/cspsim/Config.h>
 
 //#include <osgDB/FileUtils>
@@ -35,6 +35,7 @@
 #include <cassert>
 
 namespace csp {
+namespace input {
 
 EventMapIndex::~EventMapIndex() {
 	OpenedJoysticks::const_iterator openedJoystickIt;
@@ -98,5 +99,6 @@ void EventMapIndex::openNewJoysticks(const EventMapping::UsedJoysticks & usedJoy
 	}
 }
 
+} // namespace input
 } // namespace csp
 

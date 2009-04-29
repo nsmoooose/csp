@@ -100,10 +100,6 @@ inline typename ToFloat<T>::Type inDegrees(T angle) { return toRadians(angle); }
 template<typename T>
 inline typename ToFloat<T>::Type inRadians(T angle) { return static_cast<typename ToFloat<T>::Type>(angle); }
 
-template<typename T>
-inline void swap(T &a, T &b) { T t = a; a = b; b = t; }
-
-
 #if (defined(_WIN32) && !(defined(_MSC_VER) && (_MSC_VER >= 1300)) && !defined(__MINGW32__) ) ||  defined (sun)
     #ifndef isnanf
     #define isnanf (float)isnan

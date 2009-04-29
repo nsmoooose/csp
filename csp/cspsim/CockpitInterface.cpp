@@ -44,7 +44,7 @@ CockpitSwitch::CockpitSwitch(std::string const &states, std::string const &chann
 CockpitSwitch::CockpitSwitch(DataChannel<EnumLink> *channel, std::string const &command): m_Command(command), m_State(channel) {
 }
 
-void CockpitSwitch::registerHandlers(InputInterface *input) {
+void CockpitSwitch::registerHandlers(input::InputInterface *input) {
 	assert(input);
 	if (m_Command.empty()) return;
 	const Enumeration &enumeration = m_State->value().getEnumeration();
@@ -85,7 +85,7 @@ void CockpitSwitch::onSelect(int state) {
 	m_State->push();
 }
 
-void CockpitInterface::bindEvents(InputInterface *input) {
+void CockpitInterface::bindEvents(input::InputInterface *input) {
 	assert(input);
 	for (unsigned i = 0; i < m_Elements.size(); ++i) {
 		m_Elements[i]->registerHandlers(input);

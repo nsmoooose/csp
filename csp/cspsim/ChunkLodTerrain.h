@@ -59,7 +59,7 @@ namespace csp {
 class ChunkLodTerrain: public TerrainObject
 {
 public:
-	CSP_DECLARE_OBJECT(ChunkLodTerrain)
+	CSP_DECLARE_ABSTRACT_OBJECT(ChunkLodTerrain)
 
 	ChunkLodTerrain();
 	virtual ~ChunkLodTerrain();

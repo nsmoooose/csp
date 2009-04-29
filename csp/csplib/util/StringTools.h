@@ -59,11 +59,14 @@ void Tokenize(std::string const &str, T_BackInsertionSequence &output, const cha
 
 /** Tokenize a string, placing the tokens into a deque.
  */
-class CSPLIB_EXPORT TokenQueue: public std::deque<std::string> {
+class TokenQueue: public std::deque<std::string> {
 public:
 	typedef std::deque<std::string>::iterator iterator;
 	typedef std::deque<std::string>::const_iterator const_iterator;
-	TokenQueue(const std::string &str, const std::string &delimiters = " ,\n");
+
+	TokenQueue(const std::string &str, const std::string &delimiters = " ,\n") {
+		Tokenize(str, *this, delimiters.c_str());
+	}
 };
 
 /** @DEPRECATED For backwards compatibility only; use TokenQueue instead.

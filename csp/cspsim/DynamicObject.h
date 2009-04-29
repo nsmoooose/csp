@@ -26,7 +26,7 @@
 #define __CSPSIM_DYNAMICOBJECT_H__
 
 #include <csp/cspsim/Bus.h>
-#include <csp/cspsim/InputInterface.h>
+#include <csp/cspsim/input/InputInterface.h>
 #include <csp/cspsim/TerrainObject.h>
 #include <csp/cspsim/stores/StoresDynamics.h>
 #include <csp/cspsim/battlefield/SimObject.h>
@@ -61,7 +61,7 @@ namespace hud { class HUD; }
  * class DynamicObject - Base class for all mobile objects in the simulation.
  *
  */
-class CSPSIM_EXPORT DynamicObject: public SimObject, public InputInterface
+class CSPSIM_EXPORT DynamicObject: public SimObject, public input::InputInterface
 {
 	struct SystemsModelStore {
 		ObjectId id;
@@ -95,9 +95,9 @@ protected:
 public:
 	CSP_DECLARE_ABSTRACT_OBJECT(DynamicObject)
 
-	DECLARE_INPUT_INTERFACE(DynamicObject, InputInterface)
+	DECLARE_INPUT_INTERFACE(DynamicObject, input::InputInterface)
 		BIND_ACTION("MARKS_TOGGLE", toggleMarkers);
-	END_INPUT_INTERFACE  // protected:
+	END_INPUT_INTERFACE
 
 public:
 	DynamicObject(TypeId type);
@@ -234,7 +234,7 @@ protected:
 	virtual void doPhysics(double dt);
 	virtual void doControl(double dt);
 
-	virtual bool onMapEvent(MapEvent const &event);
+	virtual bool onMapEvent(input::MapEvent const &event);
 
 private:
 	double m_ReferenceMass;

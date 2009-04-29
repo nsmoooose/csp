@@ -30,6 +30,7 @@
  **/
 
 #include <csp/cspsim/ControlNode.h>
+#include <csp/cspsim/FlightControlSystem.h>
 #include <csp/cspsim/System.h>
 #include <csp/cspsim/DataRecorder.h>
 
@@ -755,6 +756,36 @@ CSP_XML_END
 
 
 //} // namespace fcsnode
+
+void registerFlightControlSystemObjects() {
+	{ static ControlNode::__csp_interface_proxy instance; }
+	{ static Junction1::__csp_interface_proxy instance; }
+	{ static Junction2::__csp_interface_proxy instance; }
+	{ static Junction3::__csp_interface_proxy instance; }
+	{ static LagFilter::__csp_interface_proxy instance; }
+	{ static LeadLagFilter::__csp_interface_proxy instance; }
+	{ static LeadFilter::__csp_interface_proxy instance; }
+	{ static Integrator::__csp_interface_proxy instance; }
+	{ static Multiply::__csp_interface_proxy instance; }
+	{ static Divide::__csp_interface_proxy instance; }
+	{ static Adder::__csp_interface_proxy instance; }
+	{ static Adder3::__csp_interface_proxy instance; }
+	{ static Scale::__csp_interface_proxy instance; }
+	{ static Schedule1::__csp_interface_proxy instance; }
+	{ static Schedule2::__csp_interface_proxy instance; }
+	{ static Switch::__csp_interface_proxy instance; }
+	{ static BooleanSwitch::__csp_interface_proxy instance; }
+	{ static Constant::__csp_interface_proxy instance; }
+	{ static InputChannel::__csp_interface_proxy instance; }
+	{ static InputVectorXChannel::__csp_interface_proxy instance; }
+	{ static InputVectorYChannel::__csp_interface_proxy instance; }
+	{ static InputVectorZChannel::__csp_interface_proxy instance; }
+	{ static InputScalarChannel::__csp_interface_proxy instance; }
+	{ static OutputChannel::__csp_interface_proxy instance; }
+	{ static Greater::__csp_interface_proxy instance; }
+	{ static Lesser::__csp_interface_proxy instance; }
+	{ static FlightControlSystem::__csp_interface_proxy instance; }
+}
 
 } // namespace csp
 

@@ -52,9 +52,9 @@ public:
 
 class SystemsModel::EventVisitor: public SystemVisitor {
 	bool m_handled;
-	MapEvent m_event;
+	input::MapEvent m_event;
 public:
-	EventVisitor(MapEvent const &event): m_handled(false), m_event(event) {}
+	EventVisitor(input::MapEvent const &event): m_handled(false), m_event(event) {}
 	bool handled() const { return m_handled; }
 	void apply(System &system) {
 		m_handled = m_handled || system.onMapEvent(m_event);
@@ -149,7 +149,7 @@ void SystemsModel::getInfo(InfoList &info) {
 void SystemsModel::init(Ref<SystemsModel>) {
 }
 
-bool SystemsModel::onMapEvent(MapEvent const &event) {
+bool SystemsModel::onMapEvent(input::MapEvent const &event) {
 	Ref<EventVisitor> visitor = accept(new EventVisitor(event));
 	return visitor->handled();
 }

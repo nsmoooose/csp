@@ -122,15 +122,15 @@ double AircraftInputSystem::onUpdate(double dt) {
 
 // input event callbacks
 
-void AircraftInputSystem::setAirbrake(MapEvent::AxisEvent const &event) {
+void AircraftInputSystem::setAirbrake(input::MapEvent::AxisEvent const &event) {
 	m_AirbrakeInput->setValue(event.value);
 }
 
-void AircraftInputSystem::setThrottle(MapEvent::AxisEvent const &event) {
+void AircraftInputSystem::setThrottle(input::MapEvent::AxisEvent const &event) {
 	m_ThrottleInput->setValue(0.5 *(1.0 - event.value));
 }
 
-void AircraftInputSystem::setRudder(MapEvent::AxisEvent const &event) {
+void AircraftInputSystem::setRudder(input::MapEvent::AxisEvent const &event) {
 	m_RudderInput->setValue(event.value);
 }
 
@@ -152,11 +152,11 @@ void AircraftInputSystem::noDecRudder() {
 	m_RudderInput->setDecay(30);
 }
 
-void AircraftInputSystem::setRoll(MapEvent::AxisEvent const &event) {
+void AircraftInputSystem::setRoll(input::MapEvent::AxisEvent const &event) {
 	m_RollInput->setValue(event.value);
 }
 
-void AircraftInputSystem::setPitch(MapEvent::AxisEvent const &event) {
+void AircraftInputSystem::setPitch(input::MapEvent::AxisEvent const &event) {
 	m_PitchInput->setValue(event.value);
 }
 
@@ -239,7 +239,7 @@ void AircraftInputSystem::WheelBrakeToggle() {
 	}
 }
 
-void AircraftInputSystem::setWheelBrake(MapEvent::AxisEvent const &event) {
+void AircraftInputSystem::setWheelBrake(input::MapEvent::AxisEvent const &event) {
 	m_LeftBrakeInput->setValue(event.value);
 	m_RightBrakeInput->setValue(event.value);
 }

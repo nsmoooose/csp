@@ -34,6 +34,7 @@
 #include <csp/cspsim/ObjectModel.h>
 #include <csp/cspsim/Projection.h>
 #include <csp/cspsim/SceneConstants.h>
+#include <csp/cspsim/ScreenInfoNode.h>
 #include <csp/cspsim/Shader.h>
 
 #include <csp/cspsim/sky/Sky.h>
@@ -82,6 +83,7 @@
 
 #include <cmath>
 #include <cassert>
+#include <iostream>
 
 // SHADOW is an *extremely* experimental feature.  It is based on the
 // osgShadow demo, and does (did) work to some extent, but only for a
@@ -381,7 +383,9 @@ VirtualScene::VirtualScene(osg::State* state, int width, int height):
 	m_ScreenHeight(height) {
 	}
 
-VirtualScene::~VirtualScene() { }
+VirtualScene::~VirtualScene() { 
+	ScreenInfoNode::tearDown(CSPSim::theSim->getSceneData());
+}
 
 void VirtualScene::init() {
 	// set up the display settings that will be shared by all sceneviews.
@@ -421,8 +425,12 @@ void VirtualScene::createSceneViews() {
 	createVeryFarView();
 	createFarView();
 	createNearView();
-	createInfoView();
-	createWindowView();
+}
+
+void VirtualScene::createSceneViewsNew() {
+	createVeryFarViewNew();
+	createFarView();
+	createNearView();
 }
 
 osgUtil::SceneView *VirtualScene::makeSceneView(unsigned mask) {
@@ -437,9 +445,9 @@ osgUtil::SceneView *VirtualScene::makeSceneView(unsigned mask) {
 	sv->setGlobalStateSet(m_GlobalStateSet.get());
 	sv->setFrameStamp(m_FrameStamp.get());
 	// default cull settings
-	sv->getCullVisitor()->setImpostorsActive(true);
-	sv->getCullVisitor()->setComputeNearFarMode(osgUtil::CullVisitor::COMPUTE_NEAR_FAR_USING_BOUNDING_VOLUMES);
-	sv->getCullVisitor()->setCullingMode(osgUtil::CullVisitor::ENABLE_ALL_CULLING);
+	//sv->getCullVisitor()->setImpostorsActive(true); // true by default
+	//sv->getCullVisitor()->setComputeNearFarMode(osgUtil::CullVisitor::COMPUTE_NEAR_FAR_USING_BOUNDING_VOLUMES); // Inherited from the SceneView
+	sv->setCullingMode(osgUtil::CullVisitor::ENABLE_ALL_CULLING); // Inherited by the CullVisitor
 	sv->setCullMask(SceneMasks::CULL_ONLY | SceneMasks::NORMAL | mask);
 	// default update settings
 	sv->getUpdateVisitor()->setTraversalMask(SceneMasks::UPDATE_ONLY | SceneMasks::NORMAL | mask);
@@ -453,6 +461,13 @@ void VirtualScene::createVeryFarView() {
 	m_VeryFarView->setSceneData(m_VeryFarGroup.get());
 }
 
+void VirtualScene::createVeryFarViewNew() {
+	//m_VeryFarView = makeSceneView(SceneMasks::FAR);
+	m_VeryFarGroup = new osg::Group;
+	m_VeryFarGroup->setName("very_far_group");
+	//m_VeryFarView->setSceneData(m_VeryFarGroup.get());
+}
+
 void VirtualScene::createFarView() {
 	m_FarView = makeSceneView(SceneMasks::FAR);
 	// clear the depth buffer (but not the color buffer)
@@ -462,35 +477,33 @@ void VirtualScene::createFarView() {
 	m_FarView->setSceneData(m_FarGroup.get());
 }
 
+void VirtualScene::createFarViewNew() {
+	//m_FarView = makeSceneView(SceneMasks::FAR);
+	// clear the depth buffer (but not the color buffer)
+	//m_FarView->getCamera()->setClearMask(GL_DEPTH_BUFFER_BIT);
+	m_FarGroup = new osg::Group;
+	m_FarGroup->setName("far_group");
+	//m_FarView->setSceneData(m_FarGroup.get());
+}
+
 void VirtualScene::createNearView() {
 	m_NearView = makeSceneView(SceneMasks::NEAR);
 	// clear the depth buffer (but not the color buffer)
 	m_NearView->getCamera()->setClearMask(GL_DEPTH_BUFFER_BIT);
-	m_NearView->getCullVisitor()->setImpostorsActive(false);
+	m_NearView->setImpostorsActive(false); // Inherited by the CullVisitor
 	m_NearGroup = new osg::Group;
 	m_NearGroup->setName("near_group");
 	m_NearView->setSceneData(m_NearGroup.get());
 }
 
-void VirtualScene::createInfoView() {
-	m_InfoView = makeSceneView(0);
-
+void VirtualScene::createNearViewNew() {
+	//m_NearView = makeSceneView(SceneMasks::NEAR);
 	// clear the depth buffer (but not the color buffer)
-	m_InfoView->getCamera()->setClearMask(GL_DEPTH_BUFFER_BIT);
-
-	m_InfoGroup = new osg::Group;
-	m_InfoGroup->setName("info_group");
-	m_InfoView->setSceneData(m_InfoGroup.get());
-}
-
-wf::WindowManager* VirtualScene::getWindowManager() {
-	return m_WindowManager.get();
-}
-
-void VirtualScene::createWindowView() {
-	const int screenWidth = CSPSim::theSim->getSDLScreen()->w;
-	const int screenHeight = CSPSim::theSim->getSDLScreen()->h;
-	m_WindowManager = new wf::WindowManagerSceneView(m_GlobalState.get(), screenWidth, screenHeight);
+	//m_NearView->getCamera()->setClearMask(GL_DEPTH_BUFFER_BIT);
+	//m_NearView->setImpostorsActive(false); // Inherited by the CullVisitor
+	m_NearGroup = new osg::Group;
+	m_NearGroup->setName("near_group");
+	//m_NearView->setSceneData(m_NearGroup.get());
 }
 
 void VirtualScene::buildScene() {
@@ -503,6 +516,7 @@ void VirtualScene::buildScene() {
 
 	init();
 	createSceneViews();
+	ScreenInfoNode::setUp(CSPSim::theSim->getSceneData());
 
 	if(SoundEngine::getInstance().getSoundEnabled()) {
 		m_SoundRoot = new osg::PositionAttitudeTransform;
@@ -591,9 +605,100 @@ void VirtualScene::buildScene() {
 	//opt.optimize(m_FarGroup.get(), osgUtil::Optimizer::SHARE_DUPLICATE_STATE);
 }
 
+void VirtualScene::buildSceneNew() {
+	std::cout << "VirtualScene::buildSceneNew() ";
+
+	/////////////////////////////////////
+	//(Un)comment to (enable) disable debug info from osg
+	//osg::setNotifyLevel(osg::DEBUG_INFO);
+	/////////////////////////////////////
+
+	init();
+	createSceneViewsNew();
+
+	m_FreeObjectGroup = new osg::Group;
+	m_FreeObjectGroup->setName("free_object_group");
+
+	m_FeatureGroup = new osg::PositionAttitudeTransform;
+	m_FeatureGroup->setName("feature_group");
+
+	m_ObjectGroup = new osg::Group;
+	m_ObjectGroup->setName("object_group");
+	m_ObjectGroup->addChild(m_FeatureGroup.get());
+	m_ObjectGroup->addChild(m_FreeObjectGroup.get());
+
+
+	// construct the skydome, stars, moon, sunlight, and moonlight
+	buildSky();
+
+	osg::ClearNode* background = new osg::ClearNode;
+	// the horizon fan and sky now completely enclose the camera so there
+	// is no longer any need to clear the background for normal rendering.
+	// blanking is only needed for wireframe mode.
+	background->setRequiresClear(true);
+	background->setClearColor(osg::Vec4(0.6, 0.3, 0.4, 1.0));
+	background->addChild(m_Sky->group());
+
+	m_VeryFarGroup->addChild(background);
+
+	m_TerrainGroup = new osg::PositionAttitudeTransform;
+	m_TerrainGroup->setName("terrain_group");
+	// the terrain is placed in bin -3 to ensure that it is drawn first.
+	// (bin -2 is used for planar objects and bin -1 is used for planar
+	// shadows; see ObjectModel and SceneModel for details.)
+	m_TerrainGroup->getOrCreateStateSet()->setRenderBinDetails(-3, "RenderBin");
+	m_TerrainGroup->getOrCreateStateSet()->setTextureAttributeAndModes(2, m_Sky->getSkyDome()->getHorizonTexture(), osg::StateAttribute::ON);
+
+	m_FogGroup = new osg::Group;
+	m_FogGroup->setName("fog_group");
+	m_FogGroup->addChild(m_TerrainGroup.get());
+	m_FogGroup->addChild(m_ObjectGroup.get());
+
+	m_GlobalFrame = new osg::PositionAttitudeTransform;
+	m_GlobalFrame->setName("global_frame");
+	//m_GlobalFrame->setCullingActive(false);
+	//m_GlobalFrame->setReferenceFrame(osg::Transform::RELATIVE_TO_ABSOLUTE);
+
+	m_ParticleEmitterGroup = new osg::Group;
+	m_ParticleEmitterGroup->setName("particle_emitter_group");
+	//m_ParticleEmitterGroup->setCullingActive(false);
+	m_ParticleUpdaterGroup = new osg::Group;
+	m_ParticleUpdaterGroup->setName("particle_updater_group");
+	//m_ParticleUpdaterGroup->setCullingActive(false);
+
+	m_FarGroup->addChild(m_SkyLights.get());
+	m_FarGroup->addChild(m_FogGroup.get());
+	m_FarGroup->addChild(m_ParticleEmitterGroup.get());
+	m_FarGroup->addChild(m_GlobalFrame.get());
+	m_FarGroup->addChild(m_ParticleUpdaterGroup.get());
+
+	// fog properties: start and end distances are read from CSPSim.ini
+	osg::StateSet * pFogState = m_FogGroup->getOrCreateStateSet();
+	osg::Fog* fog = new osg::Fog;
+	fog->setMode(osg::Fog::LINEAR);
+	fog->setFogCoordinateSource(osg::Fog::FRAGMENT_DEPTH);
+	fog->setDensity(0.3f);
+	pFogState->setAttributeAndModes(fog, m_FogEnabled ? osg::StateAttribute::ON : osg::StateAttribute::OFF);
+	m_FogGroup->setStateSet(pFogState);
+
+	m_NearObjectGroup = new osg::Group;
+	m_NearGroup->addChild(m_SkyLights.get());
+	m_NearGroup->addChild(m_NearObjectGroup.get());
+
+	// TODO: Remove these calls and place them into some kind of weather object.
+	m_CloudGroup = new osg::Group;
+	m_NearGroup->addChild(m_CloudGroup.get());
+
+
+	//FIXME: why doesn't ALL_OPTIMIZATIONS work as expected?
+	//osgUtil::Optimizer opt;
+	//opt.optimize(m_FarGroup.get(), osgUtil::Optimizer::COMBINE_ADJACENT_LODS);
+	//opt.optimize(m_FarGroup.get(), osgUtil::Optimizer::SHARE_DUPLICATE_STATE);
+}
 
 void VirtualScene::buildSky() {
-	osg::StateSet* globalStateSet = m_FarView->getGlobalStateSet();
+//	osg::StateSet* globalStateSet = m_FarView->getGlobalStateSet();
+	osg::StateSet* globalStateSet = m_GlobalStateSet.get();
 	assert(globalStateSet);
 
 	m_Sky = new Sky(1e+6);
@@ -642,24 +747,11 @@ void VirtualScene::drawNearView() {
 	}
 }
 
-osg::Group *VirtualScene::getInfoGroup() {
-	return m_InfoGroup.get();
-}
-
-void VirtualScene::drawInfoView() {
-	static int i = 0;
-	if ((++i % 3) == 1) m_InfoView->update();
-	m_InfoView->cull();
-	m_InfoView->draw();
-}
-
 int VirtualScene::drawScene() {
 	CSPLOG(DEBUG, APP) << "VirtualScene::drawScene()...";
 	drawVeryFarView();
 	drawFarView();
 	drawNearView();
-	drawInfoView();
-	m_WindowManager->onRender();
 	if (m_Terrain.valid()) m_Terrain->endDraw();
 	return 1;
 }
@@ -1020,7 +1112,7 @@ bool VirtualScene::getLabels() const {
 }
 
 bool VirtualScene::pick(int x, int y) {
-	if(m_WindowManager->onClick(x, y))
+	if(CSPSim::theSim->getWindowManager()->onClick(x, y))
 		return true;
 
 	if (m_NearObjectGroup->getNumChildren() > 0) {

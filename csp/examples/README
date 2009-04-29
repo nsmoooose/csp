@@ -28,3 +28,5 @@ objectmodel     Displays a single 3d model.
 terrain-demeter A simple example that is displaying the demeter terrain engine.
 
 wf-window       Displays a simple window with a single label on it.
+
+wf-python       Shows the power of python together with the windowing framework.

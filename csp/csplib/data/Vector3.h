@@ -125,7 +125,7 @@ public:
 			case 0: return _x;
 			case 1: return _y;
 			case 2: return _z;
-			default: abort();
+			default: abort(); return _x;
 		}
 	}
 
@@ -141,7 +141,7 @@ public:
 			case 0: return _x;
 			case 1: return _y;
 			case 2: return _z;
-			default: abort();
+			default: abort(); return _x;
 		}
 	}
 #endif // SWIG

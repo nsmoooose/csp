@@ -27,7 +27,7 @@
 #define __COCKPIT_INTERFACE_H__
 
 #include <csp/cspsim/Bus.h>
-#include <csp/cspsim/InputInterface.h>
+#include <csp/cspsim/input/InputInterface.h>
 #include <csp/csplib/util/Ref.h>
 #include <csp/csplib/data/Enum.h>
 #include <sigc++/sigc++.h>
@@ -44,7 +44,7 @@ public:
 	typedef Ref<CockpitElement> RefT;
 
 protected:
-	virtual void registerHandlers(InputInterface*) { }
+	virtual void registerHandlers(input::InputInterface*) { }
 	virtual void registerChannels(Bus*) { }
 };
 
@@ -71,7 +71,7 @@ public:
 	EnumLink &state() { return m_State->value(); }
 
 protected:
-	virtual void registerHandlers(InputInterface*);
+	virtual void registerHandlers(input::InputInterface*);
 	virtual void registerChannels(Bus *bus);
 
 private:
@@ -91,7 +91,7 @@ class CockpitInterface: public Referenced {
 
 public:
 	virtual void registerChannels(Bus *bus);
-	virtual void bindEvents(InputInterface *pInterface);
+	virtual void bindEvents(input::InputInterface *pInterface);
 	virtual CockpitElement* addElement(CockpitElement *element);
 
 private:

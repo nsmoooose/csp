@@ -38,6 +38,7 @@
 #include <set>
 
 namespace csp {
+namespace input {
 
 class EventMapping: public Referenced
 {
@@ -144,7 +145,7 @@ private:
 	std::vector<hasht> m_Bindings;
 };
 
-
+} // namespace input
 } // namespace csp
 
 #endif // __CSPSIM_EVENTMAPPING_H__

@@ -53,12 +53,10 @@ public:
 	virtual bool onMouseMove(SDL_MouseMotionEvent const &);
 	virtual bool onMouseButton(SDL_MouseButtonEvent const &);
 	
-	virtual wf::WindowManager* getWindowManager();
 	virtual wf::Serialization* getSerializer();
 
 private:
 	osg::ref_ptr<osg::State> m_State;
-	Ref<wf::WindowManagerSceneView> m_WindowManager;
 	Ref<wf::Serialization> m_Serializer;
 };
 

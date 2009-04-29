@@ -29,7 +29,7 @@
 #include <csp/cspsim/f16/PageCNI.h>
 #include <csp/cspsim/f16/PageLIST.h>
 #include <csp/cspsim/f16/PageSTPT.h>
-#include <csp/cspsim/InputEventChannel.h>
+#include <csp/cspsim/input/InputEventChannel.h>
 
 #include <csp/csplib/data/ObjectInterface.h>
 #include <csp/csplib/data/Enum.h>
@@ -53,7 +53,7 @@ UpFrontControls::~UpFrontControls() { }
 
 // helper for defining button handlers
 #define UFC_REGISTER(CONTROL) \
-	bus->registerChannel(new InputEventChannel(#CONTROL, this, &UpFrontControls::CONTROL));
+	bus->registerChannel(new input::InputEventChannel(#CONTROL, this, &UpFrontControls::CONTROL));
 
 void UpFrontControls::registerChannels(Bus *bus) {
 	m_Display = bus->registerLocalDataChannel<AlphaNumericDisplay::RefT>("DED", new AlphaNumericDisplay(26, 5));

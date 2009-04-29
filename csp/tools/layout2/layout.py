@@ -24,6 +24,9 @@ def loadModules():
 
 loadModules()
 
+# Make all objects available for introspection and serialization
+csp.cspsim.registerAllObjectInterfaces()
+
 # Create the application object and run the main loop.
 app = LayoutApplication(0)
 app.MainLoop()

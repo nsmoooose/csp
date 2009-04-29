@@ -50,20 +50,20 @@ CSP_TESTFIXTURE(Quaternion) {
 
 	CSP_TESTCASE(Arithmetic) {
 		Quat q(1, 2, -3, -4);
-		CSP_EXPECT_FEQ(0, delta(Quat(2.5, 5, -7.5,  -10), 2.5 * q));
-		CSP_EXPECT_FEQ(0, delta(Quat(2.5, 5, -7.5,  -10), q * 2.5));
-		CSP_EXPECT_FEQ(0, delta(Quat(2.5, 5, -7.5, -10), q / 0.4));
-		CSP_EXPECT_FEQ(0, delta(Quat(-1, -2, 3, 4), -q));
-		CSP_EXPECT_FEQ(0, delta(Quat(3, 6, -9, -12), q + 2 * q));
-		CSP_EXPECT_FEQ(0, (q - q).length());
+		CSP_EXPECT_DEQ(0, delta(Quat(2.5, 5, -7.5,  -10), 2.5 * q));
+		CSP_EXPECT_DEQ(0, delta(Quat(2.5, 5, -7.5,  -10), q * 2.5));
+		CSP_EXPECT_DEQ(0, delta(Quat(2.5, 5, -7.5, -10), q / 0.4));
+		CSP_EXPECT_DEQ(0, delta(Quat(-1, -2, 3, 4), -q));
+		CSP_EXPECT_DEQ(0, delta(Quat(3, 6, -9, -12), q + 2 * q));
+		CSP_EXPECT_DEQ(0, (q - q).length());
 		q += 1.5 * q;
-		CSP_EXPECT_FEQ(0, delta(Quat(2.5, 5, -7.5,  -10), q));
+		CSP_EXPECT_DEQ(0, delta(Quat(2.5, 5, -7.5,  -10), q));
 		q /= 2.5;
-		CSP_EXPECT_FEQ(0, delta(Quat(1, 2, -3, -4), q));
+		CSP_EXPECT_DEQ(0, delta(Quat(1, 2, -3, -4), q));
 		q *= 2.5;
-		CSP_EXPECT_FEQ(0, delta(Quat(2.5, 5, -7.5,  -10), q));
+		CSP_EXPECT_DEQ(0, delta(Quat(2.5, 5, -7.5,  -10), q));
 		q -= 0.6 * q;
-		CSP_EXPECT_FEQ(0, delta(Quat(1, 2, -3, -4), q));
+		CSP_EXPECT_DEQ(0, delta(Quat(1, 2, -3, -4), q));
 	}
 
 	CSP_TESTCASE(Comparison) {
@@ -76,8 +76,8 @@ CSP_TESTFIXTURE(Quaternion) {
 
 	CSP_TESTCASE(Conjugation) {
 		Quat q(1, 2, -3, -4);
-		CSP_EXPECT_FEQ(0, delta(Quat(-1, -2, 3, -4), ~q));
-		CSP_EXPECT_FEQ(0, delta(Quat(-1, -2, 3, -4), q.conj()));
+		CSP_EXPECT_DEQ(0, delta(Quat(-1, -2, 3, -4), ~q));
+		CSP_EXPECT_DEQ(0, delta(Quat(-1, -2, 3, -4), q.conj()));
 	}
 
 	CSP_TESTCASE(Components) {
@@ -166,39 +166,39 @@ CSP_TESTFIXTURE(Quaternion) {
 		CSP_EXPECT_EQ(0, Quat::ZERO.length2());
 		CSP_EXPECT_EQ(1, Quat::IDENTITY.length());
 		CSP_EXPECT_EQ(1, Quat::IDENTITY.length2());
-		CSP_EXPECT_FEQ(sqrt(30.0), Quat(1, -2, 3, 4).length());
-		CSP_EXPECT_FEQ(30, Quat(1, -2, 3, 4).length2());
+		CSP_EXPECT_DEQ(sqrt(30.0), Quat(1, -2, 3, 4).length());
+		CSP_EXPECT_DEQ(30, Quat(1, -2, 3, 4).length2());
 	}
 
 	CSP_TESTCASE(VecToVec) {
 		Quat q;
 		q.makeRotate(Vector3::XAXIS, Vector3::YAXIS);
-		CSP_EXPECT_FEQ(0, delta(Vector3::YAXIS, q.rotate(Vector3::XAXIS)));
-		CSP_EXPECT_FEQ(0, delta(Vector3::ZAXIS, q.rotate(Vector3::ZAXIS)));
+		CSP_EXPECT_DEQ(0, delta(Vector3::YAXIS, q.rotate(Vector3::XAXIS)));
+		CSP_EXPECT_DEQ(0, delta(Vector3::ZAXIS, q.rotate(Vector3::ZAXIS)));
 
 		Vector3 a(1, 2, 3);
 		Vector3 b(-4, 5, 7);
 		Vector3 c = a ^ b;
 		q.makeRotate(a, b);
-		CSP_EXPECT_FEQ(0, delta(b.normalized() * a.length(), q.rotate(a)));
-		CSP_EXPECT_FEQ(0, delta(c, q.rotate(c)));
+		CSP_EXPECT_DEQ(0, delta(b.normalized() * a.length(), q.rotate(a)));
+		CSP_EXPECT_DEQ(0, delta(c, q.rotate(c)));
 	}
 
 	CSP_TESTCASE(AngleAxis) {
-		CSP_EXPECT_FEQ(0, delta(-Quat::IDENTITY, Quat(toRadians(360), Vector3::XAXIS)));
-		CSP_EXPECT_FEQ(0, delta(-Quat::IDENTITY, Quat(toRadians(360), Vector3::YAXIS)));
-		CSP_EXPECT_FEQ(0, delta(-Quat::IDENTITY, Quat(toRadians(360), Vector3::ZAXIS)));
-		CSP_EXPECT_FEQ(0, delta(Quat::IDENTITY, Quat(toRadians(720), Vector3::XAXIS)));
-		CSP_EXPECT_FEQ(0, delta(Quat::IDENTITY, Quat(toRadians(720), Vector3::YAXIS)));
-		CSP_EXPECT_FEQ(0, delta(Quat::IDENTITY, Quat(toRadians(720), Vector3::ZAXIS)));
+		CSP_EXPECT_DEQ(0, delta(-Quat::IDENTITY, Quat(toRadians(360), Vector3::XAXIS)));
+		CSP_EXPECT_DEQ(0, delta(-Quat::IDENTITY, Quat(toRadians(360), Vector3::YAXIS)));
+		CSP_EXPECT_DEQ(0, delta(-Quat::IDENTITY, Quat(toRadians(360), Vector3::ZAXIS)));
+		CSP_EXPECT_DEQ(0, delta(Quat::IDENTITY, Quat(toRadians(720), Vector3::XAXIS)));
+		CSP_EXPECT_DEQ(0, delta(Quat::IDENTITY, Quat(toRadians(720), Vector3::YAXIS)));
+		CSP_EXPECT_DEQ(0, delta(Quat::IDENTITY, Quat(toRadians(720), Vector3::ZAXIS)));
 
 		Vector3 axis(1, 2, -3);
 		double angle = toRadians(138);
 		Quat q(angle, axis);
-		CSP_EXPECT_FEQ(cos(angle / 2), q.w());
-		CSP_EXPECT_FEQ(sin(angle / 2) * axis.normalized().x(), q.x());
-		CSP_EXPECT_FEQ(sin(angle / 2) * axis.normalized().y(), q.y());
-		CSP_EXPECT_FEQ(sin(angle / 2) * axis.normalized().z(), q.z());
+		CSP_EXPECT_DEQ(cos(angle / 2), q.w());
+		CSP_EXPECT_DEQ(sin(angle / 2) * axis.normalized().x(), q.x());
+		CSP_EXPECT_DEQ(sin(angle / 2) * axis.normalized().y(), q.y());
+		CSP_EXPECT_DEQ(sin(angle / 2) * axis.normalized().z(), q.z());
 
 		Quat other;
 		other.makeRotate(angle, axis);
@@ -214,16 +214,16 @@ CSP_TESTFIXTURE(Quaternion) {
 		double get_z = 0;
 
 		other.getRotate(get_angle, get_x, get_y, get_z);
-		CSP_EXPECT_FEQ(angle, get_angle);
-		CSP_EXPECT_FEQ(axis.normalized().x(), get_x);
-		CSP_EXPECT_FEQ(axis.normalized().y(), get_y);
-		CSP_EXPECT_FEQ(axis.normalized().z(), get_z);
+		CSP_EXPECT_DEQ(angle, get_angle);
+		CSP_EXPECT_DEQ(axis.normalized().x(), get_x);
+		CSP_EXPECT_DEQ(axis.normalized().y(), get_y);
+		CSP_EXPECT_DEQ(axis.normalized().z(), get_z);
 
 		Vector3 get_axis;
 		get_angle = 0;
 		other.getRotate(get_angle, get_axis);
-		CSP_EXPECT_FEQ(angle, get_angle);
-		CSP_EXPECT_FEQ(0, delta(axis.normalized(), get_axis));
+		CSP_EXPECT_DEQ(angle, get_angle);
+		CSP_EXPECT_DEQ(0, delta(axis.normalized(), get_axis));
 	}
 
 	CSP_TESTCASE(Rotate) {
@@ -233,19 +233,19 @@ CSP_TESTFIXTURE(Quaternion) {
 		CSP_EXPECT_EQ(Vector3::ZAXIS, I.rotate(Vector3::ZAXIS));
 
 		Quat X(0.5 * PI, Vector3::XAXIS);
-		CSP_EXPECT_FEQ(0.0, delta(Vector3::XAXIS, X.rotate(Vector3::XAXIS)));
-		CSP_EXPECT_FEQ(0.0, delta(Vector3::ZAXIS, X.rotate(Vector3::YAXIS)));
-		CSP_EXPECT_FEQ(0.0, delta(-Vector3::YAXIS, X.rotate(Vector3::ZAXIS)));
+		CSP_EXPECT_DEQ(0.0, delta(Vector3::XAXIS, X.rotate(Vector3::XAXIS)));
+		CSP_EXPECT_DEQ(0.0, delta(Vector3::ZAXIS, X.rotate(Vector3::YAXIS)));
+		CSP_EXPECT_DEQ(0.0, delta(-Vector3::YAXIS, X.rotate(Vector3::ZAXIS)));
 
 		Quat Y(0.5 * PI, Vector3::YAXIS);
-		CSP_EXPECT_FEQ(0.0, delta(-Vector3::ZAXIS, Y.rotate(Vector3::XAXIS)));
-		CSP_EXPECT_FEQ(0.0, delta(Vector3::YAXIS, Y.rotate(Vector3::YAXIS)));
-		CSP_EXPECT_FEQ(0.0, delta(Vector3::XAXIS, Y.rotate(Vector3::ZAXIS)));
+		CSP_EXPECT_DEQ(0.0, delta(-Vector3::ZAXIS, Y.rotate(Vector3::XAXIS)));
+		CSP_EXPECT_DEQ(0.0, delta(Vector3::YAXIS, Y.rotate(Vector3::YAXIS)));
+		CSP_EXPECT_DEQ(0.0, delta(Vector3::XAXIS, Y.rotate(Vector3::ZAXIS)));
 
 		Quat Z(0.5 * PI, Vector3::ZAXIS);
-		CSP_EXPECT_FEQ(0.0, delta(Vector3::YAXIS, Z.rotate(Vector3::XAXIS)));
-		CSP_EXPECT_FEQ(0.0, delta(-Vector3::XAXIS, Z.rotate(Vector3::YAXIS)));
-		CSP_EXPECT_FEQ(0.0, delta(Vector3::ZAXIS, Z.rotate(Vector3::ZAXIS)));
+		CSP_EXPECT_DEQ(0.0, delta(Vector3::YAXIS, Z.rotate(Vector3::XAXIS)));
+		CSP_EXPECT_DEQ(0.0, delta(-Vector3::XAXIS, Z.rotate(Vector3::YAXIS)));
+		CSP_EXPECT_DEQ(0.0, delta(Vector3::ZAXIS, Z.rotate(Vector3::ZAXIS)));
 	}
 
 	CSP_TESTCASE(InvRotate) {
@@ -255,29 +255,29 @@ CSP_TESTFIXTURE(Quaternion) {
 		CSP_EXPECT_EQ(Vector3::ZAXIS, I.invrotate(Vector3::ZAXIS));
 
 		Quat X(0.5 * PI, Vector3::XAXIS);
-		CSP_EXPECT_FEQ(0.0, delta(Vector3::XAXIS, X.invrotate(Vector3::XAXIS)));
-		CSP_EXPECT_FEQ(0.0, delta(-Vector3::ZAXIS, X.invrotate(Vector3::YAXIS)));
-		CSP_EXPECT_FEQ(0.0, delta(Vector3::YAXIS, X.invrotate(Vector3::ZAXIS)));
+		CSP_EXPECT_DEQ(0.0, delta(Vector3::XAXIS, X.invrotate(Vector3::XAXIS)));
+		CSP_EXPECT_DEQ(0.0, delta(-Vector3::ZAXIS, X.invrotate(Vector3::YAXIS)));
+		CSP_EXPECT_DEQ(0.0, delta(Vector3::YAXIS, X.invrotate(Vector3::ZAXIS)));
 
 		Quat Y(0.5 * PI, Vector3::YAXIS);
-		CSP_EXPECT_FEQ(0.0, delta(Vector3::ZAXIS, Y.invrotate(Vector3::XAXIS)));
-		CSP_EXPECT_FEQ(0.0, delta(Vector3::YAXIS, Y.invrotate(Vector3::YAXIS)));
-		CSP_EXPECT_FEQ(0.0, delta(-Vector3::XAXIS, Y.invrotate(Vector3::ZAXIS)));
+		CSP_EXPECT_DEQ(0.0, delta(Vector3::ZAXIS, Y.invrotate(Vector3::XAXIS)));
+		CSP_EXPECT_DEQ(0.0, delta(Vector3::YAXIS, Y.invrotate(Vector3::YAXIS)));
+		CSP_EXPECT_DEQ(0.0, delta(-Vector3::XAXIS, Y.invrotate(Vector3::ZAXIS)));
 
 		Quat Z(0.5 * PI, Vector3::ZAXIS);
-		CSP_EXPECT_FEQ(0.0, delta(-Vector3::YAXIS, Z.invrotate(Vector3::XAXIS)));
-		CSP_EXPECT_FEQ(0.0, delta(Vector3::XAXIS, Z.invrotate(Vector3::YAXIS)));
-		CSP_EXPECT_FEQ(0.0, delta(Vector3::ZAXIS, Z.invrotate(Vector3::ZAXIS)));
+		CSP_EXPECT_DEQ(0.0, delta(-Vector3::YAXIS, Z.invrotate(Vector3::XAXIS)));
+		CSP_EXPECT_DEQ(0.0, delta(Vector3::XAXIS, Z.invrotate(Vector3::YAXIS)));
+		CSP_EXPECT_DEQ(0.0, delta(Vector3::ZAXIS, Z.invrotate(Vector3::ZAXIS)));
 
 		Vector3 axis(-1.0, sqrt(2.0), 7.0);
 		Quat R(0.74 * PI, axis);
 		R.normalize();
-		CSP_EXPECT_FEQ(1.0, R.length());
-		CSP_EXPECT_FEQ(0.0, delta(Vector3::XAXIS, R.rotate(R.invrotate(Vector3::XAXIS))));
-		CSP_EXPECT_FEQ(0.0, delta(Vector3::YAXIS, R.rotate(R.invrotate(Vector3::YAXIS))));
-		CSP_EXPECT_FEQ(0.0, delta(Vector3::ZAXIS, R.rotate(R.invrotate(Vector3::ZAXIS))));
-		CSP_EXPECT_FEQ(0.0, delta(axis, R.rotate(axis)));
-		CSP_EXPECT_FEQ(0.0, delta(axis, R.invrotate(axis)));
+		CSP_EXPECT_DEQ(1.0, R.length());
+		CSP_EXPECT_DEQ(0.0, delta(Vector3::XAXIS, R.rotate(R.invrotate(Vector3::XAXIS))));
+		CSP_EXPECT_DEQ(0.0, delta(Vector3::YAXIS, R.rotate(R.invrotate(Vector3::YAXIS))));
+		CSP_EXPECT_DEQ(0.0, delta(Vector3::ZAXIS, R.rotate(R.invrotate(Vector3::ZAXIS))));
+		CSP_EXPECT_DEQ(0.0, delta(axis, R.rotate(axis)));
+		CSP_EXPECT_DEQ(0.0, delta(axis, R.invrotate(axis)));
 	}
 
 	CSP_TESTCASE(EulerAngles) {
@@ -285,48 +285,48 @@ CSP_TESTFIXTURE(Quaternion) {
 		q.makeRotate(1, 0.5, 3.0);
 		double roll = 0, pitch = 0, yaw = 0;
 		q.getEulerAngles(roll, pitch, yaw);
-		CSP_EXPECT_FEQ(1, roll);
-		CSP_EXPECT_FEQ(0.5, pitch);
-		CSP_EXPECT_FEQ(3, yaw);
+		CSP_EXPECT_DEQ(1, roll);
+		CSP_EXPECT_DEQ(0.5, pitch);
+		CSP_EXPECT_DEQ(3, yaw);
 
 		double pole = PI * 0.4999;
 		q.makeRotate(1, pole, 3.0);
 		q.getEulerAngles(roll, pitch, yaw);
-		CSP_EXPECT_FEQ(0, roll);
-		CSP_EXPECT_FEQ(pole, pitch);
-		CSP_EXPECT_FEQ(3, yaw);
+		CSP_EXPECT_DEQ(0, roll);
+		CSP_EXPECT_DEQ(pole, pitch);
+		CSP_EXPECT_DEQ(3, yaw);
 
 		double angle = toRadians(31);
 		q.makeRotate(angle, 0, 0);
-		CSP_EXPECT_FEQ(0, delta(q, Quat(angle, Vector3::XAXIS)));
+		CSP_EXPECT_DEQ(0, delta(q, Quat(angle, Vector3::XAXIS)));
 		q.makeRotate(0, angle, 0);
-		CSP_EXPECT_FEQ(0, delta(q, Quat(angle, Vector3::YAXIS)));
+		CSP_EXPECT_DEQ(0, delta(q, Quat(angle, Vector3::YAXIS)));
 		q.makeRotate(0, 0, angle);
-		CSP_EXPECT_FEQ(0, delta(q, Quat(angle, Vector3::ZAXIS)));
+		CSP_EXPECT_DEQ(0, delta(q, Quat(angle, Vector3::ZAXIS)));
 
 		q.makeRotate(0, toRadians(60), toRadians(225));
-		CSP_EXPECT_FEQ(0, delta(q.rotate(Vector3::XAXIS), Vector3(-sqrt(0.125), -sqrt(0.125), -sqrt(0.75))));
-		CSP_EXPECT_FEQ(0, delta(q.rotate(Vector3::YAXIS), Vector3(sqrt(0.5), -sqrt(0.5), 0.0)));
+		CSP_EXPECT_DEQ(0, delta(q.rotate(Vector3::XAXIS), Vector3(-sqrt(0.125), -sqrt(0.125), -sqrt(0.75))));
+		CSP_EXPECT_DEQ(0, delta(q.rotate(Vector3::YAXIS), Vector3(sqrt(0.5), -sqrt(0.5), 0.0)));
 		q.getEulerAngles(roll, pitch, yaw);
-		CSP_EXPECT_FEQ(0, roll);
-		CSP_EXPECT_FEQ(toRadians(60), pitch);
-		CSP_EXPECT_FEQ(toRadians(225 - 360), yaw);
+		CSP_EXPECT_DEQ(0, roll);
+		CSP_EXPECT_DEQ(toRadians(60), pitch);
+		CSP_EXPECT_DEQ(toRadians(225 - 360), yaw);
 
 		q.makeRotate(toRadians(60), 0, toRadians(225));
-		CSP_EXPECT_FEQ(0, delta(q.rotate(Vector3::XAXIS), Vector3(-sqrt(0.5), -sqrt(0.5), 0.0)));
-		CSP_EXPECT_FEQ(0, delta(q.rotate(Vector3::YAXIS), Vector3(sqrt(0.125), -sqrt(0.125), sqrt(0.75))));
+		CSP_EXPECT_DEQ(0, delta(q.rotate(Vector3::XAXIS), Vector3(-sqrt(0.5), -sqrt(0.5), 0.0)));
+		CSP_EXPECT_DEQ(0, delta(q.rotate(Vector3::YAXIS), Vector3(sqrt(0.125), -sqrt(0.125), sqrt(0.75))));
 		q.getEulerAngles(roll, pitch, yaw);
-		CSP_EXPECT_FEQ(toRadians(60), roll);
-		CSP_EXPECT_FEQ(0, pitch);
-		CSP_EXPECT_FEQ(toRadians(225 - 360), yaw);
+		CSP_EXPECT_DEQ(toRadians(60), roll);
+		CSP_EXPECT_DEQ(0, pitch);
+		CSP_EXPECT_DEQ(toRadians(225 - 360), yaw);
 
 		q.makeRotate(toRadians(90), toRadians(30), 0);
-		CSP_EXPECT_FEQ(0, delta(q.rotate(Vector3::XAXIS), Vector3(sqrt(0.75), 0, -sqrt(0.25))));
-		CSP_EXPECT_FEQ(0, delta(q.rotate(Vector3::YAXIS), Vector3(sqrt(0.25), 0, sqrt(0.75))));
+		CSP_EXPECT_DEQ(0, delta(q.rotate(Vector3::XAXIS), Vector3(sqrt(0.75), 0, -sqrt(0.25))));
+		CSP_EXPECT_DEQ(0, delta(q.rotate(Vector3::YAXIS), Vector3(sqrt(0.25), 0, sqrt(0.75))));
 		q.getEulerAngles(roll, pitch, yaw);
-		CSP_EXPECT_FEQ(toRadians(90), roll);
-		CSP_EXPECT_FEQ(toRadians(30), pitch);
-		CSP_EXPECT_FEQ(0, yaw);
+		CSP_EXPECT_DEQ(toRadians(90), roll);
+		CSP_EXPECT_DEQ(toRadians(30), pitch);
+		CSP_EXPECT_DEQ(0, yaw);
 	}
 
 	CSP_TESTCASE(Matrix) {
@@ -336,44 +336,44 @@ CSP_TESTFIXTURE(Quaternion) {
 		q.makeRotate(Vector3::ZAXIS, Vector3::YAXIS);
 		m.makeRotate(Vector3::ZAXIS, Vector3::YAXIS);
 		convert.set(m);
-		CSP_EXPECT_FEQ(0, delta(q, convert));
+		CSP_EXPECT_DEQ(0, delta(q, convert));
 
 		q.makeRotate(toRadians(67), Vector3(1, -2, 3) / sqrt(14.0));
 		m.makeRotate(toRadians(67), Vector3(1, -2, 3) / sqrt(14.0));
 		convert.set(m);
-		CSP_EXPECT_FEQ(0, delta(q, convert));
+		CSP_EXPECT_DEQ(0, delta(q, convert));
 
 		Matrix3 m0 = m;
 		m.invert();
 		convert.set(m);
-		CSP_EXPECT_FEQ(0, delta(q.inverse(), convert));
+		CSP_EXPECT_DEQ(0, delta(q.inverse(), convert));
 
 		m.makeRotate(q);
 		convert.set(0, 0, 0, 0);
 		convert.set(m);
-		CSP_EXPECT_FEQ(0, delta(q, convert));
+		CSP_EXPECT_DEQ(0, delta(q, convert));
 	}
 
 	CSP_TESTCASE(Normalize) {
 		Quat q(1, 2, 3, 4);
 		CSP_EXPECT_LT(1.0, q.length());
-		CSP_EXPECT_FEQ(1.0, q.normalized().length());
+		CSP_EXPECT_DEQ(1.0, q.normalized().length());
 		Quat n = q.normalized();
 		q.normalize();
-		CSP_EXPECT_FEQ(0, delta(q, n));
-		CSP_EXPECT_FEQ(1.0, q.length());
-		CSP_EXPECT_FEQ(q.y(), 2 * q.x());
-		CSP_EXPECT_FEQ(q.z(), 3 * q.x());
-		CSP_EXPECT_FEQ(q.w(), 4 * q.x());
+		CSP_EXPECT_DEQ(0, delta(q, n));
+		CSP_EXPECT_DEQ(1.0, q.length());
+		CSP_EXPECT_DEQ(q.y(), 2 * q.x());
+		CSP_EXPECT_DEQ(q.z(), 3 * q.x());
+		CSP_EXPECT_DEQ(q.w(), 4 * q.x());
 	}
 
 	CSP_TESTCASE(Invert) {
 		Quat q(1, 2, 3, 4);
 		Quat i = q.inverse();
-		CSP_EXPECT_FEQ(0, delta(q * i, Quat::IDENTITY));
-		CSP_EXPECT_FEQ(0, delta(i * q, Quat::IDENTITY));
-		CSP_EXPECT_FEQ(1.0 / q.length(), i.length());
-		CSP_EXPECT_FEQ(0, delta(q, i.inverse()));
+		CSP_EXPECT_DEQ(0, delta(q * i, Quat::IDENTITY));
+		CSP_EXPECT_DEQ(0, delta(i * q, Quat::IDENTITY));
+		CSP_EXPECT_DEQ(1.0 / q.length(), i.length());
+		CSP_EXPECT_DEQ(0, delta(q, i.inverse()));
 	}
 
 	CSP_TESTCASE(Slerp) {
@@ -381,24 +381,24 @@ CSP_TESTFIXTURE(Quaternion) {
 		qy.makeRotate(Vector3::XAXIS, Vector3::YAXIS);
 		qz.makeRotate(Vector3::XAXIS, Vector3::ZAXIS);
 		q.slerp(0, qy, qz);
-		CSP_EXPECT_FEQ(0, delta(qy, q));
+		CSP_EXPECT_DEQ(0, delta(qy, q));
 		q.slerp(1, qy, qz);
-		CSP_EXPECT_FEQ(0, delta(qz, q));
+		CSP_EXPECT_DEQ(0, delta(qz, q));
 		q.slerp(0.5, qy, qz);
-		CSP_EXPECT_FEQ(0, delta(Vector3(1, 2, 2).normalized(), q.rotate(Vector3::XAXIS)));
+		CSP_EXPECT_DEQ(0, delta(Vector3(1, 2, 2).normalized(), q.rotate(Vector3::XAXIS)));
 
 		q.slerp(0.4, Quat::IDENTITY, Quat(PI, Vector3::XAXIS));
-		CSP_EXPECT_FEQ(0, delta(Quat(PI * 0.4, Vector3::XAXIS), q));
+		CSP_EXPECT_DEQ(0, delta(Quat(PI * 0.4, Vector3::XAXIS), q));
 	}
 
 	CSP_TESTCASE(Nlerp) {
 		Quat q;
 		q.nlerp(0.4, Quat::IDENTITY, Quat(PI, Vector3::XAXIS));
-		CSP_EXPECT_FEQ(1, q.length());
-		CSP_EXPECT_FEQ(0.4 / sqrt(0.52), q.x());
+		CSP_EXPECT_DEQ(1, q.length());
+		CSP_EXPECT_DEQ(0.4 / sqrt(0.52), q.x());
 		CSP_EXPECT_EQ(0, q.y());
 		CSP_EXPECT_EQ(0, q.z());
-		CSP_EXPECT_FEQ(0.6 / sqrt(0.52), q.w());
+		CSP_EXPECT_DEQ(0.6 / sqrt(0.52), q.w());
 	}
 
 	CSP_TESTCASE(ParseXMLWith4Values) {

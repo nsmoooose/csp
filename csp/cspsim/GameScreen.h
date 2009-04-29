@@ -26,7 +26,7 @@
 #define __CSPSIM_GAMESCREEN_H__
 
 #include <csp/cspsim/BaseScreen.h>
-#include <csp/cspsim/InputInterfaceWfAdapter.h>
+#include <csp/cspsim/input/InputInterfaceWfAdapter.h>
 #include <csp/csplib/util/Ref.h>
 #include <csp/csplib/util/ScopedPointer.h>
 #include <csp/csplib/util/Callback.h>
@@ -34,7 +34,6 @@
 #include <osg/ref_ptr>
 
 namespace osg { class Group; }
-namespace osgUtil { class SceneView; }
 
 namespace csp {
 
@@ -62,8 +61,7 @@ public:
 	virtual void onRender();
 	virtual void onUpdate(double dt);
 
-	virtual wf::WindowManager* getWindowManager();
-	virtual InputInterfaceWfAdapter* getInputInterfaceWfAdapter();
+	virtual input::InputInterfaceWfAdapter* getInputInterfaceWfAdapter();
 
 	virtual void setActiveObject(Ref<DynamicObject> const &);
 
@@ -165,10 +163,10 @@ public:
 	void on_LabelsOn();
 	void on_LabelsOff();
 	void on_LabelsToggle();
-	void on_LeftClick(MapEvent::ClickEvent const &event);
-	void on_MouseView(MapEvent::MotionEvent const &event);
-	void on_ViewPanLeftRight(MapEvent::AxisEvent const &event);
-	void on_ViewPanUpDown(MapEvent::AxisEvent const &event);
+	void on_LeftClick(input::MapEvent::ClickEvent const &event);
+	void on_MouseView(input::MapEvent::MotionEvent const &event);
+	void on_ViewPanLeftRight(input::MapEvent::AxisEvent const &event);
+	void on_ViewPanUpDown(input::MapEvent::AxisEvent const &event);
 
 	virtual void initInterface();
 
@@ -196,7 +194,7 @@ private:
 	callback<void, int, const std::string&> m_OnPlayerQuit;
 	
 	// Handles signals to be emitted to the python gui code. For example player QUIT action.
-	Ref<InputInterfaceWfAdapter> m_InputInterfaceWfAdapter;
+	Ref<input::InputInterfaceWfAdapter> m_InputInterfaceWfAdapter;
 
 	// Receives mouse move events from the input interface and sends 
 	// them on to the window framework for processing.  

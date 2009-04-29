@@ -26,10 +26,11 @@
 #include <csp/cspsim/CSPSim.h>
 #include <csp/cspsim/DataRecorder.h>
 #include <csp/cspsim/DynamicObject.h>
-#include <csp/cspsim/EventMapIndex.h>
+#include <csp/cspsim/input/EventMapIndex.h>
 #include <csp/cspsim/glDiagnostics.h>
 #include <csp/cspsim/ObjectModel.h>
 #include <csp/cspsim/ScreenInfoManager.h>
+#include <csp/cspsim/ScreenInfoNode.h>
 #include <csp/cspsim/VirtualScene.h>
 #include <csp/cspsim/battlefield/LocalBattlefield.h>
 #include <csp/cspsim/views/CameraAgent.h>
@@ -38,18 +39,17 @@
 #include <csp/cspsim/weather/clouds/Cloud.h>
 #include <csp/cspsim/weather/clouds/CloudRegistry.h>
 #include <csp/cspsim/weather/clouds/CloudUtils.h>
-#include <csp/cspwf/WindowManager.h>
 
 #include <csp/csplib/util/FileUtility.h>
 #include <csp/csplib/util/Log.h>
+
+#include <csp/cspwf/WindowManager.h>
 
 #include <osg/Image>
 #include <osg/MatrixTransform>
 #include <osgDB/WriteFile>
 #include <osgDB/FileUtils>
-#include <osgUtil/SceneView>
 #include <osgText/Text>
-//#include <Producer/Camera>
 
 #include <ctime>
 #include <iomanip>
@@ -78,11 +78,11 @@ DEFINE_INPUT_INTERFACE(GameScreen)
 void GameScreen::initInterface()
 {
 	assert(!m_Interface);
-	m_Interface = new VirtualHID(); //GameScreenInterface();
+	m_Interface = new input::VirtualHID(); 
 	m_Interface->bindObject(this);
-	Ref<EventMapIndex> maps = CSPSim::theSim->getInterfaceMaps();
+	Ref<input::EventMapIndex> maps = CSPSim::theSim->getInterfaceMaps();
 	if (maps.valid()) {
-		Ref<EventMapping> map = maps->getMap("__gamescreen__");
+		Ref<input::EventMapping> map = maps->getMap("__gamescreen__");
 		if (map != NULL) {
 			m_Interface->setMapping(map);
 		} else {
@@ -92,67 +92,6 @@ void GameScreen::initInterface()
 		CSPLOG(ERROR, APP) << "No HID interface maps defined, '__gamescreen__' not found.";
 	}
 }
-
-#if 0
-// XXX: Preparing for the jump to OpenProducer ...
-class SnapImageDrawCallback: public Producer::Camera::Callback {
-	std::string m_Filename, m_Ext, m_Directory;
-    bool m_SnapImageOnNextFrame;
-	std::string getDate() {
-		time_t timer;
-		time(&timer);
-		tm* time_ptr = localtime(&timer);
-		std::ostringstream os;
-		os.fill('0');
-		os << std::setw(2) << time_ptr->tm_mon + 1 << std::setw(2) << time_ptr->tm_mday << std::setw(2) << time_ptr->tm_year - 100;
-		std::string day = os.str();
-		os.str("");
-		os << std::setw(2) << time_ptr->tm_hour << std::setw(2) << time_ptr->tm_min << std::setw(2) << time_ptr->tm_sec;
-		std::string hour = os.str();
-		return day + '-' + hour;
-	}
-public:
-	SnapImageDrawCallback(const std::string& filename = "CSP",const std::string& ext = ".jpg"):
-        m_Filename(filename),
-		m_Ext(ext),
-		m_Directory(g_Config.getString("Paths", "Screenshots", "../Screenshots", true)),
-        m_SnapImageOnNextFrame(false){
-			if (!osgDB::makeDirectory(m_Directory))
-				std::cerr << "Warning: can't create target: " << m_Directory << "; no snapshot will be saved." << std::endl;
-    }
-    void setSnapImageOnNextFrame(bool flag) {
-		m_SnapImageOnNextFrame = flag;
-	}
-    bool getSnapImageOnNextFrame() const {
-		return m_SnapImageOnNextFrame;
-	}
-    virtual void operator()(const Producer::Camera& /*camera*/) {
-		if (m_SnapImageOnNextFrame) {
-			int x,y,width,height;
-			//unsigned int width,height;
-
-			//camera.getProjectionRectangle(x,y,width,height);
-			VirtualScene* scene = CSPSim::theSim->getScene();
-			scene->getViewport(x,y,width,height);
-
-			osg::ref_ptr<osg::Image> image = new osg::Image;
-			image->readPixels(x,y,width,height,GL_RGB,GL_UNSIGNED_BYTE);
-
-			// save the file in the form CSPmmddyy-hhmmss.ext
-			osgDB::writeImageFile(*image, ospath::join(m_Directory, m_Filename + getDate() + m_Ext));
-			m_SnapImageOnNextFrame = false;
-		}
-    }
-};
-
-void GameScreen::on_PrintScreen() {
-	// for now, it's on previous frame... but that should work.
-	SnapImageDrawCallback sn;
-	sn.setSnapImageOnNextFrame(true);
-	osg::ref_ptr<Producer::Camera> camera = new Producer::Camera;
-	sn(*camera);
-}
-#endif
 
 GameScreen::GameScreen():
 	BaseScreen(),
@@ -184,7 +123,7 @@ void GameScreen::onInit() {
 	m_ScreenInfoManager->setStatus("OBJECT STATS", false);
 
 	CSPLOG(DEBUG, APP) << "attach ScreenInfoManager to scene";
-	osg::Group *info = CSPSim::theSim->getScene()->getInfoGroup();
+	osg::Group *info = ScreenInfoNode::getGroup(CSPSim::theSim->getSceneData());
 	info->removeChild(0, info->getNumChildren());
 	info->addChild(m_ScreenInfoManager.get());
 
@@ -253,16 +192,12 @@ void GameScreen::onUpdate(double dt) {
 	}
 }
 
-wf::WindowManager* GameScreen::getWindowManager() {
-	return CSPSim::theSim->getScene()->getWindowManager();
-}
-
-InputInterfaceWfAdapter* GameScreen::getInputInterfaceWfAdapter() {
+input::InputInterfaceWfAdapter* GameScreen::getInputInterfaceWfAdapter() {
 	if (m_InputInterfaceWfAdapter.valid()) {
 		return m_InputInterfaceWfAdapter.get();
 	}
 
-	m_InputInterfaceWfAdapter = new InputInterfaceWfAdapter(this);
+	m_InputInterfaceWfAdapter = new input::InputInterfaceWfAdapter(this);
 	return m_InputInterfaceWfAdapter.get();
 }
 
@@ -504,24 +439,24 @@ void GameScreen::on_LabelsOff() {
 	if (scene) scene->setLabels(false);
 }
 
-void GameScreen::on_LeftClick(MapEvent::ClickEvent const &event) {
+void GameScreen::on_LeftClick(input::MapEvent::ClickEvent const &event) {
 	VirtualScene *scene = CSPSim::theSim->getScene();
 	if (scene && !event.drag) {
 		scene->pick(event.x, event.y);
 	}
 }
 
-void GameScreen::on_MouseView(MapEvent::MotionEvent const &event) {
+void GameScreen::on_MouseView(input::MapEvent::MotionEvent const &event) {
 	m_CameraCommands->Mouse.set(event.x, event.y, event.dx, event.dy);
 	m_CameraAgent->setCameraCommand(&m_CameraCommands->Mouse);
 }
 
-void GameScreen::on_ViewPanLeftRight(MapEvent::AxisEvent const &event) {
+void GameScreen::on_ViewPanLeftRight(input::MapEvent::AxisEvent const &event) {
 	m_CameraCommands->LeftRightAxis.set(event.value);
 	m_CameraAgent->setCameraCommand(&m_CameraCommands->LeftRightAxis);
 }
 
-void GameScreen::on_ViewPanUpDown(MapEvent::AxisEvent const &event) {
+void GameScreen::on_ViewPanUpDown(input::MapEvent::AxisEvent const &event) {
 	m_CameraCommands->UpDownAxis.set(event.value);
 	m_CameraAgent->setCameraCommand(&m_CameraCommands->UpDownAxis);
 }
@@ -541,7 +476,7 @@ void GameScreen::setCamera(double dt) {
 
 bool GameScreen::onMouseMove(SDL_MouseMotionEvent const &event) {
 	// Let the window manager process the input interface events.
-	return getWindowManager()->onMouseMove(event.x, event.y, event.xrel, event.yrel);
+	return CSPSim::theSim->getWindowManager()->onMouseMove(event.x, event.y, event.xrel, event.yrel);
 }
 
 } // namespace csp

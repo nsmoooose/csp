@@ -23,13 +23,14 @@
  */
 
 #include <csp/cspsim/CSPSim.h>
-#include <csp/cspsim/InputEvent.h>
+#include <csp/cspsim/input/InputEvent.h>
 #include <csp/cspsim/Config.h>
 
 #include <stdexcept>
 #include <iostream>
 
 namespace csp {
+namespace input {
 
 const float Handle::m_Sampling = 1.0f/210;
 
@@ -107,5 +108,6 @@ InputEvent::InputEvent() {
 	}
 }
 
+} // namespace input
 } // namespace csp
 

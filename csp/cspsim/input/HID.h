@@ -43,7 +43,7 @@
 #ifndef __CSPSIM_HID_H__
 #define __CSPSIM_HID_H__
 
-#include <csp/cspsim/EventMapping.h>
+#include <csp/cspsim/input/EventMapping.h>
 
 #include <csp/csplib/util/Namespace.h>
 #include <csp/csplib/util/Ref.h>
@@ -56,6 +56,7 @@
 #include <vector>
 
 namespace csp {
+namespace input {
 
 class InputInterface;
 
@@ -189,6 +190,7 @@ protected:
 	bool m_MousePreDrag;
 };
 
+} // namespace input
 } // namespace csp
 
 #endif // __CSPSIM_HID_H__

@@ -40,6 +40,8 @@ Boston, MA  02111-1307, USA.
 // not worry about clamping values. If external callers can be trusted to keep all parameters within
 // legal extents, then disable this option for performance gains.
 
+#include <csp/modules/demeter/Export.h>
+
 typedef unsigned char   Uint8;
 typedef signed char     Sint8;
 typedef unsigned short  Uint16;

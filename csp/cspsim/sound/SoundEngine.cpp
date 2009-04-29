@@ -83,12 +83,12 @@ void SoundEngine::initialize ()
 		manager.setClampVelocity (true);
 	}
 	catch (const std::exception& x) {
-		ERR << "Sound engine initialization failed (" << x.what() << ")";
+		ERR << "Sound engine initialization failed - are the OpenAL drivers installed? (" << x.what() << ")";
 		m_SoundEnabled = false;
 		//throw; // Don't know how to continue without sound.
 	}
 	catch (...) {
-		ERR << "Sound engine initialization failed (unknown exception)";
+		ERR << "Sound engine initialization failed (unknown exception) - are the OpenAL drivers installed?";
 		m_SoundEnabled = false;
 		//throw; // Don't know how to continue without sound.
 	}

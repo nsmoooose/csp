@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<WindowDocument 
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+   xsi:noNamespaceSchemaLocation='../../data/ui/window_document.xsd'>
+  <Window Id="hello_world_window">
+	<Style>
+	</Style>
+  	<Control>
+  		<MultiControlContainer>
+  			<Controls>
+	          <Button Id="hello" Text="Hello world" />
+  			</Controls>
+  		</MultiControlContainer>
+  	</Control>
+	<Styles>
+	  <Style Name="Window">
+		<BackgroundColor>fdfdfdcc</BackgroundColor>
+		<BorderWidth>1</BorderWidth>
+		<BorderColor>b0b0b0ff</BorderColor>
+		<VerticalAlign>middle</VerticalAlign>
+		<HorizontalAlign>center</HorizontalAlign>
+		<Height>300</Height>
+		<Width>600</Width>
+	  </Style>
+	  <Style Name="Button">
+		<FontFamily>prima_sans_bt.ttf</FontFamily>
+		<FontSize>15</FontSize>
+		<Color>000000ff</Color>
+		<BackgroundColor>ffffffff</BackgroundColor>
+		<VerticalAlign>middle</VerticalAlign>
+		<HorizontalAlign>center</HorizontalAlign>
+		<Height>30</Height>
+		<Width>100</Width>
+	  </Style>
+	</Styles>
+  </Window>
+</WindowDocument>

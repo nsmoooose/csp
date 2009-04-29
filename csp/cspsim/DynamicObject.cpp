@@ -536,8 +536,8 @@ void DynamicObject::setVehicleCore(Ref<SystemsModel> systems) {
 	}
 }
 
-bool DynamicObject::onMapEvent(MapEvent const &event) {
-	if (InputInterface::onMapEvent(event)) {
+bool DynamicObject::onMapEvent(input::MapEvent const &event) {
+	if (input::InputInterface::onMapEvent(event)) {
 		return true;
 	}
 	if (m_SystemsModel.valid() && m_SystemsModel->onMapEvent(event)) {

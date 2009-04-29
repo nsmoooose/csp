@@ -113,6 +113,8 @@ public:
 	virtual ChannelSlave *createSlave() const = 0;
 };
 
+void registerChannelMirrorObjects();
+
 } // namespace csp
 
 #endif // __CSPSIM_CHANNEL_MIRROR_H__

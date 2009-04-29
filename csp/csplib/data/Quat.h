@@ -154,7 +154,7 @@ public:
 			case 1: return _y;
 			case 2: return _z;
 			case 3: return _w;
-			default: abort();
+			default: abort(); return _x;
 		}
 	}
 
@@ -166,7 +166,7 @@ public:
 			case 1: return _y;
 			case 2: return _z;
 			case 3: return _w;
-			default: abort();
+			default: abort(); return _x;
 		}
 	}
 

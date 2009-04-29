@@ -197,6 +197,14 @@ template <typename A>
 struct float_less_equal { bool operator()(A const &a, A const &b) const { return float_le(a, b); } };
 template <typename A>
 struct float_greater_equal { bool operator()(A const &a, A const &b) const { return float_ge(a, b); } };
+template <typename A >
+struct double_equal { bool operator()(A const &a, A const &b) const { return double_eq(a, b); } };
+template <typename A>
+struct double_not_equal { bool operator()(A const &a, A const &b) const { return !double_eq(a, b); } };
+template <typename A>
+struct double_less_equal { bool operator()(A const &a, A const &b) const { return double_le(a, b); } };
+template <typename A>
+struct double_greater_equal { bool operator()(A const &a, A const &b) const { return double_ge(a, b); } };
 
 template <> struct equal_to<const char*, const char*> { bool operator()(const char *a, const char *b) const { return !strcmp(a, b); } };
 template <> struct less_than<const char*, const char*> { bool operator()(const char *a, const char *b) const { return strcmp(a, b) < 0; } };
@@ -227,10 +235,10 @@ CSP_TYPED_OPERATOR(FloatEqualTo, float, float_equal, "~=", "!=")
 CSP_TYPED_OPERATOR(FloatNotEqualTo, float, float_not_equal, "!=", "~=")
 CSP_TYPED_OPERATOR(FloatLessEqual, float, float_less_equal, "<~", ">")
 CSP_TYPED_OPERATOR(FloatGreaterEqual, float, float_greater_equal, ">~", "<")
-CSP_TYPED_OPERATOR(DoubleEqualTo, double, float_equal, "~=", "!=")
-CSP_TYPED_OPERATOR(DoubleNotEqualTo, double, float_not_equal, "!=", "~=")
-CSP_TYPED_OPERATOR(DoubleLessEqual, double, float_less_equal, "<~", ">")
-CSP_TYPED_OPERATOR(DoubleGreaterEqual, double, float_greater_equal, ">~", "<")
+CSP_TYPED_OPERATOR(DoubleEqualTo, double, double_equal, "~=", "!=")
+CSP_TYPED_OPERATOR(DoubleNotEqualTo, double, double_not_equal, "!=", "~=")
+CSP_TYPED_OPERATOR(DoubleLessEqual, double, double_less_equal, "<~", ">")
+CSP_TYPED_OPERATOR(DoubleGreaterEqual, double, double_greater_equal, ">~", "<")
 
 
 class CSPLIB_EXPORT TestResult {

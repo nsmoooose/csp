@@ -26,9 +26,8 @@
 #pragma warning(disable : 4786)
 # endif
 
-//#include <csp/cspsim/Event.h>
-#include <csp/cspsim/HID.h>
-#include <csp/cspsim/InputInterface.h>
+#include <csp/cspsim/input/HID.h>
+#include <csp/cspsim/input/InputInterface.h>
 #include <SDL/SDL_events.h>
 
 #include <cassert>
@@ -41,6 +40,7 @@
 
 
 namespace csp {
+namespace input {
 
 /////////////////////////////////////////////////////////////////////////////
 // class HID
@@ -266,5 +266,6 @@ void VirtualHID::setScript(EventMapping::Script const *s, int x, int y, bool dra
 	onUpdate(0.0);
 }
 
+} // namespace input
 } // namespace csp
 

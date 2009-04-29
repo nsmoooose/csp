@@ -44,8 +44,11 @@ typedef std::vector<std::string> StringVector;
  */
 class CSPWF_EXPORT ResourceLocator : public Referenced {
 public:
+	ResourceLocator();
 	ResourceLocator(const StringVector& includeFolders);
 	
+	virtual void addFolder(const std::string& folder);
+
 	virtual bool locateResource(std::string& file) const;
 	virtual const StringVector& getIncludeFolders() const;
 	virtual void setIncludeFolders(const StringVector& includeFolders);

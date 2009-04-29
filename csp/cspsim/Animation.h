@@ -121,6 +121,8 @@ private:
 	int m_LOD;
 };
 
+	void registerAnimationObjects();
+
 } // namespace csp
 
 #endif // __CSPSIM_ANIMATION_H__

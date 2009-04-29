@@ -24,7 +24,7 @@
 
 #include <osg/State>
 #include <csp/cspsim/CSPSim.h>
-#include <csp/cspsim/EventMapIndex.h>
+#include <csp/cspsim/input/EventMapIndex.h>
 #include <csp/cspsim/MenuScreen.h>
 #include <csp/cspwf/WindowManagerSceneView.h>
 
@@ -37,13 +37,10 @@ MenuScreen::~MenuScreen() {
 }
 
 void MenuScreen::onInit() {
-	const int screenWidth = CSPSim::theSim->getSDLScreen()->w;
-	const int screenHeight = CSPSim::theSim->getSDLScreen()->h;
-	m_WindowManager = new wf::WindowManagerSceneView(m_State.get(), screenWidth, screenHeight);
 	m_Serializer = new wf::Serialization();
 
 	// We need some kindo of keyboard binding for this screen.
-	m_Interface = new VirtualHID();
+	m_Interface = new input::VirtualHID();
 	m_Interface->bindObject(this);
 }
 
@@ -51,26 +48,20 @@ void MenuScreen::onExit() {
 }
 
 void MenuScreen::onRender() {
-	m_WindowManager->onRender();
 }
 
-void MenuScreen::onUpdate(double dt) {
-	m_WindowManager->onUpdate(dt);
+void MenuScreen::onUpdate(double /* dt */) {
 }
 
 bool MenuScreen::onMouseMove(SDL_MouseMotionEvent const &event) {
-	return m_WindowManager->onMouseMove(event.x, event.y, event.xrel, event.yrel);
+	return CSPSim::theSim->getWindowManager()->onMouseMove(event.x, event.y, event.xrel, event.yrel);
 }
 
 bool MenuScreen::onMouseButton(SDL_MouseButtonEvent const &event) {
 	if(event.state == SDL_RELEASED) {
-		return m_WindowManager->onClick(event.x, event.y);
+		return CSPSim::theSim->getWindowManager()->onClick(event.x, event.y);
 	}
 	return false;
-}
-
-wf::WindowManager* MenuScreen::getWindowManager() {
-	return m_WindowManager.get();
 }
 
 wf::Serialization* MenuScreen::getSerializer() {

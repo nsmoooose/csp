@@ -30,8 +30,8 @@
 #define __USE_OSX_CGL_IMPLEMENTATION__
 #endif
 
-#include <csp/cspsim/InputInterface.h>
-#include <csp/cspsim/HID.h>
+#include <csp/cspsim/input/InputInterface.h>
+#include <csp/cspsim/input/HID.h>
 #include <csp/csplib/util/Namespace.h>
 
 namespace csp {
@@ -40,7 +40,7 @@ namespace csp {
  *  within the game / sim should subclass this class.  The active screen receives
  *  input events and renders the view via the onRender callback.
  */
-class CSPSIM_EXPORT BaseScreen: public InputInterface, public Referenced
+class CSPSIM_EXPORT BaseScreen: public input::InputInterface, public Referenced
 {
 public:
 	BaseScreen();
@@ -52,10 +52,10 @@ public:
 	virtual void onUpdate(double dt) = 0;
 	virtual void onRender() = 0;
 
-	virtual Ref<VirtualHID> getInterface();
+	virtual Ref<input::VirtualHID> getInterface();
 
 protected:
-	Ref<VirtualHID> m_Interface;
+	Ref<input::VirtualHID> m_Interface;
 };
 
 } // namespace csp

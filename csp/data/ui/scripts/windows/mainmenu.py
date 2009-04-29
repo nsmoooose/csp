@@ -35,7 +35,6 @@ class MainMenu(csp.cspsim.Window, SlotManager):
 
         self.cspsim = cspsim
         
-        configuration = cspsim.getConfiguration()
         serializer = csp.cspsim.Serialization()
         serializer.load(self, 'main_menu.xml')
         

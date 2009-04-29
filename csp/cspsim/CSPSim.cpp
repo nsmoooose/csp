@@ -31,39 +31,37 @@
 #include <Python.h>
 #endif
 
-#include <csp/cspsim/CSPSim.h>
 #include <csp/cspsim/AnimationSequence.h>
-#include <csp/cspsim/config/Configuration.h>
-#include <csp/cspsim/config/Display.h>
-#include <csp/cspsim/config/UserInterface.h>
+#include <csp/cspsim/CSPSim.h>
 #include <csp/cspsim/Config.h>
 #include <csp/cspsim/DynamicObject.h>
-#include <csp/cspsim/EventMapIndex.h>
 #include <csp/cspsim/Exception.h>
 #include <csp/cspsim/GameScreen.h>
-#include <csp/cspsim/HID.h>
-#include <csp/cspsim/InputEvent.h>
 #include <csp/cspsim/LogoScreen.h>
 #include <csp/cspsim/MenuScreen.h>
 #include <csp/cspsim/ObjectModel.h>
 #include <csp/cspsim/Profile.h>
 #include <csp/cspsim/Shader.h>
 #include <csp/cspsim/SimpleSceneManager.h>
-#include <csp/cspsim/sound/Loader.h>
-#include <csp/cspsim/sound/SoundEngine.h>
 #include <csp/cspsim/TerrainObject.h>
 #include <csp/cspsim/Theater.h>
 #include <csp/cspsim/VirtualScene.h>
-
 #include <csp/cspsim/battlefield/LocalBattlefield.h>
 #include <csp/cspsim/battlefield/SimObject.h>
-
+#include <csp/cspsim/config/Configuration.h>
+#include <csp/cspsim/config/Display.h>
+#include <csp/cspsim/config/UserInterface.h>
+#include <csp/cspsim/input/EventMapIndex.h>
+#include <csp/cspsim/input/HID.h>
+#include <csp/cspsim/input/InputEvent.h>
+#include <csp/cspsim/sound/Loader.h>
+#include <csp/cspsim/sound/SoundEngine.h>
 #include <csp/cspsim/stores/StoresDatabase.h>
-
 #include <csp/cspsim/weather/Atmosphere.h>
 
 #include <csp/cspwf/ResourceLocator.h>
 #include <csp/cspwf/SignalData.h>
+#include <csp/cspwf/WindowManagerViewerNode.h>
 
 #include <csp/csplib/data/GeoPos.h>
 #include <csp/csplib/data/DataArchive.h>
@@ -90,7 +88,6 @@
 #include <osg/Timer>
 #include <osg/Notify>
 #include <osgAL/SoundManager>
-//--#include <Producer/RenderSurface>
 
 #include <SDL/SDL.h>
 
@@ -123,7 +120,7 @@ CSPSim::CSPSim():
 	m_ConfigurationChanged(new wf::Signal),
 	m_Atmosphere(new weather::Atmosphere),
 	//--m_RenderSurface(new Producer::RenderSurface),
-	m_InputEvent(new InputEvent)
+	m_InputEvent(new input::InputEvent)
 {
 	if (theSim == 0) {
 		theSim = this;
@@ -214,11 +211,24 @@ void CSPSim::setWfResourceLocator() {
 	// Add the data directory
 	includeFolders.push_back(getDataPath());
 
+	// Add the font folder also.
+	includeFolders.push_back(getDataPath("FontPath"));
+
 	// Add the ui directory below the data directory.	
 	includeFolders.push_back(getUIPath());
 
 	Ref<wf::ResourceLocator> resourceLocator = new wf::ResourceLocator(includeFolders);
 	wf::setDefaultResourceLocator(resourceLocator.get());
+}
+
+osg::Group* CSPSim::getSceneData() {
+	osgViewer::Viewer* viewer = m_Viewer->getViewer();
+	return dynamic_cast<osg::Group*>(viewer->getSceneData());
+}
+
+
+wf::WindowManager* CSPSim::getWindowManager() {
+	return m_WindowManager.get();
 }
 
 wf::Signal* CSPSim::getConfigurationChangedSignal() {
@@ -255,7 +265,7 @@ void CSPSim::setActiveObject(Ref<DynamicObject> object) {
 		// XXX XXX m_Battlefield->setHuman(m_ActiveObject->id(), true);
 		hasht classhash = m_ActiveObject->getPath();
 		CSPLOG(DEBUG, APP) << "Getting input interface map for " << classhash.str();
-		Ref<EventMapping> map = m_InterfaceMaps->getMap(classhash);
+		Ref<input::EventMapping> map = m_InterfaceMaps->getMap(classhash);
 		CSPLOG(INFO, APP) << "Selecting map @ " << map.get();
 		m_Interface->setMapping(map);
 	}
@@ -337,9 +347,9 @@ void CSPSim::init() {
 
 		// load all interface maps and create a virtual hid for the active object
 		CSPLOG(DEBUG, APP) << "Initializing input event maps";
-		m_InterfaceMaps = new EventMapIndex();
+		m_InterfaceMaps = new input::EventMapIndex();
 		m_InterfaceMaps->loadAllMaps();
-		m_Interface = new VirtualHID();
+		m_Interface = new input::VirtualHID();
 
 		SDL_GL_SwapBuffers();
 
@@ -349,6 +359,23 @@ void CSPSim::init() {
 		SoundEngine::getInstance().mute();
 		CSPLOG(DEBUG, APP) << "Initializing sound file loader";
 		SoundFileLoader::init();
+
+		// This is the unified SDLViewer that shall render all the
+		// the scenes.
+		m_Viewer = new SDLViewer(screenSettings.width, screenSettings.height, m_GlobalState.get());
+
+		osgViewer::Viewer* viewer = m_Viewer->getViewer();
+		
+		// This is the root node that holds the entire scene.
+		osg::ref_ptr<osg::Group> rootNode = new osg::Group();
+		viewer->setSceneData(rootNode.get());
+		
+		// Add a window manager node. The purpose of this node is to hold
+		// all windows. By removing this node you simply removes all user
+		// interfaces.
+		osg::ref_ptr<csp::wf::WindowManagerViewerNode> windowManagerNode = new csp::wf::WindowManagerViewerNode(screenSettings.width, screenSettings.height);
+		m_WindowManager = windowManagerNode->getWindowManager();
+		rootNode->addChild(windowManagerNode.get());
 	}
 	catch (Exception &e) {
 		FatalException(e, "initialization");
@@ -356,11 +383,6 @@ void CSPSim::init() {
 	catch (DemeterException &e) {
 		DemeterFatalException(e, "initialization");
 	}
-	/*
-	catch (...) {
-		csp::OtherFatalException("initialization");
-	}
-	*/
 }
 
 void CSPSim::cleanup() {
@@ -693,6 +715,7 @@ void CSPSim::run() {
 				time_render.start();
 				if (!g_DisableRender) {
 					m_CurrentScreen->onRender();
+					m_Viewer->frame();
 				}
 				time_render.stop();
 				PROF1(_screen_render, 60);
@@ -797,14 +820,14 @@ void CSPSim::updateTime() {
 void CSPSim::doInput(double dt, BaseScreen* currentScreen) {
 	CSPLOG(DEBUG, APP) << "Checking for input events";
 
-	Ref<VirtualHID> screen_interface = currentScreen->getInterface();
+	Ref<input::VirtualHID> screen_interface = currentScreen->getInterface();
 
 	SDL_Event event;
 	short doPoll = 10;
 	while (doPoll-- && (*m_InputEvent)(event)) {
 	//while (doPoll-- && SDL_PollEvent(&event)) {
 		bool handled = false;
-		HID::translate(event);
+		input::HID::translate(event);
 		if (event.type == SDL_QUIT) {
 			m_Finished = true;
 			return;
@@ -899,7 +922,7 @@ TerrainObject const * CSPSim::getTerrain() const {
 	return m_Terrain.get();
 }
 
-Ref<EventMapIndex> CSPSim::getInterfaceMaps() const {
+Ref<input::EventMapIndex> CSPSim::getInterfaceMaps() const {
 	return m_InterfaceMaps;
 }
 

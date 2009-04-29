@@ -27,9 +27,10 @@
 #define __CSPSIM_INPUTEVENTCHANNEL_H__
 
 #include <csp/cspsim/Bus.h>
-#include <csp/cspsim/InputInterface.h>
+#include <csp/cspsim/input/InputInterface.h>
 
 namespace csp {
+namespace input {
 
 /** A specialized channel for accessing input events from the system bus.
  *  Provides a general signal mechanism similar to a push data channel, but
@@ -113,6 +114,7 @@ private:
 	mutable sigc::signal<void> m_Signal;
 };
 
+} // namespace input
 } // namespace csp
 
 #endif // __CSPSIM_INPUTEVENTCHANNEL_H__

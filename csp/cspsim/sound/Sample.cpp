@@ -93,9 +93,16 @@ osgAL::SoundState const *SoundSample::getSharedSoundState() const {
 
 void SoundSample::loadSample() const {
 	assert(!m_Sample);
-	m_Sample = SoundFileLoader::load(m_Filename.getSource());
-	// TODO on failure, load a dummy sound
-	m_State->setSample(m_Sample.get());
+	try
+	{
+		m_Sample = SoundFileLoader::load(m_Filename.getSource());
+		// TODO on failure, load a dummy sound
+		m_State->setSample(m_Sample.get());	
+	}
+	catch (...)
+	{
+		CSPLOG(ERROR, AUDIO) << "Loading sample " << m_Filename << " failed.";
+	}
 }
 
 SoundSample::SoundSample():

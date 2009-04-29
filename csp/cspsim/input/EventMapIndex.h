@@ -26,13 +26,14 @@
 #define __CSPSIM_EVENTMAPINDEX_H__
 
 
-#include <csp/cspsim/HID.h>
-#include <csp/cspsim/EventMapping.h>
+#include <csp/cspsim/input/HID.h>
+#include <csp/cspsim/input/EventMapping.h>
 
 #include <csp/csplib/util/HashUtility.h>
 #include <map>
 
 namespace csp {
+namespace input {
 
 class EventMapIndex: public Referenced {
 public:
@@ -53,6 +54,7 @@ protected:
 	OpenedJoysticks m_openedJoysticks;
 };
 
+} // namespace input
 } // namespace csp
 
 #endif // __CSPSIM_EVENTMAPINDEX_H__

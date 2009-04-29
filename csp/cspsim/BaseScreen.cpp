@@ -32,7 +32,7 @@ BaseScreen::BaseScreen() {
 BaseScreen::~BaseScreen() {
 }
 
-Ref<VirtualHID> BaseScreen::getInterface() {
+Ref<input::VirtualHID> BaseScreen::getInterface() {
 	return m_Interface;
 }
 

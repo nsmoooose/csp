@@ -28,7 +28,7 @@
 #include <csp/cspsim/f16/StoresManagementPages.h>
 #include <csp/cspsim/hud/DisplayTools.h>
 #include <csp/cspsim/hud/Text.h>
-#include <csp/cspsim/InputEventChannel.h>
+#include <csp/cspsim/input/InputEventChannel.h>
 
 #include <csp/csplib/util/osg.h>
 #include <csp/csplib/util/StringTools.h>
@@ -830,7 +830,7 @@ DisplayInterface *MultiFunctionDisplay::getInterface() {
 void MultiFunctionDisplay::buildMultiFunctionDisplay(Bus *bus) {
 	for (int i = 0; i < 20; ++i) {
 		std::string label = stringprintf("%sOSB_%02d", m_EventPrefix, i);
-		bus->registerChannel(new InputEventChannel(label.c_str(), this, sigc::bind(sigc::mem_fun(this, &MultiFunctionDisplay::onOSB), i)));
+		bus->registerChannel(new input::InputEventChannel(label.c_str(), this, sigc::bind(sigc::mem_fun(this, &MultiFunctionDisplay::onOSB), i)));
 	}
 
 	osb(14)->setText("SWAP");

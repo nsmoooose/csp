@@ -30,7 +30,7 @@
 #include <string>
 
 namespace csp {
-
+namespace input {
 
 /** Event wrapper struct that can hold parameters for a command, axis, or mouse event.
  *  Also defines the event structs that are passed by to handler methods.  See
@@ -116,7 +116,7 @@ struct MapEvent {
 	}
 };
 
-
+} // namespace input
 } // namespace csp
 
 #endif // __MAPEVENT_H__

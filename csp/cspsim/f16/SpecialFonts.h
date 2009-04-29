@@ -59,7 +59,7 @@ public:
 	 *  value inverted.  The image is also expanded to fill the entire
 	 *  character cell.
 	 */
-	virtual Glyph* getGlyph(unsigned int charcode);
+	virtual Glyph* getGlyph(const osgText::FontResolution& fontSize, unsigned int charcode); 
 
 	~ReverseAltFont();
 private:
@@ -80,7 +80,7 @@ public:
 	 *  glyphs for character codes 128 through 255.  For character codes
 	 *  less than 128 we use the base class implementation.
 	 */
-	virtual Glyph* getGlyph(unsigned int charcode);
+	virtual Glyph* getGlyph(const osgText::FontResolution& fontSize, unsigned int charcode); 
 
 private:
 	// Created only via load()

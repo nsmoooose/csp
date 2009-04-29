@@ -22,10 +22,9 @@
  *
  **/
 
-
-#include <csp/cspsim/System.h>
 #include <csp/cspsim/KineticsChannels.h>
 #include <csp/cspsim/f16/F16Channels.h>
+#include <csp/cspsim/f16/F16INS.h>
 
 #include <csp/csplib/data/ObjectInterface.h>
 #include <csp/csplib/data/Quat.h>
@@ -33,46 +32,32 @@
 
 namespace csp {
 
-class F16INS: public System {
-public:
-	CSP_DECLARE_OBJECT(F16INS)
-
-	F16INS(): m_ResponseTime(0.0) { }
-	virtual ~F16INS() { }
-
-	virtual void registerChannels(Bus* bus) {
-		b_INSAttitude = bus->registerLocalDataChannel<Quat>(bus::F16::INSAttitude, Quat());
-	}
-
-	virtual void importChannels(Bus* bus) {
-		b_Attitude = bus->getChannel(bus::Kinetics::Attitude);
-		b_Position = bus->getChannel(bus::Kinetics::Position);
-		b_Velocity = bus->getChannel(bus::Kinetics::Velocity);
-	}
-
-protected:
-	// TODO implement an INS error model (for background, see NAWCWPNS TM 8128, "Basic
-	// Inertial Navigation," http://www.fas.org/spp/military/program/nav/basicnav.pdf).
-	virtual double onUpdate(double dt) {
-		double f = 1.0 - m_ResponseTime / (dt + m_ResponseTime);
-		Quat &a0 = b_INSAttitude->value();
-		Quat const &a1 = b_Attitude->value();
-		a0.slerp(f, a0, a1);
-		return 0.0;
-	}
-
-	DataChannel<Quat>::RefT b_INSAttitude;
-	DataChannel<Quat>::CRefT b_Attitude;
-	DataChannel<Vector3>::CRefT b_Position;
-	DataChannel<Vector3>::CRefT b_Velocity;
-
-	double m_ResponseTime;
-};
-
-
 CSP_XML_BEGIN(F16INS)
 	CSP_DEF("ins_attitude_response_time", m_ResponseTime, false)
 CSP_XML_END
+
+F16INS::F16INS() : m_ResponseTime(0.0) { }
+F16INS::~F16INS() { }
+
+void F16INS::registerChannels(Bus* bus) {
+	b_INSAttitude = bus->registerLocalDataChannel<Quat>(bus::F16::INSAttitude, Quat());
+}
+
+void F16INS::importChannels(Bus* bus) {
+	b_Attitude = bus->getChannel(bus::Kinetics::Attitude);
+	b_Position = bus->getChannel(bus::Kinetics::Position);
+	b_Velocity = bus->getChannel(bus::Kinetics::Velocity);
+}
+
+// TODO implement an INS error model (for background, see NAWCWPNS TM 8128, "Basic
+// Inertial Navigation," http://www.fas.org/spp/military/program/nav/basicnav.pdf).
+double F16INS::onUpdate(double dt) {
+	double f = 1.0 - m_ResponseTime / (dt + m_ResponseTime);
+	Quat &a0 = b_INSAttitude->value();
+	Quat const &a1 = b_Attitude->value();
+	a0.slerp(f, a0, a1);
+	return 0.0;
+}
 
 } // namespace csp
 

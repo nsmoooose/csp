@@ -357,9 +357,9 @@ public:
 	/** Transpose this matrix.
 	 */
 	inline void transpose() {
-		swap(_mat[0][1], _mat[1][0]);
-		swap(_mat[0][2], _mat[2][0]);
-		swap(_mat[1][2], _mat[2][1]);
+		std::swap(_mat[0][1], _mat[1][0]);
+		std::swap(_mat[0][2], _mat[2][0]);
+		std::swap(_mat[1][2], _mat[2][1]);
 	}
 
 	/** Get the inverse of this matrix.

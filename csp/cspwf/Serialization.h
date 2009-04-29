@@ -35,6 +35,16 @@ namespace wf {
 class StringResourceManager;
 class Window;
 
+class CSPWF_EXPORT SerializationException : public std::exception {
+public:
+	SerializationException(const char* message);
+	virtual ~SerializationException() throw();
+
+	const char* what();
+private:
+	std::string m_Message;
+};
+
 /** Is responsible for parsing xml-content into control objects.
  */
 class CSPWF_EXPORT Serialization : public Referenced {
@@ -44,7 +54,7 @@ public:
 	
 	// Loads a specific resource file containing ui controls. The file parameter should contain 
 	// the full path to the file excluding Xxx/data/ui. Example: help/index.xml.
-	virtual void load(Window* window, const std::string& file);
+	virtual void load(Window* window, const std::string& file) throw (SerializationException);
 	
 	virtual void load(StringResourceManager* resourceManager, const std::string& filePath);
 	 

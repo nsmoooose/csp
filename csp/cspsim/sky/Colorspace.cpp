@@ -45,8 +45,8 @@ namespace csp {
 static const float wpPI = 3.14159265358979f;
 
 // global whitepoint (D65 by default)
-static float Xn=0.950515, Yn=1.0, Zn=1.08909;
-static float unprime=0.197841, vnprime=0.468316, wnprime=0.333843;
+static float Xn=0.950515f, Yn=1.0f, Zn=1.08909f;
+static float unprime=0.197841f, vnprime=0.468316f, wnprime=0.333843f;
 
 
 /**

@@ -27,6 +27,7 @@
 #include <csp/cspsim/CSPSim.h>
 #include <csp/cspsim/ObjectModel.h>
 #include <csp/cspsim/Animation.h>
+#include <csp/cspsim/RegisterObjectInterfaces.h>
 %}
 
 %include exception.i
@@ -44,9 +45,12 @@ class Referenced {
 
 }
 
+%include <csp/cspsim/Export.h>
 %include <csp/cspsim/swig/Config.i>
 %include <csp/cspsim/swig/VirtualScene.i>
 %include <csp/cspwf/cspwf.i>
 %include <csp/cspsim/swig/Screens.i>
 %include <csp/cspsim/swig/Projection.i>
 %include <csp/cspsim/swig/CSPSim.i>
+%include <csp/cspsim/RegisterObjectInterfaces.h>
+%include <csp/cspsim/swig/CSPViewer.i>

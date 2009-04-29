@@ -25,7 +25,7 @@
 
 #include <csp/cspsim/Animation.h>
 #include <csp/cspsim/hud/Display.h>
-#include <csp/cspsim/InputEventChannel.h>
+#include <csp/cspsim/input/InputEventChannel.h>
 
 #include <csp/csplib/util/Log.h>
 #include <csp/csplib/util/Math.h>
@@ -1418,7 +1418,7 @@ class AnimatedMomentarySwitch::Callback: public AnimationCallback, public sigc::
 	osg::ref_ptr<const osg::AnimationPathCallback> m_AnimationPathCallback;
 	osg::AnimationPath::ControlPoint m_DefaultPoint;
 	std::vector<osg::AnimationPath::ControlPoint> m_ControlPoints;
-	std::vector<InputEventChannel::RefT> m_EventChannels;
+	std::vector<input::InputEventChannel::RefT> m_EventChannels;
 	unsigned m_Index;
 	double m_Cycle;
 	double m_Scale;
@@ -1509,7 +1509,7 @@ public:
 			const std::vector<std::string> &channel_names = m_Animation->getEventChannelNames();
 			m_EventChannels.reserve(channel_names.size());
 			for (unsigned i = 0; i < channel_names.size(); ++i) {
-				InputEventChannel::RefT channel = bus->getSharedChannel(channel_names[i], false);
+				input::InputEventChannel::RefT channel = bus->getSharedChannel(channel_names[i], false);
 				if (channel.valid()) {
 					channel->connect(sigc::bind(sigc::mem_fun(this, &Callback::onEvent), i));
 				} else {
@@ -1602,6 +1602,25 @@ CSP_XML_BEGIN(DisplayScreen)
 	//CSP_DEF("top_right", m_TopRight, false)
 CSP_XML_END
 
+void registerAnimationObjects() {
+	{ static Animation::__csp_interface_proxy instance; }
+	{ static Rotation::__csp_interface_proxy instance; }
+	{ static RotarySwitch::__csp_interface_proxy instance; }
+	{ static StateSwitch::__csp_interface_proxy instance; }
+	{ static AnimatedSwitch::__csp_interface_proxy instance; }
+	{ static AttitudeAnimation::__csp_interface_proxy instance; }
+	{ static DrivenRotation::__csp_interface_proxy instance; }
+	{ static TimedAnimationProxy::__csp_interface_proxy instance; }
+	{ static TimedRotation::__csp_interface_proxy instance; }
+	{ static Translation::__csp_interface_proxy instance; }
+	{ static DrivenMagnitudeTranslation::__csp_interface_proxy instance; }
+	{ static DrivenVectorialTranslation::__csp_interface_proxy instance; }
+	{ static TimedMagnitudeTranslation::__csp_interface_proxy instance; }
+	{ static DrivenAnimationPath::__csp_interface_proxy instance; }
+	{ static CounterWheel::__csp_interface_proxy instance; }
+	{ static AnimatedMomentarySwitch::__csp_interface_proxy instance; }
+	{ static DisplayScreen::__csp_interface_proxy instance; }
+}
 
 } // namespace csp
 

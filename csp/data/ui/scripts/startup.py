@@ -62,7 +62,7 @@ class UserInterfaceStartup:
         # controls.
         self.cspsim.displayMenuScreen()
         self.menuScreen = self.cspsim.getCurrentScreen()
-        self.windowManager = self.menuScreen.getWindowManager()
+        self.windowManager = self.cspsim.getWindowManager()
 
         # Display the desktop and the main menu.
         self.displayDesktop()
@@ -86,4 +86,4 @@ class UserInterfaceStartup:
         elif self.cspsim.getCurrentScreen().__class__.__name__.find('GameScreen') != -1:
             messageBox = MessageBox(self.cspsim)
             messageBox.setMessage('${restart_required}')
-            self.cspsim.getCurrentScreen().getWindowManager().show(messageBox)
+            self.cspsim.getWindowManager().show(messageBox)

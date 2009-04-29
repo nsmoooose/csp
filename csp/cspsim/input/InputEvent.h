@@ -34,7 +34,7 @@
 #include <memory>
 
 namespace csp {
-
+namespace input {
 
 class Handle {
 protected:
@@ -81,6 +81,7 @@ public:
 	}
 };
 
+} // namespace input
 } // namespace csp
 
 #endif // __CSPSIM_INPUTEVENT_H__

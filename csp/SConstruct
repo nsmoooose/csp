@@ -18,6 +18,7 @@
 
 print 'COMBAT SIMULATOR PROJECT - Build System'
 
+import os
 import sys
 from tools import build
 
@@ -33,6 +34,7 @@ PACKAGES = [
 	'modules',
 	'examples/clouds',
 	'examples/objectmodel',
+	'examples/sdl-viewer',
 	'examples/sky',
 	'examples/terrain-demeter',
 	'examples/wf-window',
@@ -91,11 +93,11 @@ build.ExternalLibrary(
 build.ExternalLibrary(
 	name = 'osg',
 	config = [
-		build.PkgConfig(package='openscenegraph', version='2.0.0'),
-		build.PkgConfig(package='openthreads', version='1.9'),
+		build.PkgConfig(package='openscenegraph', version='2.6.0'),
+		build.PkgConfig(package='openthreads', version='2.3'),
 		build.PkgConfig(package='osgal', version='0.6.1'),
 		build.DevpackConfig(dlls='osgal', headers=[('osgAL', 'SoundNode')]),
-		build.DevpackConfig(dlls=['osg', 'osgDB', 'osgFX', 'osgGA', 'osgParticle', 'osgViewer', 'osgText', 'osgUtil', 'OpenThreads'], headers=[('osg', 'Depth'), ('osgText', 'Font')]),
+		build.DevpackConfig(libs=['osg', 'osgDB', 'osgFX', 'osgGA', 'osgParticle', 'osgViewer', 'osgText', 'osgUtil', 'OpenThreads'], dlls=[], headers=[('osg', 'Depth'), ('osgText', 'Font')]),
 	])
 
 build.ExternalLibrary(
@@ -136,7 +138,7 @@ class Environment(build.Environment):
 	  scons examples         build all examples
 	"""
 
-	INCLUDE = ['#/..', build.GetPythonInclude()]
+	INCLUDE = ['#/..', build.GetPythonInclude(),  os.environ.get('CSPDEVPACK', '') + "\\include\\AL"]
 
 	def customize_all(self, env):
 		env.Replace(CXXFILESUFFIX='.cpp')

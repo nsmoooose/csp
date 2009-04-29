@@ -27,7 +27,7 @@
 #define __CSPSIM_AIRCRAFTOBJECT_H__
 
 #include <csp/cspsim/DynamicObject.h>
-#include <csp/cspsim/HID.h>
+#include <csp/cspsim/input/HID.h>
 
 namespace csp {
 

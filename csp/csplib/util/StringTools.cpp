@@ -49,10 +49,6 @@ void ConvertStringToLower(std::string &str) {
 	std::transform(str.begin(), str.end(), str.begin(), ::tolower);
 }
 
-TokenQueue::TokenQueue(const std::string &str, const std::string &delimiters) {
-	Tokenize(str, *this, delimiters.c_str());
-}
-
 std::string TrimString(std::string const &str, std::string const &chars) {
 	const std::string::size_type begin = str.find_first_not_of(chars);
 	const std::string::size_type end = str.find_last_not_of(chars);

@@ -38,7 +38,7 @@
 #define __INPUTINTERFACE_H__
 
 #include <csp/cspsim/Export.h>
-#include <csp/cspsim/MapEvent.h>
+#include <csp/cspsim/input/MapEvent.h>
 
 #include <csp/csplib/util/Namespace.h>
 #include <csp/csplib/util/HashUtility.h>
@@ -52,7 +52,7 @@
 
 
 namespace csp {
-
+namespace input {
 
 // forward declaration
 class InputInterface;
@@ -413,10 +413,10 @@ private:
  */
 #define DECLARE_INPUT_INTERFACE(this_class, base_class) \
 private: \
-	static InputInterfaceDispatch _InputInterfaceDispatch; \
+	static ::csp::input::InputInterfaceDispatch _InputInterfaceDispatch; \
 protected: \
-	virtual InputInterfaceDispatch *_getInputInterfaceDispatch() { return &_InputInterfaceDispatch; } \
-	static void _bindInputInterfaceDispatch(InputInterfaceDispatch &_map) { \
+	virtual ::csp::input::InputInterfaceDispatch *_getInputInterfaceDispatch() { return &_InputInterfaceDispatch; } \
+	static void _bindInputInterfaceDispatch(::csp::input::InputInterfaceDispatch &_map) { \
 		typedef this_class TARGET; \
 		base_class::_bindInputInterfaceDispatch(_map);
 
@@ -432,7 +432,7 @@ protected: \
  *  DECLARE_INPUT_INTERFACE block.
  */
 #define DEFINE_INPUT_INTERFACE(interface_class) \
-	InputInterfaceDispatch interface_class::_InputInterfaceDispatch(interface_class::_bindInputInterfaceDispatch);
+	::csp::input::InputInterfaceDispatch interface_class::_InputInterfaceDispatch(interface_class::_bindInputInterfaceDispatch);
 
 /** Bind an action handler to an input event identifier string.
  *
@@ -441,7 +441,7 @@ protected: \
  *    and returning void.
  */
 #define BIND_ACTION(id, method) \
-		_map.bindEventHandler(id, new ActionAdapterT<TARGET>(&TARGET::method));
+	_map.bindEventHandler(id, new ::csp::input::ActionAdapterT<TARGET>(&TARGET::method));
 
 /** Bind a click handler to an input event identifier string.
  *
@@ -450,7 +450,7 @@ protected: \
  *    (the x-y coordinates of the mouse) and returning void.
  */
 #define BIND_CLICK(id, method) \
-		_map.bindEventHandler(id, new ClickAdapterT<TARGET>(&TARGET::method));
+	_map.bindEventHandler(id, new ::csp::input::ClickAdapterT<TARGET>(&TARGET::method));
 
 /** Bind an axis handler to an input event identifier string.
  *
@@ -459,7 +459,7 @@ protected: \
  *    ([0.0, 1.0] for the position of the axis) and returning void.
  */
 #define BIND_AXIS(id, method) \
-		_map.bindEventHandler(id, new AxisAdapterT<TARGET>(&TARGET::method));
+	_map.bindEventHandler(id, new ::csp::input::AxisAdapterT<TARGET>(&TARGET::method));
 
 /** Bind a mouse motion handler to an input event identifier string.
  *
@@ -468,9 +468,9 @@ protected: \
  *    parameters (x, y, delta_x, delta_y) and returning void.
  */
 #define BIND_MOTION(id, method) \
-	_map.bindEventHandler(id, new MotionAdapterT<TARGET>(&TARGET::method));
+	_map.bindEventHandler(id, new ::csp::input::MotionAdapterT<TARGET>(&TARGET::method));
 
-
+} // namespace input
 } // namespace csp
 
 #endif // __INPUTINTERFACE_H__

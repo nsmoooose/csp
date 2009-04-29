@@ -22,7 +22,7 @@
  *
  **/
 
-
+#include <algorithm>
 #include <csp/cspsim/hud/DisplayTools.h>
 #include <csp/csplib/util/Math.h>
 
@@ -93,8 +93,8 @@ void SymbolMaker::addRectangle(float x0, float y0, float x1, float y1, bool fill
 	assert(!m_DrawMode);
 	const unsigned v0 = m_Vertices->size();
 	addColorValues(color, 4);
-	if (x0 > x1) swap(x0, x1);
-	if (y0 > y1) swap(y0, y1);
+	if (x0 > x1) std::swap(x0, x1);
+	if (y0 > y1) std::swap(y0, y1);
 	m_Vertices->push_back(osg::Vec3(x1, 0.0, y0));
 	m_Vertices->push_back(osg::Vec3(x1, 0.0, y1));
 	m_Vertices->push_back(osg::Vec3(x0, 0.0, y1));

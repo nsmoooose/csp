@@ -140,19 +140,22 @@ ReverseAltFont::~ReverseAltFont() {
 	CSPLOG(INFO, DATA) << "~ReverseAltFont " << this << ", imp=" << getImplementation();
 }
 
-osgText::Font::Glyph* ReverseAltFont::getGlyph(unsigned int charcode) {
-	SizeGlyphMap::iterator itr = _sizeGlyphMap.find(SizePair(_width,_height));
-	if (itr != _sizeGlyphMap.end()) {
-		GlyphMap& glyphmap = itr->second;
-		GlyphMap::iterator gitr = glyphmap.find(charcode);
-		if (gitr!=glyphmap.end()) return gitr->second.get();
+osgText::Font::Glyph* ReverseAltFont::getGlyph(const osgText::FontResolution& fontRes, unsigned int charcode) {
+	{
+		OpenThreads::ScopedLock<OpenThreads::Mutex> lock(_glyphMapMutex);
+		FontSizeGlyphMap::iterator itr = _sizeGlyphMap.find(fontRes);
+		if (itr != _sizeGlyphMap.end()) {
+			GlyphMap& glyphmap = itr->second;
+			GlyphMap::iterator gitr = glyphmap.find(charcode);
+			if (gitr!=glyphmap.end()) return gitr->second.get();
+		}
 	}
 	if (_implementation.valid()) {
 		if (charcode >= 128) {
 			// use '0' as the reference glyph for sizing and centering the new glyph.  'M' would
 			// probably be a better choice, but i haven't made that glyph yet in my test font ;-)
-			Glyph *reference = getGlyph('0');
-			Glyph *normal = getGlyph(charcode % 128);
+			Glyph *reference = getGlyph(fontRes, '0');
+			Glyph *normal = getGlyph(fontRes, charcode % 128);
 			Glyph *reverse = new osgText::Font::Glyph;
 			int reference_width = reference->s();
 			int reference_height = reference->t();
@@ -219,70 +222,45 @@ osgText::Font::Glyph* ReverseAltFont::getGlyph(unsigned int charcode) {
 			reverse->setVerticalAdvance(reference->getVerticalAdvance());
 
 			// finally add the new glyph so we don't repeat all this work!
-#ifdef OSG_OLD_FONT_INTERFACE
-			addGlyph(getWidth(), getHeight(), charcode, reverse);
-#else
-			addGlyph(getFontWidth(), getFontHeight(), charcode, reverse);
-#endif
+			addGlyph(fontRes, charcode, reverse);
 			return reverse;
 		} else {
-			return _implementation->getGlyph(charcode);
+			return _implementation->getGlyph(fontRes,charcode);
 		}
 	}
 	return 0;
 }
 
-osgText::Font::Glyph* ScaledAltFont::getGlyph(unsigned int charcode) {
-	SizeGlyphMap::iterator itr = _sizeGlyphMap.find(SizePair(_width,_height));
-	if (itr != _sizeGlyphMap.end()) {
-		GlyphMap& glyphmap = itr->second;
-		GlyphMap::iterator gitr = glyphmap.find(charcode);
-		if (gitr!=glyphmap.end()) return gitr->second.get();
+osgText::Font::Glyph* ScaledAltFont::getGlyph(const osgText::FontResolution& fontRes, unsigned int charcode) {
+	{
+		OpenThreads::ScopedLock<OpenThreads::Mutex> lock(_glyphMapMutex);
+		FontSizeGlyphMap::iterator itr = _sizeGlyphMap.find(fontRes);
+		if (itr != _sizeGlyphMap.end()) {
+			GlyphMap& glyphmap = itr->second;
+			GlyphMap::iterator gitr = glyphmap.find(charcode);
+			if (gitr!=glyphmap.end()) return gitr->second.get();
+		}
 	}
 	if (_implementation.valid()) {
 		if (charcode >= 128) {
 			unsigned int normal_code = charcode % 128;
-			// Ensure that the normal character is loaded.
-			Glyph *normal_glyph = getGlyph(normal_code);
 			// Reload a scaled version of the glyph
-			unsigned int original_width = _width;
-			unsigned int original_height = _height;
-			unsigned int new_width = static_cast<unsigned int>(_width * m_Scale);
-			unsigned int new_height = static_cast<unsigned int>(_height * m_Scale);
-#ifdef OSG_OLD_FONT_INTERFACE
-			setSize(new_width, new_height);
-#else
-			setFontResolution(new_width, new_height);
-#endif
-			Glyph *scaled_glyph = _implementation->getGlyph(normal_code);
+			Glyph *normal_glyph = getGlyph(fontRes, normal_code);
+			
+			const osgText::FontResolution new_fontRes(fontRes.first * m_Scale, fontRes.second * m_Scale);
+			Glyph *scaled_glyph = _implementation->getGlyph(new_fontRes, normal_code);
 			if (m_VCenter) {
 				osg::Vec2 hbearing = scaled_glyph->getHorizontalBearing();
 				hbearing.y() += 0.5f * (normal_glyph->t() - scaled_glyph->t());
 				scaled_glyph->setHorizontalBearing(hbearing);
 			}
-#ifdef OSG_OLD_FONT_INTERFACE
-			setSize(original_width, original_height);
-#else
-			setFontResolution(original_width, original_height);
-#endif
-			_sizeGlyphMap[SizePair(_width, _height)][charcode] = scaled_glyph;
+			_sizeGlyphMap[fontRes][charcode] = scaled_glyph;
 			return scaled_glyph;
 		} else {
-			return _implementation->getGlyph(charcode);
+			return _implementation->getGlyph(fontRes, charcode);
 		}
 	}
 	return 0;
 }
 
 } // namespace csp
-
-
-/*
-	ScaledAltFont(std::string const &file, float scale, bool center_vertical=true): m_Scale(scale), m_VCenter(center_vertical) {
-		Font *font = osgText::readFontFile(file);
-		assert(font);
-		setImplementation(font->getImplementation());
-	}
-
-	ScaledAltFont(Font *font, float scale, bool center_vertical=true): Font(font->getImplementation()), m_Scale(scale), m_VCenter(center_vertical) { }
-*/

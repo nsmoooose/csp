@@ -55,7 +55,6 @@ class Sky;
 
 namespace wf {
 	class WindowManager;
-	class WindowManagerSceneView;
 }
 
 /**

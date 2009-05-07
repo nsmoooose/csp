@@ -36,7 +36,6 @@ namespace csp {
 namespace wf {
 	class Serialization;
 	class WindowManager;
-	class WindowManagerSceneView;
 }
 
 class CSPSIM_EXPORT MenuScreen : public BaseScreen { 

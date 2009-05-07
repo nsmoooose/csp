@@ -51,7 +51,7 @@
 #include <csp/cspsim/theater/FeatureSceneGroup.h>
 
 #include <csp/cspwf/Serialization.h>
-#include <csp/cspwf/WindowManagerSceneView.h>
+#include <csp/cspwf/WindowManager.h>
 
 #include <csp/csplib/util/Log.h>
 #include <csp/csplib/data/Types.h>

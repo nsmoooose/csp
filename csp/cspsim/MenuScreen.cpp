@@ -26,7 +26,7 @@
 #include <csp/cspsim/CSPSim.h>
 #include <csp/cspsim/input/EventMapIndex.h>
 #include <csp/cspsim/MenuScreen.h>
-#include <csp/cspwf/WindowManagerSceneView.h>
+#include <csp/cspwf/WindowManager.h>
 
 namespace csp {
 

@@ -283,7 +283,9 @@ class SharedLibrary(Target):
 class Test(SharedLibrary):
 	def __init__(self, env, **kw):
 		kw['is_test'] = 1
-		SharedLibrary.__init__(self, env, **kw)
+		testEnv = env.Clone()
+		testEnv['no_import_lib'] = 1
+		SharedLibrary.__init__(self, testEnv, **kw)
 
 
 class Command(Target):

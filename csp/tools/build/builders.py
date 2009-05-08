@@ -46,7 +46,7 @@ def EmitSwig(target, source, env):
 		# first try to find %module directive in the swig interface.  this is
 		# a fairly simplistic search that can easily be tripped up (e.g., by
 		# multiline comments.
-		re_module = re.compile(r'^\s*%module\s+([a-zA-Z0-9_]+)')
+		re_module = re.compile(r'^\s*%module(?:\(.*\))?\s+([a-zA-Z0-9_]+)')
 		for line in open(str(s)):
 			m = re_module.match(line)
 			if m is not None:

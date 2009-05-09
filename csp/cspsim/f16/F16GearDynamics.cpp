@@ -93,7 +93,7 @@ bool F16GearDynamics::gearHandleRequestHandler(bool const &up) {
 	return b_GearHandleUp->value() == up;
 }
 
-F16GearDynamics::F16GearDynamics(): m_GearHandleRequest(this, &F16GearDynamics::gearHandleRequestHandler) { }
+F16GearDynamics::F16GearDynamics() { m_GearHandleRequest.init(this, &F16GearDynamics::gearHandleRequestHandler); }
 
 } // namespace csp
 

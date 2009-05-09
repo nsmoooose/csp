@@ -97,10 +97,10 @@ GameScreen::GameScreen():
 	BaseScreen(),
 	m_ActiveObject(0),
 	m_CameraAgent(new CameraAgent(ViewFactory())),
-	m_CameraCommands(new CameraCommands),
-	m_OnPlayerJoin(this, &GameScreen::onPlayerJoin),
-	m_OnPlayerQuit(this, &GameScreen::onPlayerQuit)
+	m_CameraCommands(new CameraCommands)
 {
+	m_OnPlayerJoin.init(this, &GameScreen::onPlayerJoin);
+	m_OnPlayerQuit.init(this, &GameScreen::onPlayerQuit);
 	initInterface();	
 }
 

@@ -38,7 +38,7 @@
  *   void bar(double);
  *   csp::callback<void, double> _bar_callback;
  * public:
- *   Target(): _bar_callback(this, &Bar::bar) { }
+ *   Target() { _bar_callback.init(this, &Bar::bar); }
  *   csp::callback<void, double> &callback() { return _bar_callback; }
  * };
  *
@@ -91,7 +91,9 @@ protected:
  */
 template <class ret>
 struct callback0: public callbackbase, private sigc::slot<ret> {
+	callback0() { }
 	template <class F> callback0(F const &functor): sigc::slot<ret>(functor) { }
+	template <class Obj> void init(Obj *o, ret (Obj::*m)()) { sigc::slot<ret>::operator=( sigc::mem_fun(*o, m) ); }
 	sigc::connection bind(sigc::signal0<ret> &signal) { return capture(signal.connect(*this)); }
 };
 
@@ -99,7 +101,9 @@ struct callback0: public callbackbase, private sigc::slot<ret> {
  */
 template <class ret, class arg1>
 struct callback1: public callbackbase, private sigc::slot<ret, arg1> {
+	callback1() { }
 	template <class F> callback1(F const &functor): sigc::slot<ret, arg1>(functor) { }
+	template <class Obj> void init(Obj *o, ret (Obj::*m)(arg1)) { sigc::slot<ret, arg1>::operator=( sigc::mem_fun(*o, m) ); }
 	sigc::connection bind(sigc::signal1<ret, arg1> &signal) { return capture(signal.connect(*this)); }
 };
 
@@ -107,7 +111,9 @@ struct callback1: public callbackbase, private sigc::slot<ret, arg1> {
  */
 template <class ret, class arg1, class arg2>
 struct callback2: public callbackbase, private sigc::slot<ret, arg1, arg2> {
+	callback2() { }
 	template <class F> callback2(F const &functor): sigc::slot<ret, arg1, arg2>(functor) { }
+	template <class Obj> void init(Obj *o, ret (Obj::*m)(arg1, arg2)) { sigc::slot<ret, arg1, arg2>::operator=( sigc::mem_fun(*o, m) ); }
 	sigc::connection bind(sigc::signal2<ret, arg1, arg2> &signal) { return capture(signal.connect(*this)); }
 };
 
@@ -115,7 +121,9 @@ struct callback2: public callbackbase, private sigc::slot<ret, arg1, arg2> {
  */
 template <class ret, class arg1, class arg2, class arg3>
 struct callback3: public callbackbase, private sigc::slot<ret, arg1, arg2, arg3> {
+	callback3() { }
 	template <class F> callback3(F const &functor): sigc::slot<ret, arg1, arg2, arg3>(functor) { }
+	template <class Obj> void init(Obj *o, ret (Obj::*m)(arg1, arg2, arg3)) { sigc::slot<ret, arg1, arg2, arg3>::operator=( sigc::mem_fun(*o, m) ); }
 	sigc::connection bind(sigc::signal3<ret, arg1, arg2, arg3> &signal) { return capture(signal.connect(*this)); }
 };
 
@@ -123,7 +131,9 @@ struct callback3: public callbackbase, private sigc::slot<ret, arg1, arg2, arg3>
  */
 template <class ret, class arg1, class arg2, class arg3, class arg4>
 struct callback4: public callbackbase, private sigc::slot<ret, arg1, arg2, arg3, arg4> {
+	callback4() { }
 	template <class F> callback4(F const &functor): sigc::slot<ret, arg1, arg2, arg3, arg4>(functor) { }
+	template <class Obj> void init(Obj *o, ret (Obj::*m)(arg1, arg2, arg3, arg4)) { sigc::slot<ret, arg1, arg2, arg3, arg4>::operator=( sigc::mem_fun(*o, m) ); }
 	sigc::connection bind(sigc::signal3<ret, arg1, arg2, arg3, arg4> &signal) { return capture(signal.connect(*this)); }
 };
 
@@ -139,40 +149,40 @@ struct callback { };
  */
 template <class ret>
 struct callback<ret>: public callback0<ret> {
+	callback() { }
 	template <class F> callback(F const &functor): callback0<ret>(functor) { }
-	template <class obj> callback(obj *o, ret (obj::*m)()): callback0<ret>(sigc::mem_fun(*o, m)) { }
 };
 
 /** Template specialization for one argument.
  */
 template <class ret, class arg1>
 struct callback<ret, arg1>: public callback1<ret, arg1> {
+	callback() { }
 	template <class F> callback(F const &functor): callback1<ret, arg1>(functor) { }
-	template <class obj> callback(obj *o, ret (obj::*m)(arg1)): callback1<ret, arg1>(sigc::mem_fun(*o, m)) { }
 };
 
 /** Template specialization for two arguments.
  */
 template <class ret, class arg1, class arg2>
 struct callback<ret, arg1, arg2>: public callback2<ret, arg1, arg2> {
+	callback() { }
 	template <class F> callback(F const &functor): callback2<ret, arg1, arg2>(functor) { }
-	template <class obj> callback(obj *o, ret (obj::*m)(arg1, arg2)): callback2<ret, arg1, arg2>(sigc::mem_fun(*o, m)) { }
 };
 
 /** Template specialization for three arguments.
  */
 template <class ret, class arg1, class arg2, class arg3>
 struct callback<ret, arg1, arg2, arg3>: public callback3<ret, arg1, arg2, arg3> {
+	callback() { }
 	template <class F> callback(F const &functor): callback3<ret, arg1, arg2, arg3>(functor) { }
-	template <class obj> callback(obj *o, ret (obj::*m)(arg1, arg2, arg3)): callback3<ret, arg1, arg2, arg3>(sigc::mem_fun(*o, m)) { }
 };
 
 /** Template specialization for four arguments.
  */
 template <class ret, class arg1, class arg2, class arg3, class arg4>
 struct callback<ret, arg1, arg2, arg3, arg4>: public callback4<ret, arg1, arg2, arg3, arg4> {
+	callback() { }
 	template <class F> callback(F const &functor): callback4<ret, arg1, arg2, arg3, arg4>(functor) { }
-	template <class obj> callback(obj *o, ret (obj::*m)(arg1, arg2, arg3, arg4)): callback4<ret, arg1, arg2, arg3, arg4>(sigc::mem_fun(*o, m)) { }
 };
 
 } // namespace csp

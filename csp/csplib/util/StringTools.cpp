@@ -132,13 +132,11 @@ bool _parseInt(const char *str, uint64 &value, int &sign) {
  * argument should be the largest positive value of the type.
  */
 template <typename T>
-bool _parseInt(const char *s, T &x) {
-	const bool is_signed = std::numeric_limits<T>::is_signed;
+bool _parseSignedInt(const char *s, T &x) {
 	const uint64 limit = static_cast<uint64>(std::numeric_limits<T>::max());
 	uint64 value;
 	int sign;
 	if (!_parseInt(s, value, sign)) return false;
-	if (sign < 0 && !is_signed) return false;
 	if (value <= limit) {
 		x = static_cast<T>(value) * static_cast<T>(sign);
 		return true;
@@ -149,14 +147,28 @@ bool _parseInt(const char *s, T &x) {
 	return false;
 }
 
-bool parseInt(const char *s, int64 &x) { return _parseInt(s, x); }
-bool parseInt(const char *s, uint64 &x) { return _parseInt(s, x); }
-bool parseInt(const char *s, int32 &x) { return _parseInt(s, x); }
-bool parseInt(const char *s, uint32 &x) { return _parseInt(s, x); }
-bool parseInt(const char *s, int16 &x) { return _parseInt(s, x); }
-bool parseInt(const char *s, uint16 &x) { return _parseInt(s, x); }
-bool parseInt(const char *s, int8 &x) { return _parseInt(s, x); }
-bool parseInt(const char *s, uint8 &x) { return _parseInt(s, x); }
+template <typename T>
+bool _parseUnsignedInt(const char *s, T &x) {
+	const uint64 limit = static_cast<uint64>(std::numeric_limits<T>::max());
+	uint64 value;
+	int sign;
+	if (!_parseInt(s, value, sign)) return false;
+	if (sign < 0) return false;
+	if (value <= limit) {
+		x = static_cast<T>(value);
+		return true;
+	}
+	return false;
+}
+
+bool parseInt(const char *s, int64 &x) { return _parseSignedInt(s, x); }
+bool parseInt(const char *s, uint64 &x) { return _parseUnsignedInt(s, x); }
+bool parseInt(const char *s, int32 &x) { return _parseSignedInt(s, x); }
+bool parseInt(const char *s, uint32 &x) { return _parseUnsignedInt(s, x); }
+bool parseInt(const char *s, int16 &x) { return _parseSignedInt(s, x); }
+bool parseInt(const char *s, uint16 &x) { return _parseUnsignedInt(s, x); }
+bool parseInt(const char *s, int8 &x) { return _parseSignedInt(s, x); }
+bool parseInt(const char *s, uint8 &x) { return _parseUnsignedInt(s, x); }
 bool parseDouble(const char *s, double &x) {
 	size_t len = strlen(s);
 

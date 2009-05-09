@@ -66,7 +66,7 @@ public:
 	 *  either true or false, and fails if x has not been set.
 	 */
 	int operator ~() const {
-		return _state == UNSET ? 0 : (_state == TRUE ? ~true : ~false);
+		return _state == UNSET ? 0 : (_state == TRUE ? ~int(true) : ~int(false));
 	}
 
 	tribool operator &&(tribool other) const {

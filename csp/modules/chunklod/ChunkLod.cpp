@@ -39,7 +39,6 @@ int s_child_count = 0;
 
 
 
-#define _USE_MATH_DEFINES
 #include <math.h>
 
 #include <osg/Timer>

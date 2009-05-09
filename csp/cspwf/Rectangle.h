@@ -31,11 +31,12 @@ namespace csp {
 namespace wf {
 
 struct Rectangle {
-	float x0, y0, x1, y1;
+	typedef float Value_type;
+	Value_type x0, y0, x1, y1;
 	Rectangle() {}
-	Rectangle(float x0_, float y0_, float x1_, float y1_): x0(x0_), y0(y0_), x1(x1_), y1(y1_) {}
-	inline float width() const { return x1 - x0; }
-	inline float height() const { return y1 - y0; }
+	Rectangle(Value_type x0_, Value_type y0_, Value_type x1_, Value_type y1_): x0(x0_), y0(y0_), x1(x1_), y1(y1_) {}
+	inline Value_type width() const { return x1 - x0; }
+	inline Value_type height() const { return y1 - y0; }
 	inline bool pointInRectangle(Point& p) {
 		return p.x >= x0 && p.x <= x1 && p.y >= y0 && p.y <= y1;
 	}

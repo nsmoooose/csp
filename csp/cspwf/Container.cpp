@@ -79,7 +79,7 @@ Rectangle Container::getClientRect() const {
 		clientArea.y0 = *style->getBorderTopWidth();
 	}
 	
-	clientArea.x1 = getSize().width;
+	clientArea.x1 = static_cast<Rectangle::Value_type>( getSize().width );
 	if(style->getBorderWidth() && !style->getBorderRightWidth()) {
 		clientArea.x1 -= *style->getBorderWidth();
 	}
@@ -87,7 +87,7 @@ Rectangle Container::getClientRect() const {
 		clientArea.x1 -= *style->getBorderRightWidth();
 	}
 	
-	clientArea.y1 = getSize().height;
+	clientArea.y1 = static_cast<Rectangle::Value_type>( getSize().height );
 	if(style->getBorderWidth() && !style->getBorderBottomWidth()) {
 		clientArea.y1 -= *style->getBorderWidth();
 	}

@@ -42,6 +42,7 @@ namespace osg { class PositionAttitudeTransform; }
 namespace osg { class State; }
 namespace osg { class StateSet; }
 namespace osg { class DisplaySettings; }
+namespace osg { class Camera; }
 
 namespace osgUtil { class SceneView; }
 
@@ -87,11 +88,10 @@ public:
 class CSPSIM_EXPORT VirtualScene: public Referenced
 {
 public:
-	VirtualScene(osg::State* state, int width, int height);
+	VirtualScene(osg::Group *virtualSceneGroup, int width, int height);
 	virtual ~VirtualScene();
 
 	void buildScene();
-	void buildSceneNew();
 	void buildSky();
 
 	int drawScene();
@@ -142,7 +142,6 @@ public:
 	void setNearPlane(float value);
 	float getAspect() const {return m_Aspect;}
 	void setAspect(float value);
-	void getViewport(int& x,int& y,int& width,int& height);
 	ContextIDFactory* const getContextIDFactory() const {return m_ContextIDFactory.get();}
 
 	void setLabels(bool show);
@@ -181,7 +180,7 @@ private:
 	int _getFeatureTileIndex(Ref<FeatureGroup> feature) const;
 	void _updateOrigin(Vector3 const &origin);
 
-	osgUtil::SceneView *makeSceneView(unsigned mask);
+	osg::Camera *makeSceneCamera(unsigned mask);
 
 	void init();
 	void createSceneViews();
@@ -190,36 +189,17 @@ private:
 	void createFarView();
 	void createNearView();
 
-	void drawVeryFarView();
-	void drawFarView();
-	void drawNearView();
-	void drawInfoView();
-
-	void createSceneViewsNew();
-
-	void createVeryFarViewNew();
-	void createFarViewNew();
-	void createNearViewNew();
-/*	void createInfoViewNew();
-	void createWindowViewNew();*/
-
-
-/*	void drawVeryFarViewNew();
-	void drawFarViewNew();
-	void drawNearViewNew();*/
-
 protected:
+	void _updateProjectionMatrix();
 	void _updateFog(Vector3 const &lookPos, Vector3 const &eyePos);
 
 	Ref<TerrainObject> m_Terrain;
 
-	osg::ref_ptr<osgUtil::SceneView> m_NearView;
-	osg::ref_ptr<osgUtil::SceneView> m_FarView;
-	osg::ref_ptr<osgUtil::SceneView> m_VeryFarView;
-
-	osg::ref_ptr<osg::State> m_GlobalState;
-	osg::ref_ptr<osg::StateSet> m_GlobalStateSet;
-	osg::ref_ptr<osg::DisplaySettings> m_DisplaySettings;
+	osg::ref_ptr<osg::Group> m_VirtualSceneGroup;
+	osg::ref_ptr<osg::Camera> m_NearCamera;
+	osg::ref_ptr<osg::Camera> m_FarCamera;
+	osg::ref_ptr<osg::Camera> m_TerrainCamera;
+	osg::ref_ptr<osg::Camera> m_VeryFarCamera;
 
 	osg::ref_ptr<osg::FrameStamp> m_FrameStamp;
 	Ref<ContextIDFactory> m_ContextIDFactory;
@@ -262,7 +242,6 @@ protected:
 	osg::ref_ptr<osg::Group> m_ObjectGroup;
 	osg::ref_ptr<osg::Node> m_TerrainNode;
 	osg::ref_ptr<osg::Group> m_FreeObjectGroup;
-	osg::ref_ptr<osg::Group> m_GridObjectGroup;
 	osg::ref_ptr<osg::Group> m_ParticleEmitterGroup;
 	osg::ref_ptr<osg::Group> m_ParticleUpdaterGroup;
 	osg::ref_ptr<osg::PositionAttitudeTransform> m_GlobalFrame;

@@ -162,6 +162,7 @@ protected:
 private:
 	Ref<SDLViewer> m_Viewer;
 	Ref<wf::WindowManager> m_WindowManager;
+	osg::ref_ptr<osg::Group> m_VirtualSceneGroup;
 	Ref<wf::Signal> m_ConfigurationChanged;
 	
 	SDL_Surface *m_SDLScreen;
@@ -204,7 +205,7 @@ private:
 
 	//--osg::ref_ptr<Producer::RenderSurface> m_RenderSurface;
 	// Shared state used by all SceneViews.
-	osg::ref_ptr<osg::State> m_GlobalState;
+	osg::ref_ptr<osg::State> m_GlobalState; //TODO: remove
 
 	ScopedPointer<input::InputEvent> m_InputEvent;
 };

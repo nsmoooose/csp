@@ -367,9 +367,9 @@ void VirtualScene::removeFeature(Ref<FeatureGroup> feature) {
 }
 
 
-VirtualScene::VirtualScene(osg::State* state, int width, int height):
+VirtualScene::VirtualScene(osg::Group *virtualSceneGroup, int width, int height):
 	m_SceneState(new SceneState),
-	m_GlobalState(state),
+	m_VirtualSceneGroup(virtualSceneGroup),
 	m_ViewDistance(30000.0),
 	m_ViewAngle(60.0),
 	m_NearPlane(2.0),
@@ -385,38 +385,34 @@ VirtualScene::VirtualScene(osg::State* state, int width, int height):
 
 VirtualScene::~VirtualScene() { 
 	ScreenInfoNode::tearDown(CSPSim::theSim->getSceneData());
+	m_VirtualSceneGroup->removeChild( 0, m_VirtualSceneGroup->getNumChildren() );
 }
 
 void VirtualScene::init() {
-	// set up the display settings that will be shared by all sceneviews.
-	m_DisplaySettings = new osg::DisplaySettings();
-	m_DisplaySettings->setDefaults();
-
 	// configure the default state for all scene graphs in the various scene views.
-	m_GlobalStateSet = new osg::StateSet();
-	m_GlobalStateSet->setGlobalDefaults();
+	osg::StateSet *globalStateSet = m_VirtualSceneGroup->getOrCreateStateSet();
 
 	// custom default settings
-	m_GlobalStateSet->setMode(GL_DEPTH_TEST, osg::StateAttribute::ON);
-	m_GlobalStateSet->setMode(GL_LIGHTING, osg::StateAttribute::ON);
+	globalStateSet->setMode(GL_DEPTH_TEST, osg::StateAttribute::ON);
+	globalStateSet->setMode(GL_LIGHTING, osg::StateAttribute::ON);
 
 	// add default uniforms for shaders
-	Shader::instance()->addDefaultUniforms(m_GlobalStateSet.get());
+	Shader::instance()->addDefaultUniforms(globalStateSet);
 
 	// create a light model to eliminate the default ambient light.
 	osg::LightModel *light_model = new osg::LightModel();
 	light_model->setAmbientIntensity(osg::Vec4(0.0, 0.0, 0.0, 1.0));
-	m_GlobalStateSet->setAttributeAndModes(light_model, osg::StateAttribute::ON);
+	globalStateSet->setAttributeAndModes(light_model, osg::StateAttribute::ON);
 
 	// set up an alphafunc by default to speed up blending operations.
 	osg::AlphaFunc* alphafunc = new osg::AlphaFunc;
 	alphafunc->setFunction(osg::AlphaFunc::GREATER, 0.0f);
-	m_GlobalStateSet->setAttributeAndModes(alphafunc, osg::StateAttribute::ON);
+	globalStateSet->setAttributeAndModes(alphafunc, osg::StateAttribute::ON);
 
 	// set up an texture environment by default to speed up blending operations.
 	osg::TexEnv* texenv = new osg::TexEnv;
 	texenv->setMode(osg::TexEnv::MODULATE);
-	m_GlobalStateSet->setTextureAttributeAndModes(0, texenv, osg::StateAttribute::ON);
+	globalStateSet->setTextureAttributeAndModes(0, texenv, osg::StateAttribute::ON);
 
 	m_FrameStamp = new osg::FrameStamp;
 }
@@ -425,85 +421,45 @@ void VirtualScene::createSceneViews() {
 	createVeryFarView();
 	createFarView();
 	createNearView();
+	_updateProjectionMatrix();
 }
 
-void VirtualScene::createSceneViewsNew() {
-	createVeryFarViewNew();
-	createFarView();
-	createNearView();
-}
-
-osgUtil::SceneView *VirtualScene::makeSceneView(unsigned mask) {
-	osgUtil::SceneView *sv = new osgUtil::SceneView(m_DisplaySettings.get());
-	sv->setDefaults(osgUtil::SceneView::COMPILE_GLOBJECTS_AT_INIT);
-	sv->setViewport(0, 0, m_ScreenWidth, m_ScreenHeight);
-	sv->setComputeNearFarMode(osgUtil::CullVisitor::DO_NOT_COMPUTE_NEAR_FAR);
-	// override default HEADLIGHT mode, we provide our own lights.
-	sv->setLightingMode(osgUtil::SceneView::NO_SCENEVIEW_LIGHT);
-	// all scene views share a common gl context
-	sv->setState(m_GlobalState.get());
-	sv->setGlobalStateSet(m_GlobalStateSet.get());
-	sv->setFrameStamp(m_FrameStamp.get());
-	// default cull settings
-	//sv->getCullVisitor()->setImpostorsActive(true); // true by default
-	//sv->getCullVisitor()->setComputeNearFarMode(osgUtil::CullVisitor::COMPUTE_NEAR_FAR_USING_BOUNDING_VOLUMES); // Inherited from the SceneView
-	sv->setCullingMode(osgUtil::CullVisitor::ENABLE_ALL_CULLING); // Inherited by the CullVisitor
-	sv->setCullMask(SceneMasks::CULL_ONLY | SceneMasks::NORMAL | mask);
-	// default update settings
-	sv->getUpdateVisitor()->setTraversalMask(SceneMasks::UPDATE_ONLY | SceneMasks::NORMAL | mask);
-	return sv;
+osg::Camera *VirtualScene::makeSceneCamera(unsigned mask) {
+	osg::Camera *camera = new osg::Camera;
+	camera->setReferenceFrame(osg::Transform::ABSOLUTE_RF);
+	camera->setComputeNearFarMode(osgUtil::CullVisitor::DO_NOT_COMPUTE_NEAR_FAR);
+	camera->setCullingMode(osgUtil::CullVisitor::ENABLE_ALL_CULLING); // Why don't use the default ?
+	camera->setCullMask(SceneMasks::CULL_ONLY | SceneMasks::NORMAL | mask);
+	// TODO: this was done on the old osgUtil::SceneView: sv->getUpdateVisitor()->setTraversalMask(SceneMasks::UPDATE_ONLY | SceneMasks::NORMAL | mask);
+	m_VirtualSceneGroup->addChild(camera);
+	return camera;
 }
 
 void VirtualScene::createVeryFarView() {
-	m_VeryFarView = makeSceneView(SceneMasks::FAR);
+	m_VeryFarCamera = makeSceneCamera(SceneMasks::FAR);
 	m_VeryFarGroup = new osg::Group;
 	m_VeryFarGroup->setName("very_far_group");
-	m_VeryFarView->setSceneData(m_VeryFarGroup.get());
-}
-
-void VirtualScene::createVeryFarViewNew() {
-	//m_VeryFarView = makeSceneView(SceneMasks::FAR);
-	m_VeryFarGroup = new osg::Group;
-	m_VeryFarGroup->setName("very_far_group");
-	//m_VeryFarView->setSceneData(m_VeryFarGroup.get());
+	m_VeryFarCamera->addChild(m_VeryFarGroup.get());
 }
 
 void VirtualScene::createFarView() {
-	m_FarView = makeSceneView(SceneMasks::FAR);
-	// clear the depth buffer (but not the color buffer)
-	m_FarView->getCamera()->setClearMask(GL_DEPTH_BUFFER_BIT);
-	m_FarGroup = new osg::Group;
-	m_FarGroup->setName("far_group");
-	m_FarView->setSceneData(m_FarGroup.get());
-}
+	m_TerrainCamera = makeSceneCamera(SceneMasks::FAR); // TODO: remove this temporary hack (see below)
+	m_TerrainCamera->setClearMask(GL_DEPTH_BUFFER_BIT);
 
-void VirtualScene::createFarViewNew() {
-	//m_FarView = makeSceneView(SceneMasks::FAR);
-	// clear the depth buffer (but not the color buffer)
-	//m_FarView->getCamera()->setClearMask(GL_DEPTH_BUFFER_BIT);
+	m_FarCamera = makeSceneCamera(SceneMasks::FAR);
+	m_FarCamera->setClearMask(GL_DEPTH_BUFFER_BIT);
 	m_FarGroup = new osg::Group;
 	m_FarGroup->setName("far_group");
-	//m_FarView->setSceneData(m_FarGroup.get());
+	m_FarCamera->addChild(m_FarGroup.get());
 }
 
 void VirtualScene::createNearView() {
-	m_NearView = makeSceneView(SceneMasks::NEAR);
-	// clear the depth buffer (but not the color buffer)
-	m_NearView->getCamera()->setClearMask(GL_DEPTH_BUFFER_BIT);
-	m_NearView->setImpostorsActive(false); // Inherited by the CullVisitor
+	m_NearCamera = makeSceneCamera(SceneMasks::NEAR);
+	m_NearCamera->setClearMask(GL_DEPTH_BUFFER_BIT);
+	// TODO: this was done on the old osgUtil::SceneView: m_NearView->setImpostorsActive(false); // Inherited by the CullVisitor
 	m_NearGroup = new osg::Group;
 	m_NearGroup->setName("near_group");
-	m_NearView->setSceneData(m_NearGroup.get());
-}
-
-void VirtualScene::createNearViewNew() {
-	//m_NearView = makeSceneView(SceneMasks::NEAR);
-	// clear the depth buffer (but not the color buffer)
-	//m_NearView->getCamera()->setClearMask(GL_DEPTH_BUFFER_BIT);
-	//m_NearView->setImpostorsActive(false); // Inherited by the CullVisitor
-	m_NearGroup = new osg::Group;
-	m_NearGroup->setName("near_group");
-	//m_NearView->setSceneData(m_NearGroup.get());
+	m_NearCamera->addChild(m_NearGroup.get());
 }
 
 void VirtualScene::buildScene() {
@@ -561,8 +517,13 @@ void VirtualScene::buildScene() {
 
 	m_FogGroup = new osg::Group;
 	m_FogGroup->setName("fog_group");
-	m_FogGroup->addChild(m_TerrainGroup.get());
+	//m_FogGroup->addChild(m_TerrainGroup.get()); // TODO: Temporary moved to a dedicated camera to avoid a depth buffer bug in the cockpit. But we can now see through the terrain.
 	m_FogGroup->addChild(m_ObjectGroup.get());
+
+	osg::Group* fogTerrainGroup = new osg::Group;
+	m_TerrainCamera->addChild(fogTerrainGroup);
+	fogTerrainGroup->addChild(m_SkyLights.get());
+	fogTerrainGroup->addChild(m_TerrainGroup.get());
 
 	m_GlobalFrame = new osg::PositionAttitudeTransform;
 	m_GlobalFrame->setName("global_frame");
@@ -584,12 +545,12 @@ void VirtualScene::buildScene() {
 
 	// fog properties: start and end distances are read from CSPSim.ini
 	osg::StateSet * pFogState = m_FogGroup->getOrCreateStateSet();
+	fogTerrainGroup->setStateSet(pFogState);
 	osg::Fog* fog = new osg::Fog;
 	fog->setMode(osg::Fog::LINEAR);
 	fog->setFogCoordinateSource(osg::Fog::FRAGMENT_DEPTH);
 	fog->setDensity(0.3f);
 	pFogState->setAttributeAndModes(fog, m_FogEnabled ? osg::StateAttribute::ON : osg::StateAttribute::OFF);
-	m_FogGroup->setStateSet(pFogState);
 
 	m_NearObjectGroup = new osg::Group;
 	m_NearGroup->addChild(m_SkyLights.get());
@@ -605,100 +566,8 @@ void VirtualScene::buildScene() {
 	//opt.optimize(m_FarGroup.get(), osgUtil::Optimizer::SHARE_DUPLICATE_STATE);
 }
 
-void VirtualScene::buildSceneNew() {
-	std::cout << "VirtualScene::buildSceneNew() ";
-
-	/////////////////////////////////////
-	//(Un)comment to (enable) disable debug info from osg
-	//osg::setNotifyLevel(osg::DEBUG_INFO);
-	/////////////////////////////////////
-
-	init();
-	createSceneViewsNew();
-
-	m_FreeObjectGroup = new osg::Group;
-	m_FreeObjectGroup->setName("free_object_group");
-
-	m_FeatureGroup = new osg::PositionAttitudeTransform;
-	m_FeatureGroup->setName("feature_group");
-
-	m_ObjectGroup = new osg::Group;
-	m_ObjectGroup->setName("object_group");
-	m_ObjectGroup->addChild(m_FeatureGroup.get());
-	m_ObjectGroup->addChild(m_FreeObjectGroup.get());
-
-
-	// construct the skydome, stars, moon, sunlight, and moonlight
-	buildSky();
-
-	osg::ClearNode* background = new osg::ClearNode;
-	// the horizon fan and sky now completely enclose the camera so there
-	// is no longer any need to clear the background for normal rendering.
-	// blanking is only needed for wireframe mode.
-	background->setRequiresClear(true);
-	background->setClearColor(osg::Vec4(0.6, 0.3, 0.4, 1.0));
-	background->addChild(m_Sky->group());
-
-	m_VeryFarGroup->addChild(background);
-
-	m_TerrainGroup = new osg::PositionAttitudeTransform;
-	m_TerrainGroup->setName("terrain_group");
-	// the terrain is placed in bin -3 to ensure that it is drawn first.
-	// (bin -2 is used for planar objects and bin -1 is used for planar
-	// shadows; see ObjectModel and SceneModel for details.)
-	m_TerrainGroup->getOrCreateStateSet()->setRenderBinDetails(-3, "RenderBin");
-	m_TerrainGroup->getOrCreateStateSet()->setTextureAttributeAndModes(2, m_Sky->getSkyDome()->getHorizonTexture(), osg::StateAttribute::ON);
-
-	m_FogGroup = new osg::Group;
-	m_FogGroup->setName("fog_group");
-	m_FogGroup->addChild(m_TerrainGroup.get());
-	m_FogGroup->addChild(m_ObjectGroup.get());
-
-	m_GlobalFrame = new osg::PositionAttitudeTransform;
-	m_GlobalFrame->setName("global_frame");
-	//m_GlobalFrame->setCullingActive(false);
-	//m_GlobalFrame->setReferenceFrame(osg::Transform::RELATIVE_TO_ABSOLUTE);
-
-	m_ParticleEmitterGroup = new osg::Group;
-	m_ParticleEmitterGroup->setName("particle_emitter_group");
-	//m_ParticleEmitterGroup->setCullingActive(false);
-	m_ParticleUpdaterGroup = new osg::Group;
-	m_ParticleUpdaterGroup->setName("particle_updater_group");
-	//m_ParticleUpdaterGroup->setCullingActive(false);
-
-	m_FarGroup->addChild(m_SkyLights.get());
-	m_FarGroup->addChild(m_FogGroup.get());
-	m_FarGroup->addChild(m_ParticleEmitterGroup.get());
-	m_FarGroup->addChild(m_GlobalFrame.get());
-	m_FarGroup->addChild(m_ParticleUpdaterGroup.get());
-
-	// fog properties: start and end distances are read from CSPSim.ini
-	osg::StateSet * pFogState = m_FogGroup->getOrCreateStateSet();
-	osg::Fog* fog = new osg::Fog;
-	fog->setMode(osg::Fog::LINEAR);
-	fog->setFogCoordinateSource(osg::Fog::FRAGMENT_DEPTH);
-	fog->setDensity(0.3f);
-	pFogState->setAttributeAndModes(fog, m_FogEnabled ? osg::StateAttribute::ON : osg::StateAttribute::OFF);
-	m_FogGroup->setStateSet(pFogState);
-
-	m_NearObjectGroup = new osg::Group;
-	m_NearGroup->addChild(m_SkyLights.get());
-	m_NearGroup->addChild(m_NearObjectGroup.get());
-
-	// TODO: Remove these calls and place them into some kind of weather object.
-	m_CloudGroup = new osg::Group;
-	m_NearGroup->addChild(m_CloudGroup.get());
-
-
-	//FIXME: why doesn't ALL_OPTIMIZATIONS work as expected?
-	//osgUtil::Optimizer opt;
-	//opt.optimize(m_FarGroup.get(), osgUtil::Optimizer::COMBINE_ADJACENT_LODS);
-	//opt.optimize(m_FarGroup.get(), osgUtil::Optimizer::SHARE_DUPLICATE_STATE);
-}
-
 void VirtualScene::buildSky() {
-//	osg::StateSet* globalStateSet = m_FarView->getGlobalStateSet();
-	osg::StateSet* globalStateSet = m_GlobalStateSet.get();
+	osg::StateSet* globalStateSet = m_VirtualSceneGroup->getOrCreateStateSet();
 	assert(globalStateSet);
 
 	m_Sky = new Sky(1e+6);
@@ -723,36 +592,10 @@ void VirtualScene::buildSky() {
 	m_SkyLights->addChild(moonlight);
 }
 
-void VirtualScene::drawVeryFarView() {
-	m_VeryFarView->setProjectionMatrixAsPerspective(m_ViewAngle, m_Aspect, 0.8 * m_ViewDistance, 1.2e+6);
-	m_VeryFarView->update();
-	m_VeryFarView->cull();
-	m_VeryFarView->draw();
-}
-
-void VirtualScene::drawFarView() {
-	m_FarView->setProjectionMatrixAsPerspective(m_ViewAngle, m_Aspect, m_NearPlane, m_ViewDistance);
-	m_FarView->update();
-	m_FarView->cull();
-	m_FarView->draw();
-}
-
-void VirtualScene::drawNearView() {
-	if (m_NearObjectGroup->getNumChildren() > 0) {
-		assert(m_NearObjectGroup->getNumChildren() == 1);
-		m_NearView->setProjectionMatrixAsPerspective(m_ViewAngle, m_Aspect, 0.01f, 100.0);
-		m_NearView->update();
-		m_NearView->cull();
-		m_NearView->draw();
-	}
-}
-
 int VirtualScene::drawScene() {
+	// The is no longuer needed, all the drawing is handled by osgViewer::Viewer::frame()
 	CSPLOG(DEBUG, APP) << "VirtualScene::drawScene()...";
-	drawVeryFarView();
-	drawFarView();
-	drawNearView();
-	if (m_Terrain.valid()) m_Terrain->endDraw();
+	//if (m_Terrain.valid()) m_Terrain->endDraw(); // TODO: for Demeter stats
 	return 1;
 }
 
@@ -805,9 +648,10 @@ void VirtualScene::_setLookAt(const Vector3& eyePos, const Vector3& lookPos, con
 	osg::Matrix view_matrix;
 	view_matrix.makeLookAt(osg::Vec3(0.0, 0.0, 0.0), toOSG(lookPos - eyePos), _up);
 
-	m_VeryFarView->setViewMatrix(view_matrix);
-	m_FarView->setViewMatrix(view_matrix);
-	m_NearView->setViewMatrix(view_matrix);
+	m_VeryFarCamera->setViewMatrix(view_matrix);
+	m_TerrainCamera->setViewMatrix(view_matrix);
+	m_FarCamera->setViewMatrix(view_matrix);
+	m_NearCamera->setViewMatrix(view_matrix);
 
 	osg::Quat listener_attitude;
 	listener_attitude.set(view_matrix);
@@ -822,6 +666,13 @@ void VirtualScene::_setLookAt(const Vector3& eyePos, const Vector3& lookPos, con
 		Vector3 tpos = m_Terrain->getOrigin(eyePos) - eyePos;
 		m_TerrainGroup->setPosition(toOSG(tpos));
 	}
+}
+
+void VirtualScene::_updateProjectionMatrix() {
+	m_VeryFarCamera->setProjectionMatrixAsPerspective(m_ViewAngle, m_Aspect, 0.8 * m_ViewDistance, 1.2e+6);
+	m_TerrainCamera->setProjectionMatrixAsPerspective(m_ViewAngle, m_Aspect, m_NearPlane, m_ViewDistance);
+	m_FarCamera->setProjectionMatrixAsPerspective(m_ViewAngle, m_Aspect, m_NearPlane, m_ViewDistance);
+	m_NearCamera->setProjectionMatrixAsPerspective(m_ViewAngle, m_Aspect, 0.01f, 100.0);
 }
 
 
@@ -853,16 +704,14 @@ void VirtualScene::_updateFog(Vector3 const &lookPos, Vector3 const &eyePos) {
 		pFogAttr->setEnd(m_FogEnd);
 		pStateSet->setAttributeAndModes(pFogAttr, osg::StateAttribute::ON);
 	}
-	m_FogGroup->setStateSet(pStateSet);
 	//XXX--m_Sky->updateHorizon(m_FogColor, eyePos.z(), m_ViewDistance);
 }
 
 void VirtualScene::getLookAt(Vector3 & eyePos, Vector3 & lookPos, Vector3 & upVec) const {
-	assert(m_FarView.valid());
 	osg::Vec3 _eye;
 	osg::Vec3 _center;
 	osg::Vec3 _up;
-	const_cast<osgUtil::SceneView*>(m_FarView.get())->getViewMatrixAsLookAt(_eye, _center, _up);
+	m_FarCamera->getViewMatrixAsLookAt(_eye, _center, _up);
 	eyePos = Vector3(_eye.x(), _eye.y(), _eye.z());
 	lookPos = Vector3(_center.x(), _center.y(), _center.z());
 	upVec = Vector3(_up.x(), _up.y(), _up.z());
@@ -971,11 +820,6 @@ void VirtualScene::setNearObject(Ref<DynamicObject> object, bool isNear) {
 void VirtualScene::setWireframeMode(bool flag) {
 	if (m_Wireframe == flag) return;
 	m_Wireframe = flag;
-	osg::StateSet* globalStateSet = m_FarView->getGlobalStateSet();
-	if (!globalStateSet) {
-		globalStateSet = new osg::StateSet;
-		m_FarView->setGlobalStateSet(globalStateSet);
-	}
 
 	osg::PolygonMode* polyModeObj = new osg::PolygonMode;
 
@@ -984,7 +828,7 @@ void VirtualScene::setWireframeMode(bool flag) {
 	} else {
 		polyModeObj->setMode(osg::PolygonMode::FRONT_AND_BACK, osg::PolygonMode::FILL);
 	}
-	globalStateSet->setAttribute(polyModeObj);
+	m_VirtualSceneGroup->getOrCreateStateSet()->setAttribute(polyModeObj);
 }
 
 void VirtualScene::setFogMode(bool flag) {
@@ -999,8 +843,6 @@ void VirtualScene::setFogMode(bool flag) {
 	} else {
 		pStateSet->setAttributeAndModes(pStateAttr, osg::StateAttribute::OFF);
 	}
-
-	m_FogGroup->setStateSet(pStateSet);
 }
 
 void VirtualScene::setFogStart(float value) {
@@ -1024,6 +866,7 @@ void VirtualScene::setViewDistance(float value) {
 
 void VirtualScene::setViewAngle(float value) {
 	m_ViewAngle = value;
+	_updateProjectionMatrix();
 }
 
 void VirtualScene::setNearPlane(float value) {
@@ -1032,14 +875,7 @@ void VirtualScene::setNearPlane(float value) {
 
 void VirtualScene::setAspect(float value) {
 	m_Aspect = value;
-}
-
-void VirtualScene::getViewport(int& x, int& y, int& width, int& height) {
-	const osg::Viewport* vp = m_FarView->getViewport();
-	x = static_cast<int>(vp->x());
-	y = static_cast<int>(vp->y());
-	width = static_cast<int>(vp->width());
-	height = static_cast<int>(vp->height());
+	_updateProjectionMatrix();
 }
 
 void VirtualScene::spinTheWorld(bool spin) {
@@ -1102,19 +938,21 @@ void VirtualScene::setTerrain(Ref<TerrainObject> terrain) {
 }
 
 void VirtualScene::setLabels(bool show) {
-	unsigned int currentMask = m_FarView->getCullMask();
+	unsigned int currentMask = m_FarCamera->getCullMask();
 	unsigned int newMask = (currentMask & ~SceneMasks::LABELS) | (show ? SceneMasks::LABELS : 0);
-	m_FarView->setCullMask(newMask);
+	m_FarCamera->setCullMask(newMask);
 }
 
 bool VirtualScene::getLabels() const {
-	return (m_FarView->getCullMask() & SceneMasks::LABELS) != 0;
+	return (m_FarCamera->getCullMask() & SceneMasks::LABELS) != 0;
 }
 
 bool VirtualScene::pick(int x, int y) {
 	if(CSPSim::theSim->getWindowManager()->onClick(x, y))
 		return true;
 
+	// TODO: pick
+	/*
 	if (m_NearObjectGroup->getNumChildren() > 0) {
 		assert(m_NearObjectGroup->getNumChildren() == 1);
 		osg::Vec3 var_near;
@@ -1142,6 +980,7 @@ bool VirtualScene::pick(int x, int y) {
 			}
 		}
 	}
+	*/
 	return false;
 }
 

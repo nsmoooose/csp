@@ -369,6 +369,9 @@ void CSPSim::init() {
 		// This is the root node that holds the entire scene.
 		osg::ref_ptr<osg::Group> rootNode = new osg::Group();
 		viewer->setSceneData(rootNode.get());
+
+		m_VirtualSceneGroup = new osg::Group;
+		rootNode->addChild(m_VirtualSceneGroup.get());
 		
 		// Add a window manager node. The purpose of this node is to hold
 		// all windows. By removing this node you simply removes all user
@@ -502,7 +505,7 @@ void CSPSim::loadSimulation() {
 	SDL_GL_SwapBuffers();
 
 	CSPLOG(DEBUG, APP) << "Initializing scene graph";
-	m_Scene = new VirtualScene(m_GlobalState.get(), screenSettings.width, screenSettings.height);
+	m_Scene = new VirtualScene(m_VirtualSceneGroup.get(), screenSettings.width, screenSettings.height);
 	m_Scene->buildScene();
 	m_Scene->setTerrain(m_Terrain);
 
@@ -714,7 +717,7 @@ void CSPSim::run() {
 				PROF0(_screen_render);
 				time_render.start();
 				if (!g_DisableRender) {
-					m_CurrentScreen->onRender();
+					// TODO: remove m_CurrentScreen->onRender();
 					m_Viewer->frame();
 				}
 				time_render.stop();

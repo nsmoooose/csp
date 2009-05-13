@@ -34,6 +34,7 @@ PACKAGES = [
 	'modules',
 	'examples/clouds',
 	'examples/objectmodel',
+	'examples/osgviewer_sdlinput',
 	'examples/sdl-viewer',
 	'examples/sky',
 	'examples/terrain-demeter',

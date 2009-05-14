@@ -4,15 +4,11 @@
 #include <csp/csplib/util/Ref.h>
 #include <osgViewer/Viewer>
 
-namespace osg {
-	class State;
-}
-
 namespace csp {
 
 class SDLViewer : public Referenced {
 public:
-	SDLViewer(int width, int height, osg::State* state);
+	SDLViewer(int width, int height);
 	
 	virtual osgViewer::Viewer* getViewer();
 	

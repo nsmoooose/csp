@@ -29,45 +29,33 @@
 #include <csp/cspsim/BaseScreen.h>
 
 #include <osg/ref_ptr>
-//#include <osgProducer/Viewer>
 
 namespace osg {
-	class State; 
-	class Texture2D; 
+	class Camera;
+	class Texture2D;
 }
-namespace osgUtil { class SceneView; }
 
 
 namespace csp {
-
-//struct SDL_Surface;
 
 /** A screen for displaying a series of static images.
  *
  *  TODO This class is currently specialized to display a fixed set of images
  *  during startup, but should be generalized.
  */
-class LogoScreen : public BaseScreen { //, public osgProducer::Viewer, public virtual OpenThreads::Thread {
+class LogoScreen : public BaseScreen {
 public:
-	LogoScreen(osg::State* state, int width, int height);
+	LogoScreen();
 	virtual ~LogoScreen();
  
 	virtual void onInit();
 	virtual void onExit();
 
-	virtual void onRender();
 	virtual void onUpdate(double dt);
 
-	void run();
-	void stop();
-
 private:
-	osg::ref_ptr<osg::State> m_State;
-	osg::ref_ptr<osgUtil::SceneView> m_LogoView;
+	osg::ref_ptr<osg::Camera> m_Camera;
 	osg::ref_ptr<osg::Texture2D> m_Texture;
-	//osgProducer::Viewer m_Viewer;
-	//SDL_Surface * m_image;
-	int m_width, m_height;
 };
 
 } // namespace csp

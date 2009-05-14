@@ -27,10 +27,6 @@
 
 #include <csp/cspsim/BaseScreen.h>
 
-namespace osg {
-	class State;
-}
-
 namespace csp {
 
 namespace wf {
@@ -40,13 +36,12 @@ namespace wf {
 
 class CSPSIM_EXPORT MenuScreen : public BaseScreen { 
 public:
-	MenuScreen(osg::State* state);
+	MenuScreen();
 	virtual ~MenuScreen();
  
 	virtual void onInit();
 	virtual void onExit();
 
-	virtual void onRender();
 	virtual void onUpdate(double dt);
 	
 	virtual bool onMouseMove(SDL_MouseMotionEvent const &);
@@ -55,7 +50,6 @@ public:
 	virtual wf::Serialization* getSerializer();
 
 private:
-	osg::ref_ptr<osg::State> m_State;
 	Ref<wf::Serialization> m_Serializer;
 };
 

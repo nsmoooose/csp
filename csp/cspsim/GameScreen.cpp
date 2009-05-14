@@ -177,14 +177,6 @@ void GameScreen::setActiveObject(Ref<DynamicObject> const &object) {
 	}
 }
 
-void GameScreen::onRender() {
-	// Draw the whole scene
-	VirtualScene *scene = CSPSim::theSim->getScene();
-	if (scene) {
-		scene->drawScene();
-	}
-}
-
 void GameScreen::onUpdate(double dt) {
 	setCamera(dt);
 	if (m_DataRecorder.valid()) {

@@ -30,7 +30,7 @@
 
 namespace csp {
 
-MenuScreen::MenuScreen(osg::State* state) : m_State(state) {
+MenuScreen::MenuScreen() {
 }
 
 MenuScreen::~MenuScreen() {
@@ -45,9 +45,6 @@ void MenuScreen::onInit() {
 }
 
 void MenuScreen::onExit() {
-}
-
-void MenuScreen::onRender() {
 }
 
 void MenuScreen::onUpdate(double /* dt */) {

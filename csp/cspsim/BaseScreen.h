@@ -50,7 +50,6 @@ public:
 	virtual void onExit() = 0;
 
 	virtual void onUpdate(double dt) = 0;
-	virtual void onRender() = 0;
 
 	virtual Ref<input::VirtualHID> getInterface();
 

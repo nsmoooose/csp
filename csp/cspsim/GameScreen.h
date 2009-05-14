@@ -57,7 +57,6 @@ public:
 	virtual void onInit();
 	virtual void onExit();
 
-	virtual void onRender();
 	virtual void onUpdate(double dt);
 
 	virtual input::InputInterfaceWfAdapter* getInputInterfaceWfAdapter();

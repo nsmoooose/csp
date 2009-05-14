@@ -63,10 +63,6 @@
 
 #include <osg/ref_ptr>
 
-namespace osg {
-	class State;
-}
-
 struct SDL_Surface;
 typedef struct _SDL_Joystick SDL_Joystick;
 
@@ -202,10 +198,6 @@ private:
 	Ref<TerrainObject> m_Terrain;
 	Ref<DataManager> m_DataManager;
 	ScopedPointer<weather::Atmosphere> m_Atmosphere;
-
-	//--osg::ref_ptr<Producer::RenderSurface> m_RenderSurface;
-	// Shared state used by all SceneViews.
-	osg::ref_ptr<osg::State> m_GlobalState; //TODO: remove
 
 	ScopedPointer<input::InputEvent> m_InputEvent;
 };

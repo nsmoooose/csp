@@ -79,7 +79,6 @@
 #include <osgUtil/CullVisitor>
 #include <osgUtil/IntersectVisitor>
 #include <osgUtil/Optimizer>
-#include <osgUtil/SceneView>
 
 #include <cmath>
 #include <cassert>
@@ -142,20 +141,6 @@ osg::Matrix getCM(float intensity) {
 ///////////////////////////////////////////////////////////////////////
 //
 ///////////////////////////////////////////////////////////////////////
-
-ContextIDFactory::ContextIDFactory():
-	m_NextContextID(1) {
-}
-
-unsigned int ContextIDFactory::getOrCreateContextID(osgUtil::SceneView *scene_view) {
-	ContextIDSet::const_iterator i = m_ContextIDSet.find(scene_view);
-	if (i == m_ContextIDSet.end()) {
-		osg::State *state = scene_view->getState();
-		state->setContextID(m_NextContextID);
-		m_ContextIDSet[scene_view] = m_NextContextID++;
-	}
-	return m_ContextIDSet[scene_view];
-}
 
 class FeatureTile: public osg::PositionAttitudeTransform {
 	Vector3 m_GlobalPosition;
@@ -590,13 +575,6 @@ void VirtualScene::buildSky() {
 	osg::LightSource *moonlight = m_Sky->getMoonlight();
 	moonlight->setStateSetModes(*globalStateSet, osg::StateAttribute::ON);
 	m_SkyLights->addChild(moonlight);
-}
-
-int VirtualScene::drawScene() {
-	// The is no longuer needed, all the drawing is handled by osgViewer::Viewer::frame()
-	CSPLOG(DEBUG, APP) << "VirtualScene::drawScene()...";
-	//if (m_Terrain.valid()) m_Terrain->endDraw(); // TODO: for Demeter stats
-	return 1;
 }
 
 void VirtualScene::onUpdate(float dt) {

@@ -44,8 +44,6 @@ namespace osg { class StateSet; }
 namespace osg { class DisplaySettings; }
 namespace osg { class Camera; }
 
-namespace osgUtil { class SceneView; }
-
 
 namespace csp {
 
@@ -59,29 +57,6 @@ namespace wf {
 }
 
 /**
-* The purpose of this simple class is to provide a new opengl context id
-* to each sceneview. sceneview's context ids are tracked.
-*/
-class ContextIDFactory: public Referenced {
-	unsigned int m_NextContextID;
-	typedef std::map<const osgUtil::SceneView *, unsigned int> ContextIDSet;
-	ContextIDSet m_ContextIDSet;
-public:
-	/**
-	* initialize m_NextContextID to 0
-	*/
-	ContextIDFactory();
-
-	/**
-	* assigns m_NextContextID to scene_view's context id and stores it or returns 
-	its assigned
-	* context id
-	*/
-	unsigned int getOrCreateContextID(osgUtil::SceneView *scene_view);
-};
-
-
-/**
  * A class that manages the 3D scene.  Currently created by CSPSim and used as a
  * singleton.  See CSPSim::getScene().
  */
@@ -93,8 +68,6 @@ public:
 
 	void buildScene();
 	void buildSky();
-
-	int drawScene();
 
 	void onUpdate(float dt);
 
@@ -142,7 +115,6 @@ public:
 	void setNearPlane(float value);
 	float getAspect() const {return m_Aspect;}
 	void setAspect(float value);
-	ContextIDFactory* const getContextIDFactory() const {return m_ContextIDFactory.get();}
 
 	void setLabels(bool show);
 	bool getLabels() const;
@@ -202,7 +174,6 @@ protected:
 	osg::ref_ptr<osg::Camera> m_VeryFarCamera;
 
 	osg::ref_ptr<osg::FrameStamp> m_FrameStamp;
-	Ref<ContextIDFactory> m_ContextIDFactory;
 	
 	float m_ViewDistance;
 	float m_ViewAngle;

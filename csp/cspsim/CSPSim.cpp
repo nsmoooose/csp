@@ -84,7 +84,6 @@
 #include <OpenGL/glu.h>  // Header File For The GLu32 Library
 #endif
 
-#include <osg/State>
 #include <osg/Timer>
 #include <osg/Notify>
 #include <osgAL/SoundManager>
@@ -336,9 +335,6 @@ void CSPSim::init() {
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		// Create a global state used by all scene views.
-		m_GlobalState = new osg::State;
-
 		// should run in its own thread
 		SDL_GL_SwapBuffers();
 		//--m_RenderSurface->swapBuffers();
@@ -362,7 +358,7 @@ void CSPSim::init() {
 
 		// This is the unified SDLViewer that shall render all the
 		// the scenes.
-		m_Viewer = new SDLViewer(screenSettings.width, screenSettings.height, m_GlobalState.get());
+		m_Viewer = new SDLViewer(screenSettings.width, screenSettings.height);
 
 		osgViewer::Viewer* viewer = m_Viewer->getViewer();
 		
@@ -370,6 +366,9 @@ void CSPSim::init() {
 		osg::ref_ptr<osg::Group> rootNode = new osg::Group();
 		viewer->setSceneData(rootNode.get());
 
+		// Add a Virtual Scene node. The purpose of this node is to hold
+		// all the cameras managed by VirtualScene. This node must be the
+		// first child of rootNode because it clear the buffer.
 		m_VirtualSceneGroup = new osg::Group;
 		rootNode->addChild(m_VirtualSceneGroup.get());
 		
@@ -392,7 +391,7 @@ void CSPSim::cleanup() {
 	CSPLOG(INFO, APP) << "Cleaning up resources";
 
 	setActiveObject(NULL);
-	m_CurrentScreen = NULL;
+	changeScreen(NULL);
 	m_InterfaceMaps = NULL;
 	if(m_Terrain.valid()) {
 		m_Terrain->deactivate();
@@ -401,8 +400,6 @@ void CSPSim::cleanup() {
 	m_Terrain = NULL;
 	m_Theater = NULL;
 	m_Scene = NULL;
-
-	m_GlobalState = NULL;
 
 	StoresDatabase::getInstance().reset();
 
@@ -427,6 +424,7 @@ void CSPSim::quit() {
 
 void CSPSim::changeScreen(BaseScreen * newScreen) {
 	CSPLOG(DEBUG, APP) << "Changing screen";
+	if ( m_CurrentScreen.valid() ) m_CurrentScreen->onExit();
 	m_CurrentScreen = newScreen;
 }
 
@@ -454,7 +452,7 @@ void CSPSim::loadSimulation() {
 	}
 	
 	if(m_CurrentScreen.valid()) {
-		m_CurrentScreen->onRender();
+		m_Viewer->frame();
 		SDL_GL_SwapBuffers();
 	}
 	
@@ -474,7 +472,7 @@ void CSPSim::loadSimulation() {
 	// calling them here avoids a time jump at the start of the simloop.
 	if (m_CurrentScreen.valid()) {
 		m_CurrentScreen->onUpdate(0.01);
-		m_CurrentScreen->onRender();
+		m_Viewer->frame();
 	}
 
 	setCurrentTime(date);
@@ -500,7 +498,7 @@ void CSPSim::loadSimulation() {
 
 	if(m_CurrentScreen.valid()) {
 		m_CurrentScreen->onUpdate(0.0);
-		m_CurrentScreen->onRender();
+		m_Viewer->frame();
 	}
 	SDL_GL_SwapBuffers();
 
@@ -511,7 +509,7 @@ void CSPSim::loadSimulation() {
 
 	if(m_CurrentScreen.valid()) {
 		m_CurrentScreen->onUpdate(0.0);
-		m_CurrentScreen->onRender();
+		m_Viewer->frame();
 	}
 	SDL_GL_SwapBuffers();
 
@@ -542,7 +540,7 @@ void CSPSim::loadSimulation() {
 
 	if(m_CurrentScreen.valid()) {
 		m_CurrentScreen->onUpdate(0.0);
-		m_CurrentScreen->onRender();
+		m_Viewer->frame();
 	}
 	SDL_GL_SwapBuffers();
 
@@ -586,7 +584,7 @@ void CSPSim::loadSimulation() {
 
 	if(m_CurrentScreen.valid()) {
 		m_CurrentScreen->onUpdate(0.0);
-		m_CurrentScreen->onRender();
+		m_Viewer->frame();
 	}
 	SDL_GL_SwapBuffers();
 
@@ -632,18 +630,17 @@ void CSPSim::unloadSimulationNow() {
 }
 
 void CSPSim::displayLogoScreen() {
-	Ref<LogoScreen> logoScreen = new LogoScreen(m_GlobalState.get(), screenSettings.width, screenSettings.height);
+	Ref<LogoScreen> logoScreen = new LogoScreen();
 	logoScreen->onInit();
 	
-	logoScreen->onRender();
-	logoScreen->onUpdate(0.0);
+	m_Viewer->frame();
 	SDL_GL_SwapBuffers();
 
 	changeScreen(logoScreen.get());
 }
 
 void CSPSim::displayMenuScreen() {
-	Ref<MenuScreen> menuScreen = new MenuScreen(m_GlobalState.get());
+	Ref<MenuScreen> menuScreen = new MenuScreen();
 	menuScreen->onInit();
 	
 	changeScreen(menuScreen.get());
@@ -717,7 +714,6 @@ void CSPSim::run() {
 				PROF0(_screen_render);
 				time_render.start();
 				if (!g_DisableRender) {
-					// TODO: remove m_CurrentScreen->onRender();
 					m_Viewer->frame();
 				}
 				time_render.stop();

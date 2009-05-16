@@ -30,7 +30,6 @@
 #include <csp/cspsim/Config.h>
 #include <csp/cspsim/CSPSim.h>
 #include <csp/cspsim/DynamicObject.h>
-#include <csp/cspsim/glDiagnostics.h>
 #include <csp/cspsim/ObjectModel.h>
 #include <csp/cspsim/Projection.h>
 #include <csp/cspsim/SceneConstants.h>
@@ -50,7 +49,6 @@
 #include <csp/cspsim/theater/FeatureGroup.h>
 #include <csp/cspsim/theater/FeatureSceneGroup.h>
 
-#include <csp/cspwf/Serialization.h>
 #include <csp/cspwf/WindowManager.h>
 
 #include <csp/csplib/util/Log.h>
@@ -66,23 +64,16 @@
 #include <osg/Fog>
 #include <osg/LightModel>
 #include <osg/LightSource>
-#include <osg/Material>
 #include <osg/Node>
-#include <osg/Notify>
 #include <osg/PolygonMode>
 #include <osg/PositionAttitudeTransform>
 #include <osg/StateSet>
 #include <osg/TexEnv>
-#include <osg/Texture2D>
 #include <osg/Uniform>
 #include <osgAL/SoundRoot>
-#include <osgUtil/CullVisitor>
-#include <osgUtil/IntersectVisitor>
-#include <osgUtil/Optimizer>
+#include <osgUtil/PolytopeIntersector>
 
-#include <cmath>
 #include <cassert>
-#include <iostream>
 
 // SHADOW is an *extremely* experimental feature.  It is based on the
 // osgShadow demo, and does (did) work to some extent, but only for a
@@ -411,6 +402,7 @@ void VirtualScene::createSceneViews() {
 
 osg::Camera *VirtualScene::makeSceneCamera(unsigned mask) {
 	osg::Camera *camera = new osg::Camera;
+	camera->setViewport(0, 0, m_ScreenWidth, m_ScreenHeight);
 	camera->setReferenceFrame(osg::Transform::ABSOLUTE_RF);
 	camera->setComputeNearFarMode(osgUtil::CullVisitor::DO_NOT_COMPUTE_NEAR_FAR);
 	camera->setCullingMode(osgUtil::CullVisitor::ENABLE_ALL_CULLING); // Why don't use the default ?
@@ -929,36 +921,41 @@ bool VirtualScene::pick(int x, int y) {
 	if(CSPSim::theSim->getWindowManager()->onClick(x, y))
 		return true;
 
-	// TODO: pick
-	/*
-	if (m_NearObjectGroup->getNumChildren() > 0) {
-		assert(m_NearObjectGroup->getNumChildren() == 1);
-		osg::Vec3 var_near;
-		osg::Vec3 var_far;
-		const int height = static_cast<int>(m_NearView->getViewport()->height());
-		if (m_NearView->projectWindowXYIntoObject(x, height - y, var_near, var_far)) {
-			osgUtil::IntersectVisitor iv;
-			osg::ref_ptr<osg::LineSegment> line_segment = new osg::LineSegment(var_near, var_far);
-			iv.addLineSegment(line_segment.get());
-			m_NearView->getSceneData()->accept(iv);
-			osgUtil::IntersectVisitor::HitList &hits = iv.getHitList(line_segment.get());
-			if (!hits.empty()) {
-				osg::NodePath const &nearest = hits[0]._nodePath;
-				// TODO should we iterate in reverse?
-				for (osg::NodePath::const_iterator iter = nearest.begin(); iter != nearest.end(); ++iter) {
-					osg::Node *node = *iter;
-					osg::NodeCallback *callback = node->getUpdateCallback();
-					if (callback) {
-						AnimationCallback *anim = dynamic_cast<AnimationCallback*>(callback);
-						// TODO set flags for click type, possibly add position if we can determine a useful
-						// coordinate system.
-						if (anim && anim->pick(0)) break;
-					}
-				}
+	// SDL mouse event and OSG are inverted in Y coordinate.
+	// This will be removed with the introduction of osgGA.
+	y = m_NearCamera->getViewport()->height() - y;
+
+	const double halfPixel = 0.5;
+	osg::ref_ptr<osgUtil::PolytopeIntersector> picker = new osgUtil::PolytopeIntersector(
+		osgUtil::PolytopeIntersector::WINDOW,
+		x - halfPixel, y - halfPixel,
+		x + halfPixel, y + halfPixel );
+
+	m_NearCamera->accept( osgUtil::IntersectionVisitor( picker.get() ) );
+
+	osgUtil::PolytopeIntersector::Intersections & intersections = picker->getIntersections();
+	for(osgUtil::PolytopeIntersector::Intersections::const_iterator intersectionsIt = intersections.begin();
+		intersectionsIt != intersections.end();
+		++intersectionsIt)
+	{
+		const osgUtil::PolytopeIntersector::Intersection & intersection = *intersectionsIt;
+
+		for(osg::NodePath::const_reverse_iterator nodePathIt = intersection.nodePath.rbegin();
+			nodePathIt != intersection.nodePath.rend();
+			++nodePathIt)
+		{
+			osg::Node *node = *nodePathIt;
+			osg::NodeCallback *callback = node->getUpdateCallback();
+			if ( callback )
+			{
+				AnimationCallback *anim = dynamic_cast<AnimationCallback*>( callback );
+				// TODO set flags for click type, possibly add position if we can determine a useful
+				// coordinate system.
+				if ( anim && anim->pick(0) ) return true;
 			}
 		}
 	}
-	*/
+
 	return false;
 }
 

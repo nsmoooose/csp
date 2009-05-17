@@ -27,11 +27,11 @@
 
 #include <csp/cspsim/ScreenInfo.h>
 
-#include <osg/Projection>
+#include <osg/Group>
 
 namespace csp {
 
-class ScreenInfoManager: public osg::Projection {
+class ScreenInfoManager: public osg::Group {
 public:
 	ScreenInfoManager(int screen_width, int screen_height);
 	virtual ~ScreenInfoManager(){}
@@ -40,7 +40,7 @@ public:
 	void changeObjectStats(int screen_width, int screen_height, Ref<DynamicObject> const& active_object);
 	void addMessage(std::string const &line);
 private:
-	osg::MatrixTransform* m_modelview_abs;
+	osg::Group* m_camera;
 	ScreenInfo* getScreenInfo(std::string const &name);
 };
 

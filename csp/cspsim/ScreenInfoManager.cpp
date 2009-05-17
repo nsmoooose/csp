@@ -48,16 +48,18 @@ void set2dScene(osg::Group *root_node, int screen_width, int screen_height) {
 }
 
 ScreenInfoManager::ScreenInfoManager(int screen_width, int screen_height) {
-	setMatrix(osg::Matrix::ortho2D(0, screen_width, 0, screen_height));
 
-	m_modelview_abs = new osg::MatrixTransform;
-	m_modelview_abs->setReferenceFrame(osg::Transform::ABSOLUTE_RF);
-	m_modelview_abs->setMatrix(osg::Matrix::identity());
+	osg::ref_ptr<osg::Camera> camera = new osg::Camera;
+	addChild( camera.get() );
+	m_camera = camera.get();
 
-	set2dScene(m_modelview_abs, screen_width, screen_height);
+	camera->setProjectionMatrixAsOrtho2D(0, screen_width, 0, screen_height);
+	camera->setReferenceFrame(osg::Transform::ABSOLUTE_RF);
+	camera->setClearMask(GL_DEPTH_BUFFER_BIT);
+	camera->setRenderOrder(osg::Camera::POST_RENDER);
+	camera->setAllowEventFocus(false);
 
-	addChild(m_modelview_abs);
-	setCullingActive(true);
+	set2dScene(m_camera, screen_width, screen_height);
 }
 
 void ScreenInfoManager::changeObjectStats(int /*screen_width*/, int screen_height, Ref<DynamicObject> const& vehicle)
@@ -66,11 +68,11 @@ void ScreenInfoManager::changeObjectStats(int /*screen_width*/, int screen_heigh
 	ScreenInfo* os = getScreenInfo("OBJECT STATS");
 	if (os) {
 		visible = os->getStatus();
-		m_modelview_abs->removeChild(os);
+		m_camera->removeChild(os);
 	}
 	osg::ref_ptr<ObjectStats> objectStats = new ObjectStats(12, 2 * screen_height / 3, vehicle);
 	objectStats->setStatus(visible);
-	m_modelview_abs->addChild(objectStats.get());
+	m_camera->addChild(objectStats.get());
 }
 
 class FindNamedNodeVisitor: public osg::NodeVisitor {
@@ -107,7 +109,7 @@ public:
 
 ScreenInfo* ScreenInfoManager::getScreenInfo(std::string const& name) {
 	FindNamedNodeVisitor nv(name);
-	m_modelview_abs->accept(nv);
+	m_camera->accept(nv);
 	return dynamic_cast<ScreenInfo*>(nv.foundNode());
 }
 

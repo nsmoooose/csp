@@ -35,7 +35,7 @@
 
 
 #ifdef _MSC_VER
-	#ifdef _DEBUG
+	#if defined(_DEBUG) && defined(NDEBUG)
 		#undef _DEBUG
 		#include <Python.h>
 		#define _DEBUG

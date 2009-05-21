@@ -246,7 +246,6 @@ class SharedLibrary(Target):
 				print 'WARNING: could not find mt.exe, will not bind manifests'
 		if SharedLibrary.MT_BIN:
 			dll = shlib[0]
-			assert dll.get_suffix() == '.dll'
 			CMD = '"%s" /nologo /manifest ${TARGET}.manifest /outputresource:${TARGET};#2' % SharedLibrary.MT_BIN
 			MSG = '- Binding manifest to %s' % dll.name
 			self._env.AddPostAction(dll, util.SimpleCommand(CMD, MSG))
@@ -278,6 +277,18 @@ class SharedLibrary(Target):
 		else:
 			target_dir = os.path.dirname(self._target)
 			settings.merge(XRPATH=[os.path.abspath(target_dir)], LIBPATH=[target_dir], LIBS=[os.path.basename(self._target)])
+
+
+class PythonSharedLibrary(SharedLibrary):
+	def __init__(self, env, **kw):
+		libEnv = env.Clone()
+		libEnv['SHLIBPREFIX'] = '_'
+		if util.IsWindows(env):
+			if int( libEnv.get('CONFIG_DEBUG', 0) ) == 2:
+				libEnv['SHLIBSUFFIX'] = '_d.pyd'
+			else:
+				libEnv['SHLIBSUFFIX'] = '.pyd'
+		SharedLibrary.__init__(self, libEnv, **kw)
 
 
 class Test(SharedLibrary):

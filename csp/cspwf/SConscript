@@ -96,11 +96,10 @@ build.SharedLibrary(expenv,
 	doxygen = 'cspwf.dox',
 	softlink = 1)
 
-#build.SharedLibrary(env,
+#build.PythonSharedLibrary(env,
 #	name = 'cspwf_module',
 #	sources = ['cspwf.i'],
 #	deps = ['cspwf'],
 #	aliases = ['all', 'cspwf'],
-#	doxygen = 'cspwf.dox',
-#	SHLIBPREFIX = '_')
+#	doxygen = 'cspwf.dox')
 

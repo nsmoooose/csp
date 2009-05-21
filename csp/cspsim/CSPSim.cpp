@@ -23,7 +23,7 @@
  */
 
 
-#ifdef _DEBUG
+#if defined(_DEBUG) && defined(NDEBUG)
 #undef _DEBUG
 #include <Python.h>
 #define _DEBUG
@@ -141,6 +141,7 @@ CSPSim::CSPSim():
 	m_FrameTime = 0.05;
 	m_FrameRate = 20.0;
 	m_ElapsedTime = 0.0;
+	m_TimeLag = 0.0;
 }
 
 

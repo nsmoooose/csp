@@ -18,7 +18,7 @@
 
 Import('env build')
 
-build.SharedLibrary(env,
+build.PythonSharedLibrary(env,
 	name = 'cLayout',
 	sources = [
 		'cLayout.i',
@@ -31,10 +31,9 @@ build.SharedLibrary(env,
 		'ViewEventHandler.cpp',
 	],
 	deps = ['osg', 'csplib', 'cspsim'],
-	aliases = 'layout',
-	SHLIBPREFIX = '_')
+	aliases = 'layout')
 
-build.SharedLibrary(env,
+build.PythonSharedLibrary(env,
 	name = 'cLoader',
 	sources = [
 		'cLoader.i',
@@ -42,6 +41,5 @@ build.SharedLibrary(env,
 		'Loader.cpp',
 	],
 	deps = ['osg', 'csplib', 'cspsim'],
-	aliases = 'layout',
-	SHLIBPREFIX = '_')
+	aliases = 'layout')
 

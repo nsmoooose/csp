@@ -18,7 +18,7 @@
 
 Import('env build')
 
-build.SharedLibrary(env,
+build.PythonSharedLibrary(env,
 	name = 'layout_module',
 	sources = [
 		'layout.i',
@@ -44,5 +44,4 @@ build.SharedLibrary(env,
 		'cpp/Scene.h',
 	],
 	deps = ['osg', 'csplib', 'cspsim'],
-	aliases = ['layout2', 'all'],
-	SHLIBPREFIX = '_')
+	aliases = ['layout2', 'all'])

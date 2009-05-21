@@ -122,6 +122,7 @@ class Environment(build.Environment):
 	  scons config           check for necessary headers and libraries
 	  scons all              build everything
 	  scons all debug=1      build everything in debug mode (windows)
+	  scons all debug=2      build everything in full debug mode (windows)
 	  scons cspsim           build the main flight simulator client
 	  scons indexserver      build the master server needed for multiplayer
 	  scons layout           build the theater layout tool version 1
@@ -162,10 +163,19 @@ class Environment(build.Environment):
 			env.AppendUnique(SHLINKFLAGS=Split('/INCREMENTAL:NO /RELEASE /nologo'))
 			env.AppendUnique(LIBPATH=[build.GetPythonLibrary()])
 			env.CopyEnvironment(Split('PATH INCLUDE LIB'))
-		else:
+		elif int(debug) == 1:
 			print('Building debug configuration')
 			env.Replace(CXXFLAGS=Split('/GR /MD /Zi /EHsc /W3 /nologo /wd4251 /wd4275 /wd4290'))
 			env.AppendUnique(CPPDEFINES=Split('WIN32 __WIN32__ _USRDLL _DLL NDEBUG _CRT_SECURE_NO_DEPRECATE _USE_MATH_DEFINES'))
+			env.AppendUnique(LINKFLAGS=Split('/INCREMENTAL:NO /DEBUG /nologo'))
+			env.AppendUnique(SHLINKFLAGS=Split('/INCREMENTAL:NO /DEBUG /nologo'))
+			env.AppendUnique(LIBPATH=[build.GetPythonLibrary()])
+			env.CopyEnvironment(Split('PATH INCLUDE LIB'))
+		else:
+			print('Building full debug configuration')
+			env.Replace(CONFIG_DEBUG=debug)
+			env.Replace(CXXFLAGS=Split('/GR /MDd /Zi /EHsc /W3 /nologo /wd4251 /wd4275 /wd4290'))
+			env.AppendUnique(CPPDEFINES=Split('WIN32 __WIN32__ _USRDLL _DLL _CRT_SECURE_NO_DEPRECATE _USE_MATH_DEFINES'))
 			env.AppendUnique(LINKFLAGS=Split('/INCREMENTAL:NO /DEBUG /nologo'))
 			env.AppendUnique(SHLINKFLAGS=Split('/INCREMENTAL:NO /DEBUG /nologo'))
 			env.AppendUnique(LIBPATH=[build.GetPythonLibrary()])

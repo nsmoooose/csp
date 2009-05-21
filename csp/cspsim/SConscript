@@ -432,16 +432,15 @@ build.SharedLibrary(expenv,
 	softlink = 1)
 
 
-build.SharedLibrary(env,
+build.PythonSharedLibrary(env,
 	name = 'cspsim_module',
 	sources = ['cspsim.i'],
 	deps = ['cspsim'],
 	aliases = ['all', 'cspsim'],
-	doxygen = 'cspsim.dox',
-	SHLIBPREFIX = '_')
+	doxygen = 'cspsim.dox')
 
 
-build.SharedLibrary(expenv,
+build.PythonSharedLibrary(expenv,
 	name = 'indexserver',
 	sources = [
 		'indexserver.i',
@@ -451,8 +450,7 @@ build.SharedLibrary(expenv,
 		'@cspsim/config',
 	],
 	deps = ['csplib', 'sdl'],
-	aliases = 'all',
-	SHLIBPREFIX = '_')
+	aliases = 'all')
 
 build.Program(env,
 	name = 'skydemo',

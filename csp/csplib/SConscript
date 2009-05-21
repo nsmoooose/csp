@@ -205,7 +205,7 @@ build.SharedLibrary(expenv,
 	softlink = 1)
 
 
-build.SharedLibrary(env,
+build.PythonSharedLibrary(env,
 	name = 'csplib_module',
 	sources = [
 		'csplib.i',
@@ -214,8 +214,7 @@ build.SharedLibrary(env,
 		'util/PythonSwig.h'
 	],
 	deps = ['csplib'],
-	aliases = ['all', 'csplib'],
-	SHLIBPREFIX='_')
+	aliases = ['all', 'csplib'])
 
 
 build.Test(env,

@@ -67,7 +67,7 @@ public:
 	virtual ~VirtualScene();
 
 	void buildScene();
-	void buildSky();
+	void hideScene();
 
 	void onUpdate(float dt);
 
@@ -160,6 +160,8 @@ private:
 	void createVeryFarView();
 	void createFarView();
 	void createNearView();
+
+	void buildSky();
 
 protected:
 	void _updateProjectionMatrix();

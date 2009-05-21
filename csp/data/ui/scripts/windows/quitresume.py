@@ -59,6 +59,7 @@ class QuitResume(csp.cspsim.Window, SlotManager):
     def end_simulation_Click(self):
         # Start by changing the screen. This makes it possible for us to 
         # display the main menu and the desktop.
+        self.getWindowManager().closeAll()
         self.cspsim.displayMenuScreen()
         # End the simulation by unloading everything.
         self.cspsim.unloadSimulation()
@@ -66,5 +67,5 @@ class QuitResume(csp.cspsim.Window, SlotManager):
         # Use the UserInterfaceStartup class to return to the main menu
         # and the desktop.
         from csp.data.ui.scripts.startup import UserInterfaceStartup
-        startup = UserInterfaceStartup(self.cspsim)
+        startup = UserInterfaceStartup(self.cspsim) # TODO: the UserInterfaceStartup object created in sim.py still exist !!!
         startup.run()

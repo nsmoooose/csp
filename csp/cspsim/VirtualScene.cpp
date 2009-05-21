@@ -359,9 +359,8 @@ VirtualScene::VirtualScene(osg::Group *virtualSceneGroup, int width, int height)
 	m_ScreenHeight(height) {
 	}
 
-VirtualScene::~VirtualScene() { 
-	ScreenInfoNode::tearDown(CSPSim::theSim->getSceneData());
-	m_VirtualSceneGroup->removeChild( 0, m_VirtualSceneGroup->getNumChildren() );
+VirtualScene::~VirtualScene() {
+	hideScene();
 }
 
 void VirtualScene::init() {
@@ -542,6 +541,11 @@ void VirtualScene::buildScene() {
 	//opt.optimize(m_FarGroup.get(), osgUtil::Optimizer::COMBINE_ADJACENT_LODS);
 	//opt.optimize(m_FarGroup.get(), osgUtil::Optimizer::SHARE_DUPLICATE_STATE);
 }
+
+void VirtualScene::hideScene() {
+	ScreenInfoNode::tearDown(CSPSim::theSim->getSceneData());
+	m_VirtualSceneGroup->removeChild( 0, m_VirtualSceneGroup->getNumChildren() );
+};
 
 void VirtualScene::buildSky() {
 	osg::StateSet* globalStateSet = m_VirtualSceneGroup->getOrCreateStateSet();
@@ -832,6 +836,7 @@ void VirtualScene::setFogEnd(float value) {
 // the battlefield would then need to update which objects are visible.
 void VirtualScene::setViewDistance(float value) {
 	m_ViewDistance = value;
+	_updateProjectionMatrix();
 }
 
 void VirtualScene::setViewAngle(float value) {
@@ -841,6 +846,7 @@ void VirtualScene::setViewAngle(float value) {
 
 void VirtualScene::setNearPlane(float value) {
 	m_NearPlane = value;
+	_updateProjectionMatrix();
 }
 
 void VirtualScene::setAspect(float value) {

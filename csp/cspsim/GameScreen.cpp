@@ -153,6 +153,8 @@ void GameScreen::onPlayerQuit(int, const std::string& name) {
 
 
 void GameScreen::onExit() {
+	VirtualScene *scene = CSPSim::theSim->getScene();
+	if (scene) scene->hideScene();
 }
 
 void GameScreen::setActiveObject(Ref<DynamicObject> const &object) {

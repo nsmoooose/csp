@@ -141,7 +141,7 @@ void loadTheater(std::string theaterName)
 	// 
 	std::cout << "Initializing scene graph";
 	vScene = new VirtualScene(m_GlobalState.get(), 800, 600);
-	vScene->buildSceneNew();
+	vScene->buildScene();
 
 //	root->addChild(vScene->getVeryFarGroup());
 //	root->addChild(vScene->getFarGroup());

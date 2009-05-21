@@ -931,7 +931,8 @@ bool VirtualScene::pick(int x, int y) {
 		x - halfPixel, y - halfPixel,
 		x + halfPixel, y + halfPixel );
 
-	m_NearCamera->accept( osgUtil::IntersectionVisitor( picker.get() ) );
+	osgUtil::IntersectionVisitor intersectionVisitor( picker.get() );
+	m_NearCamera->accept( intersectionVisitor );
 
 	osgUtil::PolytopeIntersector::Intersections & intersections = picker->getIntersections();
 	for(osgUtil::PolytopeIntersector::Intersections::const_iterator intersectionsIt = intersections.begin();

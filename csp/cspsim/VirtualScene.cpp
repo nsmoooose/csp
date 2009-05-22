@@ -545,7 +545,7 @@ void VirtualScene::buildScene() {
 void VirtualScene::hideScene() {
 	ScreenInfoNode::tearDown(CSPSim::theSim->getSceneData());
 	m_VirtualSceneGroup->removeChild( 0, m_VirtualSceneGroup->getNumChildren() );
-};
+}
 
 void VirtualScene::buildSky() {
 	osg::StateSet* globalStateSet = m_VirtualSceneGroup->getOrCreateStateSet();

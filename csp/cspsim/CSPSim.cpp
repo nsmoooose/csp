@@ -614,7 +614,7 @@ void CSPSim::unloadSimulation() {
 
 void CSPSim::unloadSimulationNow() {
 	// TODO Do we need to unload in a specific order?
-	m_ActiveObject = NULL;
+	setActiveObject(NULL);
 	m_Battlefield = NULL;
 	m_Scene = NULL;
 	m_NetworkClient = NULL;

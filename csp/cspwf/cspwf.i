@@ -267,6 +267,13 @@ public:
 	virtual void setText(const std::string& text);
 };
 
+// ***************** EVENTHANDLERS *****************************
+class ControlMoveEventHandler : public Referenced {
+public:
+	ControlMoveEventHandler(Control* control);
+	virtual ~ControlMoveEventHandler();
+};
+
 // ***************** SERIALIZATION *****************************
 
 class ResourceLocator : public Referenced {

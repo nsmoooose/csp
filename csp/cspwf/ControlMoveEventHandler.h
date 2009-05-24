@@ -6,7 +6,7 @@
 namespace csp {
 namespace wf {
 
-class CSPWF_EXPORT ControlMoveEventHandler : public Referenced {
+class CSPWF_EXPORT ControlMoveEventHandler : public Referenced, public sigc::trackable {
 public:
 	ControlMoveEventHandler(Control* control);
 

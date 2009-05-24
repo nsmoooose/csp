@@ -76,6 +76,7 @@ Ref<Window> createWindow() {
 	// label control to the container. Since we have added a width
 	// and a height it is now possible to use alignment.
 	Ref<Label> label = new Label();
+	label->setId("label");
 	label->setText("Hello world");
 	label->getStyle()->setWidth(Style::UnitValue(Style::Pixels, 100));
 	label->getStyle()->setHeight(Style::UnitValue(Style::Pixels, 30));
@@ -118,7 +119,11 @@ int main(int, char**) {
 	windowManager->show(window.get());
 
 	// Create a event handler that fixes window movements.
-	ControlMoveEventHandler moveEventHandler(window.get());
+	Ref<ControlMoveEventHandler> moveEventHandler = new ControlMoveEventHandler(window.get());
+
+	// We alse add a event handler for the label.
+	Ref<Label> label = window->getById<Label>("label");
+	Ref<ControlMoveEventHandler> labelMoveHandler = new ControlMoveEventHandler(label.get());
 
     // run the viewers frame loop
     return viewer.run();

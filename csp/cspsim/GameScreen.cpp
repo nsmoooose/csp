@@ -468,6 +468,17 @@ void GameScreen::setCamera(double dt) {
 	}
 }
 
+bool GameScreen::onMouseButton(SDL_MouseButtonEvent const &event) {
+	Ref<wf::WindowManager> windowManager = CSPSim::theSim->getWindowManager();
+	if(event.state == SDL_PRESSED) {
+		return windowManager->onMouseDown(event.x, event.y, event.button);
+	}
+	else if(event.state == SDL_RELEASED) {
+		return windowManager->onMouseUp(event.x, event.y, event.button);
+	}
+	return false;
+}
+
 bool GameScreen::onMouseMove(SDL_MouseMotionEvent const &event) {
 	// Let the window manager process the input interface events.
 	return CSPSim::theSim->getWindowManager()->onMouseMove(event.x, event.y);

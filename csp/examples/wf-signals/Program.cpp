@@ -8,13 +8,42 @@
 #include <csp/cspwf/ResourceLocator.h>
 #include <csp/cspwf/Window.h>
 #include <csp/cspwf/WindowManagerViewer.h>
+#include <csp/cspwf/WindowManagerEventHandler.cpp>
 #include <iostream>
 
 using namespace csp;
 using namespace csp::wf;
 
-void handleClick(csp::wf::ClickEventArgs& event) {
-	std::cout << "Click with coordinate x: " << event.x << " and y: " << event.y << std::endl;
+void handleClick(ClickEventArgs& event) {
+	std::cout << "Click on control with name: " << event.control->getName().c_str() <<
+		" with coordinate x: " << event.x <<
+		" and y: " << event.y << std::endl;
+}
+
+void handleHover(HoverEventArgs& event) {
+	std::cout << "Hover on control with name: " << // event.control->getName().c_str() <<
+		" with coordinate x: " << event.x <<
+		" and y: " << event.y << std::endl;
+}
+
+void handleMouseDown(MouseButtonEventArgs& event) {
+	std::cout << "Mouse button " << event.button <<
+		" down on control with name: " << event.control->getName().c_str() <<
+		" with coordinate x: " << event.x <<
+		" and y: " << event.y << std::endl;
+}
+
+void handleMouseMove(MouseEventArgs& event) {
+	std::cout << "Mouse move on control with name: " << event.control->getName().c_str() <<
+		" with coordinate x: " << event.x <<
+		" and y: " << event.y << std::endl;
+}
+
+void handleMouseUp(MouseButtonEventArgs& event) {
+	std::cout << "Mouse button " << event.button <<
+		" up on control with name: " << event.control->getName().c_str() <<
+		" with coordinate x: " << event.x <<
+		" and y: " << event.y << std::endl;
 }
 
 osg::ref_ptr<osg::Node> createWindow(WindowManagerViewer* windowManager) {
@@ -31,6 +60,10 @@ osg::ref_ptr<osg::Node> createWindow(WindowManagerViewer* windowManager) {
 	window->getStyle()->setHorizontalAlign(std::string("center"));
 	window->getStyle()->setVerticalAlign(std::string("middle"));
 	window->Click.connect(sigc::ptr_fun(handleClick));
+	window->Hover.connect(sigc::ptr_fun(handleHover));
+	window->MouseDown.connect(sigc::ptr_fun(handleMouseDown));
+	window->MouseMove.connect(sigc::ptr_fun(handleMouseMove));
+	window->MouseUp.connect(sigc::ptr_fun(handleMouseUp));
 
 	// Add a special container that allow us to have more than
 	// one child control. It also allow us to position each control
@@ -58,29 +91,6 @@ osg::ref_ptr<osg::Node> createWindow(WindowManagerViewer* windowManager) {
 	return windowManager->getRootNode().get();
 }
 
-class MouseEventHandler : public osgGA::GUIEventHandler {
-public:
-	MouseEventHandler(WindowManager* windowManager) : m_WindowManager(windowManager) {
-	}
-
-	bool handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& us, osg::Object*, osg::NodeVisitor*) {
-		switch(ea.getEventType()) {
-		case osgGA::GUIEventAdapter::PUSH:
-			return m_WindowManager->onClick(ea.getX(), ea.getY());
-		case osgGA::GUIEventAdapter::RELEASE:
-			return false;
-		case osgGA::GUIEventAdapter::DRAG:
-			return false;
-		case osgGA::GUIEventAdapter::MOVE:
-			return m_WindowManager->onMouseMove(ea.getX(), ea.getY(), 0, 0);
-		default:
-			return false;
-		}
-	}
-private:
-	Ref<WindowManager> m_WindowManager;
-};
-
 int main(int, char**) {
 	// Make sure that the windowing framework can external files.
 	// For example fonts.
@@ -90,13 +100,14 @@ int main(int, char**) {
 
 	// This instance keeps track of all windows connected to it.
 	// It is used to open and close windows.
-	Ref<WindowManagerViewer> windowManager = new WindowManagerViewer();
+	Ref<WindowManagerViewer> windowManager = new WindowManagerViewer(640, 480);
 
     // construct the viewer
     osgViewer::Viewer viewer;
+	viewer.setUpViewInWindow(40, 40, 640, 480);
     viewer.addEventHandler(new osgViewer::StatsHandler());
 	viewer.addEventHandler(new osgViewer::HelpHandler());
-	viewer.addEventHandler(new MouseEventHandler(windowManager.get()));
+	viewer.addEventHandler(new WindowManagerEventHandler(windowManager.get()));
     
 	osg::ref_ptr<osg::Group> group = new osg::Group;
 	group->addChild(createWindow(windowManager.get()).get());

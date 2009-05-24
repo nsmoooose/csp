@@ -63,7 +63,9 @@ struct EventArgs {
 };
 
 struct ClickEventArgs : EventArgs {
-	ClickEventArgs(int X, int Y) : x(X), y(Y) {}
+	ClickEventArgs(Control* c, int X, int Y) : control(c), x(X), y(Y) {}
+
+	Ref<Control> control;
 	int x, y;
 };
 
@@ -71,8 +73,27 @@ struct HoverEventArgs : EventArgs {
 	int x, y;
 };
 
+struct MouseEventArgs : EventArgs {
+	MouseEventArgs(Control* c, int X, int Y) :
+		control(c), x(X), y(Y) {}
+
+	Ref<Control> control;
+	int x, y;
+};
+
+struct MouseButtonEventArgs : MouseEventArgs {
+	MouseButtonEventArgs(Control* c, int b, int X, int Y) :
+		MouseEventArgs(c, X, Y), button(b) {}
+
+	int button;
+};
+
 typedef sigc::signal<void, ClickEventArgs&> ClickSignal;
 typedef sigc::signal<void, HoverEventArgs&> HoverSignal;
+
+typedef sigc::signal<void, MouseEventArgs&> MouseMoveSignal;
+typedef sigc::signal<void, MouseButtonEventArgs&> MouseDownSignal;
+typedef sigc::signal<void, MouseButtonEventArgs&> MouseUpSignal;
 
 /** The base class for all controls that exists.
  *
@@ -180,13 +201,29 @@ public:
 	ClickSignal Click;
 	HoverSignal Hover;
 
-	/** Fires the click signal. This method is normally called from WindowManager 
+	MouseMoveSignal MouseMove;
+	MouseDownSignal MouseDown;
+	MouseUpSignal MouseUp;
+
+	/** Fires the click signal. This method is normally called from WindowManager
 	 * and shouldn't be used directly. */
 	virtual void onClick(ClickEventArgs& event);
 
-	/** Fires the hover signal. This method is normally called from WindowManager 
+	/** Fires the hover signal. This method is normally called from WindowManager
 	 * and shouldn't be used directly. */
 	virtual void onHover(HoverEventArgs& event);
+
+	/** Fires the mouse move signal. This method is normally called from WindowManager
+	 * and shouldn't be used directly. */
+	virtual void onMouseMove(MouseEventArgs& event);
+
+	/** Fires the mouse down signal. This method is normally called from WindowManager
+	 * and shouldn't be used directly. */
+	virtual void onMouseDown(MouseButtonEventArgs& event);
+
+	/** Fires the mouse up signal. This method is normally called from WindowManager
+	 * and shouldn't be used directly. */
+	virtual void onMouseUp(MouseButtonEventArgs& event);
 
 	template<class Archive>
 	void serialize(Archive & ar) {

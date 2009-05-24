@@ -34,7 +34,7 @@ public:
 	WindowManagerEventHandler(WindowManagerViewer* windowManager);
 	virtual ~WindowManagerEventHandler();
 
-	virtual bool handle(const osgGA::GUIEventAdapter& ea,osgGA::GUIActionAdapter&);
+	virtual bool handle(const osgGA::GUIEventAdapter& ea,osgGA::GUIActionAdapter&, osg::Object*, osg::NodeVisitor*);
 private:
 	Ref<WindowManagerViewer> m_WindowManager;
 };

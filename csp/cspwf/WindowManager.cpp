@@ -50,15 +50,15 @@ WindowManager::~WindowManager() {
 }
 
 bool WindowManager::onClick(int x, int y) {
-	ClickEventArgs event(x, y);
 	Control* control = getControlAtPosition(x, y);
+	ClickEventArgs event(control, x, y);
 	if(control != NULL) {
 		control->onClick(event);
 	}
 	return event.handled;
 }
 
-bool WindowManager::onMouseMove(int x, int y, int /*dx*/, int /*dy*/) {
+bool WindowManager::onMouseMove(int x, int y) {
 	// Save the new mouse position.
 	m_MousePosition = Point(x, y);
 
@@ -68,7 +68,32 @@ bool WindowManager::onMouseMove(int x, int y, int /*dx*/, int /*dy*/) {
 		addStateAndRebuildGeometry("hover", newHoverControl);
 	}
 	m_HoverControl = newHoverControl;
-	return false;
+
+	/* Fire signals if we have a control at the position. */
+	Control* control = getControlAtPosition(x, y);
+	MouseEventArgs event(control, x, y);
+	if(control != NULL) {
+		control->onMouseMove(event);
+	}
+	return event.handled;
+}
+
+bool WindowManager::onMouseDown(int x, int y, int button) {
+	Control* control = getControlAtPosition(x, y);
+	MouseButtonEventArgs event(control, button, x, y);
+	if(control != NULL) {
+		control->onMouseDown(event);
+	}
+	return event.handled;
+}
+
+bool WindowManager::onMouseUp(int x, int y, int button) {
+	Control* control = getControlAtPosition(x, y);
+	MouseButtonEventArgs event(control, button, x, y);
+	if(control != NULL) {
+		control->onMouseUp(event);
+	}
+	return event.handled;
 }
 
 void WindowManager::removeStateAndRebuildGeometry(const std::string& state, Control* control) {

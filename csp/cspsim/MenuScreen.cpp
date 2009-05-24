@@ -51,7 +51,7 @@ void MenuScreen::onUpdate(double /* dt */) {
 }
 
 bool MenuScreen::onMouseMove(SDL_MouseMotionEvent const &event) {
-	return CSPSim::theSim->getWindowManager()->onMouseMove(event.x, event.y, event.xrel, event.yrel);
+	return CSPSim::theSim->getWindowManager()->onMouseMove(event.x, event.y);
 }
 
 bool MenuScreen::onMouseButton(SDL_MouseButtonEvent const &event) {

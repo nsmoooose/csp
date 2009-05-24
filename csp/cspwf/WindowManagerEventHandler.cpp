@@ -13,20 +13,23 @@ WindowManagerEventHandler::WindowManagerEventHandler(WindowManagerViewer* window
 WindowManagerEventHandler::~WindowManagerEventHandler() {
 }
 
-bool WindowManagerEventHandler::handle(const osgGA::GUIEventAdapter& ea,osgGA::GUIActionAdapter&) {
+bool WindowManagerEventHandler::handle(const osgGA::GUIEventAdapter& ea,osgGA::GUIActionAdapter&, osg::Object*, osg::NodeVisitor*) {
 	switch(ea.getEventType()) {
 	case osgGA::GUIEventAdapter::PUSH:
-		m_WindowManager->onClick(
+		return m_WindowManager->onMouseDown(
+			static_cast<int>(ea.getX()), 
+			static_cast<int>(ea.getYmax() - ea.getY()),
+			ea.getButton());
+	case osgGA::GUIEventAdapter::RELEASE:
+		return m_WindowManager->onMouseUp(
+			static_cast<int>(ea.getX()),
+			static_cast<int>(ea.getYmax() - ea.getY()),
+			ea.getButton());
+	case osgGA::GUIEventAdapter::DRAG:
+	case osgGA::GUIEventAdapter::MOVE:
+		return m_WindowManager->onMouseMove(
 			static_cast<int>(ea.getX()), 
 			static_cast<int>(ea.getYmax() - ea.getY()));
-		return true;
-	case osgGA::GUIEventAdapter::RELEASE:
-		return true;
-	case osgGA::GUIEventAdapter::MOVE:
-		m_WindowManager->onMouseMove(
-			static_cast<int>(ea.getX()), 
-			static_cast<int>(ea.getYmax() - ea.getY()), 0, 0);
-		return true;
 	default:
 		return false;
 	}

@@ -50,7 +50,9 @@ public:
 	virtual ~WindowManager();
 	
 	virtual bool onClick(int x, int y);
-	virtual bool onMouseMove(int x, int y, int dx, int dy);
+	virtual bool onMouseMove(int x, int y);
+	virtual bool onMouseDown(int x, int y, int button);
+	virtual bool onMouseUp(int x, int y, int button);
 	
 	virtual void show(Window* window);
 	virtual void close(Window* window);

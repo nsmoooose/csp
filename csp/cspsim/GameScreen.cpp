@@ -470,7 +470,7 @@ void GameScreen::setCamera(double dt) {
 
 bool GameScreen::onMouseMove(SDL_MouseMotionEvent const &event) {
 	// Let the window manager process the input interface events.
-	return CSPSim::theSim->getWindowManager()->onMouseMove(event.x, event.y, event.xrel, event.yrel);
+	return CSPSim::theSim->getWindowManager()->onMouseMove(event.x, event.y);
 }
 
 } // namespace csp

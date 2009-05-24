@@ -227,6 +227,36 @@ void Control::onHover(HoverEventArgs& event) {
 	}
 }
 
+void Control::onMouseMove(MouseEventArgs& event) {
+	MouseMove(event);
+	if(event.handled == false) {
+		Control* parent = getParent();
+		if(parent != NULL) {
+			parent->onMouseMove(event);
+		}
+	}
+}
+
+void Control::onMouseDown(MouseButtonEventArgs& event) {
+	MouseDown(event);
+	if(event.handled == false) {
+		Control* parent = getParent();
+		if(parent != NULL) {
+			parent->onMouseDown(event);
+		}
+	}
+}
+
+void Control::onMouseUp(MouseButtonEventArgs& event) {
+	MouseUp(event);
+	if(event.handled == false) {
+		Control* parent = getParent();
+		if(parent != NULL) {
+			parent->onMouseUp(event);
+		}
+	}
+}
+
 void Control::suspendLayout() {
 	// TODO: To be implemented...
 }

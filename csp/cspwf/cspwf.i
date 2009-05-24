@@ -19,6 +19,7 @@
 %{
 #include <csp/cspwf/Button.h>
 #include <csp/cspwf/CheckBox.h>
+#include <csp/cspwf/ControlMoveEventHandler.h>
 #include <csp/cspwf/Label.h>
 #include <csp/cspwf/ListBox.h>
 #include <csp/cspwf/ListBoxItem.h>
@@ -312,7 +313,7 @@ private:
 
 class WindowManagerViewer : public WindowManager {
 public:
-	WindowManagerViewer();
+	WindowManagerViewer(int width=1024, int height=768);
 	virtual ~WindowManagerViewer();
 };
 

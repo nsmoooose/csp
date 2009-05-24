@@ -9,9 +9,11 @@ namespace wf {
 class CSPWF_EXPORT ControlMoveEventHandler : public Referenced, public sigc::trackable {
 public:
 	ControlMoveEventHandler(Control* control);
+	virtual ~ControlMoveEventHandler();
 
 protected:
-	bool m_Active;
+	bool m_MouseDown;
+	bool m_Drag;
 	Point m_StartDrag;
 	Point m_ControlLocation;
 	WeakRef<Control> m_Control;

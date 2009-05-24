@@ -31,6 +31,9 @@ class Help(csp.cspsim.Window, SlotManager):
         csp.cspsim.Window.__init__(self)
         SlotManager.__init__(self)
         
+        # Install the move window event handler.
+        self.moveEventHandler = csp.cspsim.ControlMoveEventHandler(self)
+
         self.topics = {'${help_welcome}' : 'index.xml', 
                        '${help_f16_first_steps}' : 'f16_first_steps.xml',
                        '${help_keyboard_aircraft}' : 'aircraft_controls.xml',

@@ -31,6 +31,9 @@ class Library(csp.cspsim.Window, SlotManager):
         csp.cspsim.Window.__init__(self)
         SlotManager.__init__(self)    
         
+        # Install the move window event handler.
+        self.moveEventHandler = csp.cspsim.ControlMoveEventHandler(self)
+
         serializer = csp.cspsim.Serialization()
         serializer.load(self, os.path.join('library', 'index.xml'))
 

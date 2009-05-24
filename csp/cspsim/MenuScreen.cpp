@@ -55,8 +55,14 @@ bool MenuScreen::onMouseMove(SDL_MouseMotionEvent const &event) {
 }
 
 bool MenuScreen::onMouseButton(SDL_MouseButtonEvent const &event) {
-	if(event.state == SDL_RELEASED) {
-		return CSPSim::theSim->getWindowManager()->onClick(event.x, event.y);
+	Ref<wf::WindowManager> windowManager = CSPSim::theSim->getWindowManager();
+	if(event.state == SDL_PRESSED) {
+		return windowManager->onMouseDown(event.x, event.y, event.button);
+	}
+	else if(event.state == SDL_RELEASED) {
+		return
+			windowManager->onMouseUp(event.x, event.y, event.button) ||
+			windowManager->onClick(event.x, event.y);
 	}
 	return false;
 }

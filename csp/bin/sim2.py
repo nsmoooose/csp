@@ -9,14 +9,16 @@ from csp.data.ui.scripts.windows.topmenu import TopMenu
 
 try:
     # We need a viewer that is capable of rendering.
-    viewer = csp.cspsim.CSPViewer()
+    windowWidth = 640
+    windowHeight = 480
+    viewer = csp.cspsim.CSPViewer(0, 0, windowWidth, windowHeight)
     # Add some osg handlers. (provides frame statistics and help)
     viewer.addStatsHandler()
     viewer.addHelpHandler()
 
     # We must have a window manager. The window manager is responsible
     # for all windows displayed.
-    windowManager = csp.cspsim.WindowManagerViewer()
+    windowManager = csp.cspsim.WindowManagerViewer(windowWidth, windowHeight)
     viewer.addChild(windowManager.getRootNode())
     viewer.addWindowManagerEventHandler(windowManager)
 
@@ -32,9 +34,9 @@ try:
     csp.cspsim.setDefaultResourceLocator(resourceLocator)
 
     # Create the background window that covers the entire screen.
-    window = Desktop()
-    windowManager.show(window)
-    window.maximizeWindow()
+    desktopWindow = Desktop()
+    windowManager.show(desktopWindow)
+    desktopWindow.maximizeWindow()
 
     # We do want a menu at the top of the screen.
     window = TopMenu(None)

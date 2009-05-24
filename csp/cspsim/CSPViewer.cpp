@@ -12,6 +12,12 @@ CSPViewer::CSPViewer() {
 	m_Viewer->setSceneData(new osg::Group);
 }
 
+CSPViewer::CSPViewer(int left, int top, int width, int height) {
+	m_Viewer = new osgViewer::Viewer;
+	m_Viewer->setSceneData(new osg::Group);
+	m_Viewer->setUpViewInWindow(left, top, width, height);
+}
+
 CSPViewer::~CSPViewer() {
 }
 

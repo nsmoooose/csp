@@ -31,6 +31,9 @@ class QuitResume(csp.cspsim.Window, SlotManager):
         csp.cspsim.Window.__init__(self)
         SlotManager.__init__(self)
 
+        # Install the move window event handler.
+        self.moveEventHandler = csp.cspsim.ControlMoveEventHandler(self)
+
         self.cspsim = cspsim
 
         # Load the user interface for this window.

@@ -29,6 +29,7 @@ namespace csp {
 	class CSPSIM_EXPORT CSPViewer {
 	public:
 		CSPViewer();
+		CSPViewer(int left, int top, int width, int height);
 		virtual ~CSPViewer();
 		
 		virtual void run();

@@ -260,6 +260,8 @@ public:
 	 */
 	virtual bool layoutSuspended();
 	
+	void updateMatrix();
+
 protected:
 
 private:
@@ -281,7 +283,6 @@ private:
 
 	Ref<Signal> m_ClickSignal;
 
-	void updateMatrix();
 };
 
 } // namespace wf

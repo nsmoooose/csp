@@ -3,6 +3,7 @@
 #include <osgViewer/Viewer>
 #include <osgViewer/ViewerEventHandlers>
 #include <csp/cspsim/ObjectModel.h>
+#include <csp/cspwf/ControlMoveEventHandler.h>
 #include <csp/cspwf/Label.h>
 #include <csp/cspwf/MultiControlContainer.h>
 #include <csp/cspwf/ResourceLocator.h>
@@ -46,7 +47,7 @@ void handleMouseUp(MouseButtonEventArgs& event) {
 		" and y: " << event.y << std::endl;
 }
 
-osg::ref_ptr<osg::Node> createWindow(WindowManagerViewer* windowManager) {
+Ref<Window> createWindow() {
 	// Create a window. A window can only contain a single
 	// control that will span the entire width and height of
 	// the parent (the window). By adding an other container
@@ -87,8 +88,7 @@ osg::ref_ptr<osg::Node> createWindow(WindowManagerViewer* windowManager) {
 	// Add the label to the window control.
 	container->addControl(label.get());
 
-	windowManager->show(window.get());
-	return windowManager->getRootNode().get();
+	return window;
 }
 
 int main(int, char**) {
@@ -110,8 +110,15 @@ int main(int, char**) {
 	viewer.addEventHandler(new WindowManagerEventHandler(windowManager.get()));
     
 	osg::ref_ptr<osg::Group> group = new osg::Group;
-	group->addChild(createWindow(windowManager.get()).get());
+	group->addChild(windowManager->getRootNode().get());
     viewer.setSceneData(group.get());
+
+	// Create the window and show it.
+	Ref<Window> window = createWindow();
+	windowManager->show(window.get());
+
+	// Create a event handler that fixes window movements.
+	ControlMoveEventHandler moveEventHandler(window.get());
 
     // run the viewers frame loop
     return viewer.run();

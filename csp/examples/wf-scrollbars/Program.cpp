@@ -42,6 +42,40 @@ void addStyleSheetToWindow(Window* window) {
 	horizontalStyle->setHeight(Style::UnitValue(Style::Pixels, 20));
 	horizontalStyle->setBackgroundColor(osg::Vec4(0.8, 0.8, 0.8, 1.0));
 	window->addNamedStyle("HorizontalScrollBar", horizontalStyle.get());
+
+	// The scroll left button is always 20 pixels rectangle placed
+	// to the left in the parent scrollbar control.
+	Ref<Style> scrollLeftStyle = new Style();
+	scrollLeftStyle->setHeight(Style::UnitValue(Style::Pixels, 20));
+	scrollLeftStyle->setWidth(Style::UnitValue(Style::Pixels, 20));
+	scrollLeftStyle->setLeft(Style::UnitValue(Style::Pixels, 0));
+	scrollLeftStyle->setTop(Style::UnitValue(Style::Pixels, 0));
+	scrollLeftStyle->setBackgroundColor(osg::Vec4(0.0, 0.0, 0.0, 1.0));
+	window->addNamedStyle("ScrollLeftButton", scrollLeftStyle.get());
+
+	Ref<Style> scrollRightStyle = new Style();
+	scrollRightStyle->setHeight(Style::UnitValue(Style::Pixels, 20));
+	scrollRightStyle->setWidth(Style::UnitValue(Style::Pixels, 20));
+	scrollRightStyle->setHorizontalAlign(std::string("right"));
+	scrollRightStyle->setTop(Style::UnitValue(Style::Pixels, 0));
+	scrollRightStyle->setBackgroundColor(osg::Vec4(0.0, 0.0, 0.0, 1.0));
+	window->addNamedStyle("ScrollRightButton", scrollRightStyle.get());
+
+	Ref<Style> scrollUpStyle = new Style();
+	scrollUpStyle->setHeight(Style::UnitValue(Style::Pixels, 20));
+	scrollUpStyle->setWidth(Style::UnitValue(Style::Pixels, 20));
+	scrollUpStyle->setLeft(Style::UnitValue(Style::Pixels, 0));
+	scrollUpStyle->setTop(Style::UnitValue(Style::Pixels, 0));
+	scrollUpStyle->setBackgroundColor(osg::Vec4(0.0, 0.0, 0.0, 1.0));
+	window->addNamedStyle("ScrollUpButton", scrollUpStyle.get());
+
+	Ref<Style> scrollDownStyle = new Style();
+	scrollDownStyle->setHeight(Style::UnitValue(Style::Pixels, 20));
+	scrollDownStyle->setWidth(Style::UnitValue(Style::Pixels, 20));
+	scrollDownStyle->setLeft(Style::UnitValue(Style::Pixels, 0));
+	scrollDownStyle->setVerticalAlign(std::string("bottom"));
+	scrollDownStyle->setBackgroundColor(osg::Vec4(0.0, 0.0, 0.0, 1.0));
+	window->addNamedStyle("ScrollDownButton", scrollDownStyle.get());
 }
 
 Ref<Window> createWindow() {
@@ -74,12 +108,12 @@ Ref<Window> createWindow() {
 	// and a height it is now possible to use alignment.
 	Ref<Label> label = new Label();
 	label->setId("label");
-	label->setText("Hello world");
-	label->getStyle()->setWidth(Style::UnitValue(Style::Pixels, 100));
+	label->setText("Here you have two scrollbars. One vertical and one horizontal.");
+	label->getStyle()->setWidth(Style::UnitValue(Style::Pixels, 300));
 	label->getStyle()->setHeight(Style::UnitValue(Style::Pixels, 30));
 	label->getStyle()->setFontFamily(std::string("prima_sans_bt.ttf"));
 	label->getStyle()->setFontSize(15);
-	label->getStyle()->setColor(osg::Vec4(1, 0, 0, 1));
+	label->getStyle()->setColor(osg::Vec4(0, 0, 0, 1));
 	label->getStyle()->setHorizontalAlign(std::string("center"));
 	label->getStyle()->setVerticalAlign(std::string("middle"));
 

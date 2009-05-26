@@ -59,9 +59,18 @@ void ScrollBar::performLayout() {
 	// Make sure that all our child controls onInit() is called.
 	Container::performLayout();	
 	
+	osg::Group* group = getNode();
+
 	ControlGeometryBuilder geometryBuilder;
-	osg::ref_ptr<osg::Group> group = geometryBuilder.buildGenericControl(this);
-	getNode()->addChild(group.get());
+	osg::ref_ptr<osg::Group> geometry = geometryBuilder.buildGenericControl(this);
+	group->addChild(geometry.get());
+
+	ControlVector childControls = getChildControls();
+	ControlVector::iterator control = childControls.begin();
+	for(;control != childControls.end();++control) {
+		(*control)->performLayout();
+		group->addChild((*control)->getNode());
+	}
 }
 
 float ScrollBar::getValue() const {
@@ -88,16 +97,33 @@ void ScrollBar::setMaximum(float maximum) {
 	m_Maximum = maximum;
 }
 
-VerticalScrollBar::VerticalScrollBar() : 
-	ScrollBar("VerticalScrollBar"), 
-	m_ScrollUpButton(new ScrollUpButton),
-	m_ScrollDownButton(new ScrollDownButton) {
-}
-
 HorizontalScrollBar::HorizontalScrollBar() : 
 	ScrollBar("HorizontalScrollBar"),
 	m_ScrollLeftButton(new ScrollLeftButton),
 	m_ScrollRightButton(new ScrollRightButton) {
+
+	m_ScrollLeftButton->setParent(this);
+	m_ScrollRightButton->setParent(this);
+}
+
+void HorizontalScrollBar::layoutChildControls() {
+	// Don't care about child containers.
+}
+
+ControlVector HorizontalScrollBar::getChildControls() {
+	ControlVector childControls;
+	childControls.push_back(m_ScrollLeftButton);
+	childControls.push_back(m_ScrollRightButton);
+	return childControls;
+}
+
+VerticalScrollBar::VerticalScrollBar() : 
+	ScrollBar("VerticalScrollBar"), 
+	m_ScrollUpButton(new ScrollUpButton),
+	m_ScrollDownButton(new ScrollDownButton) {
+
+	m_ScrollUpButton->setParent(this);
+	m_ScrollDownButton->setParent(this);
 }
 
 void VerticalScrollBar::layoutChildControls() {
@@ -110,16 +136,5 @@ ControlVector VerticalScrollBar::getChildControls() {
 	return childControls;
 }
 
-void HorizontalScrollBar::layoutChildControls() {
-}
-
-ControlVector HorizontalScrollBar::getChildControls() {
-	ControlVector childControls;
-	childControls.push_back(m_ScrollLeftButton);
-	childControls.push_back(m_ScrollRightButton);
-	return childControls;
-}
-
 } // namespace wf
-
 } // namespace csp

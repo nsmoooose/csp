@@ -52,7 +52,7 @@ void MultiControlContainer::performLayout() {
 	ControlVector::iterator childControl = childControls.begin();
 	for(;childControl != childControls.end();++childControl) {
 		group->addChild((*childControl)->getNode());
-	}	
+	}
 }
 
 void MultiControlContainer::layoutChildControls() {

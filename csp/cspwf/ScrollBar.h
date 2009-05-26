@@ -31,14 +31,24 @@ namespace csp {
 
 namespace wf {
 
+/** Base class for all scroll buttons. Make sure that the 
+ * layout logic is called for all buttons. 
+ */
+class CSPWF_EXPORT ScrollButton : public Control {
+public:
+	ScrollButton(const char* name);
+	
+	virtual void performLayout();
+};
+
 /** A button placed to the left in a horizontal scrollbar. 
  * Used to scroll content to the left. The purpose of this
  * class is to make the button styleable using the name of
  * this class.
  */  	
-class CSPWF_EXPORT ScrollLeftButton : public Control {
+class CSPWF_EXPORT ScrollLeftButton : public ScrollButton {
 public:
-	ScrollLeftButton() : Control("ScrollLeftButton") {}
+	ScrollLeftButton();
 };
 
 /** A button placed to the right in a horizontal scrollbar.
@@ -46,9 +56,9 @@ public:
  * class is to make the button styleable using the name of
  * this class.
  */
-class CSPWF_EXPORT ScrollRightButton : public Control {
+class CSPWF_EXPORT ScrollRightButton : public ScrollButton {
 public:
-	ScrollRightButton() : Control("ScrollRightButton") {}
+	ScrollRightButton();
 };
 
 /** A button placed to the top in a vertical scrollbar.
@@ -56,9 +66,9 @@ public:
  * class is to make the button styleable using the name of
  * this class.
  */
-class CSPWF_EXPORT ScrollUpButton : public Control {
+class CSPWF_EXPORT ScrollUpButton : public ScrollButton {
 public:
-	ScrollUpButton() : Control("ScrollUpButton") {}
+	ScrollUpButton();
 };
 
 /** A button placed at the bottom of a vertical scrollbar.
@@ -66,9 +76,9 @@ public:
  * class is to make the button styleable using the name of
  * this class.
  */
-class CSPWF_EXPORT ScrollDownButton : public Control {
+class CSPWF_EXPORT ScrollDownButton : public ScrollButton {
 public:
-	ScrollDownButton() : Control("ScrollDownButton") {}
+	ScrollDownButton();
 };
 
 /** Base class for scrollbars with all shared functionality.
@@ -86,6 +96,8 @@ public:
 	float getMaximum() const;
 	void setMaximum(float maximum);
 	
+	virtual void performLayout();
+
 private:
 	float m_Value;
 	float m_Minimum;

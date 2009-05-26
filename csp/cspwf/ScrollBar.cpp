@@ -31,9 +31,37 @@ namespace csp {
 
 namespace wf {
 
+ScrollButton::ScrollButton(const char* name) : Control(name) {}
+
+void ScrollButton::performLayout() {
+	// Make sure that all our child controls onInit() is called.
+	Control::performLayout();	
+	
+	ControlGeometryBuilder geometryBuilder;
+	osg::ref_ptr<osg::Group> group = geometryBuilder.buildGenericControl(this);
+	getNode()->addChild(group.get());
+}
+
+ScrollLeftButton::ScrollLeftButton() : ScrollButton("ScrollLeftButton") {}
+
+ScrollRightButton::ScrollRightButton() : ScrollButton("ScrollRightButton") {}
+
+ScrollUpButton::ScrollUpButton() : ScrollButton("ScrollUpButton") {}
+
+ScrollDownButton::ScrollDownButton() : ScrollButton("ScrollDownButton") {}
+
 ScrollBar::ScrollBar(std::string name) : 
 	Container(name), m_Value(0.0f), m_Minimum(0.0f), 
 	m_Maximum(10.0f) {
+}
+
+void ScrollBar::performLayout() {
+	// Make sure that all our child controls onInit() is called.
+	Container::performLayout();	
+	
+	ControlGeometryBuilder geometryBuilder;
+	osg::ref_ptr<osg::Group> group = geometryBuilder.buildGenericControl(this);
+	getNode()->addChild(group.get());
 }
 
 float ScrollBar::getValue() const {

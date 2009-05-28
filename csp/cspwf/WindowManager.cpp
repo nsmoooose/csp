@@ -143,6 +143,17 @@ void WindowManager::show(Window* window) {
 	// windows.
 	window->setWindowManager(this);
 
+	performLayout(window);
+
+	// Add the window into the tree of nodes in osg. This will make
+	// the window visible for the user in the next render.
+	getWindowNode()->addChild(window->getNode());
+
+	// Also store a reference to the window.
+	m_Windows.push_back(window);
+}
+
+void WindowManager::performLayout(Window* window) {
 	// Force this container to align all child controls.
 	window->layoutChildControls();
 
@@ -182,13 +193,6 @@ void WindowManager::show(Window* window) {
 	// Build the actual geometry of all controls that is going to be
 	// displayed.
 	window->performLayout();
-
-	// Add the window into the tree of nodes in osg. This will make
-	// the window visible for the user in the next render.
-	getWindowNode()->addChild(window->getNode());
-
-	// Also store a reference to the window.
-	m_Windows.push_back(window);
 }
 
 void WindowManager::close(Window* window) {

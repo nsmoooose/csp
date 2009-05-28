@@ -36,8 +36,6 @@
 #include <osgUtil/IntersectionVisitor>
 #include <osgUtil/LineSegmentIntersector>
 
-#include <iostream>
-
 namespace csp {
 namespace wf {
 
@@ -45,13 +43,16 @@ WindowManagerViewer::WindowManagerViewer(int width, int height) : WindowManager(
 	Size screenSize;
 	float screenScale;
 	calculateScreenSizeAndScale(screenSize, screenScale);
-	if(screenScale != 1.0) {
-		osg::ref_ptr<osg::MatrixTransform> scaledGroup = new osg::MatrixTransform;
-		osg::Matrix scale;
-		scale.makeScale(osg::Vec3(screenScale, screenScale, screenScale));
-		scaledGroup->setMatrix(scale);
-		m_Group = scaledGroup.get();
-	}
+
+	// Replace the root group node that holds all windows with a
+	// matrix transform. This makes it possible for us to scale
+	// the entire user interface when a user has a really low
+	// screen resolution.
+	osg::ref_ptr<osg::MatrixTransform> scaledGroup = new osg::MatrixTransform;
+	osg::Matrix scale;
+	scale.makeScale(osg::Vec3(screenScale, screenScale, screenScale));
+	scaledGroup->setMatrix(scale);
+	m_Group = scaledGroup.get();
 
 /*
   Some information from osghud example:
@@ -105,6 +106,28 @@ WindowManagerViewer::WindowManagerViewer(int width, int height) : WindowManager(
 }
 
 WindowManagerViewer::~WindowManagerViewer() {
+}
+
+void WindowManagerViewer::graphicsContextResize(int width, int height) {
+	m_ScreenWidth = width;
+	m_ScreenHeight = height;
+
+	Size screenSize;
+	float screenScale;
+	calculateScreenSizeAndScale(screenSize, screenScale);
+
+	// Scale the ui if the screen resolution is lower than 1024x768
+	osg::ref_ptr<osg::MatrixTransform> scaledGroup = dynamic_cast<osg::MatrixTransform*>(m_Group.get());
+	osg::Matrix scale;
+	scale.makeScale(osg::Vec3(screenScale, screenScale, screenScale));
+	scaledGroup->setMatrix(scale);
+
+    m_Camera->setProjectionMatrixAsOrtho(0, width, height, 0, -1000, 1000);
+
+	WindowVector::iterator it = m_Windows.begin();
+	for(;it != m_Windows.end();++it) {
+		performLayout(it->get());
+	}
 }
 
 osg::ref_ptr<osg::Group> WindowManagerViewer::getRootNode() {

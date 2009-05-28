@@ -39,6 +39,12 @@ public:
 	WindowManagerViewer(int width=1024, int height=768);
 	virtual ~WindowManagerViewer();
 
+	/** Call this method when the size of the graphics context change.
+	 *  Note that this method is heavy since it forces all windows
+	 *  to be recreated with new geometry and reloads of images.
+	 */
+	virtual void graphicsContextResize(int width, int height);
+
 	virtual osg::ref_ptr<osg::Group> getRootNode();
 
 	virtual Control* getControlAtPosition(int x, int y);

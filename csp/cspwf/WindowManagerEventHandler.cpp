@@ -15,6 +15,9 @@ WindowManagerEventHandler::~WindowManagerEventHandler() {
 
 bool WindowManagerEventHandler::handle(const osgGA::GUIEventAdapter& ea,osgGA::GUIActionAdapter&, osg::Object*, osg::NodeVisitor*) {
 	switch(ea.getEventType()) {
+	case osgGA::GUIEventAdapter::RESIZE:
+		m_WindowManager->graphicsContextResize(ea.getWindowWidth(), ea.getWindowHeight());
+		return true;
 	case osgGA::GUIEventAdapter::PUSH:
 		return m_WindowManager->onMouseDown(
 			static_cast<int>(ea.getX()), 

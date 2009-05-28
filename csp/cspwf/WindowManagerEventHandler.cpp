@@ -24,10 +24,9 @@ bool WindowManagerEventHandler::handle(const osgGA::GUIEventAdapter& ea,osgGA::G
 			static_cast<int>(ea.getYmax() - ea.getY()),
 			ea.getButton());
 	case osgGA::GUIEventAdapter::RELEASE:
-		return m_WindowManager->onMouseUp(
-			static_cast<int>(ea.getX()),
-			static_cast<int>(ea.getYmax() - ea.getY()),
-			ea.getButton());
+		return 
+			m_WindowManager->onMouseUp(static_cast<int>(ea.getX()), static_cast<int>(ea.getYmax() - ea.getY()), ea.getButton()) ||
+			m_WindowManager->onClick(static_cast<int>(ea.getX()), static_cast<int>(ea.getYmax() - ea.getY()));
 	case osgGA::GUIEventAdapter::DRAG:
 	case osgGA::GUIEventAdapter::MOVE:
 		return m_WindowManager->onMouseMove(

@@ -25,6 +25,7 @@
 #include <csp/csplib/util/FileUtility.h>
 #include <csp/cspwf/ResourceLocator.h>
 #include <csp/cspwf/Window.h>
+#include <sstream>
 
 csp::Ref<csp::wf::ResourceLocator> defaultResourceLocator;
 
@@ -58,6 +59,20 @@ bool ResourceLocator::locateResource(std::string& file) const {
 	
 const StringVector& ResourceLocator::getIncludeFolders() const {
 	return m_IncludeFolders;
+}
+
+std::string ResourceLocator::getPathVariable() const {
+	std::stringstream s;
+
+	StringVector::const_iterator it = m_IncludeFolders.begin();
+	for(;it != m_IncludeFolders.end();++it) {
+		if(it != m_IncludeFolders.begin()) {
+			s << ospath::PATH_SEPARATOR;
+		}
+		s << (*it);
+	}
+	s << std::ends;
+	return s.str();
 }
 
 void ResourceLocator::setIncludeFolders(const StringVector& includeFolders) {

@@ -331,10 +331,12 @@ osg::Group* ControlGeometryBuilder::buildTabHeader(const TabHeader* header) cons
 		getNextLayer(z);
 		
 	    osg::ref_ptr<osgText::Text> button_text = buildText(parsedText, *style->getFontFamily(), *style->getFontSize(), *style->getColor());
-	    button_text->setMaximumWidth(header->getSize().width);
-	    button_text->setAlignment(osgText::Text::CENTER_CENTER);
-		button_text->setPosition(osg::Vec3(0, 0, z));
-	    geode->addDrawable(button_text.get());
+		if(button_text.valid()) {
+			button_text->setMaximumWidth(header->getSize().width);
+			button_text->setAlignment(osgText::Text::CENTER_CENTER);
+			button_text->setPosition(osg::Vec3(0, 0, z));
+			geode->addDrawable(button_text.get());
+		}
 	}
 
 	osg::ref_ptr<osg::Group> group = new osg::Group;
@@ -374,9 +376,11 @@ osg::Group* ControlGeometryBuilder::buildButton(const Button* button) const {
 		std::string parsedText = stringResources->parseAndReplace(button->getText());
 		
 		osg::ref_ptr<osgText::Text> textNode = buildText(parsedText, *style->getFontFamily(), *style->getFontSize(), *style->getColor());
-		textNode->setAlignment(osgText::Text::CENTER_CENTER);
-		textNode->setPosition(osg::Vec3(0, 0, z));
-		geode->addDrawable(textNode.get());
+		if(textNode.valid()) {
+			textNode->setAlignment(osgText::Text::CENTER_CENTER);
+			textNode->setPosition(osg::Vec3(0, 0, z));
+			geode->addDrawable(textNode.get());
+		}
 	}
 
 	osg::ref_ptr<osg::Group> group = new osg::Group;
@@ -533,10 +537,12 @@ osg::Group* ControlGeometryBuilder::buildLabel(const Label* label) const {
 		}
 
 	    osg::ref_ptr<osgText::Text> button_text = buildText(parsedText, *style->getFontFamily(), *style->getFontSize(), *style->getColor());
-	    button_text->setMaximumWidth(label->getSize().width);
-	    button_text->setAlignment(alignmentEnum);
-		button_text->setPosition(osg::Vec3(xAdjustment, yAdjustment, z));
-	    geode->addDrawable(button_text.get());
+		if(button_text.valid()) {
+			button_text->setMaximumWidth(label->getSize().width);
+			button_text->setAlignment(alignmentEnum);
+			button_text->setPosition(osg::Vec3(xAdjustment, yAdjustment, z));
+			geode->addDrawable(button_text.get());
+		}
 	}
 
 	osg::ref_ptr<osg::Group> group = new osg::Group;
@@ -618,8 +624,13 @@ osg::Group* ControlGeometryBuilder::buildModel(const Model* model) const {
 Size ControlGeometryBuilder::getSizeOfText(const std::string& text, const std::string& fontFamily, float fontSize) const {
 	osg::Vec4 color(0.0f, 0.0f, 0.0f, 1.0f);
 	osg::ref_ptr<osgText::Text> textObject = buildText(text, fontFamily, fontSize, color);
-	osg::BoundingBox boundingBox = textObject->getBound();
-	return Size(boundingBox.xMax() - boundingBox.xMin(), boundingBox.yMax() - boundingBox.yMin());
+	if(textObject.valid()) {
+		osg::BoundingBox boundingBox = textObject->getBound();
+		return Size(boundingBox.xMax() - boundingBox.xMin(), boundingBox.yMax() - boundingBox.yMin());
+	}
+	else {
+		return Size(0, 0);
+	}
 }
 
 Size ControlGeometryBuilder::calculateSize(const Control* control, const Style* style) const {

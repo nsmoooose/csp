@@ -52,6 +52,8 @@ public:
 	virtual bool locateResource(std::string& file) const;
 	virtual const StringVector& getIncludeFolders() const;
 	virtual void setIncludeFolders(const StringVector& includeFolders);
+
+	virtual std::string getPathVariable() const;
 	
 private:
 	StringVector m_IncludeFolders;

@@ -281,6 +281,7 @@ class ResourceLocator : public Referenced {
 public:
 	ResourceLocator();
 	virtual void addFolder(const std::string& folder);
+	virtual std::string getPathVariable() const;
 };
 
 void setDefaultResourceLocator(ResourceLocator* locator);

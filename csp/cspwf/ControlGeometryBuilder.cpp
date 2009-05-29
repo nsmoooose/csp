@@ -48,8 +48,9 @@
 #include <osgDB/ReadFile>
 #include <osgText/Text>
 
-namespace csp {
+static const char* WF_FILENOTFOUND = "Failed to locate resource: ";
 
+namespace csp {
 namespace wf {
 
 ControlGeometryBuilder::ControlGeometryBuilder() {
@@ -74,6 +75,9 @@ osgText::Text* ControlGeometryBuilder::buildText(const std::string& text, const 
 		textNode->setAxisAlignment(osgText::Text::XY_PLANE);
 		textNode->setRotation(osg::Quat(PI/2, 0, 0, 0));
 		return textNode.release();
+	}
+	else {
+		CSPLOG(ERROR, APP) << WF_FILENOTFOUND << fontFilePath;
 	}
 	return NULL;
 }
@@ -234,6 +238,9 @@ void ControlGeometryBuilder::buildControl(osg::Geode* geode, float& z, const Sty
 		std::string filePath = *style->getBackgroundImage();
 		if (resourceLocator->locateResource(filePath)) {
 			image = osgDB::readImageFile(filePath);
+			if(!image.valid()) {
+				CSPLOG(ERROR, APP) << WF_FILENOTFOUND << filePath;
+			}
 		}
 
 		// If we succeeded with loading of the texture then we
@@ -329,7 +336,7 @@ osg::Group* ControlGeometryBuilder::buildTabHeader(const TabHeader* header) cons
 		}
 
 		getNextLayer(z);
-		
+
 	    osg::ref_ptr<osgText::Text> button_text = buildText(parsedText, *style->getFontFamily(), *style->getFontSize(), *style->getColor());
 		if(button_text.valid()) {
 			button_text->setMaximumWidth(header->getSize().width);
@@ -371,10 +378,10 @@ osg::Group* ControlGeometryBuilder::buildButton(const Button* button) const {
 	Ref<const Window> window = Window::getWindow(button);
 	if(style->getFontFamily() && style->getFontSize() && style->getColor() && window.valid()) {
 		getNextLayer(z);
-		
+
 		Ref<const StringResourceManager> stringResources = window->getStringResourceManager();
 		std::string parsedText = stringResources->parseAndReplace(button->getText());
-		
+
 		osg::ref_ptr<osgText::Text> textNode = buildText(parsedText, *style->getFontFamily(), *style->getFontSize(), *style->getColor());
 		if(textNode.valid()) {
 			textNode->setAlignment(osgText::Text::CENTER_CENTER);
@@ -594,7 +601,7 @@ osg::Group* ControlGeometryBuilder::buildModel(const Model* model) const {
 	float z = 0;
 
 	buildControl(geode.get(), z, style.get(), model);
-	
+
 	osg::ref_ptr<osg::Group> group = new osg::Group;
 	group->addChild(geode.get());
 
@@ -615,6 +622,9 @@ osg::Group* ControlGeometryBuilder::buildModel(const Model* model) const {
 				transformGroup->addChild(loadedModel.get());
 				group->addChild(transformGroup.get());
 			}
+		}
+		else {
+			CSPLOG(ERROR, APP) << WF_FILENOTFOUND << modelPath;
 		}
 	}
 
@@ -637,11 +647,11 @@ Size ControlGeometryBuilder::calculateSize(const Control* control, const Style* 
 	if(!style->getWidth() || !style->getHeight()) {
 		return Size(0,0);
 	}
-	
+
 	float height = style->getHeight()->value;
 	float width = style->getWidth()->value;
-	
-	const Container* parent = control->getParent();	
+
+	const Container* parent = control->getParent();
 	if(parent == NULL && (style->getWidth()->unit == Style::Percentage || style->getHeight()->unit == Style::Percentage) ) {
 		return Size(0,0);
 	}

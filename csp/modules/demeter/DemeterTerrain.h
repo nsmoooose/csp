@@ -193,7 +193,7 @@ protected:
 	mutable osg::ref_ptr<Demeter::Terrain> m_Terrain;
 	mutable osg::ref_ptr<Demeter::TerrainLattice> m_TerrainLattice;
 
-	Demeter::TerrainTextureFactory * m_TerrainTextureFactory;
+	osg::ref_ptr<Demeter::TerrainTextureFactory> m_TerrainTextureFactory;
 };
 
 } // namespace csp

@@ -121,10 +121,7 @@ void DemeterTerrain::unload() {
 		m_TerrainNode = NULL;
 		m_TerrainLattice = NULL;
 		m_Terrain = NULL;
-		if (m_TerrainTextureFactory) {
-			delete m_TerrainTextureFactory;
-			m_TerrainTextureFactory = NULL;
-		}
+		m_TerrainTextureFactory = NULL;
 		m_Loaded = false;
 	}
 }
@@ -256,7 +253,7 @@ int DemeterTerrain::createTerrain() {
 		assert(!m_TerrainTextureFactory);
 		m_TerrainTextureFactory = new Demeter::TerrainTextureFactory();
 		m_TerrainTextureFactory->SetTerrain(m_Terrain.get());
-		m_Terrain->SetTextureFactory(m_TerrainTextureFactory);
+		m_Terrain->SetTextureFactory(m_TerrainTextureFactory.get());
 	}
 	m_Terrain->SetDetailThreshold(m_DetailThreshold);
 	assert(m_Terrain->GetWidth() == m_Width);
@@ -307,7 +304,7 @@ int DemeterTerrain::createTerrainLattice() {
         m_TerrainTextureFactory = new Demeter::TerrainTextureFactory();
     }
 	m_TerrainTextureFactory->SetTerrainLattice(m_TerrainLattice.get());
-	m_TerrainLattice->SetTextureFactory(m_TerrainTextureFactory, m_LatticeTilesWidth, m_LatticeTilesHeight);
+	m_TerrainLattice->SetTextureFactory(m_TerrainTextureFactory.get(), m_LatticeTilesWidth, m_LatticeTilesHeight);
 
 	m_TerrainLattice->SetDetailThreshold(m_DetailThreshold);
 	CSPLOG(DEBUG, TERRAIN) << "Terrain size: " << m_TerrainLattice->GetWidth() << "(" << m_Width << "), " << m_TerrainLattice->GetHeight() << "(" << m_Height << ")";

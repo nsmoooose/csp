@@ -781,7 +781,7 @@ Terrain::~Terrain()
 	}
 	m_TextureCells.clear();
 
-	if (m_pTextureFactory)
+	if (m_pTextureFactory.valid())
 	{
 		for (int i = 0; i < m_NumberOfTextureTiles; i++)
 		{
@@ -3364,7 +3364,7 @@ void TerrainLattice::LoadTerrain(int index)
 	else
 	{
 		pTerrain = new Terrain(szElevName,NULL,m_szDetailTextureName,m_VertexSpacing,m_ElevationScale,m_MaxNumTriangles,m_bUseBorders, /* (float)indexX * m_TerrainWidth */ 0, /* (float)indexY * m_TerrainHeight */ 0,m_FactoryTilesWidth,m_FactoryTilesHeight);
-		pTerrain->SetTextureFactory(m_pTextureFactory);
+		pTerrain->SetTextureFactory(m_pTextureFactory.get());
 	}
 	if (m_TerrainWidth == 0.0f)
 	{
@@ -3516,7 +3516,7 @@ void TerrainLattice::Render()
 	{
 		if (m_CurrentTerrainIndex[i] != -1)
 		{
-			if (m_pTextureFactory)
+			if (m_pTextureFactory.valid())
 			{
 				m_pTextureFactory->SetTerrain( m_pTerrains[m_CurrentTerrainIndex[i]] );
 			}

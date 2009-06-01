@@ -69,6 +69,7 @@ typedef signed int      Sint32;
 #include <vector>
 
 #include <osg/Referenced>
+#include <osg/ref_ptr>
 
 //#include "mmgr.h"
 
@@ -108,7 +109,7 @@ namespace Demeter
     class Vector;
 
     /// An abstract factory that allows applications to provide and manage their own terrain textures, rather than letting Demeter manage textures. This is most useful for procedural texture algorithms.
-    class DEMETER_EXPORT TextureFactory
+    class DEMETER_EXPORT TextureFactory: public osg::Referenced
     {
     public:
         virtual ~TextureFactory() { }
@@ -415,7 +416,7 @@ namespace Demeter
         float           m_MaxElevation;
         float           m_OffsetX,m_OffsetY;
         int             m_LatticePositionX,m_LatticePositionY;
-        TextureFactory* m_pTextureFactory;
+        osg::ref_ptr<TextureFactory> m_pTextureFactory;
         TextureSet*     m_pTextureSet;
         float*          m_pTextureMain;
         float*          m_pTextureDetail;
@@ -682,7 +683,7 @@ namespace Demeter
         char*                           m_szExtensionTex;
         char*                           m_szBaseName;
         char*                           m_szDetailTextureName;
-        TextureFactory*                 m_pTextureFactory;
+        osg::ref_ptr<TextureFactory>    m_pTextureFactory;
         int                             m_FactoryTilesWidth;
         int                             m_FactoryTilesHeight;
 		float                           m_fThreshold;

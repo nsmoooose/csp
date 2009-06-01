@@ -1,22 +1,50 @@
+// Combat Simulator Project
+// Copyright (C) 2002-2005 The Combat Simulator Project
+// http://csp.sourceforge.net
+//
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+
 #ifndef __CSPSIM_SDLVIEWER_H__
 #define __CSPSIM_SDLVIEWER_H__
 
-#include <csp/csplib/util/Ref.h>
 #include <osgViewer/Viewer>
+
+union SDL_Event;
 
 namespace csp {
 
-class SDLViewer : public Referenced {
+struct ScreenSettings;
+
+class SDLViewer : public osgViewer::Viewer {
 public:
-	SDLViewer(int width, int height);
-	
-	virtual osgViewer::Viewer* getViewer();
-	
-	void frame();
-	
-private:
-	osgViewer::Viewer m_Viewer;
-	osg::ref_ptr<osgViewer::GraphicsWindowEmbedded> m_GraphicsWindow;
+	bool setUpWindow(const char *caption, const ScreenSettings & screenSettings);
+
+protected:
+	bool setUpViewerAsSDLGraphicsWindow(const char *caption, const ScreenSettings & screenSettings);
+	virtual void eventTraversal();
+	virtual void updateTraversal();
+
+	void pollSdlEvents();
+	bool onCurrentScreenEvent(SDL_Event &event);
+	bool onActiveObjectEvent(SDL_Event &event);
+	void runCurrentScreenInputScript();
+	void runActiveObjectInputScript();
+
+	void updateAtmosphere();
+	void updateObjects();
+	void updateCurrentScreen();
 };
 
 }

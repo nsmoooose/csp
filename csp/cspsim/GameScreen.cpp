@@ -93,8 +93,10 @@ void GameScreen::initInterface()
 	}
 }
 
-GameScreen::GameScreen():
+GameScreen::GameScreen(int screenWidth, int screenHeight):
 	BaseScreen(),
+	m_screenWidth(screenWidth),
+	m_screenHeight(screenHeight),
 	m_ActiveObject(0),
 	m_CameraAgent(new CameraAgent(ViewFactory())),
 	m_CameraCommands(new CameraCommands)
@@ -110,11 +112,9 @@ GameScreen::~GameScreen() {
 void GameScreen::onInit() {
 	// add a layer for overlay text on screen
 	CSPLOG(DEBUG, APP) << "Inside GameScreen::onInit()";
-	const int ScreenWidth = CSPSim::theSim->getSDLScreen()->w;
-	const int ScreenHeight = CSPSim::theSim->getSDLScreen()->h;
 
 	CSPLOG(DEBUG, APP) << "creating ScreenInfoManager";
-	m_ScreenInfoManager = new ScreenInfoManager(ScreenWidth, ScreenHeight);
+	m_ScreenInfoManager = new ScreenInfoManager(m_screenWidth, m_screenHeight);
 	m_ScreenInfoManager->setName("ScreenInfoManager");
 	m_ScreenInfoManager->setStatus("RECORD", false);
 	
@@ -173,9 +173,7 @@ void GameScreen::setActiveObject(Ref<DynamicObject> const &object) {
 		on_View2();
 	}
 	if (object.valid()) {
-		int ScreenWidth = CSPSim::theSim->getSDLScreen()->w;
-		int ScreenHeight = CSPSim::theSim->getSDLScreen()->h;
-		m_ScreenInfoManager->changeObjectStats(ScreenWidth,ScreenHeight,object);
+		m_ScreenInfoManager->changeObjectStats(m_screenWidth, m_screenHeight, object);
 	}
 }
 

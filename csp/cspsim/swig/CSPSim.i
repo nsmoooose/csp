@@ -75,7 +75,6 @@ public:
 	virtual wf::Signal* getConfigurationChangedSignal();
 
 
-	SDL_Surface * getSDLScreen();
 	csp::SimDate & getCurrentTime();
 	void setCurrentTime(csp::SimDate& date);
 	csp::SimTime const & getFrameRate() const;

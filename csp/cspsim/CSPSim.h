@@ -53,7 +53,6 @@
 #ifndef __CSPSIM_H__
 #define __CSPSIM_H__
 
-#include <csp/cspsim/Config.h>
 #include <csp/cspsim/Export.h>
 #include <csp/cspsim/SDLViewer.h>
 #include <csp/csplib/util/Ref.h>
@@ -62,9 +61,6 @@
 #include <csp/cspwf/Signal.h>
 
 #include <osg/ref_ptr>
-
-struct SDL_Surface;
-typedef struct _SDL_Joystick SDL_Joystick;
 
 namespace csp {
 
@@ -119,12 +115,14 @@ public:
 
 	void changeScreen(BaseScreen * newScreen);
 	BaseScreen* getCurrentScreen();
-	SDL_Surface * getSDLScreen() {return m_SDLScreen;};
+
+	const input::InputEvent & getInputEvent() const;
 
 	SimDate & getCurrentTime() { return m_CurrentTime; }
 	void setCurrentTime(SimDate const &);
 		
 	SimTime const & getFrameRate() const{ return m_FrameRate; }
+	SimTime const & getFrameTime() const{ return m_FrameTime; }
 	SimTime const & getElapsedTime() const { return m_ElapsedTime; }
 	
 	void setActiveObject(Ref<DynamicObject> object);
@@ -137,6 +135,7 @@ public:
 	VirtualScene const * getScene() const;
 	Ref<Theater> getTheater() const;
 	Ref<input::EventMapIndex> getInterfaceMaps() const;
+	Ref<input::VirtualHID> getActiveObjectInterface() const;
 
 	void togglePause();
 	bool isPaused() { return m_Paused; }
@@ -147,26 +146,16 @@ public:
 	
 protected:
 
-	void initSim();
-	int initSDL();
-
-	void doInput(double dt, BaseScreen* currentScreen);
-	void updateObjects(double dt);
-	void doStartupScript();
 	void setWfResourceLocator();
 
 private:
-	Ref<SDLViewer> m_Viewer;
+	osg::ref_ptr<SDLViewer> m_Viewer;
 	Ref<wf::WindowManager> m_WindowManager;
 	osg::ref_ptr<osg::Group> m_VirtualSceneGroup;
 	Ref<wf::Signal> m_ConfigurationChanged;
 	
-	SDL_Surface *m_SDLScreen;
-
 	Ref<BaseScreen> m_CurrentScreen;
 	Ref<config::Configuration> m_Configuration;
-
-	ScreenSettings screenSettings;
 
 	bool m_Paused;
 	bool m_Finished;

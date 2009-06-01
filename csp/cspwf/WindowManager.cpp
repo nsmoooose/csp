@@ -35,8 +35,6 @@
 #include <osg/TexEnv>
 #include <osgUtil/IntersectVisitor>
 
-#include <SDL/SDL.h>
-
 namespace csp {
 namespace wf {
 

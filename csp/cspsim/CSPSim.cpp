@@ -88,8 +88,6 @@
 #include <osg/Notify>
 #include <osgAL/SoundManager>
 
-#include <SDL/SDL.h>
-
 #include <csp/csplib/util/undef.h>
 
 namespace csp {
@@ -154,7 +152,7 @@ CSPSim::~CSPSim() {
 
 config::Configuration* CSPSim::getConfiguration() {
 	if(!m_Configuration.valid()) {
-		const ScreenSettings screenSettings = getScreenSettings();
+		const ScreenSettings & screenSettings = getScreenSettings();
 		Ref<config::Display> display = new config::Display(screenSettings.width, screenSettings.height, screenSettings.fullScreen);
 		Ref<config::UserInterface> userInterface = new config::UserInterface(getUILanguage(), getUITheme());
 		m_Configuration = new config::Configuration(display.get(), userInterface.get());
@@ -222,8 +220,7 @@ void CSPSim::setWfResourceLocator() {
 }
 
 osg::Group* CSPSim::getSceneData() {
-	osgViewer::Viewer* viewer = m_Viewer->getViewer();
-	return dynamic_cast<osg::Group*>(viewer->getSceneData());
+	return dynamic_cast<osg::Group*>(m_Viewer->getSceneData());
 }
 
 
@@ -324,21 +321,14 @@ void CSPSim::init() {
 		// elements.
 		setWfResourceLocator();
 
-		if (initSDL()) {
-			::exit(1);  // error already logged
+		const ScreenSettings & screenSettings = getScreenSettings();
+
+		// This is the unified SDLViewer that shall render all the
+		// the scenes.
+		m_Viewer = new SDLViewer();
+		if ( !m_Viewer->setUpWindow("CSPSim", screenSettings) ) {
+			::exit(1);  // Should be an exception
 		}
-
-		//--m_RenderSurface->setWindowRectangle(-1, -1, m_ScreenWidth, m_ScreenHeight);
-		//--m_RenderSurface->setWindowName("CSPSim");
-		//--m_RenderSurface->fullScreen(0);
-		//--m_RenderSurface->realize();
-		SDL_WM_SetCaption("CSPSim", "");
-
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		// should run in its own thread
-		SDL_GL_SwapBuffers();
-		//--m_RenderSurface->swapBuffers();
 
 		m_Clean = false;
 
@@ -348,8 +338,6 @@ void CSPSim::init() {
 		m_InterfaceMaps->loadAllMaps();
 		m_Interface = new input::VirtualHID();
 
-		SDL_GL_SwapBuffers();
-
 		CSPLOG(DEBUG, APP) << "Initializing sound system";
 		SoundEngine::getInstance().initialize();
 		CSPLOG(DEBUG, APP) << "Muting sound";
@@ -357,15 +345,9 @@ void CSPSim::init() {
 		CSPLOG(DEBUG, APP) << "Initializing sound file loader";
 		SoundFileLoader::init();
 
-		// This is the unified SDLViewer that shall render all the
-		// the scenes.
-		m_Viewer = new SDLViewer(screenSettings.width, screenSettings.height);
-
-		osgViewer::Viewer* viewer = m_Viewer->getViewer();
-		
 		// This is the root node that holds the entire scene.
 		osg::ref_ptr<osg::Group> rootNode = new osg::Group();
-		viewer->setSceneData(rootNode.get());
+		m_Viewer->setSceneData(rootNode.get());
 
 		// Add a Virtual Scene node. The purpose of this node is to hold
 		// all the cameras managed by VirtualScene. This node must be the
@@ -413,7 +395,9 @@ void CSPSim::cleanup() {
 	// if you experience problems here, try upgrading openal.
 	SoundEngine::getInstance().shutdown();
 
-	SDL_Quit();
+	// Release OSG Viewer
+	m_Viewer = 0;
+
 	m_Clean = true;
 }
 
@@ -431,6 +415,10 @@ void CSPSim::changeScreen(BaseScreen * newScreen) {
 
 BaseScreen* CSPSim::getCurrentScreen() {
 	return m_CurrentScreen.get();
+}
+
+const input::InputEvent & CSPSim::getInputEvent() const {
+	return *m_InputEvent;
 }
 
 void CSPSim::loadSimulation() {
@@ -454,7 +442,6 @@ void CSPSim::loadSimulation() {
 	
 	if(m_CurrentScreen.valid()) {
 		m_Viewer->frame();
-		SDL_GL_SwapBuffers();
 	}
 	
 	CSPLOG(DEBUG, APP) << "Initializing simulation time";
@@ -477,6 +464,8 @@ void CSPSim::loadSimulation() {
 	}
 
 	setCurrentTime(date);
+
+	const ScreenSettings & screenSettings = getScreenSettings();
 	
 	CSPLOG(DEBUG, APP) << "Initializing theater";
 	std::string theater = g_Config.getPath("Testing", "Theater", "sim:theater.balkan", false);
@@ -501,7 +490,6 @@ void CSPSim::loadSimulation() {
 		m_CurrentScreen->onUpdate(0.0);
 		m_Viewer->frame();
 	}
-	SDL_GL_SwapBuffers();
 
 	CSPLOG(DEBUG, APP) << "Initializing scene graph";
 	m_Scene = new VirtualScene(m_VirtualSceneGroup.get(), screenSettings.width, screenSettings.height);
@@ -512,7 +500,6 @@ void CSPSim::loadSimulation() {
 		m_CurrentScreen->onUpdate(0.0);
 		m_Viewer->frame();
 	}
-	SDL_GL_SwapBuffers();
 
 	// get view parameters from configuration file.  ultimately there should
 	// be an in-game ui for this and probably a separate config file.
@@ -543,7 +530,6 @@ void CSPSim::loadSimulation() {
 		m_CurrentScreen->onUpdate(0.0);
 		m_Viewer->frame();
 	}
-	SDL_GL_SwapBuffers();
 
 	// create the networking layer
 	if (g_Config.getBool("Networking", "UseNetworking", false, true)) {
@@ -587,7 +573,6 @@ void CSPSim::loadSimulation() {
 		m_CurrentScreen->onUpdate(0.0);
 		m_Viewer->frame();
 	}
-	SDL_GL_SwapBuffers();
 
 	CSPLOG(DEBUG, APP) << "Unmuting sound";
 	SoundEngine::getInstance().unmute();
@@ -600,7 +585,7 @@ void CSPSim::loadSimulation() {
 	m_Paused = false;  // enable/disable pause at startup
 
 	// create and initialize screens
-	Ref<GameScreen> gameScreen = new GameScreen;
+	Ref<GameScreen> gameScreen = new GameScreen(screenSettings.width, screenSettings.height);
 	gameScreen->onInit();
 
 	CSPLOG(DEBUG, APP) << "About to change screen to gameScreen";
@@ -635,7 +620,6 @@ void CSPSim::displayLogoScreen() {
 	logoScreen->onInit();
 	
 	m_Viewer->frame();
-	SDL_GL_SwapBuffers();
 
 	changeScreen(logoScreen.get());
 }
@@ -649,12 +633,6 @@ void CSPSim::displayMenuScreen() {
 
 // Main Game loop
 void CSPSim::run() {
-	bool lopri = false;
-	float low_priority = 0.0;
-	int idx = 0;
-	Timer time_object_update;
-	Timer time_render;
-
 	CSPLOG(INFO, APP) << "Entering main simulation loop";
 	try {
 		while (!m_Finished) {
@@ -676,71 +654,14 @@ void CSPSim::run() {
 			updateTime();
 			float dt = m_FrameTime;
 
-			// Do Input loop
-			PROF0(_input);
-			doInput(dt, currentScreen.get());
-			PROF1(_input, 60);
-
-			// Miscellaneous Updates
-			low_priority += dt;
-			lopri = false;
-			if (low_priority > 0.33) {
-				switch (idx++) {
-					case 0:
-						lopri = true;
-						m_Atmosphere->update(low_priority);
-						break;
-					default:
-						idx = 0;
-				}
-				low_priority = 0.0;
-			}
-
-			// Update Objects if sim is not frozen
-			PROF0(_objects);
-			if (!m_Paused) {
-				//CSPLOG(ERROR, APP) << "update objects";
-				time_object_update.start();
-				updateObjects(dt);
-				time_object_update.stop();
-				//CSPLOG(ERROR, APP) << "update objects done";
-			}
-			PROF1(_objects, 60);
-			
-			// Display (render) current Screen
-			if (m_CurrentScreen.valid()) {
-				PROF0(_screen_update);
-				m_CurrentScreen->onUpdate(dt);
-				PROF1(_screen_update, 60);
-				PROF0(_screen_render);
-				time_render.start();
-				if (!g_DisableRender) {
-					m_Viewer->frame();
-				}
-				time_render.stop();
-				PROF1(_screen_render, 60);
-			}
+			m_Viewer->frame();
 
 			if (m_NetworkClient.valid()) {
 				m_NetworkClient->processOutgoing(0.01);
 			}
 
-			// Swap OpenGL buffers
-#ifndef __CSPSIM_EXE__
-			Py_BEGIN_ALLOW_THREADS;
-			//--m_RenderSurface->swapBuffers();
-			SDL_GL_SwapBuffers();
-			Py_END_ALLOW_THREADS;
-#else
-			//--m_RenderSurface->swapBuffers();
-			SDL_GL_SwapBuffers();
-#endif
 			PROF1(_simloop, 30);
 
-			if (time_render.elapsed() + time_object_update.elapsed() > 0.05) {
-				//std::cout << "long frame: update=" << time_object_update.elapsed() << " render=" << time_render.elapsed() << " lo=" << lopri << "\n";
-			}
-			
 			// Check if someone has requested that the simulation should be
 			// unloaded. This usually means that the user wants to go back to
 			// the main menu.
@@ -817,99 +738,6 @@ void CSPSim::updateTime() {
 	}
 }
 
-void CSPSim::doInput(double dt, BaseScreen* currentScreen) {
-	CSPLOG(DEBUG, APP) << "Checking for input events";
-
-	Ref<input::VirtualHID> screen_interface = currentScreen->getInterface();
-
-	SDL_Event event;
-	short doPoll = 10;
-	while (doPoll-- && (*m_InputEvent)(event)) {
-	//while (doPoll-- && SDL_PollEvent(&event)) {
-		bool handled = false;
-		input::HID::translate(event);
-		if (event.type == SDL_QUIT) {
-			m_Finished = true;
-			return;
-		}
-		if (!handled && currentScreen != NULL) {
-			if (screen_interface.valid()) {
-				handled = screen_interface->onEvent(event);
-			}
-		}
-		if (!handled && m_Interface.valid()) {
-			CSPLOG(DEBUG, APP) << "Passing event to the active object";
-			handled = m_Interface->onEvent(event);
-		}
-	}
-
-	// run input scripts
-	if (screen_interface.valid()) {
-		screen_interface->onUpdate(dt);
-	}
-	if (m_Interface.valid()) {
-		m_Interface->onUpdate(dt);
-	}
-}
-
-/**
- * Update all objects, calling physics and AI routines.
- */
-void CSPSim::updateObjects(double dt) {
-	CSPLOG(DEBUG, APP) << "Updating all objects";
-
-	if (m_Battlefield.valid()) {
-		m_Battlefield->update(dt);
-	}
-	if (m_Scene.valid()) {
-		m_Scene->onUpdate(dt);
-	}
-}
-
-
-int CSPSim::initSDL() {
-	CSPLOG(DEBUG, APP) << "Initializing SDL";
-
-	// Get settings from configuration file.
-	screenSettings = getScreenSettings();
-
-	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK) != 0) {
-		std::cerr << "Unable to initialize SDL (" << SDL_GetError() << ")\n";
-		CSPLOG(ERROR, APP) << "Unable to initialize SDL (" << SDL_GetError() << ")";
-		return 1;
-	}
-
-	const SDL_VideoInfo *info = SDL_GetVideoInfo();
-	int bpp = info->vfmt->BitsPerPixel;
-
-	CSPLOG(INFO, APP) << "Initializing video at " << bpp << " bits per pixel.";
-
-	Uint32 flags = SDL_OPENGL | SDL_HWSURFACE | SDL_DOUBLEBUF;
-
-	if (screenSettings.fullScreen) {
-		flags |= SDL_FULLSCREEN;
-	}
-
-	m_SDLScreen = SDL_SetVideoMode(screenSettings.width, screenSettings.height, bpp, flags);
-	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 32);
-	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-
-	if (m_SDLScreen == NULL) {
-		std::cerr << "Unable to set video mode (" << SDL_GetError() << ")\n";
-		CSPLOG(ERROR, APP) << "Unable to set video mode (" << SDL_GetError() << ")";
-		return 1;
-	}
-
-	SDL_JoystickEventState(SDL_ENABLE);
-
-	SDL_EnableUNICODE(1); // TODO: must be an option
-
-	// make sure SDL_Quit gets called when the program exits.
-	atexit(SDL_Quit);
-
-	return 0;
-}
-
 Ref<Theater> CSPSim::getTheater() const {
 	return m_Theater;
 }
@@ -924,6 +752,10 @@ TerrainObject const * CSPSim::getTerrain() const {
 
 Ref<input::EventMapIndex> CSPSim::getInterfaceMaps() const {
 	return m_InterfaceMaps;
+}
+
+Ref<input::VirtualHID> CSPSim::getActiveObjectInterface() const {
+	return m_Interface;
 }
 
 } // namespace csp

@@ -51,7 +51,7 @@ namespace wf {
 
 class GameScreen : public BaseScreen {
 public:
-	GameScreen();
+	GameScreen(int screenWidth, int screenHeight);
 	virtual ~GameScreen();
 
 	virtual void onInit();
@@ -170,6 +170,8 @@ public:
 
 private:
 	size_t m_ViewMode;
+	int m_screenWidth;
+	int m_screenHeight;
 
 	void setCamera(double dt);
 

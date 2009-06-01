@@ -57,11 +57,21 @@ class WindowManager;
 
 typedef std::vector<Ref<Control> > ControlVector;
 
+/** Base struct for event arguments. All events and signals should use this
+ * struct as an argument to the signal function.
+ */
 struct EventArgs {
 	EventArgs() : handled(false) {}
+
+	/** Set this variable to true if you have handled the event and no
+	 * more processing is needed for this event.
+	 */
 	bool handled;
 };
 
+/** Click event arguments. This struct contains the Control that was
+ * clicked and the the mouse coordinates when this happened.
+ */
 struct ClickEventArgs : EventArgs {
 	ClickEventArgs(Control* c, int X, int Y) : control(c), x(X), y(Y) {}
 
@@ -73,6 +83,9 @@ struct HoverEventArgs : EventArgs {
 	int x, y;
 };
 
+/** Arguments for mouse events. Used for mouse movements and base
+ * class for mouse button events.
+ */
 struct MouseEventArgs : EventArgs {
 	MouseEventArgs(Control* c, int X, int Y) :
 		control(c), x(X), y(Y) {}
@@ -81,10 +94,14 @@ struct MouseEventArgs : EventArgs {
 	int x, y;
 };
 
+/** Event arguments when a mouse button is involved. This struct
+ * is typically used when a mouse button has been pressed or released.
+ */
 struct MouseButtonEventArgs : MouseEventArgs {
-	MouseButtonEventArgs(Control* c, int b, int X, int Y) :
-		MouseEventArgs(c, X, Y), button(b) {}
+	MouseButtonEventArgs(Control* c, int b, int X, int Y) : MouseEventArgs(c, X, Y), button(b) {
+	}
 
+	/** The button that has changed state. */
 	int button;
 };
 
@@ -103,10 +120,13 @@ typedef sigc::signal<void, MouseButtonEventArgs&> MouseUpSignal;
  */
 class CSPWF_EXPORT Control : public Referenced, public WeakReferenced {
 public:
+	/** Construct the control with the name of this class. This name is used
+	 * when controls are serialized.
+	 */
 	Control(std::string name);
 	virtual ~Control();
 
-	/** Disposing all resources to free up memory and prepare this object for 
+	/** Disposing all resources to free up memory and prepare this object for
 	 * deletion. All signals is also disposed to break circular references.
 	 * Override this method to dispose other valuable resources (child controls
 	 * or control specific signals).
@@ -114,7 +134,7 @@ public:
 	virtual void dispose();
 
 	/** Returns the id of this control. Each control can be given an unique id
-	 * to be able to find it in the control hierchy using the Container::getById() 
+	 * to be able to find it in the control hierchy using the Container::getById()
 	 * method.
 	 */
 	virtual std::string getId() const;
@@ -123,7 +143,7 @@ public:
 	 */
 	virtual void setId(const std::string& id);
 
-	/** Retreives the name of this class. This name is used together with 
+	/** Retreives the name of this class. This name is used together with
 	 * serialization to be able to instantiate the correct class.
 	 */
 	virtual std::string getName() const;
@@ -131,29 +151,29 @@ public:
 	/** Returns the Container that holds this Control.
 	 */
 	virtual Container* getParent();
-	
+
 	/** Returns the Container that holds this Control.
 	 */
 	virtual const Container* getParent() const;
-	
+
 	/** Sets a new parent for this control. The parent is held using a
 	 * WeakRef to avoid circular references.
 	 */
 	virtual void setParent(Container* parent);
-	
+
 	/** Retreives the WindowManager that this Control belongs to. Note
 	 * that this method may return a NULL value if the Window isn't displayed
 	 * yet.
 	 */
 	virtual WindowManager* getWindowManager();
 
-	/** Returns the CssClass to use for this Control. Each Window holds a map 
+	/** Returns the CssClass to use for this Control. Each Window holds a map
 	 * with named Style objects that you can refer to from any Control. If no
 	 * CssClass is assigned we are using inheritence to build the Style object
 	 * used to render the Control geometry.
 	 */
 	virtual optional<std::string> getCssClass() const;
-	
+
 	/** Sets a new CssClass to use for this Control. */
 	virtual void setCssClass(const optional<std::string>& cssClass);
 
@@ -169,13 +189,13 @@ public:
 
 	virtual const Ref<Style> getStyle() const;
 	virtual Ref<Style> getStyle();
-	
+
 	/** Returns the enabled status of the Control. If the control is disabled it has
 	 * the disabled state added. No click signals are fired either.
 	 */
 	virtual bool getEnabled() const;
-	
-	/** Sets the enabled status of the Control. If the control is disabled the 
+
+	/** Sets the enabled status of the Control. If the control is disabled the
 	 * disabled state is added. No click signals are fired either.
 	 */
 	virtual void setEnabled(bool enabled);
@@ -186,11 +206,11 @@ public:
 	 * you should use the following CssClass: "Label:disabled:hover"
 	 */
 	virtual void addState(const std::string& state);
-	
+
 	/** Removes an existing state from this Control. */
 	virtual void removeState(const std::string& state);
-	
-	/** Retreives all states as a single string. Each state is separated with a : 
+
+	/** Retreives all states as a single string. Each state is separated with a :
 	 * and sorted in alphabetic order.
 	 */
 	virtual std::string getState() const;
@@ -198,11 +218,24 @@ public:
 	/** The following members is signals that any class
 	 * can listen to. */
 	virtual Signal* getClickSignal();
+
+	/** A user has clicked on this control. Click doesn't necesarry means a mouse
+	 * click. It may also be activated by tapping a key on the keyboard. The control
+	 * must also be enabled in order to handle clicking.
+	 */
 	ClickSignal Click;
 	HoverSignal Hover;
 
+	/** Mouse move signal that fires when the mouse is over this control.
+	 */
 	MouseMoveSignal MouseMove;
+
+	/** Mouse button pressed signal that fires when the mouse is over this control.
+	 */
 	MouseDownSignal MouseDown;
+
+	/** Mouse button released signal that fires when the mouse is over this control.
+	 */
 	MouseUpSignal MouseUp;
 
 	/** Fires the click signal. This method is normally called from WindowManager
@@ -239,27 +272,27 @@ public:
 	}
 
 	/** Layout and geometric logic will be suspended. This is very usefull
-	 * when you are changing multiple properties that affect properties like 
+	 * when you are changing multiple properties that affect properties like
 	 * size, width, position etc. When you are finished with your changes
 	 * you should call resumeLayout() for your changes to take effect.
-	 */ 
+	 */
 	virtual void suspendLayout();
-	
+
 	/** Resumes layout of your controls. All changes you make to properties
 	 * like size, width, position etc will take effect immediatly.
 	 */
 	virtual void resumeLayout();
-	
+
 	/** Performs all pending layout and geometric changes. It generates all
-	 * geometry that is used to display the Control. It is called just before 
+	 * geometry that is used to display the Control. It is called just before
 	 * the window is displayed.
 	 */
 	virtual void performLayout();
-	
-	/** Returns true if layout has been suspended. 
+
+	/** Returns true if layout has been suspended.
 	 */
 	virtual bool layoutSuspended();
-	
+
 	void updateMatrix();
 
 protected:
@@ -282,12 +315,9 @@ private:
 	bool m_Visible;
 
 	Ref<Signal> m_ClickSignal;
-
 };
 
 } // namespace wf
 } // namespace csp
 
 #endif // __CSPSIM_WF_CONTROL_H__
-
-

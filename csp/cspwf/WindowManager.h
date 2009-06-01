@@ -44,30 +44,68 @@ namespace wf {
 
 class Serialization;
 
+/** Class that handles all windows opened.
+ * It is responsible for how windows are opened and closed. It is also
+ * responsible for sending all events to the right control. This class is abstract
+ * and doesn't provide a full implementation. WindowManagerViewer is a
+ * full implementation and can be used with osgViewer::Viewer based source code.
+ */
 class CSPWF_EXPORT WindowManager : public Referenced, public WeakReferenced {
 public:
 	WindowManager(int width, int height);
 	virtual ~WindowManager();
-	
+
+	/** Fires the click event on proper control. Arguments are in screen
+	 * coordinates. */
 	virtual bool onClick(int x, int y);
+
+	/** Fires the mouse move event on proper controls. Arguments are in screen
+	 * coordinates. */
 	virtual bool onMouseMove(int x, int y);
+
+	/** Fires the mouse button down event. Arguments are in screen
+	 * coordinates. */
 	virtual bool onMouseDown(int x, int y, int button);
+
+	/** Fires the mouse button released event. Arguments are in screen
+	 * coordinates. */
 	virtual bool onMouseUp(int x, int y, int button);
 
+	/** Does the layout process for a window. This is normally only done
+	 * once but can be called several times when the screen has been resized.
+	 */
 	virtual void performLayout(Window* window);
-	
+
+	/** Shows the window sent as an argument.
+	 */
 	virtual void show(Window* window);
+
+	/** Closes the window. Note that a window is not usable after it has been
+	 * closed. A close means that all resources and child controls are disposed
+	 * and the window will be deleted when the ref count is zero.
+	 */
 	virtual void close(Window* window);
+
+	/** Closes all windows.
+	 */
 	virtual void closeAll();
-	
+
+	/** Returns the screen size as the window manager knows it.
+	 */
 	virtual Size getScreenSize() const;
-	
+
+	/** Returns the window by searching for the id. If the window isn't found
+	 * NULL is returned.
+	 */
 	virtual Window* getById(const std::string& id);
 
 	virtual Point getMousePosition() const;
+
+	/** Returns the control at the specified screen coordinates.
+	 */
 	virtual Control* getControlAtPosition(int x, int y)=0;
-	
-	template <class Type> 
+
+	template <class Type>
 	bool windowIsOpen() const {
 		WindowVector::const_iterator window = m_Windows.begin();
 		for(;window != m_Windows.end();++window) {
@@ -76,7 +114,7 @@ public:
 		}
 		return false;
 	}
-	
+
 	template <class Type>
 	Ref<Type> getWindowByType() {
 		WindowVector::const_iterator window = m_Windows.begin();
@@ -86,7 +124,7 @@ public:
 		}
 		return Ref<Type>();
 	}
-	
+
 	template <class Type>
 	void closeByType() {
 		Ref<Type> window = getWindowByType<Type>();
@@ -95,25 +133,25 @@ public:
 			window = getWindowByType<Type>();
 		}
 	}
-	
+
 	bool isAnyWindowOpen() {
 		return m_Windows.size() > 0;
 	}
-		
+
 protected:
 	int m_ScreenWidth;
 	int m_ScreenHeight;
 	osg::ref_ptr<osg::Group> m_Group;
 
 	WindowVector m_Windows;
-	
+
 	// This is the control that the mouse is currently hovering above.
 	Ref<Control> m_HoverControl;
 	Point m_MousePosition;
-	
+
 	void removeStateAndRebuildGeometry(const std::string& state, Control* control);
 	void addStateAndRebuildGeometry(const std::string& state, Control* control);
-	
+
 	void calculateScreenSizeAndScale(Size& size, float& scale) const;
 
 	virtual osg::Group* getWindowNode();

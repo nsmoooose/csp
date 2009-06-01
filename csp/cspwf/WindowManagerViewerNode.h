@@ -9,9 +9,18 @@
 namespace csp {
 namespace wf {
 
+/** Osg node class to insert the entire window manager into the tree.
+ * This is usable when you want to create the window manager and attach
+ * it to the scene graph.
+ * This class will also create the WindowManagerViewer instance for you
+ * with the width and height specified in the constructor.
+ */
 class CSPWF_EXPORT WindowManagerViewerNode : public osg::Group {
 public:
 		WindowManagerViewerNode(int width, int height);
+
+		/** Returns the window manager.
+		 */
 		virtual Ref<WindowManagerViewer> getWindowManager();
 
 private:

@@ -29,12 +29,17 @@ namespace wf {
 
 class WindowManagerViewer;
 
+/** Default event handler to be used with osgGA and osgViewer::Viewer
+ * classes. It will forward all mouse and screen resize events into
+ * the window manager specified in the constructor.
+ */
 class CSPWF_EXPORT WindowManagerEventHandler : public osgGA::GUIEventHandler {
 public:
 	WindowManagerEventHandler(WindowManagerViewer* windowManager);
 	virtual ~WindowManagerEventHandler();
 
-	virtual bool handle(const osgGA::GUIEventAdapter& ea,osgGA::GUIActionAdapter&, osg::Object*, osg::NodeVisitor*);
+	virtual bool handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter&, osg::Object*, osg::NodeVisitor*);
+
 private:
 	Ref<WindowManagerViewer> m_WindowManager;
 };

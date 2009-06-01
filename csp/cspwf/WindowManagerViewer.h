@@ -34,6 +34,7 @@ namespace osg {
 namespace csp {
 namespace wf {
 
+/** Window manager implementation to be used with osgViewer::Viewer rendering. */
 class CSPWF_EXPORT WindowManagerViewer : public WindowManager {
 public:
 	WindowManagerViewer(int width=1024, int height=768);
@@ -57,4 +58,3 @@ private:
 } // namespace csp
 
 #endif // __CSPSIM_WF_WINDOWMANAGERVIEWER_H__
-

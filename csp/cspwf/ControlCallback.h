@@ -30,13 +30,21 @@
 
 namespace csp {
 namespace wf {
-	
+
 class Control;
 
+/** Callback attached to controls for hit detection. Used
+ * to identify the control that is clicked upon. When clicking is
+ * performed the window manager will try to identify the update
+ * callback and then call the getControl() method to retrieve
+ * the control.
+ */
 class ControlCallback: public osg::NodeCallback {
 public:
 	ControlCallback(Control* control);
-	
+
+	/** Returns the control assigned to this callback.
+	 */
 	Control* getControl();
 
 private:

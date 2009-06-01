@@ -33,7 +33,7 @@ namespace wf {
 /** A class that represents a button.
  *
  *  A button is a widget that can be pressed by the user with the mouse.
- *  
+ *
  */
 class CSPWF_EXPORT Button : public SingleControlContainer {
 public:
@@ -41,16 +41,19 @@ public:
 	virtual ~Button();
 
 	virtual void performLayout();
-	
+
+	/** Sets the text of the Button control. */
 	virtual const std::string getText() const;
+
+	/** Returns the text of the Button control. */
 	virtual void setText(const std::string& text);
-	
+
 	template<class Archive>
 	void serialize(Archive & ar)	{
 		SingleControlContainer::serialize(ar);
 		ar & make_nvp("@Text", m_text);
 	}
-	
+
 private:
 
 	std::string m_text;

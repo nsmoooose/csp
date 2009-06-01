@@ -62,11 +62,15 @@ class TabPage;
 class TabHeader;
 class Window;
 
+/** Class that is responsible for generating geometry for the basic control properties.
+ * All properties that exists with the Style object will turn into osg nodes here. Special
+ * geometry for buttons, listboxes etc are created here.
+ */
 class ControlGeometryBuilder {
 public:
 	ControlGeometryBuilder();
 	virtual ~ControlGeometryBuilder();
-	
+
 	virtual void buildControl(osg::Geode* geode, float& z, const Style* style, const Control* control) const;
 	virtual osg::Group* buildButton(const Button* button) const;
 	virtual osg::Group* buildCheck(const Check* check) const;
@@ -95,7 +99,7 @@ private:
 		float x1, float y1, float x2, float y2, float z, float lineWidth,
 		const osg::Vec4& outerColor, const osg::Vec4& innerColor,
 		bool left=true, bool top=true, bool right=true, bool bottom=true) const;
-		
+
 	virtual osgText::Text* buildText(const std::string& text, const std::string& fontFamily, float fontSize, osg::Vec4& color) const;
 };
 

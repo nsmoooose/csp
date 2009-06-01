@@ -37,6 +37,15 @@ class ResourceLocator;
 
 typedef std::map<std::string, std::string> StringMap;
 
+/** Hold strings for localization of texts. All texts that are used in
+ * the user interface will need to be localized to a local language.
+ * So a Label control can have the following text assigned: ${instant_action}.
+ * When the text is going to be displayed the instant_action will be
+ * replaced with a proper text from this class.
+ *
+ * String tables are usually placed into their own xml files and is
+ * serialized into this class.
+ */
 class CSPWF_EXPORT StringResourceManager : public Referenced {
 public:
 	StringResourceManager();

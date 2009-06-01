@@ -25,46 +25,50 @@
 #include <csp/csplib/util/Ref.h>
 #include <csp/cspwf/Style.h>
 
-namespace csp {
+namespace {
+	using namespace csp;
+	using namespace csp::wf;
 
-namespace wf {
-	
-struct StyleEqualComparer {
-	StyleEqualComparer(Style* lhs, Style* rhs) : 
-		equal(true), m_lhs(lhs), m_rhs(rhs) {}
-	
-	template<class T>
-	StyleEqualComparer* operator &(std::pair<std::string, T*> nvp) {
-		size_t offset = reinterpret_cast<const char*>(nvp.second) - reinterpret_cast<const char*>(m_rhs.get());
-		const T* lhs_property = reinterpret_cast<const T*>(reinterpret_cast<const char*>(m_lhs.get()) + offset);
+	struct StyleEqualComparer {
+		StyleEqualComparer(Style* lhs, Style* rhs) :
+			equal(true), m_lhs(lhs), m_rhs(rhs) {}
 
-		if(!lhs_property->equals(*nvp.second)) {
-			equal = false;
+		template<class T>
+		StyleEqualComparer* operator &(std::pair<std::string, T*> nvp) {
+			size_t offset = reinterpret_cast<const char*>(nvp.second) - reinterpret_cast<const char*>(m_rhs.get());
+			const T* lhs_property = reinterpret_cast<const T*>(reinterpret_cast<const char*>(m_lhs.get()) + offset);
+
+			if(!lhs_property->equals(*nvp.second)) {
+				equal = false;
+			}
+
+			return this;
 		}
-		
-		return this;
-	}
-	
-	bool equal;
-	Ref<Style> m_lhs;
-	Ref<Style> m_rhs;
-};
 
-struct StyleCloner {
-	StyleCloner(Style* from, Style* to) : m_from(from), m_to(to) {}
-	
-	template<class T>
-	StyleCloner* operator &(std::pair<std::string, T*> nvp) {
-		size_t offset = reinterpret_cast<const char*>(nvp.second) - reinterpret_cast<const char*>(m_from.get());
-		T* to_property = reinterpret_cast<T*>(reinterpret_cast<char*>(m_to.get()) + offset);
+		bool equal;
+		Ref<Style> m_lhs;
+		Ref<Style> m_rhs;
+	};
 
-		(*to_property) = *nvp.second;
-		return this;
-	}
-	
-	Ref<Style> m_from;
-	Ref<Style> m_to;
-};
+	struct StyleCloner {
+		StyleCloner(Style* from, Style* to) : m_from(from), m_to(to) {}
+
+		template<class T>
+		StyleCloner* operator &(std::pair<std::string, T*> nvp) {
+			size_t offset = reinterpret_cast<const char*>(nvp.second) - reinterpret_cast<const char*>(m_from.get());
+			T* to_property = reinterpret_cast<T*>(reinterpret_cast<char*>(m_to.get()) + offset);
+
+			(*to_property) = *nvp.second;
+			return this;
+		}
+
+		Ref<Style> m_from;
+		Ref<Style> m_to;
+	};
+}
+
+namespace csp {
+namespace wf {
 
 optional<std::string> Style::getFontFamily() const {
 	return fontFamily;
@@ -97,7 +101,7 @@ optional<std::string> Style::getTextHorizontalAlign() const {
 void Style::setTextHorizontalAlign(const optional<std::string>& value) {
 	textHorizontalAlign = value;
 }
-	
+
 optional<std::string> Style::getTextVerticalAlign() const {
 	return textVerticalAlign;
 }
@@ -120,7 +124,7 @@ optional<osg::Vec4> Style::getBackgroundColorTopLeft() const {
 
 void Style::setBackgroundColorTopLeft(const optional<osg::Vec4>& value) {
 	backgroundColorTopLeft = value;
-} 
+}
 
 optional<osg::Vec4> Style::getBackgroundColorTopRight() const {
 	return backgroundColorTopRight;
@@ -145,7 +149,7 @@ optional<osg::Vec4> Style::getBackgroundColorBottomRight() const {
 void Style::setBackgroundColorBottomRight(const optional<osg::Vec4>& value) {
 	backgroundColorBottomRight = value;
 }
-	
+
 optional<std::string> Style::getBackgroundImage() const {
 	return backgroundImage;
 }
@@ -160,8 +164,8 @@ optional<float> Style::getBorderWidth() const {
 
 void Style::setBorderWidth(const optional<float>& value) {
 	borderWidth = value;
-} 
- 
+}
+
 optional<float> Style::getBorderTopWidth() const {
 	return borderTopWidth;
 }
@@ -176,7 +180,7 @@ optional<float> Style::getBorderBottomWidth() const {
 
 void Style::setBorderBottomWidth(const optional<float>& value) {
 	borderBottomWidth = value;
-} 
+}
 
 optional<float> Style::getBorderLeftWidth() const {
 	return borderLeftWidth;
@@ -184,15 +188,15 @@ optional<float> Style::getBorderLeftWidth() const {
 
 void Style::setBorderLeftWidth(const optional<float>& value) {
 	borderLeftWidth = value;
-} 
-	 
+}
+
 optional<float> Style::getBorderRightWidth() const {
 	return borderRightWidth;
 }
 
 void Style::setBorderRightWidth(const optional<float>& value) {
 	borderRightWidth = value;
-} 
+}
 
 optional<osg::Vec4> Style::getBorderColor() const {
 	return borderColor;
@@ -200,7 +204,7 @@ optional<osg::Vec4> Style::getBorderColor() const {
 
 void Style::setBorderColor(const optional<osg::Vec4>& value) {
 	borderColor = value;
-} 
+}
 
 optional<osg::Vec4> Style::getBorderTopColor() const {
 	return borderTopColor;
@@ -208,7 +212,7 @@ optional<osg::Vec4> Style::getBorderTopColor() const {
 
 void Style::setBorderTopColor(const optional<osg::Vec4>& value) {
 	borderTopColor = value;
-} 
+}
 
 optional<osg::Vec4> Style::getBorderBottomColor() const {
 	return borderBottomColor;
@@ -216,7 +220,7 @@ optional<osg::Vec4> Style::getBorderBottomColor() const {
 
 void Style::setBorderBottomColor(const optional<osg::Vec4>& value) {
 	borderBottomColor = value;
-} 
+}
 
 optional<osg::Vec4> Style::getBorderLeftColor() const {
 	return borderLeftColor;
@@ -224,7 +228,7 @@ optional<osg::Vec4> Style::getBorderLeftColor() const {
 
 void Style::setBorderLeftColor(const optional<osg::Vec4>& value) {
 	borderLeftColor = value;
-} 
+}
 
 optional<osg::Vec4> Style::getBorderRightColor() const {
 	return borderRightColor;
@@ -257,7 +261,7 @@ optional<bool> Style::getVisible() const {
 void Style::setVisible(const optional<bool>& value) {
 	visible = value;
 }
-	
+
 optional<Style::UnitValue> Style::getLeft() const {
 	return left;
 }
@@ -299,7 +303,7 @@ bool Style::operator!=(const Style& style) const {
 }
 
 bool Style::equals(const Style* style) const {
-	// The StyleEqualComparer is dependent on the serialize method that isn't 
+	// The StyleEqualComparer is dependent on the serialize method that isn't
 	// const. But we know that we aren't changing anything so we removes the
 	// const to make it compile.
 	Style* rhs = const_cast<Style*>(style);
@@ -316,8 +320,7 @@ Ref<Style> Style::clone() const {
 	StyleCloner cloner(from, to.get());
 	from->serialize(cloner);
 	return to;
-}		
+}
 
 } // namespace wf
-
 } // namespace csp

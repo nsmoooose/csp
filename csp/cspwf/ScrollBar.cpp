@@ -82,6 +82,14 @@ void ScrollBar::setValue(float value) {
 		return;
 	}
 
+	if(value > m_Maximum) {
+		value = m_Maximum;
+	}
+
+	if(value < m_Minimum) {
+		value = m_Minimum;
+	}
+
 	ScrollEventArgs event(m_Value, value);
 	m_Value = value;
 	onScroll(event);
@@ -104,21 +112,22 @@ void ScrollBar::setMaximum(float maximum) {
 }
 
 void ScrollBar::onScroll(ScrollEventArgs& event) {
+	CSPLOG(DEBUG, APP) << "Signal Scroll on csp::wf::" << getName().c_str();
 	Scroll(event);
 }
 
-void ScrollBar::handleClickToMin(ClickEventArgs& /*event*/) {
-	std::cout << "Click" << std::endl;
-
-	if((getValue() - 1.0) >= getMinimum()) {
-		setValue(getValue() - 1.0);
+void ScrollBar::handleClickToMin(ClickEventArgs& event) {
+	if((getValue() - 1.0f) >= getMinimum()) {
+		setValue(getValue() - 1.0f);
 	}
+	event.handled = true;
 }
 
-void ScrollBar::handleClickToMax(ClickEventArgs& /*event*/) {
-	if((getValue() + 1.0) >= getMaximum()) {
-		setValue(getValue() + 1.0);
+void ScrollBar::handleClickToMax(ClickEventArgs& event) {
+	if((getValue() + 1.0f) <= getMaximum()) {
+		setValue(getValue() + 1.0f);
 	}
+	event.handled = true;
 }
 
 HorizontalScrollBar::HorizontalScrollBar() :

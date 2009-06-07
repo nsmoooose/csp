@@ -124,6 +124,9 @@ Ref<Window> createWindow() {
 }
 
 int main(int, char**) {
+	log().setCategories(cLogCategory_ALL);
+	log().setPriority(cLogPriority_DEBUG);
+
 	// Make sure that the windowing framework can external files.
 	// For example fonts.
 	Ref<csp::wf::ResourceLocator> resourceLocator = new csp::wf::ResourceLocator();

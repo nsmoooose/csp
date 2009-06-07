@@ -39,7 +39,7 @@ namespace wf {
 
 Control::Control(std::string name) :
 	m_Name(name),
-	m_Enabled(true), m_TransformGroup(new osg::MatrixTransform), 
+	m_Enabled(true), m_TransformGroup(new osg::MatrixTransform),
 	m_ZPos(1.0), m_Style(new Style), m_ClickSignal(new Signal)
 {
 	// Attach a control callback to the control. This makes it possible
@@ -47,9 +47,12 @@ Control::Control(std::string name) :
 	// coordinate.
 	osg::ref_ptr<ControlCallback> callback = new ControlCallback(this);
 	m_TransformGroup->setUpdateCallback(callback.get());
+
+	CSPLOG(DEBUG, APP) << "Creating csp::wf::" << name.c_str();
 }
 
 Control::~Control() {
+	CSPLOG(DEBUG, APP) << "Destroing csp::wf::" << getName().c_str();
 }
 
 void Control::dispose() {
@@ -165,7 +168,7 @@ void Control::removeState(const std::string& state) {
 
 std::string Control::getState() const {
 	// Make a local copy of the state. We wish to add all
-	// state that is inherited from the parent control. 
+	// state that is inherited from the parent control.
 	StateSet copy = m_States;
 	if(!getEnabled()) {
 		copy.insert("disabled");
@@ -205,6 +208,7 @@ void Control::onClick(ClickEventArgs& event) {
 		return;
 	}
 
+	CSPLOG(DEBUG, APP) << "Signal Click on csp::wf::" << getName().c_str();
 	Click(event);
 	if(event.handled == false) {
 		Control* parent = getParent();
@@ -218,6 +222,7 @@ void Control::onClick(ClickEventArgs& event) {
 }
 
 void Control::onHover(HoverEventArgs& event) {
+	CSPLOG(DEBUG, APP) << "Signal MouseHover on csp::wf::" << getName().c_str();
 	Hover(event);
 	if(event.handled == false) {
 		Control* parent = getParent();
@@ -228,6 +233,7 @@ void Control::onHover(HoverEventArgs& event) {
 }
 
 void Control::onMouseMove(MouseEventArgs& event) {
+	CSPLOG(DEBUG, APP) << "Signal MouseMove on csp::wf::" << getName().c_str();
 	MouseMove(event);
 	if(event.handled == false) {
 		Control* parent = getParent();
@@ -238,6 +244,7 @@ void Control::onMouseMove(MouseEventArgs& event) {
 }
 
 void Control::onMouseDown(MouseButtonEventArgs& event) {
+	CSPLOG(DEBUG, APP) << "Signal MouseDown on csp::wf::" << getName().c_str();
 	MouseDown(event);
 	if(event.handled == false) {
 		Control* parent = getParent();
@@ -248,6 +255,7 @@ void Control::onMouseDown(MouseButtonEventArgs& event) {
 }
 
 void Control::onMouseUp(MouseButtonEventArgs& event) {
+	CSPLOG(DEBUG, APP) << "Signal MouseUp on csp::wf::" << getName().c_str();
 	MouseUp(event);
 	if(event.handled == false) {
 		Control* parent = getParent();
@@ -274,7 +282,7 @@ void Control::performLayout() {
 		const Size controlSize = getSize();
 		const int parentWidth = static_cast<int>(m_Parent->getClientRect().width());
 		const int parentHeight = static_cast<int>(m_Parent->getClientRect().height());
-		 
+
 		Ref<Style> controlStyle = StyleBuilder::buildStyle(this);
 		Ref<Style> style = getStyle();
 		if(controlStyle->getHorizontalAlign()) {
@@ -287,7 +295,7 @@ void Control::performLayout() {
 			else if(*controlStyle->horizontalAlign == "right") {
 				style->setLeft(Style::UnitValue(Style::Pixels, parentWidth - controlSize.width));
 			}
-		} 
+		}
 		if(controlStyle->verticalAlign) {
 			if(*controlStyle->verticalAlign == "top") {
 				style->setTop(Style::UnitValue(Style::Pixels, 0));

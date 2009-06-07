@@ -28,24 +28,34 @@
 #include <csp/cspwf/Container.h>
 
 namespace csp {
-
 namespace wf {
 
-/** Base class for all scroll buttons. Make sure that the 
- * layout logic is called for all buttons. 
+/** Event raised when scrolling.
+ */
+struct ScrollEventArgs : EventArgs {
+	float oldValue;
+	float newValue;
+
+	ScrollEventArgs(float oldV, float newV) : oldValue(oldV), newValue(newV) {}
+};
+
+typedef sigc::signal<void, ScrollEventArgs&> ScrollSignal;
+
+/** Base class for all scroll buttons. Make sure that the
+ * layout logic is called for all buttons.
  */
 class CSPWF_EXPORT ScrollButton : public Control {
 public:
 	ScrollButton(const char* name);
-	
+
 	virtual void performLayout();
 };
 
-/** A button placed to the left in a horizontal scrollbar. 
+/** A button placed to the left in a horizontal scrollbar.
  * Used to scroll content to the left. The purpose of this
  * class is to make the button styleable using the name of
  * this class.
- */  	
+ */
 class CSPWF_EXPORT ScrollLeftButton : public ScrollButton {
 public:
 	ScrollLeftButton();
@@ -82,21 +92,32 @@ public:
 };
 
 /** Base class for scrollbars with all shared functionality.
- */ 
+ */
 class CSPWF_EXPORT ScrollBar : public Container {
 public:
 	ScrollBar(std::string name);
 
 	float getValue() const;
 	void setValue(float value);
-	
+
 	float getMinimum() const;
 	void setMinimum(float minimum);
-	
+
 	float getMaximum() const;
 	void setMaximum(float maximum);
-	
+
+	ScrollSignal Scroll;
+
 	virtual void performLayout();
+
+protected:
+
+	/** Fires the scroll signal.
+	 */
+	virtual void onScroll(ScrollEventArgs& event);
+
+	virtual void handleClickToMin(ClickEventArgs& event);
+	virtual void handleClickToMax(ClickEventArgs& event);
 
 private:
 	float m_Value;
@@ -108,10 +129,10 @@ private:
 class CSPWF_EXPORT VerticalScrollBar : public ScrollBar {
 public:
 	VerticalScrollBar();
-	
+
 	virtual void layoutChildControls();
 	virtual ControlVector getChildControls();
-	
+
 private:
 	Ref<ScrollUpButton> m_ScrollUpButton;
 	Ref<ScrollDownButton> m_ScrollDownButton;
@@ -124,7 +145,7 @@ public:
 
 	virtual void layoutChildControls();
 	virtual ControlVector getChildControls();
-	
+
 private:
 	Ref<ScrollLeftButton> m_ScrollLeftButton;
 	Ref<ScrollRightButton> m_ScrollRightButton;

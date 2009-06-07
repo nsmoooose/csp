@@ -24,7 +24,7 @@
 
 #include <csp/cspwf/ScrollBar.h>
 #include <csp/cspwf/ControlGeometryBuilder.h>
-
+#include <iostream>
 #include <osg/Group>
 
 namespace csp {
@@ -35,8 +35,8 @@ ScrollButton::ScrollButton(const char* name) : Control(name) {}
 
 void ScrollButton::performLayout() {
 	// Make sure that all our child controls onInit() is called.
-	Control::performLayout();	
-	
+	Control::performLayout();
+
 	ControlGeometryBuilder geometryBuilder;
 	osg::ref_ptr<osg::Group> group = geometryBuilder.buildGenericControl(this);
 	getNode()->addChild(group.get());
@@ -50,15 +50,15 @@ ScrollUpButton::ScrollUpButton() : ScrollButton("ScrollUpButton") {}
 
 ScrollDownButton::ScrollDownButton() : ScrollButton("ScrollDownButton") {}
 
-ScrollBar::ScrollBar(std::string name) : 
-	Container(name), m_Value(0.0f), m_Minimum(0.0f), 
+ScrollBar::ScrollBar(std::string name) :
+	Container(name), m_Value(0.0f), m_Minimum(0.0f),
 	m_Maximum(10.0f) {
 }
 
 void ScrollBar::performLayout() {
 	// Make sure that all our child controls onInit() is called.
-	Container::performLayout();	
-	
+	Container::performLayout();
+
 	osg::Group* group = getNode();
 
 	ControlGeometryBuilder geometryBuilder;
@@ -78,7 +78,13 @@ float ScrollBar::getValue() const {
 }
 
 void ScrollBar::setValue(float value) {
+	if(value == m_Value) {
+		return;
+	}
+
+	ScrollEventArgs event(m_Value, value);
 	m_Value = value;
+	onScroll(event);
 }
 
 float ScrollBar::getMinimum() const {
@@ -97,13 +103,34 @@ void ScrollBar::setMaximum(float maximum) {
 	m_Maximum = maximum;
 }
 
-HorizontalScrollBar::HorizontalScrollBar() : 
+void ScrollBar::onScroll(ScrollEventArgs& event) {
+	Scroll(event);
+}
+
+void ScrollBar::handleClickToMin(ClickEventArgs& /*event*/) {
+	std::cout << "Click" << std::endl;
+
+	if((getValue() - 1.0) >= getMinimum()) {
+		setValue(getValue() - 1.0);
+	}
+}
+
+void ScrollBar::handleClickToMax(ClickEventArgs& /*event*/) {
+	if((getValue() + 1.0) >= getMaximum()) {
+		setValue(getValue() + 1.0);
+	}
+}
+
+HorizontalScrollBar::HorizontalScrollBar() :
 	ScrollBar("HorizontalScrollBar"),
 	m_ScrollLeftButton(new ScrollLeftButton),
 	m_ScrollRightButton(new ScrollRightButton) {
 
 	m_ScrollLeftButton->setParent(this);
 	m_ScrollRightButton->setParent(this);
+
+	m_ScrollLeftButton->Click.connect(sigc::mem_fun(this, &HorizontalScrollBar::handleClickToMin));
+	m_ScrollRightButton->Click.connect(sigc::mem_fun(this, &HorizontalScrollBar::handleClickToMax));
 }
 
 void HorizontalScrollBar::layoutChildControls() {
@@ -117,13 +144,16 @@ ControlVector HorizontalScrollBar::getChildControls() {
 	return childControls;
 }
 
-VerticalScrollBar::VerticalScrollBar() : 
-	ScrollBar("VerticalScrollBar"), 
+VerticalScrollBar::VerticalScrollBar() :
+	ScrollBar("VerticalScrollBar"),
 	m_ScrollUpButton(new ScrollUpButton),
 	m_ScrollDownButton(new ScrollDownButton) {
 
 	m_ScrollUpButton->setParent(this);
 	m_ScrollDownButton->setParent(this);
+
+	m_ScrollUpButton->Click.connect(sigc::mem_fun(this, &VerticalScrollBar::handleClickToMin));
+	m_ScrollDownButton->Click.connect(sigc::mem_fun(this, &VerticalScrollBar::handleClickToMax));
 }
 
 void VerticalScrollBar::layoutChildControls() {

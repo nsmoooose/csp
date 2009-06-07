@@ -78,6 +78,16 @@ void addStyleSheetToWindow(Window* window) {
 	window->addNamedStyle("ScrollDownButton", scrollDownStyle.get());
 }
 
+void handleVerticalScroll(ScrollEventArgs& event) {
+	std::cout << "Vertical scroll position changed from: " <<
+		event.oldValue << " to: " << event.newValue << std::endl;
+}
+
+void handleHorizontalScroll(ScrollEventArgs& event) {
+	std::cout << "Horizontal scroll position changed from: " <<
+		event.oldValue << " to: " << event.newValue << std::endl;
+}
+
 Ref<Window> createWindow() {
 	// Create a window. A window can only contain a single
 	// control that will span the entire width and height of
@@ -95,15 +105,17 @@ Ref<Window> createWindow() {
 	vertical->getStyle()->setHeight(Style::UnitValue(Style::Pixels, 378));
 	vertical->getStyle()->setTop(Style::UnitValue(Style::Pixels, 0));
 	vertical->getStyle()->setHorizontalAlign(std::string("right"));
+	vertical->Scroll.connect(sigc::ptr_fun(handleVerticalScroll));
 	container->addControl(vertical.get());
 
 	Ref<HorizontalScrollBar> horizontal = new HorizontalScrollBar();
 	horizontal->getStyle()->setWidth(Style::UnitValue(Style::Pixels, 578));
 	horizontal->getStyle()->setLeft(Style::UnitValue(Style::Pixels, 0));
 	horizontal->getStyle()->setVerticalAlign(std::string("bottom"));
+	horizontal->Scroll.connect(sigc::ptr_fun(handleHorizontalScroll));
 	container->addControl(horizontal.get());
 
-	// For the simplicity of this example we add a single 
+	// For the simplicity of this example we add a single
 	// label control to the container. Since we have added a width
 	// and a height it is now possible to use alignment.
 	Ref<Label> label = new Label();
@@ -143,7 +155,7 @@ int main(int, char**) {
     viewer.addEventHandler(new osgViewer::StatsHandler());
 	viewer.addEventHandler(new osgViewer::HelpHandler());
 	viewer.addEventHandler(new WindowManagerEventHandler(windowManager.get()));
-    
+
 	osg::ref_ptr<osg::Group> group = new osg::Group;
 	group->addChild(windowManager->getRootNode().get());
     viewer.setSceneData(group.get());

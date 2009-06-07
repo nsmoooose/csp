@@ -118,7 +118,7 @@ typedef sigc::signal<void, MouseButtonEventArgs&> MouseUpSignal;
  *  window framework.
  *
  */
-class CSPWF_EXPORT Control : public Referenced, public WeakReferenced {
+class CSPWF_EXPORT Control : public Referenced, public WeakReferenced, public sigc::trackable {
 public:
 	/** Construct the control with the name of this class. This name is used
 	 * when controls are serialized.

@@ -239,8 +239,11 @@ void ControlGeometryBuilder::buildControl(osg::Geode* geode, float& z, const Sty
 		if (resourceLocator->locateResource(filePath)) {
 			image = osgDB::readImageFile(filePath);
 			if(!image.valid()) {
-				CSPLOG(ERROR, APP) << WF_FILENOTFOUND << filePath;
+				CSPLOG(ERROR, APP) << "Failed to read file: " << filePath;
 			}
+		}
+		else {
+			CSPLOG(ERROR, APP) << WF_FILENOTFOUND << filePath;
 		}
 
 		// If we succeeded with loading of the texture then we

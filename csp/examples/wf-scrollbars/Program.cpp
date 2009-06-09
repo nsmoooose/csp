@@ -31,50 +31,59 @@ void addStyleSheetToWindow(Window* window) {
 	// Independent on how many we create we know that they will
 	// have the same width and background color.
 	Ref<Style> verticalStyle = new Style();
-	verticalStyle->setWidth(Style::UnitValue(Style::Pixels, 20));
-	verticalStyle->setBackgroundColor(osg::Vec4(0.8, 0.8, 0.8, 1.0));
+	verticalStyle->setWidth(Style::UnitValue(Style::Pixels, 22));
+	verticalStyle->setBackgroundColor(osg::Vec4(1.0, 1.0, 1.0, 1.0));
+	verticalStyle->setBorderWidth(1.0);
+	verticalStyle->setBorderColor(osg::Vec4(0.8, 0.8, 0.8, 1.0));
 	window->addNamedStyle("VerticalScrollBar", verticalStyle.get());
 
 	// This is the css class of a horizontal scrollbar.
 	// Independent on how many we create we know that they will
 	// have the same width and background color.
 	Ref<Style> horizontalStyle = new Style();
-	horizontalStyle->setHeight(Style::UnitValue(Style::Pixels, 20));
-	horizontalStyle->setBackgroundColor(osg::Vec4(0.8, 0.8, 0.8, 1.0));
+	horizontalStyle->setHeight(Style::UnitValue(Style::Pixels, 22));
+	horizontalStyle->setBackgroundColor(osg::Vec4(1.0, 1.0, 1.0, 1.0));
+	horizontalStyle->setBorderWidth(1.0);
+	horizontalStyle->setBorderColor(osg::Vec4(0.8, 0.8, 0.8, 1.0));
 	window->addNamedStyle("HorizontalScrollBar", horizontalStyle.get());
 
 	// The scroll left button is always 20 pixels rectangle placed
 	// to the left in the parent scrollbar control.
 	Ref<Style> scrollLeftStyle = new Style();
-	scrollLeftStyle->setHeight(Style::UnitValue(Style::Pixels, 20));
-	scrollLeftStyle->setWidth(Style::UnitValue(Style::Pixels, 20));
-	scrollLeftStyle->setLeft(Style::UnitValue(Style::Pixels, 0));
-	scrollLeftStyle->setTop(Style::UnitValue(Style::Pixels, 0));
-	scrollLeftStyle->setBackgroundColor(osg::Vec4(0.0, 0.0, 0.0, 1.0));
+	scrollLeftStyle->setHeight(Style::UnitValue(Style::Pixels, 16));
+	scrollLeftStyle->setWidth(Style::UnitValue(Style::Pixels, 16));
+	scrollLeftStyle->setHorizontalAlign(std::string("left"));
+	scrollLeftStyle->setVerticalAlign(std::string("middle"));
+	scrollLeftStyle->setBackgroundColor(osg::Vec4(1.0, 1.0, 1.0, 1.0));
+	scrollLeftStyle->setBackgroundImage(std::string("ui/themes/default/images/go-left.png"));
 	window->addNamedStyle("ScrollLeftButton", scrollLeftStyle.get());
 
 	Ref<Style> scrollRightStyle = new Style();
-	scrollRightStyle->setHeight(Style::UnitValue(Style::Pixels, 20));
-	scrollRightStyle->setWidth(Style::UnitValue(Style::Pixels, 20));
+	scrollRightStyle->setHeight(Style::UnitValue(Style::Pixels, 16));
+	scrollRightStyle->setWidth(Style::UnitValue(Style::Pixels, 16));
 	scrollRightStyle->setHorizontalAlign(std::string("right"));
+	scrollRightStyle->setVerticalAlign(std::string("middle"));
 	scrollRightStyle->setTop(Style::UnitValue(Style::Pixels, 0));
-	scrollRightStyle->setBackgroundColor(osg::Vec4(0.0, 0.0, 0.0, 1.0));
+	scrollRightStyle->setBackgroundColor(osg::Vec4(1.0, 1.0, 1.0, 1.0));
+	scrollRightStyle->setBackgroundImage(std::string("ui/themes/default/images/go-right.png"));
 	window->addNamedStyle("ScrollRightButton", scrollRightStyle.get());
 
 	Ref<Style> scrollUpStyle = new Style();
-	scrollUpStyle->setHeight(Style::UnitValue(Style::Pixels, 20));
-	scrollUpStyle->setWidth(Style::UnitValue(Style::Pixels, 20));
-	scrollUpStyle->setLeft(Style::UnitValue(Style::Pixels, 0));
-	scrollUpStyle->setTop(Style::UnitValue(Style::Pixels, 0));
-	scrollUpStyle->setBackgroundColor(osg::Vec4(0.0, 0.0, 0.0, 1.0));
+	scrollUpStyle->setHeight(Style::UnitValue(Style::Pixels, 16));
+	scrollUpStyle->setWidth(Style::UnitValue(Style::Pixels, 16));
+	scrollUpStyle->setHorizontalAlign(std::string("center"));
+	scrollUpStyle->setVerticalAlign(std::string("top"));
+	scrollUpStyle->setBackgroundColor(osg::Vec4(1.0, 1.0, 1.0, 1.0));
+	scrollUpStyle->setBackgroundImage(std::string("ui/themes/default/images/go-up.png"));
 	window->addNamedStyle("ScrollUpButton", scrollUpStyle.get());
 
 	Ref<Style> scrollDownStyle = new Style();
-	scrollDownStyle->setHeight(Style::UnitValue(Style::Pixels, 20));
-	scrollDownStyle->setWidth(Style::UnitValue(Style::Pixels, 20));
-	scrollDownStyle->setLeft(Style::UnitValue(Style::Pixels, 0));
+	scrollDownStyle->setHeight(Style::UnitValue(Style::Pixels, 16));
+	scrollDownStyle->setWidth(Style::UnitValue(Style::Pixels, 16));
+	scrollDownStyle->setHorizontalAlign(std::string("center"));
 	scrollDownStyle->setVerticalAlign(std::string("bottom"));
-	scrollDownStyle->setBackgroundColor(osg::Vec4(0.0, 0.0, 0.0, 1.0));
+	scrollDownStyle->setBackgroundColor(osg::Vec4(1.0, 1.0, 1.0, 1.0));
+	scrollDownStyle->setBackgroundImage(std::string("ui/themes/default/images/go-down.png"));
 	window->addNamedStyle("ScrollDownButton", scrollDownStyle.get());
 }
 
@@ -102,14 +111,14 @@ Ref<Window> createWindow() {
 	window->setControl(container.get());
 
 	Ref<VerticalScrollBar> vertical = new VerticalScrollBar();
-	vertical->getStyle()->setHeight(Style::UnitValue(Style::Pixels, 378));
+	vertical->getStyle()->setHeight(Style::UnitValue(Style::Pixels, 376));
 	vertical->getStyle()->setTop(Style::UnitValue(Style::Pixels, 0));
 	vertical->getStyle()->setHorizontalAlign(std::string("right"));
 	vertical->Scroll.connect(sigc::ptr_fun(handleVerticalScroll));
 	container->addControl(vertical.get());
 
 	Ref<HorizontalScrollBar> horizontal = new HorizontalScrollBar();
-	horizontal->getStyle()->setWidth(Style::UnitValue(Style::Pixels, 578));
+	horizontal->getStyle()->setWidth(Style::UnitValue(Style::Pixels, 576));
 	horizontal->getStyle()->setLeft(Style::UnitValue(Style::Pixels, 0));
 	horizontal->getStyle()->setVerticalAlign(std::string("bottom"));
 	horizontal->Scroll.connect(sigc::ptr_fun(handleHorizontalScroll));
@@ -123,7 +132,7 @@ Ref<Window> createWindow() {
 	label->setText("Here you have two scrollbars. One vertical and one horizontal.");
 	label->getStyle()->setWidth(Style::UnitValue(Style::Pixels, 300));
 	label->getStyle()->setHeight(Style::UnitValue(Style::Pixels, 30));
-	label->getStyle()->setFontFamily(std::string("prima_sans_bt.ttf"));
+	label->getStyle()->setFontFamily(std::string("fonts/prima_sans_bt.ttf"));
 	label->getStyle()->setFontSize(15);
 	label->getStyle()->setColor(osg::Vec4(0, 0, 0, 1));
 	label->getStyle()->setHorizontalAlign(std::string("center"));
@@ -142,7 +151,7 @@ int main(int, char**) {
 	// Make sure that the windowing framework can external files.
 	// For example fonts.
 	Ref<csp::wf::ResourceLocator> resourceLocator = new csp::wf::ResourceLocator();
-	resourceLocator->addFolder("data/fonts");
+	resourceLocator->addFolder("data");
 	csp::wf::setDefaultResourceLocator(resourceLocator.get());
 
 	// This instance keeps track of all windows connected to it.

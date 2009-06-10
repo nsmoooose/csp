@@ -38,6 +38,7 @@ PACKAGES = [
 	# 'examples/sdl-viewer',
 	'examples/sky',
 	'examples/terrain-demeter',
+	'examples/wf-listbox',
 	'examples/wf-scrollbars',
 	'examples/wf-signals',
 	'examples/wf-window',

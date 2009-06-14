@@ -44,8 +44,8 @@ public:
 
 	virtual void onUpdate(double dt);
 	
-	virtual bool onMouseMove(SDL_MouseMotionEvent const &);
-	virtual bool onMouseButton(SDL_MouseButtonEvent const &);
+	virtual bool onMouseMove(input::RawEvent::MouseMotion const &);
+	virtual bool onMouseButton(input::RawEvent::MouseButton const &);
 	
 	virtual wf::Serialization* getSerializer();
 

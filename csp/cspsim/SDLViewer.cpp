@@ -16,24 +16,25 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-#include "SDLViewer.h"
-#include "SDLGraphicsWindow.h"
+#include <csp/cspsim/SDLViewer.h>
+#include <csp/cspsim/SDLGraphicsWindow.h>
 #include <csp/cspsim/CSPSim.h>
 #include <csp/cspsim/Config.h>
 #include <csp/cspsim/BaseScreen.h>
 #include <csp/cspsim/SDLEventHandler.h>
 #include <csp/cspsim/VirtualScene.h>
 #include <csp/cspsim/battlefield/LocalBattlefield.h>
-#include <csp/cspsim/input/InputEvent.h>
 #include <csp/cspsim/weather/Atmosphere.h>
 #include <csp/csplib/util/Log.h>
+#include <SDL/SDL.h>
 
 namespace csp {
 
 bool SDLViewer::setUpWindow(const char *caption, const ScreenSettings & screenSettings)
 {
 	if ( !setUpViewerAsSDLGraphicsWindow(caption, screenSettings) ) return false;
-	addEventHandler( new SDLEventHandler() );
+	m_eventHandler = new SDLEventHandler();
+	addEventHandler( m_eventHandler ); // Our base class has the responsibility to destroy m_eventHandler
 	getCamera()->setClearMask(0);
 	return true;
 }
@@ -58,8 +59,7 @@ void SDLViewer::eventTraversal()
 	pollSdlEvents();
 
 	// Run input scripts
-	runCurrentScreenInputScript();
-	runActiveObjectInputScript();
+	m_eventHandler->runInputScripts();
 }
 
 void SDLViewer::updateTraversal()
@@ -77,58 +77,18 @@ void SDLViewer::pollSdlEvents()
 {
 	CSPLOG(DEBUG, APP) << "Checking for SDL input events";
 
-	const input::InputEvent & inputEvent = CSPSim::theSim->getInputEvent();
-
 	SDL_Event event;
 	short doPoll = 10;
-	while ( doPoll-- && inputEvent(event) )
+	while ( doPoll-- && SDL_PollEvent(&event) )
 	{
-		bool handled = onCurrentScreenEvent(event);
-
-		if ( !handled )
+		if ( event.type == SDL_QUIT )
 		{
-			CSPLOG(DEBUG, APP) << "Passing event to the active object";
-			handled = onActiveObjectEvent(event);
+			CSPSim::theSim->quit();
+			return;
 		}
+
+		m_eventHandler->handle(event);
 	}
-}
-
-bool SDLViewer::onCurrentScreenEvent(SDL_Event &event)
-{
-	Ref<BaseScreen> currentScreen = CSPSim::theSim->getCurrentScreen();
-	if ( !currentScreen ) return false;
-
-	Ref<input::VirtualHID> currentScreenInterface = currentScreen->getInterface();
-	if ( !currentScreenInterface ) return false;
-
-	return currentScreenInterface->onEvent(event);
-}
-
-bool SDLViewer::onActiveObjectEvent(SDL_Event &event)
-{
-	Ref<input::VirtualHID> activeObjectInterface = CSPSim::theSim->getActiveObjectInterface();
-	if ( !activeObjectInterface ) return false;
-
-	return activeObjectInterface->onEvent(event);
-}
-
-void SDLViewer::runCurrentScreenInputScript()
-{
-	Ref<BaseScreen> currentScreen = CSPSim::theSim->getCurrentScreen();
-	if ( !currentScreen ) return;
-
-	Ref<input::VirtualHID> currentScreenInterface = currentScreen->getInterface();
-	if ( !currentScreenInterface ) return;
-
-	currentScreenInterface->onUpdate( CSPSim::theSim->getFrameTime() );
-}
-
-void SDLViewer::runActiveObjectInputScript()
-{
-	Ref<input::VirtualHID> activeObjectInterface = CSPSim::theSim->getActiveObjectInterface();
-	if ( !activeObjectInterface ) return;
-
-	activeObjectInterface->onUpdate( CSPSim::theSim->getFrameTime() );
 }
 
 void SDLViewer::updateAtmosphere()

@@ -76,7 +76,6 @@ class VirtualScene;
 
 namespace input {
 	class EventMapIndex;
-	class InputEvent;
 	class VirtualHID;
 }
 
@@ -115,8 +114,6 @@ public:
 
 	void changeScreen(BaseScreen * newScreen);
 	BaseScreen* getCurrentScreen();
-
-	const input::InputEvent & getInputEvent() const;
 
 	SimDate & getCurrentTime() { return m_CurrentTime; }
 	void setCurrentTime(SimDate const &);
@@ -187,8 +184,6 @@ private:
 	Ref<TerrainObject> m_Terrain;
 	Ref<DataManager> m_DataManager;
 	ScopedPointer<weather::Atmosphere> m_Atmosphere;
-
-	ScopedPointer<input::InputEvent> m_InputEvent;
 };
 
 } // namespace csp

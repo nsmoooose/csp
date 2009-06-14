@@ -26,11 +26,13 @@
 #define __CSPSIM_EVENTMAPINDEX_H__
 
 
-#include <csp/cspsim/input/HID.h>
 #include <csp/cspsim/input/EventMapping.h>
 
 #include <csp/csplib/util/HashUtility.h>
 #include <map>
+
+struct _SDL_Joystick;
+typedef _SDL_Joystick SDL_Joystick;
 
 namespace csp {
 namespace input {

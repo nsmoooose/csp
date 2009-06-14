@@ -29,8 +29,6 @@
 
 #include <csp/cspsim/input/EventMapping.h>
 
-#include <SDL/SDL_events.h>
-
 #include <iostream>
 #include <sstream>
 #include <fstream>
@@ -44,105 +42,92 @@ namespace input {
 EventMapping::EventMapping() {
 }
 
-int EventMapping::getKeyID(int device, SDL_keysym const &key, int state, int mode) const {
-	int press = (state == SDL_PRESSED) ? (1 << 31) : 0;
-	return (device & 0xF) + ((key.sym & 0x3FF) << 4) + ((key.mod & 0xFFF) << 14) + ((mode & 0x00F) << 26) + press;
+int EventMapping::getKeyID(unsigned int key, unsigned int modifierMask, RawEvent::Keyboard::Type type) const {
+	int press = (type == RawEvent::Keyboard::PRESSED) ? (1 << 31) : 0;
+	return (key & 0xFFFF) + ((modifierMask & 0x3FFF) << 16) + press;
 }
 
-int EventMapping::getJoystickButtonID(int device, int button, int state, int jmod, int mode) const {
-	int press = (state == SDL_PRESSED) ? (1 << 31) : 0;
-	return (device & 0xF) + ((button & 0xFFF) << 4) + ((jmod & 0xF) << 16) + ((mode & 0xF) << 20) + press;
+int EventMapping::getJoystickButtonID(unsigned int joystick, unsigned int button, RawEvent::JoystickButton::Type type, int jmod, int mode) const {
+	int press = (type == RawEvent::JoystickButton::PRESSED) ? (1 << 31) : 0;
+	return (joystick & 0xF) + ((button & 0xFFF) << 4) + ((jmod & 0xF) << 16) + ((mode & 0xF) << 20) + press;
 }
 
-int EventMapping::getJoystickAxisID(int device, int axis) const {
-	return (device & 0xF) + ((axis & 0xFF) << 4);
+int EventMapping::getJoystickAxisID(unsigned int joystick, unsigned int axis) const {
+	return (joystick & 0xF) + ((axis & 0xFF) << 4);
 }
 
-int EventMapping::getMouseButtonID(int device, int button, int state, int kmod, int mode) const {
-	int press = (state == SDL_PRESSED) ? (1 << 31) : 0;
-	return (device & 0xF) + ((button & 0xFF) << 4) + ((kmod & 0xFFF) <<  12) + ((mode & 0xF) << 24) + press;
+int EventMapping::getMouseButtonID(unsigned int button, RawEvent::MouseButton::Type type, unsigned int modifierMask, int mode) const {
+	unsigned int press = 0;
+	switch ( type )
+	{
+		case RawEvent::MouseButton::PRESSED : press = (2 << 30); break;
+		case RawEvent::MouseButton::DOUBLECLICK : press = (3 << 30); break;
+	}
+	return (button & 0xFF) + ((modifierMask & 0x3FFF) << 8) + ((mode & 0xF) << 22) + press;
 }
 
-int EventMapping::getMouseMotionID(int device, int state, int kmod, int mode) const {
-	return (device & 0xF) + ((state & 0xFF) << 4) + ((kmod & 0xFFF) << 12) + ((mode & 0xF) << 24);
+int EventMapping::getMouseMotionID(unsigned int buttonMask, unsigned int modifierMask, int mode) const {
+	return (buttonMask & 0xFF) + ((modifierMask & 0x3FFF) << 8) + ((mode & 0xF) << 22);
 }
 
 
-EventMapping::Script const *EventMapping::getKeyScript(int device, SDL_keysym const &key, int state, int mode) const {
-	int id = getKeyID(device, key, state, mode);
+EventMapping::Script const *EventMapping::getKeyScript(unsigned int key, unsigned int modifierMask, RawEvent::Keyboard::Type type) const {
+	int id = getKeyID(key, modifierMask, type);
 	EventScript kScript = m_KeyMap.find(id);
 	if (kScript == m_KeyMap.end()) return NULL;
 	return &(kScript->second);
 }
 
-EventMapping::Script const *EventMapping::getJoystickButtonScript(int device, int button, int state, int jmod, int mode) const {
-	int id = getJoystickButtonID(device, button, state, jmod, mode);
+EventMapping::Script const *EventMapping::getJoystickButtonScript(unsigned int joystick, unsigned int button, RawEvent::JoystickButton::Type type, int jmod, int mode) const {
+	int id = getJoystickButtonID(joystick, button, type, jmod, mode);
 	EventScript bScript = m_JoystickButtonMap.find(id);
 	if (bScript == m_JoystickButtonMap.end()) return NULL;
 	return &(bScript->second);
 }
 
-EventMapping::Axis const *EventMapping::getJoystickAxis(int device, int axis) const {
-	int id = getJoystickAxisID(device, axis);
+EventMapping::Axis const *EventMapping::getJoystickAxis(unsigned int joystick, unsigned int axis) const {
+	int id = getJoystickAxisID(joystick, axis);
 	axis_map::const_iterator axisIt = m_JoystickAxisMap.find(id);
 	if (axisIt == m_JoystickAxisMap.end()) return NULL;
 	return &(axisIt->second);
 }
 
-void EventMapping::addJoystickAxisMap(int device, int axis, Axis const &a) {
-	int id = getJoystickAxisID(device, axis);
+void EventMapping::addJoystickAxisMap(unsigned int joystick, unsigned int axis, Axis const &a) {
+	int id = getJoystickAxisID(joystick, axis);
 	m_JoystickAxisMap[id] = a;
-	m_usedJoysticks.insert(device);
+	m_usedJoysticks.insert(joystick);
 }
 
-void EventMapping::addKeyMap(int device, SDL_keysym &key, int state, int mode, Script const &s) {
-	int id = getKeyID(device, key, state, mode);
+void EventMapping::addKeyMap(unsigned int key, unsigned int modifierMask, RawEvent::Keyboard::Type type, Script const &s) {
+	int id = getKeyID(key, modifierMask, type);
 	m_KeyMap[id] = s;
 }
 
-void EventMapping::addJoystickButtonMap(int device, int button, int state, int jmod, int mode, Script const &s) {
-	int id = getJoystickButtonID(device, button, state, jmod, mode);
+void EventMapping::addJoystickButtonMap(unsigned int joystick, unsigned int button, RawEvent::JoystickButton::Type type, int jmod, int mode, Script const &s) {
+	int id = getJoystickButtonID(joystick, button, type, jmod, mode);
 	m_JoystickButtonMap[id] = s;
-	m_usedJoysticks.insert(device);
+	m_usedJoysticks.insert(joystick);
 }
 
-void EventMapping::addMouseMotionMap(int device, int state, int kmod, int mode, Motion const &motion) {
-	int id = getMouseMotionID(device, state, kmod, mode);
+void EventMapping::addMouseMotionMap(unsigned int buttonMask, unsigned int modifierMask, int mode, Motion const &motion) {
+	int id = getMouseMotionID(buttonMask, modifierMask, mode);
 	m_MouseMotionMap[id] = motion;
 }
 	
-void EventMapping::addMouseButtonMap(int device, int button, int state, int kmod, int mode, Script const &s) {
-	int id = getMouseButtonID(device, button, state, kmod, mode);
+void EventMapping::addMouseButtonMap(unsigned int button, RawEvent::MouseButton::Type type, unsigned int modifierMask, int mode, Script const &s) {
+	int id = getMouseButtonID(button, type, modifierMask, mode);
 	m_MouseButtonMap[id] = s;
 }
 
-// convenience method for testing purposes only
-void EventMapping::addKeyMap(int device, SDLKey vkey, SDLMod kmod, int state, int mode, Action const &action) {
-	SDL_keysym key;
-	key.sym = vkey;
-	key.mod = kmod;
-	Script s;
-	s.push_back(action);
-	addKeyMap(device, key, state, mode, s);
-}
-
-// convenience method for testing purposes only
-void EventMapping::addJoystickButtonMap(int device, int button, int state, int jmod, int mode, Action const &action) {
-	Script s;
-	s.push_back(action);
-	addJoystickButtonMap(device, button, state, jmod, mode, s);
-}
-
-EventMapping::Script const *EventMapping::getMouseButtonScript(int device, int button, int state, int kmod, int mode) const {
-	int id = getMouseButtonID(device, button, state, kmod, mode);
+EventMapping::Script const *EventMapping::getMouseButtonScript(unsigned int button, RawEvent::MouseButton::Type type, unsigned int modifierMask, int mode) const {
+	int id = getMouseButtonID(button, type, modifierMask, mode);
 	EventScript mScript = m_MouseButtonMap.find(id);
 	if (mScript == m_MouseButtonMap.end()) return NULL;
 	return &(mScript->second);
 }
 
-//int EventMapping::getMouseMotion(int device, int state, int kmod, int mode) const {
-EventMapping::Motion const *EventMapping::getMouseMotion(int device, int state, int kmod, int mode) const {
-	int id = getMouseMotionID(device, state, kmod, mode);
+EventMapping::Motion const *EventMapping::getMouseMotion(unsigned int buttonMask, unsigned int modifierMask, int mode) const {
+	int id = getMouseMotionID(buttonMask, modifierMask, mode);
 	motion_map::const_iterator map = m_MouseMotionMap.find(id);
 	if (map == m_MouseMotionMap.end()) return NULL;
 	return &(map->second);
@@ -159,17 +144,14 @@ void EventMapping::parseMap(const char *line, EventMapping::Script &script) {
 	std::stringstream s(line+1);
 	Action a;
 	char device_type, type;
-	int device, kmod, jmod, mmod, id, mode, state = SDL_PRESSED;
+	int device, kmod, jmod, mmod, id, mode;
 	s >> device_type >> device >> type >> kmod >> jmod >> mmod >> id >> mode;
-	if (type == 'P') {
-		state = SDL_PRESSED; 
-	} else
-	if (type == 'R') {
-		state = SDL_RELEASED;
-	}
 	if (device_type == 'J') {
-		if (type == 'P' || type == 'R') {
-			addJoystickButtonMap(device, id, state, jmod, mode, script);
+		if ( type == 'P' ) {
+			addJoystickButtonMap(device, id, RawEvent::JoystickButton::PRESSED, jmod, mode, script);
+		} else
+		if ( type == 'R' ) {
+			addJoystickButtonMap(device, id, RawEvent::JoystickButton::RELEASED, jmod, mode, script);
 		} else
 		if (type == 'A') {
 			if (script.size() != 1) return;
@@ -177,20 +159,23 @@ void EventMapping::parseMap(const char *line, EventMapping::Script &script) {
 		}
 	} else
 	if (device_type == 'K') {
-		if (type == 'P' || type == 'R') {
-			SDL_keysym key;
-			key.sym = (SDLKey) id;
-			key.mod = (SDLMod) kmod;
-			addKeyMap(device, key, state, mode, script);
+		if ( type == 'P' ) {
+			addKeyMap(id, kmod, RawEvent::Keyboard::PRESSED, script);
+		} else
+		if ( type == 'R' ) {
+			addKeyMap(id, kmod, RawEvent::Keyboard::RELEASED, script);
 		}
 	} else
 	if (device_type == 'M') {
-		if (type == 'P' || type == 'R') {
-			addMouseButtonMap(device, id, state, kmod, mode, script);
+		if ( type == 'P' ) {
+			addMouseButtonMap(id, RawEvent::MouseButton::PRESSED, kmod, mode, script);
+		} else
+		if ( type == 'R' ) {
+			addMouseButtonMap(id, RawEvent::MouseButton::RELEASED, kmod, mode, script);
 		} else
 		if (type == 'M') {
 			if (script.size() != 1) return;
-			addMouseMotionMap(device, mmod, kmod, mode, Motion(script[0].id));
+			addMouseMotionMap(mmod, kmod, mode, Motion(script[0].id));
 		}
 	}
 }

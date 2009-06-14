@@ -53,7 +53,6 @@
 #include <csp/cspsim/config/UserInterface.h>
 #include <csp/cspsim/input/EventMapIndex.h>
 #include <csp/cspsim/input/HID.h>
-#include <csp/cspsim/input/InputEvent.h>
 #include <csp/cspsim/sound/Loader.h>
 #include <csp/cspsim/sound/SoundEngine.h>
 #include <csp/cspsim/stores/StoresDatabase.h>
@@ -115,9 +114,7 @@ CSPSim *CSPSim::theSim = 0;
 
 CSPSim::CSPSim():
 	m_ConfigurationChanged(new wf::Signal),
-	m_Atmosphere(new weather::Atmosphere),
-	//--m_RenderSurface(new Producer::RenderSurface),
-	m_InputEvent(new input::InputEvent)
+	m_Atmosphere(new weather::Atmosphere)
 {
 	if (theSim == 0) {
 		theSim = this;
@@ -417,10 +414,6 @@ BaseScreen* CSPSim::getCurrentScreen() {
 	return m_CurrentScreen.get();
 }
 
-const input::InputEvent & CSPSim::getInputEvent() const {
-	return *m_InputEvent;
-}
-
 void CSPSim::loadSimulation() {
 	
 	m_DataManager = new DataManager();
@@ -635,7 +628,7 @@ void CSPSim::displayMenuScreen() {
 void CSPSim::run() {
 	CSPLOG(INFO, APP) << "Entering main simulation loop";
 	try {
-		while (!m_Finished) {
+		while ( !m_Finished && !m_Viewer->done() ) {
 			CSPLOG(DEBUG, APP) << "Starting simulation loop iteration";
 			
 			// The current screen may change during the execution of the 

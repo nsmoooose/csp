@@ -34,9 +34,6 @@
  * finish the definition of the map scripting language
  * complete the python tool to convert map scripts to binary
  * add xml support to the python script tool
- * introduce a new, internal event type with a translation layer
- *   for SDL events.  this will remove the tight binding with
- *   SDL and allow other input libraries to be used as well.
  *
  */
 
@@ -47,10 +44,6 @@
 
 #include <csp/csplib/util/Namespace.h>
 #include <csp/csplib/util/Ref.h>
-
-#include <SDL/SDL_events.h>
-#include <SDL/SDL_keysym.h>
-#include <SDL/SDL_keyboard.h>
 
 #include <string>
 #include <vector>
@@ -64,7 +57,7 @@ class InputInterface;
 /**
  * class HID - Base class for Human Interface Device mapping and scripting.
  *
- * This class provides an interface for handling various SDL input events,
+ * This class provides an interface for handling various input events,
  * and implements an event dispatch routine.
  */
 class HID: public Referenced
@@ -74,32 +67,29 @@ public:
 	HID() {}
 
 	/**
-	 * SDL key event handler
+	 * Keyboard event handler
 	 */
-	virtual bool onKey(SDL_KeyboardEvent const &) = 0;
+	virtual bool onEvent(RawEvent::Keyboard const &) = 0;
 
 	/**
-	 * SDL joystick button handler
+	 * Joystick button handler
 	 */
-	virtual bool onJoystickButton(SDL_JoyButtonEvent const &) = 0;
+	virtual bool onEvent(RawEvent::JoystickButton const &) = 0;
 	
 	/**
-	 * SDL joystick axis handler
+	 * Joystick axis handler
 	 */
-	virtual bool onJoystickAxisMotion(SDL_JoyAxisEvent const &) = 0;
+	virtual bool onEvent(RawEvent::JoystickAxis const &) = 0;
 	
 	/**
-	 * SDL mouse movement handler
+	 * Mouse movement handler
 	 */
-	virtual bool onMouseMove(SDL_MouseMotionEvent const &) = 0;
+	virtual bool onEvent(RawEvent::MouseMotion const &) = 0;
 	
 	/**
-	 * SDL mouse button handler
+	 * Mouse button handler
 	 */
-	virtual bool onMouseButton(SDL_MouseButtonEvent const &) = 0;
-	/*
-	virtual void onJoystickHatMotion(int joynum, int hat, int val) = 0;
-	*/
+	virtual bool onEvent(RawEvent::MouseButton const &) = 0;
 
 	/**
 	 * Update routine to drive the active script(s).
@@ -116,18 +106,13 @@ public:
 	virtual void bindObject(InputInterface *) = 0;
 
 	/**
-	 * Primary event dispatch routine.
-	 */
-	virtual bool onEvent(SDL_Event &event);
-
-	/**
 	 * Translate events.
 	 *
 	 * Call this once for each event.  Currently, the modifier state of
 	 * key releases is translated to match the state when the key was
 	 * pressed.
 	 */
-	static void translate(SDL_Event &event);
+	static void translate(RawEvent::Keyboard &event);
 
 protected:
 	virtual ~HID() {}
@@ -138,7 +123,7 @@ protected:
 /**
  * class VirtualHID - Simulates a composite, programmable human interface device.
  *
- * VirtualHID instances use event mappings to translate raw SDL input events into
+ * VirtualHID instances use event mappings to translate raw input events into
  * commands that are passed to associated objects.  Each VirtualHID can handle
  * multiple real human interface devices (keyboard, mice, joysticks), and can be 
  * placed into one of several user-defined modes that alters the event mapping.  
@@ -155,21 +140,19 @@ public:
 	virtual void setMapping(Ref<const EventMapping> map);
 	virtual void bindObject(InputInterface *object);
 	
-	virtual bool onKey(SDL_KeyboardEvent const &event);
-	virtual bool onJoystickButton(SDL_JoyButtonEvent const &event);
-	virtual bool onJoystickAxisMotion(SDL_JoyAxisEvent const &event);
-	virtual bool onMouseMove(SDL_MouseMotionEvent const &event);
-	virtual bool onMouseButton(SDL_MouseButtonEvent const &event);
+	virtual bool onEvent(RawEvent::Keyboard const &event);
+	virtual bool onEvent(RawEvent::JoystickButton const &event);
+	virtual bool onEvent(RawEvent::JoystickAxis const &event);
+	virtual bool onEvent(RawEvent::MouseMotion const &event);
+	virtual bool onEvent(RawEvent::MouseButton const &event);
 	virtual void onUpdate(double dt);
 
 
 protected:
 	virtual ~VirtualHID();
-	virtual void setScript(EventMapping::Script const *s, int x = -1, int y = -1, bool drag = false);
+	virtual void setScript(EventMapping::Script const *s, float x = -1, float y = -1, bool drag = false);
 	virtual void setVirtualMode(int mode);
 	virtual void setJoystickModifier(int jmod);
-	void updateMouseDrag(SDL_MouseMotionEvent const &event);
-	bool updateMousePreDrag(SDL_MouseButtonEvent const &event);
 
 	int m_VirtualMode;
 	bool m_JoystickModifier;
@@ -180,14 +163,9 @@ protected:
 	EventMapping::Script const *m_ActiveScript;
 	double m_ScriptTime;
 
-	int m_MouseEventX;
-	int m_MouseEventY;
+	float m_MouseEventX;
+	float m_MouseEventY;
 	bool m_MouseEventDrag;
-
-	int m_MouseDragStartX;
-	int m_MouseDragStartY;
-	bool m_MouseDrag;
-	bool m_MousePreDrag;
 };
 
 } // namespace input

@@ -16,7 +16,7 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-#include "SDLGraphicsWindow.h"
+#include <csp/cspsim/SDLGraphicsWindow.h>
 #include <csp/cspsim/Config.h>
 #include <csp/csplib/util/Log.h>
 #include <SDL/SDL.h>

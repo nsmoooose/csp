@@ -28,7 +28,6 @@
 
 #include <csp/cspsim/input/HID.h>
 #include <csp/cspsim/input/InputInterface.h>
-#include <SDL/SDL_events.h>
 
 #include <cassert>
 #include <iostream>
@@ -45,58 +44,27 @@ namespace input {
 /////////////////////////////////////////////////////////////////////////////
 // class HID
 
-void HID::translate(SDL_Event &event) {
-	if (event.type == SDL_KEYDOWN || event.type == SDL_KEYUP) {
-		static std::vector< std::list<int> > device(16);
-		int device_n = event.key.which;
-		assert(device_n < 16);
-		std::list<int> &pressed = device[device_n];
-		int sym = event.key.keysym.sym;
-		if (event.key.state == SDL_PRESSED) {
-			pressed.push_front((event.key.keysym.mod << 16) | sym);
-			// incase we miss removing some keys, don't let the
-			// list grow by much... noone is using so many fingers
-			// at once ;-)
-			if (pressed.size() > 8) pressed.pop_back();
-		} else {
-			std::list<int>::iterator i = pressed.begin();
-			std::list<int>::iterator j = pressed.end();
-			for (; i != j; i++) {
-				if ((*i & 0xFFFF) == sym) {
-					event.key.keysym.mod = static_cast<SDLMod>(*i >> 16);
-					pressed.erase(i);
-					return;
-				}
+void HID::translate(RawEvent::Keyboard &event) {
+	static std::list<unsigned int> pressed;
+	if (event.type == RawEvent::Keyboard::PRESSED) {
+		pressed.push_front((event.modifierMask << 16) | event.key);
+		// incase we miss removing some keys, don't let the
+		// list grow by much... noone is using so many fingers
+		// at once ;-)
+		if (pressed.size() > 8) pressed.pop_back();
+	} else {
+		std::list<unsigned int>::iterator i = pressed.begin();
+		std::list<unsigned int>::iterator j = pressed.end();
+		for (; i != j; i++) {
+			if ((*i & 0xFFFF) == event.key) {
+				event.modifierMask = *i >> 16;
+				pressed.erase(i);
+				return;
 			}
-			// not found!?
-			// can happen.... just ignore it.
 		}
+		// not found!?
+		// can happen.... just ignore it.
 	}
-}
-
-
-bool HID::onEvent(SDL_Event &event) {
-	switch (event.type) {
-		case SDL_MOUSEMOTION:
-			return onMouseMove(event.motion);
-		case SDL_MOUSEBUTTONUP:
-		case SDL_MOUSEBUTTONDOWN:
-			return onMouseButton(event.button);
-		case SDL_KEYUP:
-		case SDL_KEYDOWN:
-			return onKey(event.key);
-		case SDL_JOYAXISMOTION:
-			return onJoystickAxisMotion(event.jaxis);
-		case SDL_JOYHATMOTION:
-			//return onJoystickHatMotion(event.jhat);
-			return false;
-		case SDL_JOYBUTTONUP:
-		case SDL_JOYBUTTONDOWN:
-			return onJoystickButton(event.jbutton);
-		default:
-			break;
-	}
-	return false;
 }
 
 
@@ -104,12 +72,7 @@ bool HID::onEvent(SDL_Event &event) {
 /////////////////////////////////////////////////////////////////////////////
 // class VirtualHID: public HID
 
-VirtualHID::VirtualHID(): m_MouseDrag(false), m_MousePreDrag(false) {
-	m_Map = 0;
-	m_VirtualMode = 0;
-	m_JoystickModifier = 0;
-	m_Object = 0;
-	m_ActiveScript = 0;
+VirtualHID::VirtualHID(): m_VirtualMode(0), m_JoystickModifier(false), m_Object(0), m_ActiveScript(0) {
 }
 
 VirtualHID::~VirtualHID() {}
@@ -120,92 +83,58 @@ void VirtualHID::setMapping(Ref<EventMapping const> map) {
 
 void VirtualHID::bindObject(InputInterface *object) { m_Object = object; }
 
-bool VirtualHID::onKey(SDL_KeyboardEvent const &event) {
+bool VirtualHID::onEvent(RawEvent::Keyboard const &event) {
 	if (!m_Object) return false;
 	if (m_Object->onKey(event)) return true;
 	if (!m_Map) return false;
-	EventMapping::Script const *s = m_Map->getKeyScript(event.which, event.keysym, event.state, 0);
+	EventMapping::Script const *s = m_Map->getKeyScript(event.key, event.modifierMask, event.type);
 	if (s == NULL) return false;
 	setScript(s);
 	return true;
 }
 
-bool VirtualHID::onJoystickButton(SDL_JoyButtonEvent const &event) {
+bool VirtualHID::onEvent(RawEvent::JoystickButton const &event) {
 	if (!m_Object) return false;
 	if (m_Object->onJoystickButton(event)) return true;
 	if (!m_Map) return false;
 	EventMapping::Script const *s =
-		m_Map->getJoystickButtonScript(event.which, event.button, event.state, m_JoystickModifier, m_VirtualMode);
+		m_Map->getJoystickButtonScript(event.joystick, event.button, event.type, m_JoystickModifier, m_VirtualMode);
 	if (s == NULL) return false;
 	setScript(s);
 	return true;
 }
 
-bool VirtualHID::onJoystickAxisMotion(SDL_JoyAxisEvent const &event) {
+bool VirtualHID::onEvent(RawEvent::JoystickAxis const &event) {
 	if (!m_Object) return false;
 	if (m_Object->onJoystickAxisMotion(event)) return true;
 	if (!m_Map) return false;
-	EventMapping::Axis const *a = m_Map->getJoystickAxis(event.which, event.axis);
+	EventMapping::Axis const *a = m_Map->getJoystickAxis(event.joystick, event.axis);
 	if (a == NULL || a->id == "") return false;
-	if (!m_Object->onMapEvent(MapEvent::MapAxisEvent(a->id, event.value * (1.0 / 32768.0)))) {
+	if (!m_Object->onMapEvent(MapEvent::MapAxisEvent(a->id, event.value))) {
 		std::cout << "Missing HID interface for command '" << a->id << "'\n";
 	}
 	return true;
 }
 
-void VirtualHID::setVirtualMode(int mode) {
-	m_VirtualMode = mode;
-}
-
-void VirtualHID::setJoystickModifier(int jmod) {
-	m_JoystickModifier = (jmod != 0);
-}
-
-bool VirtualHID::updateMousePreDrag(SDL_MouseButtonEvent const &event) {
-	const bool was_drag = m_MouseDrag;
-	if (!m_MousePreDrag && (event.state == SDL_PRESSED)) {
-		m_MouseDragStartX = event.x;
-		m_MouseDragStartY = event.y;
-		m_MousePreDrag = true;
-	}
-	if (event.state == SDL_RELEASED && (SDL_GetMouseState(NULL, NULL) == 0)) {
-		m_MousePreDrag = false;
-		m_MouseDrag = false;
-	}
-	return was_drag;
-}
-
-void VirtualHID::updateMouseDrag(SDL_MouseMotionEvent const &event) {
-	if (!m_MouseDrag && m_MousePreDrag) {
-		if ((event.x - m_MouseDragStartX) * (event.x - m_MouseDragStartX) + (event.y - m_MouseDragStartY) * (event.y - m_MouseDragStartY) >= 9) {
-			m_MouseDrag = true;
-		}
-	}
-}
-
-bool VirtualHID::onMouseMove(SDL_MouseMotionEvent const &event) {
-	updateMouseDrag(event);
+bool VirtualHID::onEvent(RawEvent::MouseMotion const &event) {
 	if (!m_Object) return false;
 	if (m_Object->onMouseMove(event)) return true;
 	if (!m_Map) return false;
-	int kmod = SDL_GetModState();
-	EventMapping::Motion const *m = m_Map->getMouseMotion(event.which, event.state, kmod, m_VirtualMode);
+	EventMapping::Motion const *m = m_Map->getMouseMotion(event.buttonMask, event.modifierMask, m_VirtualMode);
 	if (m == NULL || m->id == "") return false;
-	if (!m_Object->onMapEvent(MapEvent::MapMotionEvent(m->id, event.x, event.y, event.xrel, event.yrel))) {
+	if (!m_Object->onMapEvent(MapEvent::MapMotionEvent(m->id, event.x, event.y, event.dx, event.dy))) {
 		std::cout << "Missing HID interface for command '" << m->id << "'\n";
 	}
 	return true;
 }
 
-bool VirtualHID::onMouseButton(SDL_MouseButtonEvent const &event) {
-	const bool drag = updateMousePreDrag(event) || m_MouseDrag;
+bool VirtualHID::onEvent(RawEvent::MouseButton const &event) {
 	if (!m_Object) return false;
 	if (m_Object->onMouseButton(event)) return true;
 	if (!m_Map) return false;
-	int kmod = SDL_GetModState();
-	EventMapping::Script const *s = m_Map->getMouseButtonScript(event.which, event.button, event.state, kmod, m_VirtualMode);
+	EventMapping::Script const *s = m_Map->getMouseButtonScript(event.button, event.type, event.modifierMask, m_VirtualMode);
 	if (s == NULL) return false;
-	setScript(s, event.x, event.y, drag);
+	setScript(s, event.x, event.y, event.drag);
 	return true;
 }
 
@@ -254,7 +183,7 @@ void VirtualHID::onUpdate(double dt) {
 	}
 }
 
-void VirtualHID::setScript(EventMapping::Script const *s, int x, int y, bool drag) {
+void VirtualHID::setScript(EventMapping::Script const *s, float x, float y, bool drag) {
 	if (m_ActiveScript) {
 		m_ActiveScript->jump(0);
 	}
@@ -264,6 +193,14 @@ void VirtualHID::setScript(EventMapping::Script const *s, int x, int y, bool dra
 	m_ActiveScript = s;
 	m_ScriptTime = 0.0;
 	onUpdate(0.0);
+}
+
+void VirtualHID::setVirtualMode(int mode) {
+	m_VirtualMode = mode;
+}
+
+void VirtualHID::setJoystickModifier(int jmod) {
+	m_JoystickModifier = (jmod != 0);
 }
 
 } // namespace input

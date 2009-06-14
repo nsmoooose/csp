@@ -196,11 +196,11 @@ private:
 	// Handles signals to be emitted to the python gui code. For example player QUIT action.
 	Ref<input::InputInterfaceWfAdapter> m_InputInterfaceWfAdapter;
 
-	bool onMouseButton(SDL_MouseButtonEvent const &);
+	bool onMouseButton(input::RawEvent::MouseButton const &);
 
 	// Receives mouse move events from the input interface and sends 
 	// them on to the window framework for processing.  
-	bool onMouseMove(SDL_MouseMotionEvent const &event);
+	bool onMouseMove(input::RawEvent::MouseMotion const &event);
 };
 
 } // namespace csp

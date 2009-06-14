@@ -29,9 +29,7 @@
 #include <csp/csplib/util/Ref.h>
 #include <csp/csplib/util/HashUtility.h>
 
-#include <SDL/SDL_events.h>
-#include <SDL/SDL_keysym.h>
-#include <SDL/SDL_keyboard.h>
+#include <csp/cspsim/input/RawEvent.h>
 
 #include <string>
 #include <vector>
@@ -103,29 +101,24 @@ public:
 	typedef script_map::const_iterator EventScript;
 	typedef std::set<int> UsedJoysticks;
 
-	int getKeyID(int device, SDL_keysym const &key, int state, int mode) const;
-	int getJoystickButtonID(int device, int button, int state, int jmod, int mode) const;
-	int getJoystickAxisID(int device, int axis) const;
-	int getMouseButtonID(int device, int button, int state, int kmod, int mode) const;
-	int getMouseMotionID(int device, int state, int kmod, int mode) const;
+	int getKeyID(unsigned int key, unsigned int modifierMask, RawEvent::Keyboard::Type type) const;
+	int getJoystickButtonID(unsigned int joystick, unsigned int button, RawEvent::JoystickButton::Type type, int jmod, int mode) const;
+	int getJoystickAxisID(unsigned int joystick, unsigned int axis) const;
+	int getMouseButtonID(unsigned int button, RawEvent::MouseButton::Type type, unsigned int modifierMask, int mode) const;
+	int getMouseMotionID(unsigned int buttonMask, unsigned int modifierMask, int mode) const;
 
-	Script const *getKeyScript(int device, SDL_keysym const &key, int state, int mode) const;
-	Script const *getJoystickButtonScript(int device, int button, int state, int jmod, int mode) const;
-	Script const *getMouseButtonScript(int device, int button, int state, int kmod, int mode) const;
-	Axis const *getJoystickAxis(int device, int axis) const;
-	Motion const *getMouseMotion(int device, int state, int kmod, int mode) const;
+	Script const *getKeyScript(unsigned int key, unsigned int modifierMask, RawEvent::Keyboard::Type type) const;
+	Script const *getJoystickButtonScript(unsigned int joystick, unsigned int button, RawEvent::JoystickButton::Type type, int jmod, int mode) const;
+	Script const *getMouseButtonScript(unsigned int button, RawEvent::MouseButton::Type type, unsigned int modifierMask, int mode) const;
+	Axis const *getJoystickAxis(unsigned int joystick, unsigned int axis) const;
+	Motion const *getMouseMotion(unsigned int buttonMask, unsigned int modifierMask, int mode) const;
 	
-	void addKeyMap(int device, SDL_keysym &key, int state, int mode, Script const &s);
-	void addJoystickButtonMap(int device, int button, int state, int jmod, int mode, Script const &s);
-	void addJoystickAxisMap(int device, int axis, Axis const &a); 
-	void addMouseMotionMap(int device, int state, int kmod, int mode, Motion const &motion);
-	void addMouseButtonMap(int device, int button, int state, int kmod, int mode, Script const &s);
+	void addKeyMap(unsigned int key, unsigned int modifierMask, RawEvent::Keyboard::Type type, Script const &s);
+	void addJoystickButtonMap(unsigned int joystick, unsigned int button, RawEvent::JoystickButton::Type type, int jmod, int mode, Script const &s);
+	void addJoystickAxisMap(unsigned int joystick, unsigned int axis, Axis const &a); 
+	void addMouseMotionMap(unsigned int buttonMask, unsigned int modifierMask, int mode, Motion const &motion);
+	void addMouseButtonMap(unsigned int button, RawEvent::MouseButton::Type type, unsigned int modifierMask, int mode, Script const &s);
 	
-	// convenience method for testing purposes only
-	void addKeyMap(int device, SDLKey vkey, SDLMod kmode, int state, int mode, Action const &action);
-	// convenience method for testing purposes only
-	void addJoystickButtonMap(int device, int button, int state, int jmod, int mode, Action const &action);
-
 	void parseMap(const char *line, EventMapping::Script &script);
 	void parseAction(const char *line, EventMapping::Script &script);
 	void parseBinding(const char *line);

@@ -21,11 +21,10 @@
 
 #include <osgViewer/Viewer>
 
-union SDL_Event;
-
 namespace csp {
 
 struct ScreenSettings;
+class SDLEventHandler;
 
 class SDLViewer : public osgViewer::Viewer {
 public:
@@ -37,14 +36,12 @@ protected:
 	virtual void updateTraversal();
 
 	void pollSdlEvents();
-	bool onCurrentScreenEvent(SDL_Event &event);
-	bool onActiveObjectEvent(SDL_Event &event);
-	void runCurrentScreenInputScript();
-	void runActiveObjectInputScript();
 
 	void updateAtmosphere();
 	void updateObjects();
 	void updateCurrentScreen();
+
+	SDLEventHandler* m_eventHandler;
 };
 
 }

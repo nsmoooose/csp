@@ -38,13 +38,13 @@
 #define __INPUTINTERFACE_H__
 
 #include <csp/cspsim/Export.h>
+#include <csp/cspsim/input/RawEvent.h>
 #include <csp/cspsim/input/MapEvent.h>
 
 #include <csp/csplib/util/Namespace.h>
 #include <csp/csplib/util/HashUtility.h>
 
 #include <sigc++/sigc++.h>
-#include <SDL/SDL_events.h>
 
 #include <map>
 #include <string>
@@ -328,11 +328,11 @@ public:
 	 *  VirtualHID to continue processing the events and then call onMapEvent().
 	 */
 	///{
-	virtual bool onKey(SDL_KeyboardEvent const &) { return false; }
-	virtual bool onJoystickButton(SDL_JoyButtonEvent const &) { return false; }
-	virtual bool onJoystickAxisMotion(SDL_JoyAxisEvent const &) { return false; }
-	virtual bool onMouseMove(SDL_MouseMotionEvent const &) { return false; }
-	virtual bool onMouseButton(SDL_MouseButtonEvent const &) { return false; }
+	virtual bool onKey(RawEvent::Keyboard const &) { return false; }
+	virtual bool onJoystickButton(RawEvent::JoystickButton const &) { return false; }
+	virtual bool onJoystickAxisMotion(RawEvent::JoystickAxis const &) { return false; }
+	virtual bool onMouseMove(RawEvent::MouseMotion const &) { return false; }
+	virtual bool onMouseButton(RawEvent::MouseButton const &) { return false; }
 	///}
 
 	/** Main entry point for dispatching input events.

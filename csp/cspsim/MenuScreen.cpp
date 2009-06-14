@@ -24,7 +24,6 @@
 
 #include <osg/State>
 #include <csp/cspsim/CSPSim.h>
-#include <csp/cspsim/input/EventMapIndex.h>
 #include <csp/cspsim/MenuScreen.h>
 #include <csp/cspwf/WindowManager.h>
 
@@ -50,16 +49,16 @@ void MenuScreen::onExit() {
 void MenuScreen::onUpdate(double /* dt */) {
 }
 
-bool MenuScreen::onMouseMove(SDL_MouseMotionEvent const &event) {
+bool MenuScreen::onMouseMove(input::RawEvent::MouseMotion const &event) {
 	return CSPSim::theSim->getWindowManager()->onMouseMove(event.x, event.y);
 }
 
-bool MenuScreen::onMouseButton(SDL_MouseButtonEvent const &event) {
+bool MenuScreen::onMouseButton(input::RawEvent::MouseButton const &event) {
 	Ref<wf::WindowManager> windowManager = CSPSim::theSim->getWindowManager();
-	if(event.state == SDL_PRESSED) {
+	if(event.type == input::RawEvent::MouseButton::PRESSED) {
 		return windowManager->onMouseDown(event.x, event.y, event.button);
 	}
-	else if(event.state == SDL_RELEASED) {
+	else if(event.type == input::RawEvent::MouseButton::RELEASED) {
 		return
 			windowManager->onMouseUp(event.x, event.y, event.button) ||
 			windowManager->onClick(event.x, event.y);

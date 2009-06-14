@@ -20,13 +20,59 @@
 #define __CSPSIM_SDLEVENTHANDLER_H__
 
 #include <osgGA/GUIEventHandler>
+#include <csp/cspsim/input/HID.h>
+
+union SDL_Event;
 
 namespace csp {
 
 class SDLEventHandler : public osgGA::GUIEventHandler
 {
 public:
+	SDLEventHandler();
+
 	virtual bool handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa, osg::Object*, osg::NodeVisitor*);
+	bool handle(const SDL_Event& sdlEvent);
+
+	template <class EventType>
+	bool onEvent(const EventType &event)
+	{
+		bool handled = onCurrentScreenEvent(event);
+		if ( !handled )
+		{
+			handled = onActiveObjectEvent(event);
+		}
+		return handled;
+	}
+
+	void runInputScripts();
+
+protected:
+	template <class EventType>
+	bool onCurrentScreenEvent(EventType &event)
+	{
+		Ref<input::HID> currentScreenInterface = getCurrentScreenInterface();
+		if ( !currentScreenInterface ) return false;
+
+		return currentScreenInterface->onEvent(event);
+	}
+
+	template <class EventType>
+	bool onActiveObjectEvent(EventType &event)
+	{
+		Ref<input::HID> activeObjectInterface = getActiveObjectInterface();
+		if ( !activeObjectInterface ) return false;
+
+		return activeObjectInterface->onEvent(event);
+	}
+
+	void runCurrentScreenInputScript();
+	void runActiveObjectInputScript();
+
+	Ref<input::HID> getCurrentScreenInterface();
+	Ref<input::HID> getActiveObjectInterface();
+
+	bool m_drag;
 };
 
 }

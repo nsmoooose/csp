@@ -26,13 +26,12 @@
 #include <csp/cspsim/input/EventMapIndex.h>
 #include <csp/cspsim/Config.h>
 
-//#include <osgDB/FileUtils>
-//#include <osgDB/FileNameUtils>
-
 #include <csp/csplib/util/Log.h>
 #include <csp/csplib/util/FileUtility.h>
 
 #include <cassert>
+
+#include <SDL/SDL.h>
 
 namespace csp {
 namespace input {

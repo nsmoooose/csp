@@ -1,0 +1,91 @@
+#!/usr/bin/python
+import csp.csplib
+import csp.cspsim
+import getopt
+import sys
+from csp.tools.data.compile import Compiler
+
+USAGE = """\
+Description:
+  Data archive compiler command line utility. This tool lets you compile your xml structures
+  into a archive file readable by the csp framework.
+
+Options:
+  -h, --help                    Show this message
+  -d, --data-archive filename   The data archive file name to create.
+  -s, --source-dir directory    The source directory where the xml files to compile are stored.
+  -m, --module path             Specifies a loadable module that contains more object definitions.
+                                This can be specified several times depending on the number of
+                                modules used.
+
+Examples:
+  python data-compiler -s data/xml -d bin/sim.dar -m modules/demeter/.bin/libdemeter.so
+
+  python data-compiler -s data/xml -d bin/sim.dar -m modules/demeter/.bin/demeter.dll
+"""
+
+def printCompilerMessage(event):
+    log = csp.csplib.log()
+    if event.GetType() == Compiler.Information:
+        log.info(event.GetMessage())
+    elif event.GetType() == Compiler.Warning:
+        log.warning(event.GetMessage())
+    elif event.GetType() == Compiler.Error:
+        log.error("===============================================================")
+        log.error(event.GetMessage())
+        log.error("===============================================================")
+
+if __name__ == '__main__':
+    data_archive_filename = None
+    source_directory = None
+    module_paths = []
+
+    option_config = [
+        'help',
+        'data-archive=',
+        'source-dir=',
+        ]
+
+    try:
+        options, args = getopt.getopt(sys.argv[1:], 'hd:s:m:', option_config)
+        if len(options) == 0:
+            print(USAGE)
+            sys.exit(0)
+    except getopt.GetoptError, message:
+        print(message)
+        sys.exit(1)
+
+    for opt, value in options:
+        if opt in ('-h','--help'):
+            print(USAGE)
+            sys.exit(0)
+        if opt in ('-d', '--data-archive'):
+            data_archive_filename = value
+        if opt in ('-s', '--source-dir'):
+            source_directory = value
+        if opt in ('-m', '--module'):
+            module_paths.append(value)
+
+    if data_archive_filename is None:
+        print("No destinationn archive specified.")
+        sys.exit(1)
+    if source_directory is None:
+        print("No source directory specified.")
+        sys.exit(1)
+
+    # Make all objects available for introspection and serialization
+    csp.cspsim.registerAllObjectInterfaces()
+    for module_path in module_paths:
+        csp.csplib.ModuleLoader.load(module_path)
+
+    # Instantiate the compiler and connect for events.
+    compiler = Compiler()
+    compiler.GetCompilerSignal().Connect(printCompilerMessage)
+    result = compiler.CompileAll(source_directory, data_archive_filename)
+    log = csp.csplib.log()
+    if result == True:
+        log.info("Compiler finished with success.")
+        sys.exit(0)
+    elif result == False:
+        log.error("Compiler finished with errors.")
+        sys.exit(2)

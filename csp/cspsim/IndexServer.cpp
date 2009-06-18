@@ -22,6 +22,7 @@
  *
  **/
 
+#include <csignal>
 #include <csp/cspsim/battlefield/GlobalBattlefield.h>
 #include <csp/cspsim/IndexServer.h>
 #include <csp/cspsim/Config.h>
@@ -32,8 +33,18 @@
 #include <csp/csplib/util/SimpleConfig.h>
 #include <csp/csplib/util/Trace.h>
 
-
 namespace csp {
+
+bool sigint_quit = false;
+void (*sigint_original)(int);
+
+void sigint_handler(int parameter) {
+	// Signal to the main loop that we wish to quit.
+	sigint_quit = true;
+
+	// Also call the original handler.
+	sigint_original(parameter);
+}
 
 IndexServer::IndexServer() {
 	CSPLOG(INFO, APP) << "IndexServer()";
@@ -98,7 +109,7 @@ void IndexServer::run() {
 	CSPLOG(INFO, APP) << "starting network loop";
 	Timer timer;
 	timer.start();
-	for (;;) {
+	while (!sigint_quit) {
 		m_NetworkServer->processAndWait(0.01, 0.01, 0.10);
 		m_Battlefield->update(timer.incremental());
 	}
@@ -106,6 +117,9 @@ void IndexServer::run() {
 
 int IndexServer::main() {
 	csp::AutoTrace::install();
+
+	// We do want to install a handler so we can respond to CTRL+C etc.
+	sigint_original = signal(SIGINT, sigint_handler);
 
 	if (!csp::openConfig("IndexServer.ini", false)) {
 		std::cerr << "Unable to open config file 'IndexServer.ini'\n";

@@ -28,7 +28,7 @@ SDLEventHandler::SDLEventHandler()
 {
 }
 
-bool SDLEventHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa, osg::Object*, osg::NodeVisitor*)
+bool SDLEventHandler::handle(const osgGA::GUIEventAdapter& /*ea*/, osgGA::GUIActionAdapter& /*aa*/, osg::Object*, osg::NodeVisitor*)
 {
 	return false; //onEvent(ea);
 }

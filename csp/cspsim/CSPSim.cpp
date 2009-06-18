@@ -645,7 +645,6 @@ void CSPSim::run() {
 			PROF0(_simloop);
 
 			updateTime();
-			float dt = m_FrameTime;
 
 			m_Viewer->frame();
 

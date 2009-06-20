@@ -24,19 +24,17 @@ Combat Simulator Project : Take off script
 
 import csp.cspsim
 from csp.data.ui.tutorials.mission import Mission
-from csp.data.ui.scripts.gamescreenmanager import GameScreenManager
-from csp.data.ui.scripts.utils import SlotManager
 
-class TakeOff(Mission):
+class TimeOfDayDawn(Mission):
     def __init__(self, cspsim):
         Mission.__init__(self, cspsim)
-
+       
     def name(self):
-        return "${tutorials_takeoff}"
+        return "${tutorials_timeofday_dawn}"
 
     def describingUI(self):
-        return "takeoff/mission.xml"
-       
+        return "timeofday/dawn.xml"
+
     def startMission(self):
         Mission.startMission(self)
         
@@ -47,14 +45,8 @@ class TakeOff(Mission):
         self.cspsim.createVehicle(f16dj, vec(-29495, -10530, 91.3), vec(0, 0, 0), vec(0.0, 0.0, 180.0), True)
         
         # Set the date and time. We want daylight for the first mission.
-        date = csp.csplib.SimDate(2007,6,12,10,0,0)
+        date = csp.csplib.SimDate(2007,6,12,2,0,0)
         self.cspsim.setCurrentTime(date)
         
     def onStart(self):
-        windowManager = self.cspsim.getWindowManager()
-        
-        window = csp.cspsim.Window()
-        serializer = csp.cspsim.Serialization()
-        serializer.load(window, 'tutorials/takeoff/help.xml')
-        windowManager.show(window)
-        
+        pass

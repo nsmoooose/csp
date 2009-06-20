@@ -25,20 +25,37 @@ Combat Simulator Project : Tutorials index script
 import csp.cspsim
 import os.path
 from csp.data.ui.scripts.utils import SlotManager
+from csp.data.ui.tutorials.mission import Mission
 from csp.data.ui.tutorials.takeoff.takeoff import TakeOff
+from csp.data.ui.tutorials.timeofday.dawn import TimeOfDayDawn
+from csp.data.ui.tutorials.timeofday.day import TimeOfDayDay
+from csp.data.ui.tutorials.timeofday.dusk import TimeOfDayDusk
+from csp.data.ui.tutorials.timeofday.night import TimeOfDayNight
 
 class Tutorials(csp.cspsim.Window, SlotManager):
+    class FakeMission(Mission):
+        def name(self):
+            return "${tutorials}"
+        def describingUI(self):
+            return "index.xml"
+
     def __init__(self, cspsim):
         csp.cspsim.Window.__init__(self)
         SlotManager.__init__(self)
         
         # Install the move window event handler.
         self.moveEventHandler = csp.cspsim.ControlMoveEventHandler(self)
-
-        self.missions = {'${tutorials}' : 'index.xml', 
-                       '${tutorials_takeoff}' : 'takeoff/mission.xml'}
+        self.missionDict = {}
         self.cspsim = cspsim
-                
+        self.missions = [
+            self.FakeMission(self.cspsim),
+            TakeOff(self.cspsim),
+            TimeOfDayDawn(self.cspsim),
+            TimeOfDayDay(self.cspsim),
+            TimeOfDayDusk(self.cspsim),
+            TimeOfDayNight(self.cspsim)
+            ]
+        
     def displayMission(self, mission):
         serializer = csp.cspsim.Serialization()
         serializer.load(self, os.path.join('tutorials', mission))
@@ -46,16 +63,16 @@ class Tutorials(csp.cspsim.Window, SlotManager):
         closeButton = self.getById('close')
         if closeButton != None:
             self.connectToClickSignal(closeButton, self.close_Click)
-            
+
         self.missionListBox = self.getById('missions')
         if self.missionListBox != None:
-            self.missionListBox.addItem(csp.cspsim.ListBoxItem('${tutorials}'))
-            self.missionListBox.addItem(csp.cspsim.ListBoxItem('${tutorials_takeoff}'))
+            for list_mission in self.missions:
+                item = csp.cspsim.ListBoxItem(list_mission.name())
+                self.missionDict[list_mission.name()] = list_mission
+                self.missionListBox.addItem(item)
 
-            # Select the correct item in the listbox.
-            for key, value in self.missions.iteritems():
-                if value == mission:
-                    self.missionListBox.setSelectedItemByText(key)
+                if list_mission.describingUI() == mission:
+                    self.missionListBox.setSelectedItem(item)
 
             self.connectToSelectedItemChangedSignal(self.missionListBox, self.missionListBox_Changed)
             
@@ -64,9 +81,10 @@ class Tutorials(csp.cspsim.Window, SlotManager):
             self.connectToClickSignal(startButton, self.start_Click)
         
     def missionListBox_Changed(self):
+        selectedItem = self.missionListBox.getSelectedItem().getText()
+
         newTutorialsWindow = Tutorials(self.cspsim)
-        selectedText = self.missionListBox.getSelectedItem().getText()
-        newTutorialsWindow.displayMission(self.missions[selectedText])
+        newTutorialsWindow.displayMission(self.missionDict[selectedItem].describingUI())
         self.getWindowManager().show(newTutorialsWindow)
         self.close()
 
@@ -74,5 +92,7 @@ class Tutorials(csp.cspsim.Window, SlotManager):
         self.close()
         
     def start_Click(self):
-        mission = TakeOff(self.cspsim)
-        mission.startMission()
+        if self.missionListBox:
+            selectedItem = self.missionListBox.getSelectedItem()
+            mission = self.missionDict[selectedItem.getText()]
+            mission.startMission()

@@ -30,6 +30,10 @@
 		<String key="start_simulation">Start</String>
 		<String key="tutorials">Tutorials</String>
 		<String key="tutorials_takeoff">Takeoff (F16)</String>
+		<String key="tutorials_timeofday_dawn">Dawn</String>
+		<String key="tutorials_timeofday_day">Day</String>
+		<String key="tutorials_timeofday_dusk">Dusk</String>
+		<String key="tutorials_timeofday_night">Night</String>
 		<String key="ui_theme">Theme</String>
 		<String key="ui_language">Language</String>
 	</Strings>

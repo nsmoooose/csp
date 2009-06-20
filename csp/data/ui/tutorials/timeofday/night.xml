@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<WindowDocument xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation='../window_document.xsd'>
+  <Includes>
+    <!-- This include will set the default behaviour on all controls. -->
+    <StyleInclude>styles.xml</StyleInclude>
+    <StyleInclude>css_help.xml</StyleInclude>
+    <StringTableInclude>global.xml</StringTableInclude>
+  </Includes>
+  <Window LocationZ="10" CssClass="help">
+ 	<Control>
+ 		<MultiControlContainer>
+ 			<Controls>
+ 				<Button Id="close" CssClass="close_button" />
+		        <Label LocationX="10" LocationY="2" SizeWidth="569" SizeHeight="30" Text="${tutorials}" />
+		        <Label CssClass="stripe" />
+				<ListBox Id="missions" LocationX="10" LocationY="55" SizeWidth="150" SizeHeight="585" />
+				<Label LocationX="170" LocationY="55" SizeWidth="709" SizeHeight="40" CssClass="heading" Text="${tutorials_timeofday_night}" />
+				<Label LocationX="170" LocationY="95" SizeWidth="709" SizeHeight="505" CssClass="multiline">
+					<Text>
+						Look at the stars in the sky.
+					</Text>
+				</Label>
+				<Button Id="start" Text="${start_simulation}" 
+						LocationX="760"	LocationY="600" SizeWidth="120" 
+						SizeHeight="40" />
+ 			</Controls>
+ 		</MultiControlContainer>
+  	</Control>
+  </Window>
+</WindowDocument>

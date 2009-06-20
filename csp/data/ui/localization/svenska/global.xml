@@ -30,6 +30,10 @@
 		<String key="start_simulation">Starta</String>
 		<String key="tutorials">Handledning</String>
 		<String key="tutorials_takeoff">Start (F16)</String>
+		<String key="tutorials_timeofday_dawn">Gryning</String>
+		<String key="tutorials_timeofday_day">Dag</String>
+		<String key="tutorials_timeofday_dusk">Skymning</String>
+		<String key="tutorials_timeofday_night">Natt</String>
 		<String key="ui_theme">Tema</String>
 		<String key="ui_language">Språk</String>
 	</Strings>

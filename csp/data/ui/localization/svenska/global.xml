@@ -34,6 +34,7 @@
 		<String key="tutorials_timeofday_day">Dag</String>
 		<String key="tutorials_timeofday_dusk">Skymning</String>
 		<String key="tutorials_timeofday_night">Natt</String>
+		<String key="tutorials_vehicles">Fordon</String>
 		<String key="ui_theme">Tema</String>
 		<String key="ui_language">Språk</String>
 	</Strings>

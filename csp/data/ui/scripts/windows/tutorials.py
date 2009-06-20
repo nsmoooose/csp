@@ -31,6 +31,7 @@ from csp.data.ui.tutorials.timeofday.dawn import TimeOfDayDawn
 from csp.data.ui.tutorials.timeofday.day import TimeOfDayDay
 from csp.data.ui.tutorials.timeofday.dusk import TimeOfDayDusk
 from csp.data.ui.tutorials.timeofday.night import TimeOfDayNight
+from csp.data.ui.tutorials.vehicles.vehicles import Vehicles
 
 class Tutorials(csp.cspsim.Window, SlotManager):
     class FakeMission(Mission):
@@ -53,7 +54,8 @@ class Tutorials(csp.cspsim.Window, SlotManager):
             TimeOfDayDawn(self.cspsim),
             TimeOfDayDay(self.cspsim),
             TimeOfDayDusk(self.cspsim),
-            TimeOfDayNight(self.cspsim)
+            TimeOfDayNight(self.cspsim),
+            Vehicles(self.cspsim)
             ]
         
     def displayMission(self, mission):

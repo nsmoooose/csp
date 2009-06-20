@@ -34,6 +34,7 @@
 		<String key="tutorials_timeofday_day">Day</String>
 		<String key="tutorials_timeofday_dusk">Dusk</String>
 		<String key="tutorials_timeofday_night">Night</String>
+		<String key="tutorials_vehicles">Vehicles</String>
 		<String key="ui_theme">Theme</String>
 		<String key="ui_language">Language</String>
 	</Strings>

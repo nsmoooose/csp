@@ -200,6 +200,18 @@ public:
 	 */
 	virtual void setEnabled(bool enabled);
 
+	/** Sets if this control can receive focus.
+	 */
+	virtual void setCanFocus(bool canFocus);
+	/** Returns true if this control can receive focus.
+	 */
+	virtual bool getCanFocus();
+
+	/** Focus on the control. Note that the control must support focus
+	 * using the CanFocus property and must be visible and enabled.
+	 */
+	virtual void focus();
+
 	/** Adds a state to the Control. Example: By adding the state "disabled" you can
 	 * use the Label:disabled CssClass to change the appearence of the control. A
 	 * Control can have several states assigned. Example: "disabled" and "hover". Then
@@ -268,6 +280,7 @@ public:
 		ar & make_nvp("@LocationZ", m_ZPos);
 		ar & make_nvp("@SizeWidth", m_Style->width);
 		ar & make_nvp("@SizeHeight", m_Style->height);
+		ar & make_nvp("@CanFocus", m_CanFocus);
 		ar & make_nvp("Style", m_Style);
 	}
 
@@ -312,7 +325,7 @@ private:
 
 	WeakRef<Container> m_Parent;
 	Ref<Style> m_Style;
-	bool m_Visible;
+	bool m_CanFocus;
 
 	Ref<Signal> m_ClickSignal;
 };

@@ -4,7 +4,7 @@
     <!-- This include will set the default behaviour on all controls. -->
     <StyleInclude>styles.xml</StyleInclude>
   </Includes>
-  <Window LocationZ="-10" CssClass="desktop">
+  <Window CssClass="desktop" CanFocus="false">
   	<Control>
   		<MultiControlContainer>
   			<Controls>

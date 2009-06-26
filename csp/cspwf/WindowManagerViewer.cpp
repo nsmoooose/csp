@@ -72,7 +72,7 @@ WindowManagerViewer::WindowManagerViewer(int width, int height) : WindowManager(
     m_Camera->setRenderOrder(osg::Camera::POST_RENDER);
 
 	osg::Matrix view_matrix;
-	view_matrix.makeLookAt(osg::Vec3(0, 0, 100.0), osg::Vec3(0.0, 0.0, 0.0), osg::Vec3(0, 1, 0));
+	view_matrix.makeLookAt(osg::Vec3(0, 0, 1000.0), osg::Vec3(0.0, 0.0, 0.0), osg::Vec3(0, 1, 0));
 	m_Camera->setViewMatrix(view_matrix);
 
     // we don't want the camera to grab event focus from the viewers main camera(s).

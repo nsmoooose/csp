@@ -6,7 +6,7 @@
     <StyleInclude>css_top.xml</StyleInclude>
     <StringTableInclude>global.xml</StringTableInclude>
   </Includes>
-  <Window CssClass="top_window" LocationZ="-9" Id="topMenuWindow">
+  <Window CssClass="top_window" Id="topMenuWindow" CanFocus="false">
 	<Style>
 	</Style>
   	<Control>

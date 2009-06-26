@@ -38,7 +38,7 @@
 namespace csp {
 namespace wf {
 
-WindowManager::WindowManager(int width, int height) : 
+WindowManager::WindowManager(int width, int height) :
 	m_ScreenWidth(width), m_ScreenHeight(height) {
 
 	m_Group = new osg::Group;
@@ -80,6 +80,16 @@ bool WindowManager::onMouseDown(int x, int y, int button) {
 	Control* control = getControlAtPosition(x, y);
 	MouseButtonEventArgs event(control, button, x, y);
 	if(control != NULL) {
+		/* Perhaps not the correct way of doing things... But
+		 * we do try to let the window that owns this control
+		 * to be put on top. This is done by modifying the z
+		 * value of the window.
+		 */
+		Ref<Window> window = Window::getWindow(control);
+		if(window->getCanFocus() && window->getEnabled()) {
+			onTop(window.get());
+		}
+
 		control->onMouseDown(event);
 	}
 	return event.handled;
@@ -149,6 +159,9 @@ void WindowManager::show(Window* window) {
 
 	// Also store a reference to the window.
 	m_Windows.push_back(window);
+
+	// Make the window be the top most window.
+	onTop(window);
 }
 
 void WindowManager::performLayout(Window* window) {
@@ -220,6 +233,31 @@ void WindowManager::closeAll() {
 	closeByType<Window>();
 }
 
+void WindowManager::onTop(Window* window) {
+	/* Simple way.
+	   - Remove the window from the vector.
+	   - Add it to the end.
+	   - Set ZPos on all windows to enforce the new
+	     order.
+	*/
+
+	WindowVector::iterator iteratedWindow = m_Windows.begin();
+	for(;iteratedWindow != m_Windows.end();++iteratedWindow) {
+		if(iteratedWindow->get() == window) {
+			m_Windows.erase(iteratedWindow);
+			break;
+		}
+	}
+
+	m_Windows.push_back(window);
+
+	float step = -1000.0;
+	iteratedWindow = m_Windows.begin();
+	for(;iteratedWindow != m_Windows.end();++iteratedWindow) {
+		(*iteratedWindow)->setZPos(step);
+		step += 20.0;
+	}
+}
 
 Size WindowManager::getScreenSize() const {
 	Size size;

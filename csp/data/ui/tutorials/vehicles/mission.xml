@@ -6,7 +6,7 @@
     <StyleInclude>css_help.xml</StyleInclude>
     <StringTableInclude>global.xml</StringTableInclude>
   </Includes>
-  <Window LocationZ="10" CssClass="help">
+  <Window CssClass="help">
  	<Control>
  		<MultiControlContainer>
  			<Controls>
@@ -24,8 +24,8 @@ Use SPACE to switch between the different vehicles. Currently this is:
 * Mirage 2000
 					</Text>
 				</Label>
-				<Button Id="start" Text="${start_simulation}" 
-						LocationX="760"	LocationY="600" SizeWidth="120" 
+				<Button Id="start" Text="${start_simulation}"
+						LocationX="760"	LocationY="600" SizeWidth="120"
 						SizeHeight="40" />
  			</Controls>
  		</MultiControlContainer>

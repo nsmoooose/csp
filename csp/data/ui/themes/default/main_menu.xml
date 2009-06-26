@@ -5,7 +5,7 @@
     <StyleInclude>styles.xml</StyleInclude>
     <StringTableInclude>global.xml</StringTableInclude>
   </Includes>
-  <Window CssClass="mainmenu" SizeWidth="210" SizeHeight="3500" LocationZ="1" >
+  <Window CssClass="mainmenu" SizeWidth="210" SizeHeight="3500" CanFocus="false">
 	<Style>
 		<VerticalAlign>none</VerticalAlign>
 		<HorizontalAlign>none</HorizontalAlign>

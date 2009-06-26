@@ -35,6 +35,7 @@ namespace wf {
 Window::Window() :
 	SingleControlContainer("Window"),
 	m_StringResources(new StringResourceManager) {
+	setCanFocus(true);
 }
 
 Window::~Window() {

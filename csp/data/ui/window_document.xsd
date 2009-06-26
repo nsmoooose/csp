@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
-<!-- 
-This schema is describing all properties of all widgets. It is easy to 
+<!--
+This schema is describing all properties of all widgets. It is easy to
 validate xml for our windows with this schema. All complexType:s found
 in this document has the same inheritence as the cpp-classes.
  -->
@@ -11,7 +11,7 @@ in this document has the same inheritence as the cpp-classes.
 
   <xsd:complexType name="StringTableDocument_t">
   	<xsd:sequence>
-  		<xsd:element name="Strings" minOccurs="0"> 
+  		<xsd:element name="Strings" minOccurs="0">
   			<xsd:complexType>
   				<xsd:sequence>
   					<xsd:element name="String" type="StringKey_t" maxOccurs="unbounded" />
@@ -20,13 +20,13 @@ in this document has the same inheritence as the cpp-classes.
   		</xsd:element>
   	</xsd:sequence>
   </xsd:complexType>
-  
+
   <xsd:complexType name="StringKey_t">
 	<xsd:simpleContent>
 		<xsd:extension base="xsd:string">
 			<xsd:attribute name="key" type="xsd:string"/>
 		</xsd:extension>
-	</xsd:simpleContent>	
+	</xsd:simpleContent>
   </xsd:complexType>
 
   <xsd:complexType name="StyleDocument_t">
@@ -48,7 +48,7 @@ in this document has the same inheritence as the cpp-classes.
       <xsd:element name="Color" type="xsd:string" minOccurs="0" />
       <xsd:element name="TextVerticalAlign" minOccurs="0" type="VerticalAlignment_t" />
       <xsd:element name="TextHorizontalAlign" minOccurs="0" type="HorizontalAlignment_t" />
-      
+
       <xsd:element name="BackgroundColor" type="xsd:string" minOccurs="0" />
       <xsd:element name="BackgroundColorTopLeft" type="xsd:string" minOccurs="0" />
       <xsd:element name="BackgroundColorTopRight" type="xsd:string" minOccurs="0" />
@@ -73,7 +73,7 @@ in this document has the same inheritence as the cpp-classes.
       <xsd:element name="HorizontalAlign" minOccurs="0" type="HorizontalAlignment_t" />
 
       <xsd:element name="Visible" type="xsd:boolean" minOccurs="0" />
-      
+
       <xsd:element name="Left" type="xsd:string" minOccurs="0" />
       <xsd:element name="Top" type="xsd:string" minOccurs="0" />
       <xsd:element name="Height" type="xsd:string" minOccurs="0" />
@@ -142,6 +142,7 @@ in this document has the same inheritence as the cpp-classes.
     <xsd:attribute name="LocationX" type="xsd:double" use="optional" />
     <xsd:attribute name="LocationY" type="xsd:double" use="optional" />
     <xsd:attribute name="LocationZ" type="xsd:double" use="optional" />
+	<xsd:attribute name="CanFocus" type="xsd:boolean" use="optional" />
   </xsd:complexType>
 
   <xsd:complexType name="Container_t">
@@ -161,7 +162,7 @@ in this document has the same inheritence as the cpp-classes.
       </xsd:extension>
     </xsd:complexContent>
   </xsd:complexType>
-  
+
   <xsd:complexType name="Image_t">
     <xsd:complexContent>
       <xsd:extension base="Control_t" />
@@ -207,7 +208,7 @@ in this document has the same inheritence as the cpp-classes.
   <xsd:group name="SingleControl_t">
     <xsd:choice>
       <xsd:element name="Button" type="Button_t" />
-      <xsd:element name="Check" type="Check_t" />     
+      <xsd:element name="Check" type="Check_t" />
       <xsd:element name="CheckBox" type="CheckBox_t" />
       <xsd:element name="Label" type="Label_t" />
       <xsd:element name="Image" type="Image_t" />
@@ -340,7 +341,7 @@ in this document has the same inheritence as the cpp-classes.
           </xsd:element>
         </xsd:sequence>
       </xsd:extension>
-    </xsd:complexContent>    
+    </xsd:complexContent>
   </xsd:complexType>
 
   <xsd:simpleType name="VerticalAlignment_t">

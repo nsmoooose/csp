@@ -6,8 +6,7 @@
 		<StyleInclude>styles.xml</StyleInclude>
 		<StringTableInclude>global.xml</StringTableInclude>
 	</Includes>
-	<Window Id="optionsWindow" CssClass="window_default" SizeWidth="580" SizeHeight="420"
-		LocationZ="30">
+	<Window Id="optionsWindow" CssClass="window_default" SizeWidth="580" SizeHeight="420">
 		<Control>
 			<MultiControlContainer>
 				<Controls>

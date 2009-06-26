@@ -40,7 +40,7 @@ namespace wf {
 Control::Control(std::string name) :
 	m_Name(name),
 	m_Enabled(true), m_TransformGroup(new osg::MatrixTransform),
-	m_ZPos(1.0), m_Style(new Style), m_ClickSignal(new Signal)
+	m_ZPos(1.0), m_Style(new Style), m_CanFocus(false), m_ClickSignal(new Signal)
 {
 	// Attach a control callback to the control. This makes it possible
 	// for the window manager to find out what control exists on a specific
@@ -110,8 +110,10 @@ float Control::getZPos() const {
 }
 
 void Control::setZPos(float zPos) {
-	m_ZPos = zPos;
-	updateMatrix();
+	if(zPos != m_ZPos) {
+		m_ZPos = zPos;
+		updateMatrix();
+	}
 }
 
 const Point Control::getLocation() const {
@@ -156,6 +158,17 @@ void Control::setEnabled(bool enabled) {
 		return;
 	}
 	m_Enabled = enabled;
+}
+
+bool Control::getCanFocus() {
+	return m_CanFocus;
+}
+
+void Control::setCanFocus(bool canFocus) {
+	m_CanFocus = canFocus;
+}
+
+void Control::focus() {
 }
 
 void Control::addState(const std::string& state) {

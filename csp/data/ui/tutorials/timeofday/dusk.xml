@@ -6,7 +6,7 @@
     <StyleInclude>css_help.xml</StyleInclude>
     <StringTableInclude>global.xml</StringTableInclude>
   </Includes>
-  <Window LocationZ="10" CssClass="help">
+  <Window CssClass="help">
  	<Control>
  		<MultiControlContainer>
  			<Controls>
@@ -20,8 +20,8 @@
 						Watch the sun go down from the F16 cockpit.
 					</Text>
 				</Label>
-				<Button Id="start" Text="${start_simulation}" 
-						LocationX="760"	LocationY="600" SizeWidth="120" 
+				<Button Id="start" Text="${start_simulation}"
+						LocationX="760"	LocationY="600" SizeWidth="120"
 						SizeHeight="40" />
  			</Controls>
  		</MultiControlContainer>

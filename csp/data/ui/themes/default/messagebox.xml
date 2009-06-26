@@ -5,7 +5,7 @@
     <StyleInclude>styles.xml</StyleInclude>
     <StringTableInclude>global.xml</StringTableInclude>
   </Includes>
-  <Window CssClass="messagebox" LocationZ="50" >
+  <Window CssClass="messagebox">
     <Control>
       <MultiControlContainer>
         <Controls>

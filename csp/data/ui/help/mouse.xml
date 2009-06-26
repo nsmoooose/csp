@@ -6,7 +6,7 @@
     <StyleInclude>css_help.xml</StyleInclude>
     <StringTableInclude>global.xml</StringTableInclude>
   </Includes>
-  <Window LocationZ="10" CssClass="help">
+  <Window CssClass="help">
  	<Control>
  		<MultiControlContainer>
  			<Controls>

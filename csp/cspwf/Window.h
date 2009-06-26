@@ -50,6 +50,9 @@ typedef std::map<std::string, Ref<Style> > NamedStyleMap;
  *
  * By default this class only supports a single child control that will take up all
  * of the client area.
+ *
+ * CanFocus property is true by default for all window controls. This means that
+ * the window can receive focus and be put on top when you click on it.
  */
 class CSPWF_EXPORT Window : public SingleControlContainer {
 public:

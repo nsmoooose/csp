@@ -6,7 +6,7 @@
     <StyleInclude>css_help.xml</StyleInclude>
     <StringTableInclude>global.xml</StringTableInclude>
   </Includes>
-  <Window CssClass="help_tutorial" LocationZ="-20" SizeWidth="300" SizeHeight="700">
+  <Window CssClass="help_tutorial" SizeWidth="300" SizeHeight="700">
  	<Control>
  		<MultiControlContainer>
  			<Controls>
@@ -18,13 +18,13 @@
  						<TextVerticalAlign>top</TextVerticalAlign>
  						<TextHorizontalAlign>left</TextHorizontalAlign>
  					</Style>
- 					<Text>1. Increase throttle to full afterburner. 
+ 					<Text>1. Increase throttle to full afterburner.
 
 2. Pitch up the nose when you reach 150 kts.
 
 3. Raise landing gear when you are in the air.</Text>
  				</Label>
- 				
+
  				<!-- Increase / decrease throttle -->
  				<Image LocationX="10" LocationY="190" SizeHeight="32" SizeWidth="32">
  					<Style>

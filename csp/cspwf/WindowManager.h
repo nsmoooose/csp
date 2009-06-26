@@ -90,6 +90,10 @@ public:
 	 */
 	virtual void closeAll();
 
+	/** Rearranges all the windows and put this instance on top.
+	 */
+	virtual void onTop(Window* window);
+
 	/** Returns the screen size as the window manager knows it.
 	 */
 	virtual Size getScreenSize() const;

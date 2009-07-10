@@ -25,6 +25,7 @@
 #include <csp/cspsim/ConditionsChannels.h>
 #include <csp/cspsim/FlightDynamicsChannels.h>
 #include <csp/cspsim/ResourceBundle.h>
+#include <csp/cspsim/sound/SoundEngine.h>
 #include <csp/cspsim/sound/Sample.h>
 #include <csp/cspsim/sound/SoundModel.h>
 #include <csp/cspsim/SystemsModel.h>
@@ -85,6 +86,7 @@ Vector3 const &Engine::getSmokeEmitterLocation() const {
 }
 
 void Engine::bindSounds(SoundModel* model, ResourceBundle* bundle) {
+	if ( !SoundEngine::getInstance().getSoundEnabled() ) return;
 	assert(model);
 	CSPLOG(DEBUG, AUDIO) << "Engine::bindSounds";
 	if (bundle) {

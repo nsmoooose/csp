@@ -99,9 +99,9 @@ void SoundSample::loadSample() const {
 		// TODO on failure, load a dummy sound
 		m_State->setSample(m_Sample.get());	
 	}
-	catch (...)
+	catch (std::exception & e)
 	{
-		CSPLOG(ERROR, AUDIO) << "Loading sample " << m_Filename << " failed.";
+		CSPLOG(ERROR, AUDIO) << "Loading sample " << m_Filename << " failed. (" << e.what() << ")";
 	}
 }
 

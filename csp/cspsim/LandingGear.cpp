@@ -45,6 +45,7 @@
 #include <csp/cspsim/LandingGearChannels.h>
 #include <csp/cspsim/SystemsModel.h>
 #include <csp/cspsim/ResourceBundle.h>
+#include <csp/cspsim/sound/SoundEngine.h>
 #include <csp/cspsim/sound/Sample.h>
 #include <csp/cspsim/sound/SoundModel.h>
 
@@ -656,6 +657,7 @@ void LandingGear::bindChannels(Bus* bus) {
 }
 
 void LandingGear::bindSounds(SoundModel *model, ResourceBundle *bundle) {
+	if ( !SoundEngine::getInstance().getSoundEnabled() ) return;
 	assert(model);
 	CSPLOG(DEBUG, AUDIO) << "GearDynamics::bindSounds";
 	if (bundle) {

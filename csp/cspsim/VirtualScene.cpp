@@ -450,8 +450,9 @@ void VirtualScene::buildScene() {
 	createSceneViews();
 	ScreenInfoNode::setUp(CSPSim::theSim->getSceneData());
 
+	m_SoundRoot = new osg::PositionAttitudeTransform;
+	
 	if(SoundEngine::getInstance().getSoundEnabled()) {
-		m_SoundRoot = new osg::PositionAttitudeTransform;
 		m_SoundRoot->addChild(SoundEngine::getInstance().getSoundRoot());
 
 		// place the sound root in the very far group to ensure that the listener is

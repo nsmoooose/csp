@@ -28,6 +28,7 @@
 #include <csp/cspsim/System.h>
 #include <csp/cspsim/Bus.h>
 #include <csp/cspsim/ResourceBundle.h>
+#include <csp/cspsim/sound/SoundEngine.h>
 #include <csp/cspsim/sound/Sample.h>
 #include <csp/cspsim/sound/SoundModel.h>
 #include <csp/cspsim/SystemsModel.h>
@@ -94,6 +95,7 @@ SoundSample const *System::getSoundSample(std::string const &name) const {
 }
 
 SoundEffect *System::addSoundEffect(std::string const &name, SoundEffect::Mode mode) {
+	if ( !SoundEngine::getInstance().getSoundEnabled() ) return 0;
 	assert(m_Model);
 	Ref<const SoundSample> sample(getSoundSample(name));
 	Ref<SoundModel> model = m_Model->getSoundModel();

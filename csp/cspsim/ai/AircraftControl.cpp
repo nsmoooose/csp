@@ -27,6 +27,8 @@
 namespace csp {
 namespace ai {
 
+static bool s_doDebug = false;
+
 AircraftControl::AircraftControl():
 		m_PitchPID(-5.0, -0.5, -1.0),
 		m_RollPID(0.5, 0.05),
@@ -88,7 +90,7 @@ void AircraftControl::importChannels(Bus *bus) {
 
 bool AircraftControl::pullupAdvisory() const {
 	if (b_AltitudeAdvisory.valid()) return b_AltitudeAdvisory->value();
-	static int xxx = 0; ++xxx; bool debug = (xxx % 100) == 0;
+	static int xxx = 0; ++xxx; bool debug = s_doDebug && (xxx % 100) == 0;
 	if (debug) std::cout << "NO ADVISORY CHANNEL\n";
 	return (!gearFullyExtended() && -4.0 * vv() > ralt() + 300.0);
 }
@@ -108,7 +110,7 @@ bool AircraftControl::flyTowardPosition(
 		double max_g,
 		bool can_invert,
 		double dt) {
-	static int xxx = 0; bool debug = ((++xxx % 10) == 0);
+	static int xxx = 0; bool debug = s_doDebug && ((++xxx % 10) == 0);
 
 	if ((target - m_LastTarget).length2() > 10000.0) {
 		m_LastTarget = target;
@@ -343,7 +345,7 @@ void AircraftControl::flyToPositionVelocity(
 	// the climb away branch), and need to detect and return "close enough".
 
 	static int xxx = 0; ++xxx;
-	bool debug = ((xxx % 30) == 0);
+	bool debug = s_doDebug && ((xxx % 30) == 0);
 
 	if (fabs(dz) > 500.0) {
 		if (climb_angle > toRadians(20.0) * climb_factor) {
@@ -517,7 +519,7 @@ void AircraftControl::controlHeading(double heading_error, double vv_error, doub
 		m_Invert = false;
 	}
 	double roll = clampTo(-3.0 * heading_error, -max_roll, max_roll);
-	static int xxx = 0; bool debug = ((++xxx % 60) == 0);
+	static int xxx = 0; bool debug = s_doDebug && ((++xxx % 60) == 0);
 	if (m_Invert) roll = toRadians(180.0) - roll;
 	if (debug) std::cout << "heading error: " << toDegrees(heading_error) << " " << roll << " " << m_Invert << "\n";
 	holdRoll(roll, dt);

@@ -101,11 +101,14 @@ Shader *Shader::instance() {
 osg::Program *Shader::loadProgram(std::string const &basename) {
 	osg::Shader *v_shader = new osg::Shader(osg::Shader::VERTEX);
 	osg::Shader *f_shader = new osg::Shader(osg::Shader::FRAGMENT);
+	v_shader->setName(basename);
+	f_shader->setName(basename);
 	bool ok = false;
 	ok = v_shader->loadShaderSourceFromFile(ospath::join(m_ShaderPath, basename + ".vertex")) || ok;
 	ok = f_shader->loadShaderSourceFromFile(ospath::join(m_ShaderPath, basename + ".fragment")) || ok;
 	if (!ok) return 0;
 	osg::Program *program = new osg::Program;
+	program->setName(basename);
 	program->addShader(v_shader);
 	program->addShader(f_shader);
 	return program;

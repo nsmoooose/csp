@@ -72,7 +72,12 @@ protected:
 	Ref<input::HID> getCurrentScreenInterface();
 	Ref<input::HID> getActiveObjectInterface();
 
+	bool handleMouseMotion(const osgGA::GUIEventAdapter& ea);
+
 	bool m_drag;
+	bool m_lastMousePositionUnknown;
+	float m_lastMousePositionX;
+	float m_lastMousePositionY;
 };
 
 }

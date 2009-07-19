@@ -24,13 +24,110 @@
 namespace csp {
 
 SDLEventHandler::SDLEventHandler()
-	: m_drag(false)
+	: m_drag(false), m_lastMousePositionUnknown(true)
 {
 }
 
-bool SDLEventHandler::handle(const osgGA::GUIEventAdapter& /*ea*/, osgGA::GUIActionAdapter& /*aa*/, osg::Object*, osg::NodeVisitor*)
+bool SDLEventHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& /*aa*/, osg::Object*, osg::NodeVisitor*)
 {
-	return false; //onEvent(ea);
+	switch ( ea.getEventType() )
+	{
+		case osgGA::GUIEventAdapter::MOVE :
+		{
+			m_drag = false;
+			return handleMouseMotion(ea);
+		}
+
+		case osgGA::GUIEventAdapter::DRAG :
+		{
+			m_drag = true;
+			return handleMouseMotion(ea);
+		}
+
+		case osgGA::GUIEventAdapter::RELEASE :
+		{
+			float y = ea.getYmax() - ea.getY(); // TODO: switch from SDL orientation to OSG orientation
+			input::RawEvent::MouseButton mouseButtonEvent(input::RawEvent::MouseButton::RELEASED, ea.getButton(), ea.getButtonMask(), ea.getModKeyMask(), ea.getX(), y, m_drag);
+			if ( ea.getButtonMask() == 0 ) m_drag = false;
+			return onEvent(mouseButtonEvent);
+		}
+
+		case osgGA::GUIEventAdapter::PUSH :
+		{
+			float y = ea.getYmax() - ea.getY(); // TODO: switch from SDL orientation to OSG orientation
+			input::RawEvent::MouseButton mouseButtonEvent(input::RawEvent::MouseButton::PRESSED, ea.getButton(), ea.getButtonMask(), ea.getModKeyMask(), ea.getX(), y, m_drag);
+			return onEvent(mouseButtonEvent);
+		}
+
+		case osgGA::GUIEventAdapter::DOUBLECLICK :
+		{
+			float y = ea.getYmax() - ea.getY(); // TODO: switch from SDL orientation to OSG orientation
+			input::RawEvent::MouseButton mouseButtonEvent(input::RawEvent::MouseButton::DOUBLECLICK, ea.getButton(), ea.getButtonMask(), ea.getModKeyMask(), ea.getX(), y, m_drag);
+			return onEvent(mouseButtonEvent);
+		}
+
+		case osgGA::GUIEventAdapter::SCROLL :
+		{
+			switch ( ea.getScrollingMotion() )
+			{
+				case osgGA::GUIEventAdapter::SCROLL_UP :
+				{
+					float y = ea.getYmax() - ea.getY(); // TODO: switch from SDL orientation to OSG orientation
+					input::RawEvent::MouseButton mouseButtonEvent(input::RawEvent::MouseButton::PRESSED, input::RawEvent::MouseButton::WHEELUP, ea.getButtonMask(), ea.getModKeyMask(), ea.getX(), y, m_drag);
+					return onEvent(mouseButtonEvent);
+				}
+
+				case osgGA::GUIEventAdapter::SCROLL_DOWN :
+				{
+					float y = ea.getYmax() - ea.getY(); // TODO: switch from SDL orientation to OSG orientation
+					input::RawEvent::MouseButton mouseButtonEvent(input::RawEvent::MouseButton::PRESSED, input::RawEvent::MouseButton::WHEELDOWN, ea.getButtonMask(), ea.getModKeyMask(), ea.getX(), y, m_drag);
+					return onEvent(mouseButtonEvent);
+				}
+			}
+		}
+
+		case osgGA::GUIEventAdapter::KEYUP :
+		{
+			input::RawEvent::Keyboard keyboardEvent(input::RawEvent::Keyboard::RELEASED, ea.getKey(), ea.getModKeyMask());
+			input::HID::translate(keyboardEvent);
+			return onEvent(keyboardEvent);
+		}
+
+		case osgGA::GUIEventAdapter::KEYDOWN :
+		{
+			input::RawEvent::Keyboard keyboardEvent(input::RawEvent::Keyboard::PRESSED, ea.getKey(), ea.getModKeyMask());
+			input::HID::translate(keyboardEvent);
+			return onEvent(keyboardEvent);
+		}
+	}
+
+	return false;
+}
+
+bool SDLEventHandler::handleMouseMotion(const osgGA::GUIEventAdapter& ea)
+{
+	float x = ea.getX();
+	float y = ea.getYmax() - ea.getY(); // TODO: switch from SDL orientation to OSG orientation
+	float dx;
+	float dy;
+
+	if ( m_lastMousePositionUnknown )
+	{
+		dx = 0;
+		dy = 0;
+		m_lastMousePositionUnknown = false;
+	}
+	else
+	{
+		dx = x - m_lastMousePositionX;
+		dy = y - m_lastMousePositionY;
+	}
+
+	m_lastMousePositionX = x;
+	m_lastMousePositionY = y;
+
+	input::RawEvent::MouseMotion mouseMotionEvent(ea.getButtonMask(), ea.getModKeyMask(), x, y, dx, dy);
+	return onEvent(mouseMotionEvent);
 }
 
 bool SDLEventHandler::handle(const SDL_Event& sdlEvent)

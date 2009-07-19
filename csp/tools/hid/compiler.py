@@ -31,19 +31,41 @@ import sys
 import os.path
 
 
-KMODS = {
-	"LSHIFT" : 0x0001,
-	"RSHIFT" : 0x0002,
-	"LCTRL"  : 0x0040,
-	"RCTRL"  : 0x0080,
-	"LALT"   : 0x0100,
-	"RALT"   : 0x0200,
-	"LMETA"  : 0x0400,
-	"RMETA"  : 0x0800,
-	"NUM"    : 0x1000,
-	"CAPS"   : 0x2000,
-	"MODE"   : 0x4000,
-}
+USE_OSG_EVENT = 0
+
+if USE_OSG_EVENT:
+	# OSG modifiers
+	KMODS = {
+		"LSHIFT" : 0x0001,
+		"RSHIFT" : 0x0002,
+		"LCTRL"  : 0x0004,
+		"RCTRL"  : 0x0008,
+		"LALT"   : 0x0010,
+		"RALT"   : 0x0020,
+		"LMETA"  : 0x0040,
+		"RMETA"  : 0x0080,
+		"LSUPER" : 0x0100,
+		"RSUPER" : 0x0200,
+		"LHYPER" : 0x0400,
+		"RHYPER" : 0x0800,
+		"NUM"    : 0x1000,
+		"CAPS"   : 0x2000,
+	}
+else:
+	# SDL modifiers
+	KMODS = {
+		"LSHIFT" : 0x0001,
+		"RSHIFT" : 0x0002,
+		"LCTRL"  : 0x0040,
+		"RCTRL"  : 0x0080,
+		"LALT"   : 0x0100,
+		"RALT"   : 0x0200,
+		"LMETA"  : 0x0400,
+		"RMETA"  : 0x0800,
+		"NUM"    : 0x1000,
+		"CAPS"   : 0x2000,
+		"MODE"   : 0x4000,
+	}
 
 MULTI_KMODS = {
 	"SHIFT" : ("LSHIFT", "RSHIFT"),
@@ -53,13 +75,13 @@ MULTI_KMODS = {
 }
 
 
-SDL_PRESSED = 0x01
+BUTTON_PRESSED = 0x01
 
-def SDL_BUTTON(x):
-	if x == 0: return 0
-	if x < 0 or x > 8:
+def BUTTON_FIELD_BIT(x):
+	if x < 0 or x > 7:
 		raise Error("invalid mouse button identifier %d (should be 0..7)." % x)
-	return SDL_PRESSED << (x-1)
+	if x == 0: return 0
+	return BUTTON_PRESSED << (x-1)
 
 
 class Error(Exception):
@@ -319,7 +341,7 @@ class VirtualDeviceDefinition:
 			if not type in valid:
 					raise Error("invalid option '%s' in map command.  must be one of %s." % (type, str(valid)))
 			if type == 'move':
-				mmod = mmod | SDL_BUTTON(value)
+				mmod = mmod | BUTTON_FIELD_BIT(value)
 			if n > 3:
 				modes = args[2]
 				script = args[3]
@@ -404,7 +426,7 @@ class VirtualDeviceDefinition:
 				elif MULTI_KMODS.has_key(mod):
 					multi.append(map(KMODS.get, MULTI_KMODS[mod]))
 				elif type == "mouse" and definitions.has_key(mod):
-					mmod = mmod | SDL_BUTTON(definitions[mod])
+					mmod = mmod | BUTTON_FIELD_BIT(definitions[mod])
 				else:
 					raise Error("unrecognized modifier '%s' in event '%s'." % (mod, event))
 		if definitions.has_key(event):
@@ -443,7 +465,7 @@ class VirtualDeviceDefinition:
 			device, id = d.split(':')
 			type, number, defs = self.devices.get(device, ("", 0, {}))
 			return defs.get(id, None)
-		return int(d)
+		return int(d, 0)
 
 	def setDefinition(self, device, name, id):
 		defs = self.definitions.setdefault(device, {})

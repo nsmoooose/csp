@@ -69,6 +69,12 @@ namespace RawEvent {
 			DOUBLECLICK
 		};
 
+		// See csp/tools/hid/maps/mouse.map
+		enum WheelButtons {
+			WHEELUP   = 1<<3,
+			WHEELDOWN = 1<<4
+		};
+
 		MouseButton(Type aType, unsigned int aButton, unsigned int aButtonMask, unsigned int aModifierMask, float aX, float aY, bool aDrag)
 			: type(aType), button(aButton), buttonMask(aButtonMask), modifierMask(aModifierMask), x(aX), y(aY), drag(aDrag) {}
 

@@ -32,6 +32,7 @@ public:
 
 protected:
 	bool setUpViewerAsSDLGraphicsWindow(const char *caption, const ScreenSettings & screenSettings);
+	bool setUpViewerAsOSGGraphicsWindow(const char *caption, const ScreenSettings & screenSettings);
 	virtual void eventTraversal();
 	virtual void updateTraversal();
 

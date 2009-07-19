@@ -32,7 +32,9 @@ namespace csp {
 
 bool SDLViewer::setUpWindow(const char *caption, const ScreenSettings & screenSettings)
 {
+	setKeyEventSetsDone(0);
 	if ( !setUpViewerAsSDLGraphicsWindow(caption, screenSettings) ) return false;
+	//if ( !setUpViewerAsOSGGraphicsWindow(caption, screenSettings) ) return false;
 	m_eventHandler = new SDLEventHandler();
 	addEventHandler( m_eventHandler ); // Our base class has the responsibility to destroy m_eventHandler
 	getCamera()->setClearMask(0);
@@ -48,6 +50,19 @@ bool SDLViewer::setUpViewerAsSDLGraphicsWindow(const char *caption, const Screen
 	getCamera()->setProjectionMatrixAsPerspective(30.0f, static_cast<double>(screenSettings.width)/static_cast<double>(screenSettings.height), 1.0f, 10000.0f);
 	getCamera()->setGraphicsContext( gw );
 	return gw->valid();
+}
+
+bool SDLViewer::setUpViewerAsOSGGraphicsWindow(const char *caption, const ScreenSettings & screenSettings)
+{
+	if ( screenSettings.fullScreen )
+	{
+		setUpViewOnSingleScreen();
+	}
+	else
+	{
+		setUpViewInWindow(50, 50, screenSettings.width, screenSettings.height);
+	}
+	return true;
 }
 
 void SDLViewer::eventTraversal()

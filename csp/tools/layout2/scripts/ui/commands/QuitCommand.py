@@ -5,6 +5,9 @@ from Command import Command
 
 class QuitCommand(Command):
 
+	def GetControlId(self):
+		return wx.ID_EXIT
+
 	def GetCaption(self):
 		return "Quit"
 
@@ -22,4 +25,3 @@ class QuitCommand(Command):
 			
 			# Close the configuration file in order to force saving
 			application.Configuration.close()
-

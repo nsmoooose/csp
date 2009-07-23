@@ -3,7 +3,7 @@ import wx
 import wx.glcanvas
 
 from csp.tools.layout2.layout_module import *
-from csp.tools.layout2.scripts.ui.controls.GraphicsWindow import GraphicsWindow
+from GraphicsWindow import GraphicsWindow
 
 class SceneWindow(GraphicsWindow):
 	"""This class is making it possible to display the scene as 
@@ -13,8 +13,8 @@ class SceneWindow(GraphicsWindow):
 	wxPyhon to use the current open gl context and when to swap
 	buffers to display the result."""
 	
-	def __init__(self, parent, id, pos, size, style, name, attribList, palette):
-		GraphicsWindow.__init__(self, parent, id, pos, size, style, name, attribList, palette)
+	def __init__(self, *args, **kwargs):
+		GraphicsWindow.__init__(self, *args, **kwargs)
 
 		# Set the c++ specific implementation that is responsible for rendering 
 		# of the scene.

@@ -1,12 +1,16 @@
 import wx
 
-class ImageWindow(wx.Window):
+class ImageWindow(wx.ScrolledWindow):
 	"""This window holds a single bitmap control. It is used to display
 	an image loaded."""
 
-	def __init__(self, parent, id):
-		wx.Window.__init__(self, parent, id)
+	def __init__(self, *args, **kwargs):
+		wx.ScrolledWindow.__init__(self, *args, **kwargs)
 		self.document = None
+		
+		self.SetScrollRate(1, 1)
+		self.sizer = wx.BoxSizer(wx.VERTICAL)
+		self.SetSizer(self.sizer)
 
 	def SetDocument(self, document):
 		if document is None:
@@ -16,8 +20,8 @@ class ImageWindow(wx.Window):
 		self.document = document
 
 		bitmap = wx.Bitmap(document.GetFileName())
-		bitmapControl = wx.StaticBitmap(self, wx.ID_ANY, bitmap)
+		bitmapControl = wx.StaticBitmap(self, bitmap = bitmap)
+		self.sizer.Add(bitmapControl)
 	
 	def GetDocument(self):
 		return self.document
-

@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import wx
+import wx.aui
 
 from csp.tools.layout2.scripts.document.ImageDocument import ImageDocument
 from csp.tools.layout2.scripts.document.OutputDocument import OutputDocument
@@ -10,7 +11,7 @@ from ModelWindow import ModelWindow
 from OutputWindow import OutputWindow
 from SceneWindow import SceneWindow
 
-class DocumentNotebook(wx.Notebook):
+class DocumentNotebook(wx.aui.AuiNotebook):
 	"""This class handles the UI of all opened documents.
 	
 	Opened documents is displayed in a notebook (tab control)
@@ -22,10 +23,13 @@ class DocumentNotebook(wx.Notebook):
 
 	Instance = None
 
-	def __init__(self, parent, id):
-		wx.Notebook.__init__(self, parent, id)
+	def __init__(self, *args, **kwargs):
+		wx.aui.AuiNotebook.__init__(self, style = wx.NO_BORDER | wx.aui.AUI_NB_DEFAULT_STYLE | wx.aui.AUI_NB_WINDOWLIST_BUTTON, *args, **kwargs)
 		
-		self.Bind(wx.EVT_NOTEBOOK_PAGE_CHANGED, self.on_PageChanged)
+		self.Bind(wx.aui.EVT_AUINOTEBOOK_PAGE_CHANGED, self.on_PageChanged)
+		self.Bind(wx.aui.EVT_AUINOTEBOOK_PAGE_CLOSE, self.on_PageClose)
+		
+		self.pendingPageClose = False
 		
 		application = wx.GetApp()
 		
@@ -40,46 +44,56 @@ class DocumentNotebook(wx.Notebook):
 		# need to create visible pages for them.
 		for document in documentRegistry.GetDocuments():
 			self.documentAdded_Signal(document)
-			
+	
 	def on_PageChanged(self, event):
 		application = wx.GetApp()
 		documentRegistry = application.GetDocumentRegistry()
-
-		newSelection = event.GetSelection()
-		if newSelection == -1:
-			return
 		
+		newSelection = event.GetSelection()
 		newPage = self.GetPage(newSelection)
 		documentRegistry.SetCurrentDocument(newPage.GetDocument())
+	
+	def on_PageClose(self, event):
+		application = wx.GetApp()
+		documentRegistry = application.GetDocumentRegistry()
 		
+		self.pendingPageClose = True
+		currentSelection = event.GetSelection()
+		currentPage = self.GetPage(currentSelection)
+		documentRegistry.Close(currentPage.GetDocument())
+		self.pendingPageClose = False
+	
 	def documentAdded_Signal(self, document):
 		# Depending on instance type of the document we choose
 		# different control to display the document.
-	
+		
 		if isinstance(document, SceneDocument):
 			# Add the scene control that is responsible for the 3D
 			# scene.
-			page = SceneWindow(self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.BORDER_NONE, "GLCanvas", 0, wx.NullPalette)
+			page = SceneWindow(self, style = wx.BORDER_NONE)
 			page.SetDocument(document)
 			self.AddPage(page, document.GetName())
 		elif isinstance(document, OutputDocument):
 			# Add simple text output window to handle any kind of 
 			# tool output.
-			page = OutputWindow(self, wx.ID_ANY)
+			page = OutputWindow(self, style = wx.BORDER_NONE)
 			page.SetDocument(document)
 			self.AddPage(page, document.GetName())
 		elif isinstance(document, ModelDocument):
-			page = ModelWindow(self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.BORDER_NONE, "GLCanvas", 0, wx.NullPalette)
+			page = ModelWindow(self, style = wx.BORDER_NONE)
 			page.SetDocument(document)
 			self.AddPage(page, document.GetName())
 		elif isinstance(document, ImageDocument):
-			page = ImageWindow(self, wx.ID_ANY)
+			page = ImageWindow(self, style = wx.BORDER_NONE)
 			page.SetDocument(document)
 			self.AddPage(page, document.GetName())
-		
+	
 	def documentClosed_Signal(self, document):
 		# We need to remove the page that is responsible for
 		# the closed document.
+		if self.pendingPageClose:
+			return
+		
 		pageCount = self.GetPageCount()
 		
 		# Make sure that we closes the page that is assigned the
@@ -89,10 +103,13 @@ class DocumentNotebook(wx.Notebook):
 			if page.GetDocument() == document:
 				self.DeletePage(pageIndex)
 				break
-		
+	
 	def currentDocumentChanged_Signal(self, document):
 		# A new document is set to be the current active document.
 		# Lets change current active page.
+		if self.pendingPageClose:
+			return
+		
 		pageCount = self.GetPageCount()
 		
 		# Make sure that we changes the page that is assigned the
@@ -100,5 +117,5 @@ class DocumentNotebook(wx.Notebook):
 		for pageIndex in range(pageCount):
 			page = self.GetPage(pageIndex)
 			if page.GetDocument() == document:
-				self.ChangeSelection(pageIndex)
+				self.SetSelection(pageIndex)
 				break

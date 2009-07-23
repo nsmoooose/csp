@@ -36,6 +36,3 @@ csp.cspsim.registerAllObjectInterfaces()
 # Create the application object and run the main loop.
 app = LayoutApplication(0)
 app.MainLoop()
-
-
-

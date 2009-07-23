@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 
 from csp.tools.layout2.layout_module import *
-from csp.tools.layout2.scripts.ui.controls.GraphicsWindow import GraphicsWindow
+from GraphicsWindow import GraphicsWindow
 
 class ModelWindow(GraphicsWindow):
-	def __init__(self, parent, id, pos, size, style, name, attribList, palette):
-		GraphicsWindow.__init__(self, parent, id, pos, size, style, name, attribList, palette)
+	def __init__(self, *args, **kwargs):
+		GraphicsWindow.__init__(self, *args, **kwargs)
 
 		# Set the graphics window implementation used. This class we are instantiating here
 		# is implemented in c++ and is responsible for all renderings.

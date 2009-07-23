@@ -2,6 +2,8 @@
 import os
 import wx
 
+from csp.tools.layout2.scripts.ui.CommandControlFactory import EventToCommandExecutionAdapter
+
 class ProjectTree(wx.TreeCtrl):
 	"""A tree control that provides information about all files
 	within the project directory. All folders and files above
@@ -11,8 +13,6 @@ class ProjectTree(wx.TreeCtrl):
 	
 	def __init__(self, parent):
 		wx.TreeCtrl.__init__(self, parent, style=wx.TR_HIDE_ROOT|wx.TR_HAS_BUTTONS|wx.TR_LINES_AT_ROOT)
-		
-		self.Bind(wx.EVT_TREE_ITEM_ACTIVATED, self.on_ItemActivated)
 
 	def SetRootDirectory(self, directory):
 		""" Sets the root directory that the tree should display. All subfolders
@@ -64,12 +64,4 @@ class ProjectTree(wx.TreeCtrl):
 			return str(selection)
 	
 	def SetOpenCommand(self, command):
-		self.openCommand = command
-
-	def on_ItemActivated(self, event):
-		if self.openCommand is None:
-			return
-
-		if os.path.isfile(self.GetSelectedFile()):
-			command = self.openCommand()
-			command.Execute()
+		self.Bind(wx.EVT_TREE_ITEM_ACTIVATED, EventToCommandExecutionAdapter(command).Execute)

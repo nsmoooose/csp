@@ -10,9 +10,9 @@ class OutputWindow(wx.Window):
 	signals. For example when we are compiling a new sim.dar
 	file."""
 
-	def __init__(self, parent, id):
-		wx.Window.__init__(self, parent, id)
-		self.textCtrl = wx.TextCtrl(self, wx.ID_ANY, style = wx.TE_MULTILINE|wx.TE_READONLY|wx.TE_DONTWRAP)
+	def __init__(self, *args, **kwargs):
+		wx.Window.__init__(self, *args, **kwargs)
+		self.textCtrl = wx.TextCtrl(self, style = wx.BORDER_NONE | wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_DONTWRAP)
 		self.Bind(wx.EVT_SIZE, self.on_Size)
 		self.document = None
 

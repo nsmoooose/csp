@@ -9,10 +9,11 @@ class SelectDataDirectoryDialog(wx.Dialog):
 	you press OK the main frame is loaded and you can begin
 	to edit your layout of CSP."""
 
-	def __init__(self, parent, id, title):
-		wx.Dialog.__init__(self, parent, id, title, style=wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER)
+	def __init__(self, *args, **kwargs):
+		wx.Dialog.__init__(self, *args, **kwargs)
 
 		horizontalSizer = wx.BoxSizer(wx.HORIZONTAL)
+		self.SetSizer(horizontalSizer)
 
 		bitmap = wx.Bitmap(os.path.join('images', 'splash.png'))
 		bitmapControl = wx.StaticBitmap(self, wx.ID_ANY, bitmap)
@@ -22,6 +23,8 @@ class SelectDataDirectoryDialog(wx.Dialog):
 		horizontalSizer.Add(rightPanel, flag=wx.TOP|wx.BOTTOM|wx.RIGHT|wx.EXPAND, border=10, proportion=1)
 
 		verticalSizer = wx.BoxSizer(wx.VERTICAL)
+		rightPanel.SetSizer(verticalSizer)
+
 		cspLabel = wx.StaticText(rightPanel, wx.ID_ANY, 'Combat Simulator Project')
 		verticalSizer.Add(cspLabel)
 
@@ -33,46 +36,38 @@ class SelectDataDirectoryDialog(wx.Dialog):
 		verticalSizer.Add(directoryLabel, border=5, flag=wx.TOP)
 
 		directoryPanel = wx.Panel(rightPanel, wx.ID_ANY)
-		directoryText = wx.TextCtrl(directoryPanel, wx.ID_ANY, '')
-		directoryText.SetMinSize(wx.Size(300, directoryText.GetSize().GetHeight()))
-		browseDirectoryButton = wx.Button(directoryPanel, 6666, '...', size=wx.Size(20,20))
+		verticalSizer.Add(directoryPanel, flag=wx.EXPAND)
 		directorySizer = wx.BoxSizer(wx.HORIZONTAL)
-		directorySizer.Add(directoryText, flag=wx.RIGHT, border=5)
-		directorySizer.Add(browseDirectoryButton, flag=wx.ALIGN_RIGHT)
 		directoryPanel.SetSizer(directorySizer)
-		verticalSizer.Add(directoryPanel, flag=wx.EXPAND, proportion=1)
+		self.directoryText = wx.TextCtrl(directoryPanel, wx.ID_ANY, '')
+		self.directoryText.SetMinSize(wx.Size(300, self.directoryText.GetSize().GetHeight()))
+		directorySizer.Add(self.directoryText, flag=wx.RIGHT, border=5)
+		browseDirectoryButton = wx.Button(directoryPanel, label='...', size=wx.Size(20,20))
+		browseDirectoryButton.Bind(wx.EVT_BUTTON, self.browseDirectoryButton_Click)
+		directorySizer.Add(browseDirectoryButton)
 
 		verticalSizer.AddStretchSpacer()
 
 		buttonPanel = wx.Panel(rightPanel, wx.ID_ANY)
-		okButton = wx.Button(buttonPanel, wx.ID_OK, 'OK')
-		cancelButton = wx.Button(buttonPanel, wx.ID_CANCEL, 'Cancel')
-		buttonSizer = wx.BoxSizer(wx.HORIZONTAL)
-		buttonSizer.Add(okButton, border=5, flag=wx.RIGHT)
-		buttonSizer.Add(cancelButton)
-		buttonPanel.SetSizer(buttonSizer)
 		verticalSizer.Add(buttonPanel, border=5, flag=wx.TOP)
-
-		rightPanel.SetSizer(verticalSizer)
+		buttonSizer = wx.BoxSizer(wx.HORIZONTAL)
+		buttonPanel.SetSizer(buttonSizer)
+		okButton = wx.Button(buttonPanel, wx.ID_OK, 'OK')
+		okButton.SetFocus()
+		buttonSizer.Add(okButton, border=5, flag=wx.RIGHT)
+		cancelButton = wx.Button(buttonPanel, wx.ID_CANCEL, 'Cancel')
+		buttonSizer.Add(cancelButton)
 
 		# Force the window to resize itself according to its content.
 		horizontalSizer.SetSizeHints(self)
 
-		self.SetSizer(horizontalSizer)
-
 		# Store a reference to the text control containing
 		# the selected directory.
-		self.directoryText = directoryText
 		application = wx.GetApp()
 		self.directoryText.SetValue(application.Configuration.get('LayoutApplication.DataDirectory', '.'))
 		
 		# Bind events to buttons
 		wx.EVT_BUTTON(self, wx.ID_OK, self.okButton_Click)
-		wx.EVT_BUTTON(self, 6666, self.browseDirectoryButton_Click)
-
-		okButton.SetFocus()
-		
-		self.SetWindowStyle(wx.DEFAULT_DIALOG_STYLE)
 
 	def browseDirectoryButton_Click(self, event):
 		# Use the current value in the text box. This will

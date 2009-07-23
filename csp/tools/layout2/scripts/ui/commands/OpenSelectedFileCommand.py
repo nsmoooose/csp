@@ -13,7 +13,7 @@ class OpenSelectedFileCommand(Command):
 	executing the correct FileCommand."""
 
 	def GetCaption(self):
-		return "Open selected file in project tree"
+		return "Open selected file"
 
 	def GetToolTipText(self):
 		return "Open selected file in project tree"
@@ -53,4 +53,3 @@ class OpenSelectedFileCommand(Command):
 				'Cannot find a FileCommand to execute on that file type.',
 				'Error loading file', style = wx.OK|wx.ICON_ERROR)
 			messageDialog.ShowModal()
-

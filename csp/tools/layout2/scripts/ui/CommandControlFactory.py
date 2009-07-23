@@ -1,8 +1,7 @@
 #!/usr/bin/env python
-import os.path
 import wx
 
-from csp.tools.layout2.scripts.document.OutputDocument import OutputDocument
+from controls.OutputPane import OutputPane
 
 class CommandControlFactory:
 	"""A factory that creates ui controls that is bound to command objects."""
@@ -22,12 +21,12 @@ class CommandControlFactory:
 			if command is None:
 				menu.AppendSeparator()
 				continue
-			instance = command()
-
-			controlId = self.controlIdGenerator.Generate()
-			menu.Append(controlId, instance.GetCaption())
-
-			wx.EVT_MENU(parent, controlId, EventToCommandExecutionAdapter(instance).Execute)
+			
+			controlId = command.GetControlId()
+			if controlId is None:
+				controlId = self.controlIdGenerator.Generate()
+			
+			command.AppendInMenu(parent, menu, controlId)
 		return menu
 
 	def GenerateToolBarButtons(self, parent, toolbar, commands):
@@ -38,14 +37,12 @@ class CommandControlFactory:
 			if command is None:
 				toolbar.AddSeparator()
 				continue
-
-			instance = command()
-			bitmap1 = wx.BitmapFromImage(wx.Image(os.path.join("images", instance.GetToolBarImageName())))
-			bitmap2 = wx.BitmapFromImage(wx.Image(os.path.join("images", instance.GetToolBarImageName())))
-
-			controlId = self.controlIdGenerator.Generate()
-			toolbar.AddTool(controlId, bitmap1, bitmap2, wx.ITEM_NORMAL, instance.GetCaption(), instance.GetToolTipText())
-			wx.EVT_TOOL(parent, controlId, EventToCommandExecutionAdapter(instance).Execute)
+			
+			controlId = command.GetControlId()
+			if controlId is None:
+				controlId = self.controlIdGenerator.Generate()
+			
+			command.AppendInToolBar(parent, toolbar, controlId)
 		
 		toolbar.Realize()
 
@@ -63,24 +60,9 @@ class EventToCommandExecutionAdapter:
 		"""Bind this method to a wx event. When the event is fired the command will
 		be executed."""
 		
-		# If possible we will print the command execution to the output document.
-		# We will also assign the output document to the command so the command can
-		# be able the print messages to the console.
-		application = wx.GetApp()
-		if application is not None:
-			documentRegistry = application.GetDocumentRegistry()
-			documentName = 'Command history'
-
-			# Get the output document. If it doesn't exist we will create it and
-			# add it to the list of current documents.
-			outputDocument = documentRegistry.GetByName(documentName)
-			if outputDocument is None:
-				outputDocument = OutputDocument(documentName)
-				documentRegistry.Add(outputDocument)
-
-			self.command.SetOutputDocument(outputDocument)
-			outputDocument.WriteLine("Executing: " + self.command.__class__.__name__)
+		# If possible we will print the command execution to the output pane.
+		if OutputPane.Instance is not None:
+			OutputPane.Instance.AppendLine("Executing: %s" % self.command.__class__.__name__)
 		
 		# Execute the command.
 		self.command.Execute()
-		event.Skip()

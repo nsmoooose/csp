@@ -56,23 +56,22 @@ class LayoutApplication(wx.App):
 		# objects are using.
 		self.documentRegistry = DocumentRegistry()
 
-		dlg = SelectDataDirectoryDialog(None, wx.ID_ANY, "CSP Theater Layout Tool")
+		dlg = SelectDataDirectoryDialog(None, title="CSP Theater Layout Tool")
 		if dlg.ShowModal() == wx.ID_OK:
 
 			dataDirectory = self.Configuration.get('LayoutApplication.DataDirectory', '.')
 
 			datadirs = ('images', 'models', 'fonts', 'sounds')
 			pathlist = os.pathsep.join([os.path.join(dataDirectory, subdir) for subdir in datadirs])
-			CspLayoutApplication.setOpenSceneGraphPathList(pathlist.encode('utf8'))
-			shaderPath = os.path.join(dataDirectory, 'shaders').encode('utf8')
+			CspLayoutApplication.setOpenSceneGraphPathList(pathlist)
+			shaderPath = os.path.join(dataDirectory, 'shaders')
 			CspLayoutApplication.setShaderPath(shaderPath)
 
 			# Destroy the modal dialog
 			dlg.Destroy()
 
 			# Create an instance of our customized Frame class
-			frame = MainFrame(None, wx.ID_ANY, "CSP Theater Layout Tool")
-			frame.SetSize(wx.Size(800, 600))
+			frame = MainFrame( None, title="CSP Theater Layout Tool", size=(800, 600) )
 			frame.Show(True)
 		
 			# Return a success flag

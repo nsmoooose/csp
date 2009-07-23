@@ -12,8 +12,8 @@ class GraphicsWindow(wx.glcanvas.GLCanvas):
 	wxPyhon to use the current open gl context and when to swap
 	buffers to display the result."""
 	
-	def __init__(self, parent, id, pos, size, style, name, attribList, palette):
-		wx.glcanvas.GLCanvas.__init__(self, parent, id, pos, size, style, name, attribList, palette)
+	def __init__(self, *args, **kwargs):
+		wx.glcanvas.GLCanvas.__init__(self, *args, **kwargs)
 
 		self.document = None
 		self.graphicsWindow = None

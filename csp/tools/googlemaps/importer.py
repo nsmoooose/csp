@@ -181,7 +181,7 @@ class MainPanel(wx.Panel):
 
 class MainWindow(wx.Frame):
     def __init__(self, parent, *args, **kwargs):
-        wx.Frame.__init__(self, parent, *args, **kwargs)
+        wx.Frame.__init__(self, parent, style=wx.DEFAULT_FRAME_STYLE & ~(wx.RESIZE_BORDER | wx.MAXIMIZE_BOX), *args, **kwargs)
         
         self.googlemapsServer = "http://khm%d.google.com"
         
@@ -194,11 +194,14 @@ class MainWindow(wx.Frame):
         if not os.path.exists(self.cachePath):
             os.mkdir(self.cachePath)
         
-        self.mainPanel = MainPanel(self)
+        sizerFrame = wx.BoxSizer(wx.VERTICAL)
+        self.SetSizer(sizerFrame)
         
+        self.mainPanel = MainPanel(self)
+        sizerFrame.Add(self.mainPanel)
+        
+        sizerFrame.SetSizeHints(self)
         self.Show(True)
-        self.mainPanel.Fit()
-        self.Fit()
         
         self.startReadTerrainInfo()
     
@@ -237,8 +240,7 @@ class MainWindow(wx.Frame):
         else:
             self.mainPanel.progressGauge.SetValue(0)
             self.drawPreviewBackground()
-            self.mainPanel.Fit()
-            self.Fit()
+            self.GetSizer().SetSizeHints(self)
             self.mainPanel.infoPanel.Enable()
             self.mainPanel.infoPanel.buttonStart.Enable()
     

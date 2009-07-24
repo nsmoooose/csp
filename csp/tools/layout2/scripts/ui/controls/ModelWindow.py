@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from csp.tools.layout2.layout_module import *
+from csp.tools.layout2.layout_module import OsgModelWindow
 from GraphicsWindow import GraphicsWindow
 
 class ModelWindow(GraphicsWindow):

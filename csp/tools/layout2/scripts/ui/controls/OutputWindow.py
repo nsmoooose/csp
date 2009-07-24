@@ -16,6 +16,9 @@ class OutputWindow(wx.Window):
 		self.Bind(wx.EVT_SIZE, self.on_Size)
 		self.document = None
 
+	def Dispose(self):
+		self.document.GetChangedSignal().Disconnect(self.on_DocumentChanged)
+	
 	def SetDocument(self, document):
 		if document is None:
 			return

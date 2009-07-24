@@ -60,6 +60,7 @@ class DocumentNotebook(wx.aui.AuiNotebook):
 		self.pendingPageClose = True
 		currentSelection = event.GetSelection()
 		currentPage = self.GetPage(currentSelection)
+		currentPage.Dispose()
 		documentRegistry.Close(currentPage.GetDocument())
 		self.pendingPageClose = False
 	
@@ -101,6 +102,7 @@ class DocumentNotebook(wx.aui.AuiNotebook):
 		for pageIndex in range(pageCount):
 			page = self.GetPage(pageIndex)
 			if page.GetDocument() == document:
+				page.Dispose()
 				self.DeletePage(pageIndex)
 				break
 	

@@ -17,7 +17,12 @@ class GraphicsWindow(wx.glcanvas.GLCanvas):
 
 		self.document = None
 		self.graphicsWindow = None
-
+	
+	def Dispose(self):
+		self.graphicsWindow.clearSignals()
+		application = wx.GetApp()
+		application.GetIdleSignal().Disconnect(self.on_Idle)
+	
 	def SetGraphicsWindow(self, graphicsWindow):
 		"""Sets the graphics implementation. The implementation is a c++ class
 		with rendering capabilities."""
@@ -33,8 +38,6 @@ class GraphicsWindow(wx.glcanvas.GLCanvas):
 		
 		application = wx.GetApp()
 		application.GetIdleSignal().Connect(self.on_Idle)
-		documentRegistry = application.GetDocumentRegistry()
-		documentRegistry.GetDocumentClosedSignal().Connect(self.document_Closed)
 
 	def GetGraphicsWindow(self):
 		return self.graphicsWindow
@@ -72,11 +75,6 @@ class GraphicsWindow(wx.glcanvas.GLCanvas):
 			self.graphicsWindow.Frame()
 			event.RequestMore()
 	
-	def document_Closed(self, document):
-		if document == self.document:
-			application = wx.GetApp()
-			application.GetIdleSignal().Disconnect(self.on_Idle)
-
 	def on_Size(self, event):
 		width, height = self.GetClientSizeTuple()
 

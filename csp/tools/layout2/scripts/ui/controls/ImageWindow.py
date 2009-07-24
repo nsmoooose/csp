@@ -12,6 +12,9 @@ class ImageWindow(wx.ScrolledWindow):
 		self.sizer = wx.BoxSizer(wx.VERTICAL)
 		self.SetSizer(self.sizer)
 
+	def Dispose(self):
+		pass
+	
 	def SetDocument(self, document):
 		if document is None:
 			return

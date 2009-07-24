@@ -51,6 +51,11 @@ public:
 
 	OsgGraphicsWindow();
 	virtual ~OsgGraphicsWindow();
+
+	// Clear the signals.
+	// TODO: modify the functions connectToSetCurrent and connectToSwapBuffers
+	// (in layout2/layout.i) so they return a sigc::connection
+	void clearSignals();
 	
 	/* Render a new frame. This method is used from the OnIdle
 	event in wxPython. */

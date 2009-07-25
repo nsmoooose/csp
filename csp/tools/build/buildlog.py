@@ -41,6 +41,8 @@ class _Tee:
 	def write(self, data):
 		for out in self._out:
 			out.write(data)
+	def __getattr__(self, name):
+		return self._out[0].__getattribute__(name)
 
 
 def _MakeLogHook(pspawn, log):

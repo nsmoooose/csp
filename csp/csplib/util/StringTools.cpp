@@ -38,6 +38,11 @@
 #define snprintf _snprintf
 #endif
 
+#if defined(__GNUC__)
+/* This file isn't shipped with MS visual studio. */
+#include <stdint.h>
+#endif
+
 #include <iostream> // XXX
 namespace csp {
 

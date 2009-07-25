@@ -31,9 +31,7 @@
 #include <csignal>
 #include <cstdlib>
 
-
 namespace csp {
-
 
 // static StackTrace to avoid allocations in the signal handlers.
 StackTrace AutoTrace::_trace;
@@ -47,7 +45,7 @@ char *AutoTrace::_reserve = 0;
 // flag used by the segv handler to prevent the sigabort handler from firing.
 bool AutoTrace::_abort = true;
 
-
+} // namespace csp
 
 // Platform-specific implementation of stack traces.  Each platform and/or
 // compiler must implement the StackTrace::TraceData class, which provides
@@ -58,6 +56,9 @@ bool AutoTrace::_abort = true;
 // TODO need to add a config test for these headers.
 #include <dlfcn.h>
 #include <execinfo.h>
+#include <stdint.h>
+
+namespace csp {
 
 /** A class that can acquire, store, and display a stack trace.
  */
@@ -115,10 +116,14 @@ private:
 	int _stack_depth;
 };
 
+} // namespace csp
+
 #else  // non-gcc or apple
 
 // Windows version not yet implemented.  Please feel free to add it if
 // you know how.
+
+namespace csp {
 
 class StackTrace::TraceData {
 public:
@@ -128,11 +133,14 @@ public:
 	bool valid() const { return false; }
 };
 
+} // namespace csp
+
 #endif
 
 
 // Platform-independent implementation.
 
+namespace csp {
 
 StackTrace::StackTrace(): _data(new TraceData) { }
 
@@ -210,7 +218,6 @@ LogStream *AutoTrace::log() {
 void AutoTrace::setLog(LogStream &log) {
 	_log = &log;
 }
-
 
 } // namespace csp
 

@@ -24,7 +24,7 @@
 
 namespace csp {
 
-SDLGraphicsWindow::SDLGraphicsWindow(const char *caption, const ScreenSettings & screenSettings)
+SDLGraphicsWindow::SDLGraphicsWindow(const char *caption, const ::csp::ScreenSettings & screenSettings)
 	: osgViewer::GraphicsWindowEmbedded(0, 0, screenSettings.width, screenSettings.height)
 	, m_valid(false)
 {

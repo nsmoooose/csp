@@ -28,7 +28,7 @@ struct ScreenSettings;
 class SDLGraphicsWindow : public osgViewer::GraphicsWindowEmbedded
 {
 public:
-	SDLGraphicsWindow(const char *caption, const ScreenSettings & screenSettings);
+	SDLGraphicsWindow(const char *caption, const ::csp::ScreenSettings & screenSettings);
 	~SDLGraphicsWindow();
 
 	virtual bool isSameKindAs(const Object* object) const { return dynamic_cast<const SDLGraphicsWindow*>(object)!=0; }

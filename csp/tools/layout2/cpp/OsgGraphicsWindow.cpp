@@ -18,11 +18,8 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, US
 
-#include <iostream>
-#include <sstream>
 #include <osgViewer/ViewerEventHandlers>
-#include <osgGA/TrackballManipulator>
-#include <osgDB/ReadFile>
+#include <osgViewer/Viewer>
 #include <csp/tools/layout2/cpp/OsgGraphicsWindow.h>
 
 namespace csp {
@@ -52,36 +49,52 @@ class OsgGraphicsWindow::Implementation {
 public:
 	osg::ref_ptr<osgViewer::Viewer> m_Viewer;
 	osg::ref_ptr<osgViewer::GraphicsWindow> m_GraphicsWindow;
-	osg::ref_ptr<osgGA::TrackballManipulator> m_Manipulator;
+	ProjectionKind m_projectionKind;
 
-	void init(OsgGraphicsWindow* window) {
+	void init(OsgGraphicsWindow* window, ProjectionKind projectionKind, osg::ref_ptr<osgGA::MatrixManipulator> manipulator) {
 		m_Viewer = new osgViewer::Viewer;
+		m_projectionKind = projectionKind;
 		setUpViewerAsEmbeddedInWxWindow(window, 50, 70, 300, 200);
 
 		m_Viewer->addEventHandler(new osgViewer::StatsHandler);
 
-		m_Manipulator = new osgGA::TrackballManipulator;
-		m_Viewer->setCameraManipulator(m_Manipulator.get());
-
-		m_Manipulator->setCenter(osg::Vec3(0, 0, 0));
-		m_Manipulator->setDistance(700);
-		m_Manipulator->setRotation(osg::Quat(0, 0, 0, 1));
+		m_Viewer->setCameraManipulator(manipulator.get());
 	}
 
-protected:
 	bool setUpViewerAsEmbeddedInWxWindow(OsgGraphicsWindow* window, int x, int y, int width, int height) {
 		// inspired by osgViewer::Viewer::setUpViewerAsEmbeddedInWindow()
-		m_Viewer->setThreadingModel(osgViewer::Viewer::SingleThreaded);
-		m_GraphicsWindow = new WxGraphicsWindowEmbedded(window, x,y,width,height);
-		m_Viewer->getCamera()->setViewport(new osg::Viewport(0,0,width,height));
-		m_Viewer->getCamera()->setProjectionMatrixAsPerspective(30.0f, static_cast<double>(width)/static_cast<double>(height), 1.0f, 10000.0f);
-		m_Viewer->getCamera()->setGraphicsContext(m_GraphicsWindow.get());
+		m_Viewer->setThreadingModel( osgViewer::Viewer::SingleThreaded );
+		m_GraphicsWindow = new WxGraphicsWindowEmbedded(window, x, y, width, height);
+		m_Viewer->getCamera()->setViewport( new osg::Viewport(0, 0, width, height) );
+
+		switch ( m_projectionKind ) {
+			case Perspective:
+				setProjectionMatrixAsPerspective(width, height);
+				break;
+
+			case Ortho:
+				setProjectionMatrixAsOrtho(width, height);
+				m_Viewer->getCamera()->setProjectionResizePolicy( osg::Camera::FIXED );
+				break;
+		}
+
+		m_Viewer->getCamera()->setGraphicsContext( m_GraphicsWindow.get() );
 		return m_GraphicsWindow.valid();
+	}
+
+	void setProjectionMatrixAsPerspective(double width, double height)
+	{
+		m_Viewer->getCamera()->setProjectionMatrixAsPerspective( 30.0, width/height, 1.0, 10000.0 );
+	}
+
+	void setProjectionMatrixAsOrtho(double width, double height)
+	{
+		m_Viewer->getCamera()->setProjectionMatrixAsOrtho( -width/2.0, width/2.0, -height/2.0, height/2.0, 10000.0, 0.0 );
 	}
 };
 
-OsgGraphicsWindow::OsgGraphicsWindow() : m_Implementation(new Implementation()) {
-	m_Implementation->init(this);
+OsgGraphicsWindow::OsgGraphicsWindow(ProjectionKind projectionKind, osg::ref_ptr<osgGA::MatrixManipulator> manipulator) : m_Implementation(new Implementation()) {
+	m_Implementation->init(this, projectionKind, manipulator);
 }
 
 OsgGraphicsWindow::~OsgGraphicsWindow() {
@@ -113,6 +126,11 @@ void OsgGraphicsWindow::setSize(int width, int height) {
 	// update the window dimensions, in case the window has been resized.
 	m_Implementation->m_GraphicsWindow->getEventQueue()->windowResize(0, 0, width, height);
 	m_Implementation->m_GraphicsWindow->resized(0, 0, width, height);
+
+	if ( m_Implementation->m_projectionKind == Ortho )
+	{
+		m_Implementation->setProjectionMatrixAsOrtho(width, height);
+	}
 }
 
 void OsgGraphicsWindow::handleKeyDown(int key) {
@@ -135,20 +153,12 @@ void OsgGraphicsWindow::handleMouseButtonUp(int x, int y, int button) {
 	m_Implementation->m_GraphicsWindow->getEventQueue()->mouseButtonRelease(x, y, button);
 }
 
-std::string OsgGraphicsWindow::getTrackballInformation() {
-	std::stringstream stream;
-	osg::Vec3 center = m_Implementation->m_Manipulator->getCenter();
-	osg::Quat rotation = m_Implementation->m_Manipulator->getRotation();
-	stream << "Center: " << center._v[0] << ", " << center._v[1] << ", " << center._v[2];
-	stream << " Distance: " << m_Implementation->m_Manipulator->getDistance();
-	stream << " Rotation: " << rotation._v[0] << ", " << rotation._v[1] << ", " << rotation._v[2] << ", " << rotation._v[3];
-	stream << std::ends;
-	
-	return stream.str();
+void OsgGraphicsWindow::handleMouseWheelRotation(int wheelRotation) {
+	m_Implementation->m_GraphicsWindow->getEventQueue()->mouseScroll( wheelRotation < 0 ? osgGA::GUIEventAdapter::SCROLL_DOWN : osgGA::GUIEventAdapter::SCROLL_UP );
 }
 
-osg::ref_ptr<osgGA::TrackballManipulator> OsgGraphicsWindow::getManipulator() {
-	return m_Implementation->m_Manipulator;
+osg::ref_ptr<osgGA::MatrixManipulator> OsgGraphicsWindow::getManipulator() {
+	return m_Implementation->m_Viewer->getCameraManipulator();
 }
 
 osg::ref_ptr<osg::Node> OsgGraphicsWindow::getSceneData() {
@@ -157,26 +167,6 @@ osg::ref_ptr<osg::Node> OsgGraphicsWindow::getSceneData() {
 
 void OsgGraphicsWindow::setSceneData(osg::Node* node) {
 	m_Implementation->m_Viewer->setSceneData(node);
-}
-
-void OsgGraphicsWindow::zoomOut(double distance) {
-	m_Implementation->m_Manipulator->setDistance(m_Implementation->m_Manipulator->getDistance() + distance);
-}
-
-void OsgGraphicsWindow::zoomIn(double distance) {
-	m_Implementation->m_Manipulator->setDistance(m_Implementation->m_Manipulator->getDistance() - distance);
-}
-
-void OsgGraphicsWindow::panLeft(double /*distance*/) {
-}
-
-void OsgGraphicsWindow::panRight(double /*distance*/) {
-}
-
-void OsgGraphicsWindow::panUp(double /*distance*/) {
-}
-
-void OsgGraphicsWindow::panDown(double /*distance*/) {
 }
 
 } // namespace layout

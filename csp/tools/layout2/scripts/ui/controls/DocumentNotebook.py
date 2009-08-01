@@ -6,10 +6,12 @@ from csp.tools.layout2.scripts.document.ImageDocument import ImageDocument
 from csp.tools.layout2.scripts.document.OutputDocument import OutputDocument
 from csp.tools.layout2.scripts.document.ModelDocument import ModelDocument
 from csp.tools.layout2.scripts.document.SceneDocument import SceneDocument
+from csp.tools.layout2.scripts.document.TerrainDocument import TerrainDocument
 from ImageWindow import ImageWindow
 from ModelWindow import ModelWindow
 from OutputWindow import OutputWindow
 from SceneWindow import SceneWindow
+from TerrainWindow import TerrainWindow
 
 class DocumentNotebook(wx.aui.AuiNotebook):
 	"""This class handles the UI of all opened documents.
@@ -86,6 +88,10 @@ class DocumentNotebook(wx.aui.AuiNotebook):
 			self.AddPage(page, document.GetName())
 		elif isinstance(document, ImageDocument):
 			page = ImageWindow(self, style = wx.BORDER_NONE)
+			page.SetDocument(document)
+			self.AddPage(page, document.GetName())
+		elif isinstance(document, TerrainDocument):
+			page = TerrainWindow(self, style = wx.BORDER_NONE)
 			page.SetDocument(document)
 			self.AddPage(page, document.GetName())
 	

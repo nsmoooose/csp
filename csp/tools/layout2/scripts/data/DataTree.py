@@ -335,6 +335,11 @@ class Node:
 			if child.containsNode(node_type): return 1
 		return 0
 
+	def rootNodeIs(self, node_type):
+		if self._node.type == domtree.Node.DOCUMENT_NODE:
+			if isinstance(self._children[0], node_type): return True
+		return False
+
 	def _parentFiles(self, files):
 		if not self._path.isNoPath():
 			files[self.filepath()] = 1
@@ -676,6 +681,11 @@ Node.Classes['RandomBillboardModel'] = RandomBillboardModel
 
 # RandomForestModel has the same implementation for now
 Node.Classes['RandomForestModel'] = RandomBillboardModel
+
+
+class GenericOsgTerrain(Node):
+	pass
+Node.Classes['GenericOsgTerrain'] = GenericOsgTerrain
 
 
 if __name__ == '__main__':

@@ -1,0 +1,9 @@
+<?xml version="1.0" standalone="no"?>
+
+<Object class="GenericOsgTerrain">
+	<String name="name">Test Terrain</String>
+	<Int name="version">0</Int>
+	<LLA name="center">41.6450 16.0057 0.0</LLA>
+	<Float name="width">1024000</Float>
+	<Float name="height">1024000</Float>
+</Object>

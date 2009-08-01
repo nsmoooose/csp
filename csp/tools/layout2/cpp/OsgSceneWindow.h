@@ -2,7 +2,7 @@
 #define __CSP_LAYOUT_OSGSCENEWINDOW_H__
 
 #include <csp/csplib/util/Ref.h>
-#include <csp/tools/layout2/cpp/OsgGraphicsWindow.h>
+#include <csp/tools/layout2/cpp/OsgTrackballGraphicsWindow.h>
 
 namespace csp {
 namespace layout {
@@ -13,7 +13,7 @@ class Scene;
 /* This is a graphical window that we can draw 3D into. It is called
 from a wxPython window (wx.glcanvas.GLCanvas inherited class). This 
 makes it possible to integrate wxPython and open scene graph. */
-class OsgSceneWindow : public OsgGraphicsWindow {
+class OsgSceneWindow : public OsgTrackballGraphicsWindow {
 public:
 	OsgSceneWindow();
 

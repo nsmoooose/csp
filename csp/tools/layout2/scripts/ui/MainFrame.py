@@ -140,6 +140,10 @@ class MainFrame(wx.Frame):
 		# Save the current layout
 		currentPerspective = application.auiManager.SavePerspective()
 		application.Configuration['LayoutApplication.auiManager.currentPerspective'] = currentPerspective
+		if not self.IsMaximized():
+			application.Configuration['LayoutApplication.MainFrame.position'] = self.GetPosition()
+			application.Configuration['LayoutApplication.MainFrame.size'] = self.GetSize()
+		application.Configuration['LayoutApplication.MainFrame.IsMaximized'] = self.IsMaximized()
 		
 		documentRegistry = application.GetDocumentRegistry()
 		

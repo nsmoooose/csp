@@ -61,7 +61,7 @@ class LayoutApplication(wx.App):
 
 			dataDirectory = self.Configuration.get('LayoutApplication.DataDirectory', '.')
 
-			datadirs = ('images', 'models', 'fonts', 'sounds')
+			datadirs = ('images', 'models', 'fonts', 'sounds', 'terrain')
 			pathlist = os.pathsep.join([os.path.join(dataDirectory, subdir) for subdir in datadirs])
 			CspLayoutApplication.setOpenSceneGraphPathList(pathlist)
 			shaderPath = os.path.join(dataDirectory, 'shaders')
@@ -71,7 +71,12 @@ class LayoutApplication(wx.App):
 			dlg.Destroy()
 
 			# Create an instance of our customized Frame class
-			frame = MainFrame( None, title="CSP Theater Layout Tool", size=(800, 600) )
+			pos = self.Configuration.get('LayoutApplication.MainFrame.position', wx.DefaultPosition)
+			size = self.Configuration.get('LayoutApplication.MainFrame.size', (800,600))
+			style = wx.DEFAULT_FRAME_STYLE
+			if self.Configuration.get('LayoutApplication.MainFrame.IsMaximized', False):
+				style = style | wx.MAXIMIZE
+			frame = MainFrame( None, title="CSP Theater Layout Tool", pos=pos, size=size, style=style )
 			frame.Show(True)
 		
 			# Return a success flag

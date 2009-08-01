@@ -22,14 +22,16 @@
 #ifndef __CSP_LAYOUT_OSGGRAPHICSWINDOW_H__
 #define __CSP_LAYOUT_OSGGRAPHICSWINDOW_H__
 
-#include <string>
-#include <osgViewer/Viewer>
-#include <csp/csplib/util/Ref.h>
+#include <osg/ref_ptr>
+#include <osg/Vec3>
 #include <csp/csplib/util/Signal.h>
-#include <csp/tools/layout2/cpp/Scene.h>
+
+namespace osg {
+	class Node;
+}
 
 namespace osgGA {
-	class TrackballManipulator;
+	class MatrixManipulator;
 }
 
 namespace csp {
@@ -40,6 +42,11 @@ from a wxPython window (wx.glcanvas.GLCanvas inherited class). This
 makes it possible to integrate wxPython and open scene graph. */
 class OsgGraphicsWindow {
 public:
+	enum ProjectionKind {
+		Perspective,
+		Ortho
+	};
+
 	typedef sigc::signal<void> VoidSignal;
 
 	/* This signal is sent to inform wxPython that the current
@@ -49,7 +56,7 @@ public:
 	buffers to display the last rendered frame.*/
 	VoidSignal SwapBuffers;
 
-	OsgGraphicsWindow();
+	OsgGraphicsWindow(ProjectionKind projectionKind, osg::ref_ptr<osgGA::MatrixManipulator> manipulator);
 	virtual ~OsgGraphicsWindow();
 
 	// Clear the signals.
@@ -71,18 +78,10 @@ public:
 	void handleMouseMotion(int x, int y);
 	void handleMouseButtonDown(int x, int y, int button);
 	void handleMouseButtonUp(int x, int y, int button);
-
-	void zoomOut(double distance);
-	void zoomIn(double distance);
-	void panLeft(double distance);
-	void panRight(double distance);
-	void panUp(double distance);
-	void panDown(double distance);
-
-	virtual std::string getTrackballInformation();
+	void handleMouseWheelRotation(int wheelRotation);
 
 protected:
-	virtual osg::ref_ptr<osgGA::TrackballManipulator> getManipulator();
+	osg::ref_ptr<osgGA::MatrixManipulator> getManipulator();
 
 	osg::ref_ptr<osg::Node> getSceneData();
 	void setSceneData(osg::Node* node);	

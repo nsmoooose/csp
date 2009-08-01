@@ -107,12 +107,15 @@ class GraphicsWindow(wx.glcanvas.GLCanvas):
 		# The mouse event (movement and clicking) should be
 		# processed by the manipulator implemented in c++.
 		x, y = event.GetX(), event.GetY()
+		wheelRotation = event.GetWheelRotation()
 		if event.ButtonDown():
 			button = event.GetButton()
 			self.graphicsWindow.handleMouseButtonDown(x, y, button)
 		elif event.ButtonUp():
 			button = event.GetButton()
 			self.graphicsWindow.handleMouseButtonUp(x, y, button)
+		elif wheelRotation != 0:
+			self.graphicsWindow.handleMouseWheelRotation(wheelRotation)
 		else:
 			self.graphicsWindow.handleMouseMotion(x, y)
 

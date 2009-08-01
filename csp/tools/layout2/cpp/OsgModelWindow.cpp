@@ -1,4 +1,3 @@
-#include <osgDB/Registry>
 #include <osgDB/ReadFile>
 #include <csp/tools/layout2/cpp/OsgModelWindow.h>
 

@@ -18,15 +18,18 @@
 
 %module(directors="1") layout_module
 %{
+#include <osgGA/TrackballManipulator>
 #include <csp/csplib/data/Object.h>
 #include <csp/csplib/util/PythonSignals.h>
-#include "csp/tools/layout2/cpp/CspLayoutApplication.h"
+#include <csp/tools/layout2/cpp/CspLayoutApplication.h>
 #include <csp/tools/layout2/cpp/FeatureGraph.h>
 #include <csp/tools/layout2/cpp/LayoutNodes.h>
 #include <csp/tools/layout2/cpp/ModelLoader.h>
 #include <csp/tools/layout2/cpp/OsgGraphicsWindow.h>
+#include <csp/tools/layout2/cpp/OsgTrackballGraphicsWindow.h>
 #include <csp/tools/layout2/cpp/OsgModelWindow.h>
 #include <csp/tools/layout2/cpp/OsgSceneWindow.h>
+#include <csp/tools/layout2/cpp/OsgTerrainOverviewWindow.h>
 %}
 
 %include "typemaps.i"
@@ -101,8 +104,10 @@ TYPEMAP_PYSLOT_IN(void)
 %include "csp/tools/layout2/cpp/FeatureGraph.h"
 %include "csp/tools/layout2/cpp/ModelLoader.h"
 %include "csp/tools/layout2/cpp/OsgGraphicsWindow.h"
+%include "csp/tools/layout2/cpp/OsgTrackballGraphicsWindow.h"
 %include "csp/tools/layout2/cpp/OsgModelWindow.h"
 %include "csp/tools/layout2/cpp/OsgSceneWindow.h"
+%include "csp/tools/layout2/cpp/OsgTerrainOverviewWindow.h"
 
 %extend csp::layout::OsgGraphicsWindow {
 	void connectToSetCurrent(sigc::slot<void> slot) {

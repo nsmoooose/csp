@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import os
 
-from OpenCustomLayoutModelFileCommand import OpenCustomLayoutModelFileCommand
+from OpenXmlFileCommand import OpenXmlFileCommand
 from OpenImageFileCommand import OpenImageFileCommand
 from OpenOsgModelFileCommand import OpenOsgModelFileCommand
 
@@ -20,7 +20,7 @@ class FileCommandRegistry:
 		command = None
 		extension = os.path.splitext(fileName)[1].lower()
 		if extension == '.xml':
-			command = OpenCustomLayoutModelFileCommand()
+			command = OpenXmlFileCommand()
 		elif extension == '.osg' or extension == '.ive':
 			command = OpenOsgModelFileCommand()
 		elif extension == '.png' or extension == '.jpg' or extension == '.tga':

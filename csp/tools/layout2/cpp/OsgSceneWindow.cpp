@@ -1,4 +1,5 @@
 #include <osgGA/TrackballManipulator>
+#include <csp/tools/layout2/cpp/Scene.h>
 #include <csp/tools/layout2/cpp/OsgSceneWindow.h>
 
 namespace csp {
@@ -9,10 +10,7 @@ OsgSceneWindow::OsgSceneWindow() : m_Scene(new Scene()) {
 }
 
 void OsgSceneWindow::moveCameraToHome() {
-	osg::ref_ptr<osgGA::TrackballManipulator> manipulator = getManipulator();
-	manipulator->setCenter(osg::Vec3(0, 0, 0));
-	manipulator->setDistance(700);
-	manipulator->setRotation(osg::Quat(0, 0, 0, 1));
+	osg::ref_ptr<osgGA::TrackballManipulator> manipulator = getTrackballManipulator();
 }
 
 FeatureGraph* OsgSceneWindow::graph() {
@@ -20,7 +18,7 @@ FeatureGraph* OsgSceneWindow::graph() {
 }
 
 void OsgSceneWindow::Frame() {
-	osg::ref_ptr<osgGA::TrackballManipulator> manipulator = getManipulator();
+	osg::ref_ptr<osgGA::TrackballManipulator> manipulator = getTrackballManipulator();
 	osg::Vec3 cameraTarget = manipulator->getCenter();
 	m_Scene->updateDynamicGrid(cameraTarget, getCameraPosition());
 

@@ -14,6 +14,13 @@ class OsgTerrainOverviewWindow : public OsgGraphicsWindow
 		OsgTerrainOverviewWindow();
 
 		void loadModel(const std::string& file);
+
+		void zoomOut(double distance);
+		void zoomIn(double distance);
+		void panLeft(double distance);
+		void panRight(double distance);
+		void panUp(double distance);
+		void panDown(double distance);
 };
 
 } // namespace layout

@@ -37,6 +37,9 @@ class OsgTerrainOverviewManipulator : public osgGA::MatrixManipulator
 
 		virtual bool handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& us);
 
+		void zoomIn();
+		void zoomOut();
+
 	private:
 		~OsgTerrainOverviewManipulator();
 

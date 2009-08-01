@@ -131,6 +131,20 @@ bool OsgTerrainOverviewManipulator::handle(const osgGA::GUIEventAdapter& ea, osg
 	return false;
 }
 
+void OsgTerrainOverviewManipulator::zoomIn()
+{
+	m_level += 1;
+	clampLevel();
+	computeMatrix();
+}
+
+void OsgTerrainOverviewManipulator::zoomOut()
+{
+	m_level -= 1;
+	clampLevel();
+	computeMatrix();
+}
+
 void OsgTerrainOverviewManipulator::resetMove()
 {
 	m_startMoveEvent = 0;

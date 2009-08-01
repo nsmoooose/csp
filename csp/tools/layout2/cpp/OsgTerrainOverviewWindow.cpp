@@ -21,5 +21,33 @@ void OsgTerrainOverviewWindow::loadModel(const std::string& file)
 	}
 }
 
+void OsgTerrainOverviewWindow::zoomOut(double /*distance*/)
+{
+	osg::ref_ptr<OsgTerrainOverviewManipulator> manipulator = dynamic_cast<OsgTerrainOverviewManipulator *>( getManipulator().get() );
+	manipulator->zoomOut();
+}
+
+void OsgTerrainOverviewWindow::zoomIn(double /*distance*/)
+{
+	osg::ref_ptr<OsgTerrainOverviewManipulator> manipulator = dynamic_cast<OsgTerrainOverviewManipulator *>( getManipulator().get() );
+	manipulator->zoomIn();
+}
+
+void OsgTerrainOverviewWindow::panLeft(double /*distance*/)
+{
+}
+
+void OsgTerrainOverviewWindow::panRight(double /*distance*/)
+{
+}
+
+void OsgTerrainOverviewWindow::panUp(double /*distance*/)
+{
+}
+
+void OsgTerrainOverviewWindow::panDown(double /*distance*/)
+{
+}
+
 } // namespace layout
 } // namespace csp

@@ -127,3 +127,9 @@ class DocumentNotebook(wx.aui.AuiNotebook):
 			if page.GetDocument() == document:
 				self.SetSelection(pageIndex)
 				break
+	
+	def GetCurrentPage(self):
+		currentSelection = self.GetSelection()
+		if currentSelection == -1:
+			return None
+		return self.GetPage(currentSelection)

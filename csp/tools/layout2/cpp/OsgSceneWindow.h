@@ -3,6 +3,7 @@
 
 #include <csp/csplib/util/Ref.h>
 #include <csp/tools/layout2/cpp/OsgTrackballGraphicsWindow.h>
+#include <csp/tools/layout2/cpp/Scene.h>
 
 namespace csp {
 namespace layout {

@@ -109,6 +109,7 @@ public:
  */
 class ChannelMirror: public Object {
 public:
+	CSP_DECLARE_ABSTRACT_OBJECT(ChannelMirror)
 	virtual ChannelMaster *createMaster() const = 0;
 	virtual ChannelSlave *createSlave() const = 0;
 };

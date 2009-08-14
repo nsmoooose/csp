@@ -35,6 +35,8 @@ class IsoContour: public Object {
 protected:
 	virtual float f(float x, float y) const = 0;
 public:
+	CSP_DECLARE_ABSTRACT_OBJECT(IsoContour)
+
 	virtual bool in(float x, float y) const {
 		return f(x,y) < 1.0f;
 	}

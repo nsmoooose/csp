@@ -79,6 +79,7 @@ void CSPSIM_EXPORT registerAllObjectInterfaces() {
 	{ static FuelTankNode::__csp_interface_proxy instance; }
 	{ static FuelManagementSystem::__csp_interface_proxy instance; }
 	{ static M2kGearAnimation::__csp_interface_proxy instance; }
+	{ static GearAnimation::__csp_interface_proxy instance; }
 	{ static GearSequenceAnimation::__csp_interface_proxy instance; }
 	{ static LandingGear::__csp_interface_proxy instance; }
 	{ static GearDynamics::__csp_interface_proxy instance; }
@@ -106,12 +107,15 @@ void CSPSIM_EXPORT registerAllObjectInterfaces() {
 	{ static SystemsModel::__csp_interface_proxy instance; }
 	{ static TankObject::__csp_interface_proxy instance; }
 	{ static TerrainObject::__csp_interface_proxy instance; }
+	{ static FeatureModel::__csp_interface_proxy instance; }
+	{ static FeatureGroupModel::__csp_interface_proxy instance; }
 	{ static CustomLayoutModel::__csp_interface_proxy instance; }
 	{ static FeatureGroup::__csp_interface_proxy instance; }
 	{ static FeatureGroupList::__csp_interface_proxy instance; }
 	{ static FeatureLayout::__csp_interface_proxy instance; }
 	{ static FeatureObjectModel::__csp_interface_proxy instance; }
 	{ static FeatureQuad::__csp_interface_proxy instance; }
+	{ static IsoContour::__csp_interface_proxy instance; }
 	{ static RectangularCurve::__csp_interface_proxy instance; }
 	{ static Circle::__csp_interface_proxy instance; }
 	{ static Objective::__csp_interface_proxy instance; }

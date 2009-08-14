@@ -28,6 +28,7 @@
 
 #include <csp/csplib/data/Path.h>
 #include <csp/csplib/data/Object.h>
+#include <csp/csplib/data/ObjectInterface.h>
 
 namespace csp {
 
@@ -48,6 +49,8 @@ class FeatureSceneGroup;
  */
 class FeatureModel: public Object {
 public:
+	CSP_DECLARE_ABSTRACT_OBJECT(FeatureModel)
+
 	/**
 	 * Add all children to the scene graph of the FeatureGroup.
 	 *

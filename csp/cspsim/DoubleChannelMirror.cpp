@@ -158,7 +158,11 @@ CSP_XML_BEGIN(DoubleChannelMirror)
 	CSP_DEF("rate_limit", m_RateLimit, true)
 CSP_XML_END
 
+CSP_XML_BEGIN(ChannelMirror)
+CSP_XML_END
+
 void registerChannelMirrorObjects() {
+	{ static ChannelMirror::__csp_interface_proxy instance; }
 	{ static DoubleChannelMirror::__csp_interface_proxy instance; }
 }
 

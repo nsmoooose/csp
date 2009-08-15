@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 
-from Document import Document
+from FileDocument import FileDocument
 
-class SceneDocument(Document):
+class SceneDocument(FileDocument):
 	"""This document represents a scene of 3D objects."""
 
 	def __init__(self, name):
-		Document.__init__(self, name)
+		FileDocument.__init__(self, name)
 		self.node = None
 		
 	def SetRootNode(self, node):

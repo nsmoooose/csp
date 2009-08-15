@@ -1,8 +1,26 @@
 #!/usr/bin/env python
 import os.path
 import wx
-from csp.tools.layout2.scripts.document.SceneDocument import SceneDocument
 from XmlFileCommand import XmlFileCommand
+from ...document.SceneDocument import SceneDocument
+from ..controls.SceneWindow import SceneWindow
+from ..controls.DocumentNotebook import DocumentNotebook
+
+class SceneDocumentFactory():
+	def __init__(self, fileName, node):
+		self.fileName = fileName
+		self.node = node
+	
+	def GetUniqueId(self):
+		"""Returns a unique Id identifying the document in the DocumentRegistry."""
+		return SceneDocument.MakeUniqueId(self.fileName)
+	
+	def CreateDocument(self):
+		"""Returns a new document that will be added in the DocumentRegistry."""
+		document = SceneDocument(os.path.basename(self.fileName))
+		document.SetFileName(self.fileName)
+		document.SetRootNode(self.node)
+		return document
 
 class OpenCustomLayoutModelFileCommand(XmlFileCommand):
 	
@@ -34,13 +52,11 @@ class OpenCustomLayoutModelFileCommand(XmlFileCommand):
 		node = node_map.getRoot()
 		assert(node is not None and node.isGroup())
 		
-		# Create a document and add the root node to it. This will in
-		# turn signal the document added signal that is caught in the gui.
-		# This will create a 3D view.
-		document = SceneDocument('Scene')
-		document.SetRootNode(node)
-		application.GetDocumentRegistry().Add(document)
-		application.GetDocumentRegistry().SetCurrentDocument(document)
+		# Get the document from the DocumentRegistry
+		documentRegistry = application.GetDocumentRegistry()
+		document = documentRegistry.GetOrCreateDocument( SceneDocumentFactory(self.GetFileName(), node) )
+
+		# Create a SceneWindow for the document and add it to the DocumentNotebook
+		DocumentNotebook.Instance.AddDocumentPage(SceneWindow, document)
 		
 		node.thisown = 0
-		return 1

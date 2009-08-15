@@ -24,8 +24,7 @@ class SaveAllDocumentsCommand(Command):
 
 	# Iterate each document and try to save every document
 	# that isn't read only.
-	for document in documentRegistry.GetDocuments():
+	for document in documentRegistry.GetDocuments().itervalues():
 		if document.IsReadOnly():
 			continue
 		document.Save()
-

@@ -1,12 +1,6 @@
 #!/usr/bin/env python
 
-from Document import Document
+from FileDocument import FileDocument
 
-class ModelDocument(Document):
+class ModelDocument(FileDocument):
     """Document representing a single graphical model. A model can be any .osg or .ive file."""
-
-    def SetFileName(self, fileName):
-        self._fileName = fileName
-
-    def GetFileName(self):
-        return self._fileName

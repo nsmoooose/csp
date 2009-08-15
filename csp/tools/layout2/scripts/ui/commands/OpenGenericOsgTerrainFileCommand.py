@@ -1,8 +1,24 @@
 #!/usr/bin/env python
 import os.path
 import wx
-from csp.tools.layout2.scripts.document.TerrainDocument import TerrainDocument
 from XmlFileCommand import XmlFileCommand
+from ...document.TerrainDocument import TerrainDocument
+from ..controls.TerrainWindow import TerrainWindow
+from ..controls.DocumentNotebook import DocumentNotebook
+
+class TerrainDocumentFactory():
+	def __init__(self, fileName):
+		self.fileName = fileName
+	
+	def GetUniqueId(self):
+		"""Returns a unique Id identifying the document in the DocumentRegistry."""
+		return TerrainDocument.MakeUniqueId(self.fileName)
+	
+	def CreateDocument(self):
+		"""Returns a new document that will be added in the DocumentRegistry."""
+		document = TerrainDocument(os.path.basename(self.fileName))
+		document.SetFileName(self.fileName)
+		return document
 
 class OpenGenericOsgTerrainFileCommand(XmlFileCommand):
 	
@@ -22,12 +38,10 @@ class OpenGenericOsgTerrainFileCommand(XmlFileCommand):
 		if graph is None:
 			return
 		
-		# Create a document and add the root node to it. This will in
-		# turn signal the document added signal that is caught in the gui.
-		# This will create a 3D view.
-		fileName = self.GetFileName()
-		document = TerrainDocument( os.path.basename(fileName) )
-		document.SetFileName( fileName )
+		# Get the document from the DocumentRegistry
 		application = wx.GetApp()
-		application.GetDocumentRegistry().Add(document)
-		application.GetDocumentRegistry().SetCurrentDocument(document)
+		documentRegistry = application.GetDocumentRegistry()
+		document = documentRegistry.GetOrCreateDocument( TerrainDocumentFactory( self.GetFileName() ) )
+
+		# Create a TerrainWindow for the document and add it to the DocumentNotebook
+		DocumentNotebook.Instance.AddDocumentPage(TerrainWindow, document)

@@ -2,7 +2,23 @@
 import os.path
 import wx
 from FileCommand import FileCommand
-from csp.tools.layout2.scripts.document.ModelDocument import ModelDocument
+from ...document.ModelDocument import ModelDocument
+from ..controls.ModelWindow import ModelWindow
+from ..controls.DocumentNotebook import DocumentNotebook
+
+class ModelDocumentFactory():
+    def __init__(self, fileName):
+        self.fileName = fileName
+    
+    def GetUniqueId(self):
+        """Returns a unique Id identifying the document in the DocumentRegistry."""
+        return ModelDocument.MakeUniqueId(self.fileName)
+    
+    def CreateDocument(self):
+        """Returns a new document that will be added in the DocumentRegistry."""
+        document = ModelDocument(os.path.basename(self.fileName))
+        document.SetFileName(self.fileName)
+        return document
 
 class OpenOsgModelFileCommand(FileCommand):
     """Opens a single Open Scene Graph model file in its own window within
@@ -23,19 +39,12 @@ class OpenOsgModelFileCommand(FileCommand):
         # configuration object and the top window for this application.
         application = wx.GetApp()
 
-        # Get the top window for this application. The top window shall be the 
-        # parent for the open file dialog.
-        topWindow = application.GetTopWindow()
-        if topWindow == None:
-            return
-
         # Retreive the filename. It is set by the parent class.
         fileName = self.GetFileName()
 
-        # Create a document and add the root node to it. This will in
-        # turn signal the document added signal that is caught in the gui.
-        # This will create a 3D view.
-        document = ModelDocument(os.path.basename(fileName))
-        document.SetFileName(fileName)
-        application.GetDocumentRegistry().Add(document)
-	application.GetDocumentRegistry().SetCurrentDocument(document)
+        # Get the document from the DocumentRegistry
+        documentRegistry = application.GetDocumentRegistry()
+        document = documentRegistry.GetOrCreateDocument( ModelDocumentFactory(fileName) )
+
+        # Create a ModelWindow for the document and add it to the DocumentNotebook
+        DocumentNotebook.Instance.AddDocumentPage(ModelWindow, document)

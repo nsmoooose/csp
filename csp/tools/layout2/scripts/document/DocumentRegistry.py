@@ -1,5 +1,8 @@
 from csp.base.signals import Signal
 
+class BadUniqueIdError(Exception):
+	pass
+
 class DocumentRegistry:
 	"""This class represents all opened documents. It can be
 	any loaded document like a text file or an hierchy of 
@@ -9,51 +12,43 @@ class DocumentRegistry:
 	GetDocumentRegistry() method on the wx application object"""
 	
 	def __init__(self):
-		self.documents = []
+		self.documents = {}
 		self.currentDocument = None
-		self.documentAddedSignal = Signal()
-		self.documentClosedSignal = Signal()
 		self.currentDocumentChangedSignal = Signal()
 
-	def GetDocumentAddedSignal(self):
-		"""Whenever a document is added this signal is emitted
-		to all listeners. The document is attached to the signal
-		as the first argument."""
-		return self.documentAddedSignal
-
-	def GetDocumentClosedSignal(self):
-		"""Whenever a document is closed this signal is emitted
-		to all listeners. The document is attached to the signal
-		as the first argument."""
-		return self.documentClosedSignal
-		
 	def GetCurrentDocumentChangedSignal(self):
+		"""Whenever the current document is replaced by another
+		this signal is emitted to all listeners. The document
+		is attached to the signal as the first argument."""
 		return self.currentDocumentChangedSignal
 
-	def Add(self, document):
-		"""Adds a document to the list of opened documents."""
-		self.documents.append(document)
-		self.documentAddedSignal.Emit(document)
+	def GetOrCreateDocument(self, documentFactory):
+		"""Get a document based on its uniqueId.
+		If the document is not found, create it and add it to the list of opened documents.
+		Increment the refCount of the document before returning it.
+		The returned document must be released by a corresponded call to ReleaseDocument."""
 		
-		# If this is the first document we are adding. Lets make it 
-		# the default one too.
-		if len(self.documents) == 1:
-			self.SetCurrentDocument(document)
+		uniqueId = documentFactory.GetUniqueId()
+		document = self.documents.get(uniqueId)
+		
+		if document is None:
+			document = documentFactory.CreateDocument()
+			if document.GetUniqueId() != uniqueId:
+				raise BadUniqueIdError
+			self.documents[uniqueId] = document
+		
+		document.incrementRefCount()
+		return document
 
-	def Close(self, document):
-		"""Closes the specified document and removes it from
-		the list of opened documents."""
-		self.documents.remove(document)
-		self.documentClosedSignal.Emit(document)
+	def ReleaseDocument(self, document):
+		"""Decrement the refCount of the document.
+		If the document is no more referenced, remove it from the list of opened documents,
+		and dispose of it."""
 		
-		if len(self.documents) == 0:
-			self.SetCurrentDocument(None)
-		elif document == self.currentDocument:
-			self.SetCurrentDocument(self.documents[0])
-			
-		# No further use of this document since it has been closed.
-		document.Dispose()
-		
+		if document.decrementRefCount() == 0:
+			del self.documents[ document.GetUniqueId() ]
+			document.Dispose()
+	
 	def SetCurrentDocument(self, document):
 		"""Changes the current document to the specified one."""
 
@@ -68,13 +63,11 @@ class DocumentRegistry:
 	def GetCurrentDocument(self):
 		return self.currentDocument
 
-	def GetByName(self, name):
-		"""Returns the document with the specified name. If it
+	def GetByUniqueId(self, uniqueId):
+		"""Returns the document with the specified uniqueId. If it
 		doesn't exist None is returned."""
-		for document in self.documents:
-			if document.GetName() == name:
-				return document
-		return None
+		
+		return self.documents.get(uniqueId)
 
 	def GetDocuments(self):
 		return self.documents

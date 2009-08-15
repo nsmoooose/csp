@@ -26,7 +26,6 @@ class FileCommandRegistry:
 			
 		for extension in extensions:
 			self.fileCommands[extension] = fileCommand
-			print "RegisterCommandForFileExtensions( %s )" % extension
 	
 	def GetCommandForFile(self, fileName):
 		"""Returns a Command to use for the file. If no command

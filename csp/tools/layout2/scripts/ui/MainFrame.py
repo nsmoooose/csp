@@ -2,8 +2,6 @@
 import wx
 import wx.aui
 
-from csp.tools.layout2.scripts.document.SceneDocument import SceneDocument
-
 from ControlIdGenerator import ControlIdGenerator
 from CommandControlFactory import CommandControlFactory
 from controls.DocumentNotebook import DocumentNotebook
@@ -143,15 +141,8 @@ class MainFrame(wx.Frame):
 			application.Configuration['LayoutApplication.MainFrame.size'] = self.GetSize()
 		application.Configuration['LayoutApplication.MainFrame.IsMaximized'] = self.IsMaximized()
 		
-		documentRegistry = application.GetDocumentRegistry()
-		
-		# Clone the document list and iterate over each document
-		# to close it. This triggers document closed signal which
-		# forces all signals to be disconnected from their ui
-		# widgets.
-		documents = documentRegistry.GetDocuments()[:]
-		for document in documents:
-			documentRegistry.Close(document)
+		# Close all opened documents
+		DocumentNotebook.Instance.CloseAllPages()
 		
 		# Free the advanced user interface (aui) from managing the MainFrame
 		application.auiManager.UnInit()

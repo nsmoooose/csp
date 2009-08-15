@@ -13,12 +13,10 @@ class ImageWindow(wx.ScrolledWindow):
 		self.SetSizer(self.sizer)
 
 	def Dispose(self):
-		pass
+		documentRegistry = wx.GetApp().GetDocumentRegistry()
+		documentRegistry.ReleaseDocument(self.document)
 	
 	def SetDocument(self, document):
-		if document is None:
-			return
-
 		# Store a reference to the document for later use.
 		self.document = document
 

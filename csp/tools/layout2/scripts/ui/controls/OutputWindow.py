@@ -4,26 +4,30 @@ import wx.glcanvas
 
 from csp.tools.layout2.layout_module import *
 
-class OutputWindow(wx.Window):
+class OutputWindow(wx.Panel):
 	"""This window holds a multi line text box that displays
 	a log of events from any process that is sending message
 	signals. For example when we are compiling a new sim.dar
 	file."""
 
 	def __init__(self, *args, **kwargs):
-		wx.Window.__init__(self, *args, **kwargs)
+		wx.Panel.__init__(self, *args, **kwargs)
+		
+		self.sizer = wx.BoxSizer(wx.VERTICAL)
+		self.SetSizer(self.sizer)
+		
 		self.textCtrl = wx.TextCtrl(self, style = wx.BORDER_NONE | wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_DONTWRAP)
-		self.Bind(wx.EVT_SIZE, self.on_Size)
+		self.sizer.Add(self.textCtrl, proportion=1, flag=wx.EXPAND)
+		
 		self.outputDocument = None
 		self.nbLines = 0
 
 	def Dispose(self):
 		self.outputDocument.GetChangedSignal().Disconnect(self.on_DocumentChanged)
+		documentRegistry = wx.GetApp().GetDocumentRegistry()
+		documentRegistry.ReleaseDocument(self.outputDocument)
 	
 	def SetDocument(self, outputDocument):
-		if outputDocument is None:
-			return
-
 		# Store a reference to the outputDocument for later use.
 		self.outputDocument = outputDocument
 		self.outputDocument.GetChangedSignal().Connect(self.on_DocumentChanged)
@@ -36,10 +40,6 @@ class OutputWindow(wx.Window):
 	
 	def GetDocument(self):
 		return self.outputDocument
-
-	def on_Size(self, event):
-		width, height = self.GetClientSizeTuple()
-		self.textCtrl.SetSize(wx.Size(width, height))
 
 	def on_DocumentChanged(self, outputDocument):
 		lines = outputDocument.GetLines()

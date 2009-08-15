@@ -1,12 +1,6 @@
 #!/usr/bin/env python
 
-from Document import Document
+from FileDocument import FileDocument
 
-class ImageDocument(Document):
+class ImageDocument(FileDocument):
 	"""Document representing a single Image. """
-
-	def SetFileName(self, fileName):
-		self._fileName = fileName
-
-	def GetFileName(self):
-		return self._fileName

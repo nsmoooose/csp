@@ -10,6 +10,15 @@ class OutputDocument(Document):
 		Document.__init__(self, name)
 		self.lines = []
 
+	@staticmethod
+	def MakeUniqueId(name):
+		return "OutputDocument:" + name
+	
+	def GetUniqueId(self):
+		"""Returns a unique Id identifying the document in the DocumentRegistry.
+		Inheriting classes should implement this method"""
+		return OutputDocument.MakeUniqueId( self.GetName() )
+
 	def WriteLine(self, text):
 		self.lines.append(text)
 		self.GetChangedSignal().Emit(self)

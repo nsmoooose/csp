@@ -2,6 +2,7 @@
 import wx
 
 from Command import Command
+from ..controls.DocumentNotebook import DocumentNotebook
 
 class CloseCurrentDocumentCommand(Command):
 	"""The purpose of this command is to close the currently
@@ -17,14 +18,4 @@ class CloseCurrentDocumentCommand(Command):
 		return "generic.png"
 
 	def Execute(self):
-		application = wx.GetApp()
-
-		# Get the registry of documents. This class holds a
-		# reference to the current document that has focus.
-		documentRegistry = application.GetDocumentRegistry()
-
-		# Retreive the current document. There may not be any
-		# opened documents. In that case we cannot continue.
-		currentDocument = documentRegistry.GetCurrentDocument()
-		if currentDocument is not None:
-			documentRegistry.Close(currentDocument)
+		DocumentNotebook.Instance.CloseCurrentPage()

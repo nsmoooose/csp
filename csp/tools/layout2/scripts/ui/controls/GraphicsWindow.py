@@ -22,6 +22,9 @@ class GraphicsWindow(wx.glcanvas.GLCanvas):
 		self.graphicsWindow.clearSignals()
 		application = wx.GetApp()
 		application.GetIdleSignal().Disconnect(self.on_Idle)
+		
+		documentRegistry = wx.GetApp().GetDocumentRegistry()
+		documentRegistry.ReleaseDocument(self.document)
 	
 	def SetGraphicsWindow(self, graphicsWindow):
 		"""Sets the graphics implementation. The implementation is a c++ class

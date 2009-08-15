@@ -43,8 +43,7 @@ class OpenSelectedFileCommand(Command):
 		# Now we have a file name and all apropriate data to identify
 		# the file selected. This is the responsibility of the 
 		# FileCommandRegistry. Get a command and execute it.
-		fileRegistry = FileCommandRegistry()
-		command = fileRegistry.GetCommandForFile(fileName)
+		command = FileCommandRegistry.Instance.GetCommandForFile(fileName)
 		if command is not None:
 			command.Execute()
 		else:

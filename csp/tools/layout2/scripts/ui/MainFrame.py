@@ -50,8 +50,6 @@ class MainFrame(wx.Frame):
 		# Let the advanced user interface (aui) manage the MainFrame
 		application.auiManager = wx.aui.AuiManager(self)
 		
-		documentRegistry = application.GetDocumentRegistry()
-		
 		# Create a control id generator. This is used by all helper classes
 		# to actualy define an unique id for each control (menu, toolbar button)
 		# etc.

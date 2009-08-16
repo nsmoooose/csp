@@ -7,6 +7,7 @@ from CommandControlFactory import CommandControlFactory
 from controls.DocumentNotebook import DocumentNotebook
 from controls.OutputPane import OutputPane
 from controls.ProjectTree import ProjectTree
+from controls.CurrentDocumentPropertiesPane import CurrentDocumentPropertiesPane
 from controls.SceneWindow import SceneWindow
 
 from commands.CloseCurrentDocumentCommand import CloseCurrentDocumentCommand
@@ -58,10 +59,42 @@ class MainFrame(wx.Frame):
 		# objects.
 		controlFactory = CommandControlFactory(self.controlIdGenerator)
 
-		fileMenuCommands = [OpenSelectedFileCommand(), CloseCurrentDocumentCommand(), SaveCurrentDocumentCommand(), SaveAllDocumentsCommand(), None, QuitCommand()]
-		viewMenuCommands = [MoveCameraToHomeCommand(), None, ZoomInCommand(), ZoomOutCommand(), None, PanDownCommand(), PanLeftCommand(), PanRightCommand(), PanUpCommand()]
-		toolsMenuCommands = [ReCompileDataArchiveCommand(), CreateModelXmlFileCommand(), CreateInterfaceInformationDocumentCommand()]
-		toolbarCommands = [OpenSelectedFileCommand(), SaveCurrentDocumentCommand(), CloseCurrentDocumentCommand(), None, MoveCameraToHomeCommand(), ReCompileDataArchiveCommand(), None, ZoomInCommand(), ZoomOutCommand(), None, PanDownCommand(), PanLeftCommand(), PanRightCommand(), PanUpCommand()]
+		fileMenuCommands = [
+			OpenSelectedFileCommand(),
+			CloseCurrentDocumentCommand(),
+			SaveCurrentDocumentCommand(),
+			SaveAllDocumentsCommand(),
+			None,
+			QuitCommand() ]
+		viewMenuCommands = [
+			MoveCameraToHomeCommand(),
+			None,
+			ZoomInCommand(),
+			ZoomOutCommand(),
+			None,
+			PanDownCommand(),
+			PanLeftCommand(),
+			PanRightCommand(),
+			PanUpCommand() ]
+		toolsMenuCommands = [
+			ReCompileDataArchiveCommand(),
+			CreateModelXmlFileCommand(),
+			CreateInterfaceInformationDocumentCommand() ]
+		toolbarCommands = [
+			OpenSelectedFileCommand(),
+			SaveCurrentDocumentCommand(),
+			CloseCurrentDocumentCommand(),
+			None,
+			MoveCameraToHomeCommand(),
+			ReCompileDataArchiveCommand(),
+			None,
+			ZoomInCommand(),
+			ZoomOutCommand(),
+			None,
+			PanDownCommand(),
+			PanLeftCommand(),
+			PanRightCommand(),
+			PanUpCommand() ]
 
 		# Menu items.
 		menuBar = wx.MenuBar()
@@ -74,7 +107,9 @@ class MainFrame(wx.Frame):
 		toolbar = wx.ToolBar(self, style=wx.TB_FLAT | wx.TB_NODIVIDER)
 		toolbar.SetToolBitmapSize((32,32))
 		controlFactory.GenerateToolBarButtons(self, toolbar, toolbarCommands)
-		application.auiManager.AddPane( toolbar, wx.aui.AuiPaneInfo().Name('Toolbar').Caption('General toolbar').ToolbarPane().Top() )
+		application.auiManager.AddPane( toolbar,
+			wx.aui.AuiPaneInfo().Name('Toolbar')
+			.Caption('General toolbar').ToolbarPane().Top() )
 
 		# Status bar control at the bottom of the screen.
 		statusBar = wx.StatusBar(self)
@@ -85,7 +120,8 @@ class MainFrame(wx.Frame):
 		# of controls. To the center we have all opened documents.
 		# And at the bottom we have the output panel.
 		DocumentNotebook.Instance = DocumentNotebook(self)
-		application.auiManager.AddPane( DocumentNotebook.Instance, wx.aui.AuiPaneInfo().Name('Documents').CenterPane() )
+		application.auiManager.AddPane( DocumentNotebook.Instance,
+			wx.aui.AuiPaneInfo().Name('Documents').CenterPane() )
 
 		# Display the tree control with all files in this project. Also
 		# register this instance so all command object can use it to 
@@ -94,21 +130,39 @@ class MainFrame(wx.Frame):
 		ProjectTree.Instance.SetRootDirectory(application.Configuration['LayoutApplication.DataDirectory'])
 		ProjectTree.Instance.SetOpenCommand( OpenSelectedFileCommand() )
 
-		application.auiManager.AddPane( ProjectTree.Instance, wx.aui.AuiPaneInfo().Name('Project').Caption('Project').Left().BestSize((300, 300)) )
+		application.auiManager.AddPane( ProjectTree.Instance,
+			wx.aui.AuiPaneInfo().Name('Project')
+			.Caption('Project').Layer(1).Left().BestSize((300, 300)) )
+		
+		CurrentDocumentPropertiesPane.Instance = CurrentDocumentPropertiesPane(self)
+		application.auiManager.AddPane( CurrentDocumentPropertiesPane.Instance,
+			wx.aui.AuiPaneInfo().Name('CurrentDocumentPropertiesPane')
+			.Caption('Document properties').Layer(1).Left().BestSize((300, 300)) )
 		
 		OutputPane.Instance = OutputPane(self)
-		application.auiManager.AddPane( OutputPane.Instance, wx.aui.AuiPaneInfo().Name('Output').Caption('Output').Bottom().BestSize((300, 300)) )
+		application.auiManager.AddPane( OutputPane.Instance,
+			wx.aui.AuiPaneInfo().Name('Output')
+			.Caption('Output').Bottom().BestSize((300, 300)) )
 		
 		# Create the Windows menu and toolbar.
-		windowsToolbarCommands = [TogglePaneCommand(toolbar), TogglePaneCommand(ProjectTree.Instance), TogglePaneCommand(OutputPane.Instance)]
+		windowsToolbarCommands = [
+			TogglePaneCommand(toolbar),
+			TogglePaneCommand(ProjectTree.Instance),
+			TogglePaneCommand(CurrentDocumentPropertiesPane.Instance),
+			TogglePaneCommand(OutputPane.Instance) ]
 		
 		toolbar = wx.ToolBar(self, style=wx.TB_FLAT | wx.TB_NODIVIDER)
 		toolbar.SetToolBitmapSize((32,32))
 		controlFactory.GenerateToolBarButtons(self, toolbar, windowsToolbarCommands)
-		application.auiManager.AddPane( toolbar, wx.aui.AuiPaneInfo().Name('Windows').Caption('Windows toolbar').ToolbarPane().Top() )
+		application.auiManager.AddPane( toolbar,
+			wx.aui.AuiPaneInfo().Name('Windows')
+			.Caption('Windows toolbar').ToolbarPane().Top() )
 		
 		defaultPerspective = application.auiManager.SavePerspective()
-		windowsMenuCommands = [DefaultLayoutCommand(defaultPerspective), None, TogglePaneCommand(toolbar)] + windowsToolbarCommands
+		windowsMenuCommands = [
+			DefaultLayoutCommand(defaultPerspective),
+			None,
+			TogglePaneCommand(toolbar) ] + windowsToolbarCommands
 		menuBar.Append(controlFactory.GenerateMenuItems(self, windowsMenuCommands), "Windows")
 		
 		# Update the layout

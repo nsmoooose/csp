@@ -35,69 +35,6 @@ import SCons.Scanner
 import SCons.Tool
 
 
-def EmitSwig(target, source, env):
-	target = []
-	assert(len(source)==1)
-	ext = env['CXXFILESUFFIX']
-	for s in source:
-		wrapper = s.target_from_source('', '_wrap'+ext)
-		target.append(wrapper)
-		module = None
-		# first try to find %module directive in the swig interface.  this is
-		# a fairly simplistic search that can easily be tripped up (e.g., by
-		# multiline comments.
-		re_module = re.compile(r'^\s*%module(?:\(.*\))?\s+([a-zA-Z0-9_]+)')
-		for line in open(str(s)):
-			m = re_module.match(line)
-			if m is not None:
-				module = s.dir.File(m.group(1) + '.py')
-				break
-		# if a %module directive wasn't found, assume the output module has
-		# the same name as the interface file.  to be thorough we should also
-		# consider swig's -module flag, but this isn't implemented yet.
-		if module is None:
-			module = s.target_from_source('', '.py')
-		target.append(module)
-	return (target, source)
-
-
-def AddSwigBuild(env):
-	env['SWIGCOM'] = '$SWIG $SWIGFLAGS $_SWIGINCFLAGS -o ${TARGETS[0]} $SOURCE'
-	env['SWIGINCPREFIX'] = '-I'
-	env['SWIGINCSUFFIX'] = '$INCSUFFIX'
-	env['SWIGCXXFLAGS'] = '$CXXFLAGS'
-	env['_SWIGINCFLAGS'] = '$( ${_concat(SWIGINCPREFIX, SWIGINCLUDES, SWIGINCSUFFIX, __env__, RDirs)} $)'
-	SwigAction = SCons.Action.Action('$SWIGCOM', '$SWIGCOMSTR')
-	builder = SCons.Builder.Builder(action = SwigAction, emitter = EmitSwig)
-	env.Append(BUILDERS = {'Swig': builder})
-	def wrapper_builder(env, target = None, source = SCons.Builder._null, **kw):
-		kw.setdefault('CXXFLAGS', env['SWIGCXXFLAGS'])
-		return env.SharedObject(target, source, **kw)
-	env.Append(BUILDERS = {'SwigWrapper': wrapper_builder })
-
-
-def AddSwigDep(env):
-	def SwigScanner(node, env, path, arg=None):
-		cmd = env.subst('$SWIG $SWIGFLAGS $SWIGINCLUDES -MM %s' % str(node))
-		stdin, stdout, stderr = os.popen3(cmd, 't')
-		deps = ''.join(map(lambda x: x.strip(), stdout.readlines()))
-		deps = map(lambda x: "#/"+x.strip(), deps.split('\\'))[1:]
-		return deps
-	scanner = SCons.Scanner.Scanner(name = 'SwigScanner', function = SwigScanner, skeys = ['.i'], recursive = 0)
-	env.Append(SCANNERS = scanner)
-
-
-def AddSwigSupport(env, required=1):
-	SWIG = scons.WhereIs('swig')
-	if not SWIG:
-		print 'WARNING: swig not found in path'
-		if required:
-			print >>sys.stderr, 'Cannot continue without swig.'
-			sys.exit(1)
-	AddSwigDep(env)
-	AddSwigBuild(env)
-
-
 def AddDoxygen(env):
 	env['DOXYGEN'] = 'doxygen'
 	env['DOXYGENCOM'] = 'cd $SOURCE.dir && $DOXYGEN $SOURCES.file 1>.dox.log 2>.dox.err'

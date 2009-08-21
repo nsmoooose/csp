@@ -149,7 +149,7 @@ class Environment(build.Environment):
 		env.Replace(CXXFILESUFFIX='.cpp')
 		env.Replace(CPPPATH=self.INCLUDE)
 		env.Replace(SWIGFLAGS=Split('-python -c++'))
-		env.Replace(SWIGINCLUDES=self.INCLUDE)
+		env.Replace(SWIGPATH=self.INCLUDE)
 
 	def customize_win(self, env):
 		# The following compiler warnings has been disabled:

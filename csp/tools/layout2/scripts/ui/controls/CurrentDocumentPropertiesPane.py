@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 import wx
-import wx.lib.agw.customtreectrl
 
 from ...document.FileDocument import FileDocument
 from ...document.ImageDocument import ImageDocument

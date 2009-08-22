@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import wx
-import wx.lib.agw.customtreectrl
+from wx.lib import customtreectrl
 
 class FilePropertiesPane(wx.Panel):
 	def __init__(self, parent, document, rootLabel = "File document", *args, **kwargs):
@@ -9,7 +9,7 @@ class FilePropertiesPane(wx.Panel):
 		sizer = wx.BoxSizer(wx.VERTICAL)
 		self.SetSizer(sizer)
 		
-		self.tree = wx.lib.agw.customtreectrl.CustomTreeCtrl(self, style = wx.lib.agw.customtreectrl.TR_DEFAULT_STYLE | wx.lib.agw.customtreectrl.TR_HAS_VARIABLE_ROW_HEIGHT)
+		self.tree = customtreectrl.CustomTreeCtrl(self, style = customtreectrl.TR_DEFAULT_STYLE | customtreectrl.TR_HAS_VARIABLE_ROW_HEIGHT)
 		sizer.Add(self.tree, proportion = 1, flag = wx.EXPAND)
 		
 		self.root = self.tree.AddRoot(rootLabel)

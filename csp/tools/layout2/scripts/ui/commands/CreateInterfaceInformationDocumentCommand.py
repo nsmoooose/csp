@@ -6,18 +6,6 @@ from ...document.OutputDocument import OutputDocument
 from ..controls.OutputWindow import OutputWindow
 from ..controls.DocumentNotebook import DocumentNotebook
 
-class OutputDocumentFactory():
-	def __init__(self, documentName):
-		self.documentName = documentName
-	
-	def GetUniqueId(self):
-		"""Returns a unique Id identifying the document in the DocumentRegistry."""
-		return OutputDocument.MakeUniqueId(self.documentName)
-	
-	def CreateDocument(self):
-		"""Returns a new document that will be added in the DocumentRegistry."""
-		return OutputDocument(self.documentName)
-
 class CreateInterfaceInformationDocumentCommand(Command):
 	"""Generates a text document describing all interface objects that exists within the
 	CSP project. Each property is documented with information about type and what information
@@ -98,3 +86,14 @@ class CreateInterfaceInformationDocumentCommand(Command):
 			outputDocument.WriteLine("")
 
 
+class OutputDocumentFactory():
+	def __init__(self, documentName):
+		self.documentName = documentName
+	
+	def GetUniqueId(self):
+		"""Returns a unique Id identifying the document in the DocumentRegistry."""
+		return OutputDocument.MakeUniqueId(self.documentName)
+	
+	def CreateDocument(self):
+		"""Returns a new document that will be added in the DocumentRegistry."""
+		return OutputDocument(self.documentName)

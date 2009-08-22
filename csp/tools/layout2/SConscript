@@ -52,6 +52,8 @@ build.PythonSharedLibrary(env,
 		'cpp/ReaderWriterVirtualEarthOverview.cpp',
 		'cpp/Scene.cpp',
 		'cpp/Scene.h',
+		'cpp/XmlNode.cpp',
+		'cpp/XmlNode.h',
 	],
 	deps = ['osg', 'csplib', 'cspsim'],
 	aliases = ['layout2', 'all'])

@@ -1,8 +1,5 @@
 #!/usr/bin/env python
 import wx
-import wx.glcanvas
-
-from csp.tools.layout2.layout_module import *
 
 class OutputWindow(wx.Panel):
 	"""This window holds a multi line text box that displays
@@ -26,6 +23,7 @@ class OutputWindow(wx.Panel):
 		self.outputDocument.GetChangedSignal().Disconnect(self.on_DocumentChanged)
 		documentRegistry = wx.GetApp().GetDocumentRegistry()
 		documentRegistry.ReleaseDocument(self.outputDocument)
+		self.outputDocument = None
 	
 	def SetDocument(self, outputDocument):
 		# Store a reference to the outputDocument for later use.

@@ -15,6 +15,7 @@ class ImageWindow(wx.ScrolledWindow):
 	def Dispose(self):
 		documentRegistry = wx.GetApp().GetDocumentRegistry()
 		documentRegistry.ReleaseDocument(self.document)
+		self.document = None
 	
 	def SetDocument(self, document):
 		# Store a reference to the document for later use.

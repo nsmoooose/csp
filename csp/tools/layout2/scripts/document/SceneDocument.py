@@ -5,8 +5,8 @@ from FileDocument import FileDocument
 class SceneDocument(FileDocument):
 	"""This document represents a scene of 3D objects."""
 
-	def __init__(self, name):
-		FileDocument.__init__(self, name)
+	def __init__(self, *args, **kwargs):
+		FileDocument.__init__(self, *args, **kwargs)
 		self.node = None
 		
 	def SetRootNode(self, node):

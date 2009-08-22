@@ -1,24 +1,9 @@
 #!/usr/bin/env python
-import os.path
 import wx
 from FileCommand import FileCommand
 from ...document.ModelDocument import ModelDocument
 from ..controls.ModelWindow import ModelWindow
 from ..controls.DocumentNotebook import DocumentNotebook
-
-class ModelDocumentFactory():
-    def __init__(self, fileName):
-        self.fileName = fileName
-    
-    def GetUniqueId(self):
-        """Returns a unique Id identifying the document in the DocumentRegistry."""
-        return ModelDocument.MakeUniqueId(self.fileName)
-    
-    def CreateDocument(self):
-        """Returns a new document that will be added in the DocumentRegistry."""
-        document = ModelDocument(os.path.basename(self.fileName))
-        document.SetFileName(self.fileName)
-        return document
 
 class OpenOsgModelFileCommand(FileCommand):
     """Opens a single Open Scene Graph model file in its own window within
@@ -48,3 +33,16 @@ class OpenOsgModelFileCommand(FileCommand):
 
         # Create a ModelWindow for the document and add it to the DocumentNotebook
         DocumentNotebook.Instance.AddDocumentPage(ModelWindow, document)
+
+
+class ModelDocumentFactory():
+    def __init__(self, fileName):
+        self.fileName = fileName
+    
+    def GetUniqueId(self):
+        """Returns a unique Id identifying the document in the DocumentRegistry."""
+        return ModelDocument.MakeUniqueId(self.fileName)
+    
+    def CreateDocument(self):
+        """Returns a new document that will be added in the DocumentRegistry."""
+        return ModelDocument(self.fileName)

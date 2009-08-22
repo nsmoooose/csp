@@ -1,24 +1,9 @@
 #!/usr/bin/env python
-import os.path
 import wx
 from FileCommand import FileCommand
 from ...document.ImageDocument import ImageDocument
 from ..controls.ImageWindow import ImageWindow
 from ..controls.DocumentNotebook import DocumentNotebook
-
-class ImageDocumentFactory():
-	def __init__(self, fileName):
-		self.fileName = fileName
-	
-	def GetUniqueId(self):
-		"""Returns a unique Id identifying the document in the DocumentRegistry."""
-		return ImageDocument.MakeUniqueId(self.fileName)
-	
-	def CreateDocument(self):
-		"""Returns a new document that will be added in the DocumentRegistry."""
-		document = ImageDocument(os.path.basename(self.fileName))
-		document.SetFileName(self.fileName)
-		return document
 
 class OpenImageFileCommand(FileCommand):
 	"""Opens a single image file in its own window within
@@ -48,3 +33,16 @@ class OpenImageFileCommand(FileCommand):
 
 		# Create an ImageWindow for the document and add it to the DocumentNotebook
 		DocumentNotebook.Instance.AddDocumentPage(ImageWindow, document)
+
+
+class ImageDocumentFactory():
+	def __init__(self, fileName):
+		self.fileName = fileName
+	
+	def GetUniqueId(self):
+		"""Returns a unique Id identifying the document in the DocumentRegistry."""
+		return ImageDocument.MakeUniqueId(self.fileName)
+	
+	def CreateDocument(self):
+		"""Returns a new document that will be added in the DocumentRegistry."""
+		return ImageDocument(self.fileName)

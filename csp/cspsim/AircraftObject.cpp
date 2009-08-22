@@ -62,9 +62,6 @@ AircraftObject::AircraftObject(): DynamicObject(TYPE_AIR_UNIT) {
 AircraftObject::~AircraftObject() {
 }
 
-void AircraftObject::convertXML() {
-}
-
 void AircraftObject::postCreate() {
 	DynamicObject::postCreate();
 }

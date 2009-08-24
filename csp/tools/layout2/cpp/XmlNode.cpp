@@ -16,11 +16,6 @@ XmlNode::~XmlNode()
 {
 }
 
-std::string XmlNode::trace() const
-{
-	return "XmlNode";
-}
-
 
 XmlNodeDocument::XmlNodeDocument()
 {
@@ -32,11 +27,6 @@ XmlNodeDocument::~XmlNodeDocument()
 	std::cout << "XmlNodeDocument::~XmlNodeDocument()" << std::endl;
 }
 
-std::string XmlNodeDocument::trace() const
-{
-	return "XmlNodeDocument";
-}
-
 
 XmlNodeElement::XmlNodeElement()
 {
@@ -46,11 +36,6 @@ XmlNodeElement::XmlNodeElement()
 XmlNodeElement::~XmlNodeElement()
 {
 	std::cout << "XmlNodeElement::~XmlNodeElement()" << std::endl;
-}
-
-std::string XmlNodeElement::trace() const
-{
-	return "XmlNodeElement";
 }
 
 
@@ -70,11 +55,6 @@ XmlNodeObject::XmlNodeObject()
 XmlNodeObject::~XmlNodeObject()
 {
 	std::cout << "XmlNodeObject::~XmlNodeObject()" << std::endl;
-}
-
-std::string XmlNodeObject::trace() const
-{
-	return "XmlNodeObject";
 }
 
 } // namespace layout

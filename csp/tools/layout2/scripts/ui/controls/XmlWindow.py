@@ -5,13 +5,13 @@ import wx.stc
 class XmlWindow(wx.stc.StyledTextCtrl):
 	"""This window holds a read only StyledTextCtrl. It is used to display
 	an xml document."""
-
+	
 	def __init__(self, *args, **kwargs):
 		wx.stc.StyledTextCtrl.__init__(self, *args, **kwargs)
 		
 		self.document = None
 		self.SetReadOnly(1)
-
+	
 	def Dispose(self):
 		self.document.GetChangedSignal().Disconnect(self.on_DocumentChanged)
 		documentRegistry = wx.GetApp().GetDocumentRegistry()
@@ -29,7 +29,7 @@ class XmlWindow(wx.stc.StyledTextCtrl):
 	
 	def GetDocument(self):
 		return self.document
-
+	
 	def on_DocumentChanged(self, document):
 		fullText = document.xmlNodeDocument.domNode.toprettyxml()
 		
@@ -39,7 +39,7 @@ class XmlWindow(wx.stc.StyledTextCtrl):
 			if line.strip():
 				lines.append( line )
 		fullText = "\n".join( lines )
-			
+		
 		self.SetReadOnly(0)
 		self.SetText(fullText)
 		self.SetReadOnly(1)

@@ -34,11 +34,15 @@ class DocumentRegistry:
 		if document is None:
 			document = documentFactory.CreateDocument()
 			if document.GetUniqueId() != uniqueId:
-				raise BadUniqueIdError
+				raise BadUniqueIdError()
 			self.documents[uniqueId] = document
 		
 		document.incrementRefCount()
 		return document
+
+	def ReferenceDocument(self, document):
+		"""Increment the refCount of the document."""
+		document.incrementRefCount()
 
 	def ReleaseDocument(self, document):
 		"""Decrement the refCount of the document.

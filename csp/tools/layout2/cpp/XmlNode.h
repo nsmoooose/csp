@@ -16,8 +16,6 @@ class XmlNode : public Referenced
 	public:
 		XmlNode();
 		virtual ~XmlNode();
-
-		virtual std::string trace() const;
 };
 
 class XmlNodeDocument : public XmlNode
@@ -27,7 +25,6 @@ class XmlNodeDocument : public XmlNode
 		~XmlNodeDocument();
 
 		virtual csp::Ref<XmlNode> GetRootElement() const { return 0; };
-		virtual std::string trace() const;
 };
 
 class XmlNodeElement : public XmlNode
@@ -35,8 +32,6 @@ class XmlNodeElement : public XmlNode
 	public:
 		XmlNodeElement();
 		~XmlNodeElement();
-
-		virtual std::string trace() const;
 };
 
 
@@ -78,8 +73,6 @@ class XmlNodeObject : public XmlNodeElement
 	public:
 		XmlNodeObject();
 		~XmlNodeObject();
-
-		virtual std::string trace() const;
 };
 
 } // namespace layout

@@ -23,11 +23,11 @@ class Document:
 	
 	def incrementRefCount(self):
 		"""This methode should only be called by DocumentRegistry."""
-		self.refCount = self.refCount + 1
+		self.refCount += 1
 	
 	def decrementRefCount(self):
 		"""This methode should only be called by DocumentRegistry."""
-		self.refCount = self.refCount - 1
+		self.refCount -= 1
 		return self.refCount
 	
 	def GetChangedSignal(self):

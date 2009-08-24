@@ -2,10 +2,12 @@
 import wx
 
 from ...document.FileDocument import FileDocument
+from ...document.XmlDocument import XmlDocument
 from ...document.ImageDocument import ImageDocument
 from NoPropertiesPane import NoPropertiesPane
-from FilePropertiesPane import FilePropertiesPane
+from XmlPropertiesPane import XmlPropertiesPane
 from ImagePropertiesPane import ImagePropertiesPane
+from FilePropertiesPane import FilePropertiesPane
 
 class CurrentDocumentPropertiesPane(wx.Panel):
 	"""This window display various properties related to the current document."""
@@ -40,7 +42,9 @@ class CurrentDocumentPropertiesPane(wx.Panel):
 			return NoPropertiesPane(self)
 		else:
 			if isinstance(document, FileDocument):
-				if isinstance(document, ImageDocument):
+				if isinstance(document, XmlDocument):
+					return XmlPropertiesPane(self, document = document)
+				elif isinstance(document, ImageDocument):
 					return ImagePropertiesPane(self, document = document)
 				else:
 					return FilePropertiesPane(self, document = document)

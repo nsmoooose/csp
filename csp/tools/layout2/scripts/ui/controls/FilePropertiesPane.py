@@ -14,7 +14,7 @@ class FilePropertiesPane(wx.Panel):
 		
 		self.root = self.tree.AddRoot(rootLabel)
 		
-		fileName_text = wx.TextCtrl(self.tree, value = document.GetFileName(), size = (500, -1), style = wx.TE_READONLY)
+		fileName_text = wx.StaticText(self.tree, label = document.GetFileName(), style = wx.BORDER_SIMPLE)
 		fileName_item = self.tree.AppendItem(self.root, "File name", wnd = fileName_text)
 		
 		self.tree.Expand(self.root)

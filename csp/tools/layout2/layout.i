@@ -45,6 +45,7 @@
 %feature("director") GraphCallback;
 %feature("director") LayoutNodeVisitor;
 %feature("director") XmlNode;
+%feature("director") XmlNodeDocument;
 
 #if defined(SWIGPYTHON)
 %typemap(in) (int argc, char **argv)

@@ -19,3 +19,19 @@ class SceneDocument(FileDocument):
 	def Clear(self):
 		self.node = None
 		self.GetChangedSignal().Emit(self)
+
+
+class SceneDocumentFactory():
+	def __init__(self, fileName, node):
+		self.fileName = fileName
+		self.node = node
+	
+	def GetUniqueId(self):
+		"""Returns a unique Id identifying the document in the DocumentRegistry."""
+		return SceneDocument.MakeUniqueId(self.fileName)
+	
+	def CreateDocument(self):
+		"""Returns a new document that will be added in the DocumentRegistry."""
+		document = SceneDocument(self.fileName)
+		document.SetRootNode(self.node)
+		return document

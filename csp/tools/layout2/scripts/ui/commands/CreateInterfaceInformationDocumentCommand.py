@@ -2,7 +2,7 @@
 import wx
 from csp import csplib
 from Command import Command
-from ...document.OutputDocument import OutputDocument
+from ...document.OutputDocument import OutputDocumentFactory
 from ..controls.OutputWindow import OutputWindow
 from ..controls.DocumentNotebook import DocumentNotebook
 
@@ -84,16 +84,3 @@ class CreateInterfaceInformationDocumentCommand(Command):
 			# Write end of class.
 			outputDocument.WriteLine("};")
 			outputDocument.WriteLine("")
-
-
-class OutputDocumentFactory():
-	def __init__(self, documentName):
-		self.documentName = documentName
-	
-	def GetUniqueId(self):
-		"""Returns a unique Id identifying the document in the DocumentRegistry."""
-		return OutputDocument.MakeUniqueId(self.documentName)
-	
-	def CreateDocument(self):
-		"""Returns a new document that will be added in the DocumentRegistry."""
-		return OutputDocument(self.documentName)

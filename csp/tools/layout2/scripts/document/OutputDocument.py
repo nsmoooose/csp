@@ -29,3 +29,16 @@ class OutputDocument(Document):
 	def Clear(self):
 		self.lines = []
 		self.GetChangedSignal().Emit(self)
+
+
+class OutputDocumentFactory():
+	def __init__(self, documentName):
+		self.documentName = documentName
+	
+	def GetUniqueId(self):
+		"""Returns a unique Id identifying the document in the DocumentRegistry."""
+		return OutputDocument.MakeUniqueId(self.documentName)
+	
+	def CreateDocument(self):
+		"""Returns a new document that will be added in the DocumentRegistry."""
+		return OutputDocument(self.documentName)

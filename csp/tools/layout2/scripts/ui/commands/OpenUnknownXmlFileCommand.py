@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import wx
 from FileCommand import FileCommand
-from ...document.XmlDocument import XmlDocument
+from ...document.XmlDocument import XmlDocumentFactory
 from ..controls.XmlWindow import XmlWindow
 from ..controls.DocumentNotebook import DocumentNotebook
 
@@ -24,18 +24,3 @@ class OpenUnknownXmlFileCommand(FileCommand):
 
 		# Create a XmlWindow for the document and add it to the DocumentNotebook
 		DocumentNotebook.Instance.AddDocumentPage(XmlWindow, document)
-
-
-class XmlDocumentFactory():
-	def __init__(self, fileName):
-		self.fileName = fileName
-	
-	def GetUniqueId(self):
-		"""Returns a unique Id identifying the document in the DocumentRegistry."""
-		return XmlDocument.MakeUniqueId(self.fileName)
-	
-	def CreateDocument(self):
-		"""Returns a new document that will be added in the DocumentRegistry."""
-		document = XmlDocument(self.fileName)
-		document.Load()
-		return document

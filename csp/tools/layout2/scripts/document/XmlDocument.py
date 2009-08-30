@@ -43,3 +43,18 @@ class XmlDocument(FileDocument):
 	
 	def GetXmlNodeDocument(self):
 		return self.xmlNodeDocument
+
+
+class XmlDocumentFactory():
+	def __init__(self, fileName):
+		self.fileName = fileName
+	
+	def GetUniqueId(self):
+		"""Returns a unique Id identifying the document in the DocumentRegistry."""
+		return XmlDocument.MakeUniqueId(self.fileName)
+	
+	def CreateDocument(self):
+		"""Returns a new document that will be added in the DocumentRegistry."""
+		document = XmlDocument(self.fileName)
+		document.Load()
+		return document

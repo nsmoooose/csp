@@ -3,7 +3,7 @@ import os.path
 import wx
 from FileCommand import FileCommand
 from ...data import DataTree
-from ...document.SceneDocument import SceneDocument
+from ...document.SceneDocument import SceneDocumentFactory
 from ..controls.SceneWindow import SceneWindow
 from ..controls.DocumentNotebook import DocumentNotebook
 
@@ -83,19 +83,3 @@ class OpenCustomLayoutModelFileCommand(FileCommand):
 		except Exception, e:
 			wx.MessageDialog(topWindow, str(e), "Error loading XML file", style = wx.OK|wx.ICON_ERROR).ShowModal()
 			return None
-
-
-class SceneDocumentFactory():
-	def __init__(self, fileName, node):
-		self.fileName = fileName
-		self.node = node
-	
-	def GetUniqueId(self):
-		"""Returns a unique Id identifying the document in the DocumentRegistry."""
-		return SceneDocument.MakeUniqueId(self.fileName)
-	
-	def CreateDocument(self):
-		"""Returns a new document that will be added in the DocumentRegistry."""
-		document = SceneDocument(self.fileName)
-		document.SetRootNode(self.node)
-		return document

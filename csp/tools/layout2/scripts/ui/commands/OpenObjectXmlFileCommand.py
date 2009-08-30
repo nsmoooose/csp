@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import wx
 from FileCommand import FileCommand
-from ...document.XmlObjectDocument import XmlObjectDocument
+from ...document.XmlObjectDocument import XmlObjectDocumentFactory
 from ..controls.DocumentNotebook import DocumentNotebook
 
 class OpenObjectXmlFileCommand(FileCommand):
@@ -26,18 +26,3 @@ class OpenObjectXmlFileCommand(FileCommand):
 
 		# Create a Page for the document and add it to the DocumentNotebook
 		DocumentNotebook.Instance.AddDocumentPage(self.PageClass, document)
-
-
-class XmlObjectDocumentFactory():
-	def __init__(self, fileName):
-		self.fileName = fileName
-	
-	def GetUniqueId(self):
-		"""Returns a unique Id identifying the document in the DocumentRegistry."""
-		return XmlObjectDocument.MakeUniqueId(self.fileName)
-	
-	def CreateDocument(self):
-		"""Returns a new document that will be added in the DocumentRegistry."""
-		document = XmlObjectDocument(self.fileName)
-		document.Load()
-		return document

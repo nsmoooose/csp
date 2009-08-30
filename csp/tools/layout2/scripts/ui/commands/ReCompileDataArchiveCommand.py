@@ -4,6 +4,7 @@ import os.path
 
 from csp.tools.layout2.scripts.document.OutputDocument import OutputDocument
 from Command import Command
+from ..controls.OutputPane import OutputPane
 
 # TODO
 
@@ -51,12 +52,5 @@ class ReCompileDataArchiveCommand(Command):
 		compiler.CompileAll(xmlDirectory, archiveFile)
 
 	def compiler_Signal(self, event):
-		application = wx.GetApp()
-		documentName = 'Archive compiler'
-		outputDocument = application.GetDocumentRegistry().GetByName(documentName)
-		if outputDocument is None:
-			outputDocument = OutputDocument(documentName)
-			documentRegistry = application.GetDocumentRegistry()
-			documentRegistry.Add(outputDocument)
-			documentRegistry.SetCurrentDocument(outputDocument)
-		outputDocument.WriteLine(event.GetMessage())
+		if OutputPane.Instance is not None:
+			OutputPane.Instance.AppendLine(event.GetMessage())

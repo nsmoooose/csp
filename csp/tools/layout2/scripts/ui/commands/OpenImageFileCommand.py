@@ -16,7 +16,7 @@ class OpenImageFileCommand(FileCommand):
 		return "Opens an existing Open Scene Graph model file (.osg, .ive) file"
 
 	def GetToolBarImageName(self):
-		return "document-open.png"
+		return "document-open"
 
 	def Execute(self):
 

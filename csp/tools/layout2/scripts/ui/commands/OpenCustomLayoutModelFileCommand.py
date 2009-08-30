@@ -16,7 +16,7 @@ class OpenCustomLayoutModelFileCommand(FileCommand):
 		return "Opens an existing layout file"
 	
 	def GetToolBarImageName(self):
-		return "document-open.png"
+		return "document-open"
 	
 	def Execute(self):
 		"""Load a feature group or feature model from the specified file.  The existing

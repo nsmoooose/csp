@@ -36,7 +36,7 @@ class TogglePaneCommand(CheckCommand):
 		return "Toggle the visibility of the %s window" % auiManager.GetPane(self.pane).caption
 
 	def GetToolBarImageName(self):
-		return "generic.png"
+		return "generic"
 
 	def UpdatePane(self):
 		auiManager = wx.GetApp().auiManager

@@ -22,7 +22,7 @@ class OpenXmlFileCommand(FileCommand):
 		return "Opens an existing XML file"
 	
 	def GetToolBarImageName(self):
-		return "document-open.png"
+		return "document-open"
 	
 	def Execute(self):
 		"""Load the dom from the specified file.

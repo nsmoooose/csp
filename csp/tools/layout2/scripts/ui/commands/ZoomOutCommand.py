@@ -12,7 +12,7 @@ class ZoomOutCommand(Command):
         return "Zoom out"
 
     def GetToolBarImageName(self):
-        return "zoom-out.png"
+        return "zoom-out"
 
     def Execute(self):
         window = DocumentNotebook.Instance.GetCurrentPage()

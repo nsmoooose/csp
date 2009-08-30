@@ -18,7 +18,7 @@ class CreateInterfaceInformationDocumentCommand(Command):
 		return "Create interface information document describing all object interfaces."
 
 	def GetToolBarImageName(self):
-		return "generic.png"
+		return "generic"
 
 	def Execute(self):
 		# Get a document from the DocumentRegistry, where we can add

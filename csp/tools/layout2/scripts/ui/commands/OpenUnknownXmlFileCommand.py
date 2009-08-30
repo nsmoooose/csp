@@ -14,7 +14,7 @@ class OpenUnknownXmlFileCommand(FileCommand):
 		return "Opens an existing unknown XML file"
 	
 	def GetToolBarImageName(self):
-		return "document-open.png"
+		return "document-open"
 	
 	def Execute(self):
 		# Get the document from the DocumentRegistry

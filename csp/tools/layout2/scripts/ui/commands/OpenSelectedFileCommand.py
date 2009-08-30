@@ -17,7 +17,7 @@ class OpenSelectedFileCommand(Command):
 		return "Open selected file in project tree"
 
 	def GetToolBarImageName(self):
-		return "document-open.png"
+		return "document-open"
 
 	def Execute(self):
 		"""Loads a document from the project tree."""

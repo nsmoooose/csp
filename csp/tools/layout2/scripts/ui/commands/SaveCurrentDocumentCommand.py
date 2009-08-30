@@ -13,7 +13,7 @@ class SaveCurrentDocumentCommand(Command):
         return "Save file"
 
     def GetToolBarImageName(self):
-        return "document-save.png"
+        return "document-save"
 
     def Execute(self):
 	application = wx.GetApp()

@@ -9,7 +9,7 @@ class PanLeftCommand(Command):
         return "Pan left"
 
     def GetToolBarImageName(self):
-        return "arrow-left.png"
+        return "arrow-left"
 
     def Execute(self):
         pass

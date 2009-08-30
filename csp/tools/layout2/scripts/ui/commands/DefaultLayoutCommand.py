@@ -17,7 +17,7 @@ class DefaultLayoutCommand(Command):
 		return "Reset to the default windows layout"
 
 	def GetToolBarImageName(self):
-		return "generic.png"
+		return "generic"
 
 	def Execute(self):
 		auiManager = wx.GetApp().auiManager

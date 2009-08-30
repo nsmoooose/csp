@@ -12,7 +12,7 @@ class ZoomInCommand(Command):
         return "Zoom in"
 
     def GetToolBarImageName(self):
-        return "zoom-in.png"
+        return "zoom-in"
 
     def Execute(self):
         window = DocumentNotebook.Instance.GetCurrentPage()

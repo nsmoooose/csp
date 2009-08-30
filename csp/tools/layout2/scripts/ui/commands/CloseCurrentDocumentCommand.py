@@ -15,7 +15,7 @@ class CloseCurrentDocumentCommand(Command):
 		return "Close current document"
 
 	def GetToolBarImageName(self):
-		return "generic.png"
+		return "generic"
 
 	def Execute(self):
 		DocumentNotebook.Instance.CloseCurrentPage()

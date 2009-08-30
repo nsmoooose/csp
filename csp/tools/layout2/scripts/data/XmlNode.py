@@ -21,6 +21,8 @@ class XmlNodeFactory:
 			return XmlNodeText(parent)
 		elif domNode.nodeType == domNode.COMMENT_NODE:
 			return XmlNodeComment(parent)
+		elif domNode.nodeType == domNode.ATTRIBUTE_NODE:
+			return XmlNodeAttribute(parent)
 		else:
 			raise UnknownXmlNode()
 
@@ -47,6 +49,9 @@ class XmlNodeDocument(layout_module.XmlNodeDocument):
 		
 		# Errors detected on this node
 		self.errors = {}
+		
+		# Nb errors detected on children
+		self.childrenErrorCount = 0
 	
 	def Dispose(self):
 		for child in self.nodesBeforeRootElement:
@@ -108,6 +113,23 @@ class XmlNodeDocument(layout_module.XmlNodeDocument):
 	def CheckErrors(self):
 		pass
 	
+	def SetError(self, id, text):
+		if text is None:
+			if id in self.errors:
+				del self.errors[id]
+				self.IncrementChangeCount()
+		else:
+			if id in self.errors:
+				if self.errors[id] != text:
+					self.errors[id] = text
+					self.IncrementChangeCount()
+			else:
+				self.errors[id] = text
+				self.IncrementChangeCount()
+	
+	def ChangeChildrenErrorCount(self, childErrorCount):
+		self.childrenErrorCount += childErrorCount
+	
 	def Save(self, fileName):
 		if self.domNode is not None:
 			with open(fileName, 'w+') as file:
@@ -136,13 +158,53 @@ class XmlNodeDocument(layout_module.XmlNodeDocument):
 			yield child
 
 
-class XmlNodeElement(layout_module.XmlNodeElement):
+class XmlNodeChild(object):
+	def __init__(self, parent):
+		# The XmlNode parent
+		self.parent = parent
+		
+		# Incremented each time a change is made on this node
+		self.changeCount = 0
+		
+		# Errors detected on this node
+		self.errors = {}
+	
+	def TakeFrom(self, xmlNodeChild):
+		"""Copy all the data from xmlNodeChild."""
+		
+		self.changeCount = xmlNodeElement.changeCount
+		self.errors = xmlNodeElement.errors
+	
+	def IncrementChangeCount(self):
+		self.changeCount += 1
+		self.parent.IncrementChildrenChangeCount()
+	
+	def SetError(self, id, text):
+		errorCountDelta = 0
+		
+		if text is None:
+			if id in self.errors:
+				del self.errors[id]
+				errorCountDelta = -1
+				self.IncrementChangeCount()
+		else:
+			if id in self.errors:
+				if self.errors[id] != text:
+					self.errors[id] = text
+					self.IncrementChangeCount()
+			else:
+				self.errors[id] = text
+				errorCountDelta = 1
+				self.IncrementChangeCount()
+		
+		self.parent.ChangeChildrenErrorCount(errorCountDelta)
+
+
+class XmlNodeElement(layout_module.XmlNodeElement, XmlNodeChild):
 	def __init__(self, parent, documentOwner, *args, **kwargs):
 		if ( type(self) is XmlNodeElement ):
 			layout_module.XmlNodeElement.__init__(self, *args, **kwargs)
-		
-		# The XmlNode parent
-		self.parent = parent
+		XmlNodeChild.__init__(self, parent)
 		
 		# The XmlObjectDocument that own this node
 		self.documentOwner = documentOwner
@@ -150,17 +212,17 @@ class XmlNodeElement(layout_module.XmlNodeElement):
 		# The xml.dom.Element
 		self.domNode = None
 		
+		# The XmlNode attributes
+		self.attributes = {}
+		
 		# The XmlNode children
 		self.childNodes = []
-		
-		# Incremented each time a change is made on this node
-		self.changeCount = 0
 		
 		# Incremented each time a change is made on a children
 		self.childrenChangeCount = 0
 		
-		# Errors detected on this node
-		self.errors = {}
+		# Nb errors detected on children
+		self.childrenErrorCount = 0
 	
 	def TakeFrom(self, xmlNodeElement):
 		"""Copy all the data from xmlNodeElement.
@@ -172,31 +234,38 @@ class XmlNodeElement(layout_module.XmlNodeElement):
 		
 		self.Dispose()
 		
+		# Take the xml.dom.Element
 		self.domNode = xmlNodeElement.domNode
+		xmlNodeElement.domNode = None
 		
-		# Clone the list
-		self.childNodes = xmlNodeElement.childNodes[:]
+		# Clone the lists
+		self.attributes = xmlNodeElement.attributes
+		self.childNodes = xmlNodeElement.childNodes
 		
 		# Re-parent the children
+		for attribute in self.attributes.itervalues():
+			attribute.parent = self
+		
 		for child in self.childNodes:
 			child.parent = self
 		
 		# Clean the source element
+		xmlNodeElement.attributes = {}
 		xmlNodeElement.childNodes = []
 		
 		# Copy all remaining member data
-		self.changeCount = xmlNodeElement.changeCount
+		XmlNodeChild.TakeFrom(self, xmlNodeElement)
 		self.childrenChangeCount = xmlNodeElement.childrenChangeCount
-		self.errors = xmlNodeElement.errors
+		self.childrenErrorCount = xmlNodeElement.childrenErrorCount
 	
 	def Dispose(self):
+		for attribute in self.attributes.itervalues():
+			attribute.Dispose()
+		self.attributes = {}
+		
 		for child in self.childNodes:
 			child.Dispose()
 		self.childNodes = []
-	
-	def IncrementChangeCount(self):
-		self.changeCount += 1
-		self.parent.IncrementChildrenChangeCount()
 	
 	def IncrementChildrenChangeCount(self):
 		self.childrenChangeCount += 1
@@ -206,16 +275,49 @@ class XmlNodeElement(layout_module.XmlNodeElement):
 		self.Dispose()
 		
 		self.domNode = domNode
+		self.domNode.normalize()
+		
+		domAttributes = self.domNode.attributes
+		for attributeIndex in range(0, domAttributes.length):
+			domAttribute = domAttributes.item(attributeIndex)
+			child = self.documentOwner.NodeFactory().CreateXmlNode(self, domAttribute)
+			self.attributes[domAttribute.name] = child
+			child.Load(domAttribute)
 		
 		for domChild in self.domNode.childNodes:
 			child = self.documentOwner.NodeFactory().CreateXmlNode(self, domChild)
 			self.childNodes.append(child)
 			child.Load(domChild)
 		
+		self.CombineTextNodes()
 		self.CheckErrors()
+	
+	def CombineTextNodes(self):
+		lastNodeText = None
+		nodeTextToRemove = []
+		for child in self.childNodes:
+			if isinstance(child, XmlNodeText):
+				if child.GetText() == '':
+					nodeTextToRemove.append(child)
+				elif lastNodeText is None:
+					lastNodeText = child
+				else:
+					lastNodeText.CombineWith(child)
+					nodeTextToRemove.append(child)
+			else:
+				lastNodeText = None
+		
+		for child in nodeTextToRemove:
+			del self.childNodes[ self.childNodes.index(child) ]
+			self.domNode.removeChild( child.domNode )
+			child.Dispose()
 	
 	def CheckErrors(self):
 		pass
+	
+	def ChangeChildrenErrorCount(self, childErrorCount):
+		self.childrenErrorCount += childErrorCount
+		self.parent.ChangeChildrenErrorCount(childErrorCount)
 	
 	def Rename(self, newName):
 		if self.domNode.tagName == newName:
@@ -240,65 +342,77 @@ class XmlNodeElement(layout_module.XmlNodeElement):
 		self.CheckErrors()
 		self.IncrementChangeCount()
 	
+	def GetAttributeValue(self, name):
+		attribute = self.attributes.get(name)
+		if attribute is None:
+			return ""
+		else:
+			return attribute.GetValue()
+	
 	def GetChildren(self):
-		return self.childNodes
+		for attribute in self.attributes.itervalues():
+			yield attribute
+		
+		for child in self.childNodes:
+			yield child
 
 
-class XmlNodeText(layout_module.XmlNode):
+class XmlNodeData(layout_module.XmlNode, XmlNodeChild):
 	def __init__(self, parent, *args, **kwargs):
 		layout_module.XmlNode.__init__(self, *args, **kwargs)
+		XmlNodeChild.__init__(self, parent)
 		
-		# The XmlNode parent
-		self.parent = parent
-		
-		# The xml.dom.Text
+		# The xml.dom.Text or xml.dom.Comment
 		self.domNode =  None
 		
-		# Incremented each time a change is made on this node
-		self.changeCount = 0
-		
-		# Errors detected on this node
-		self.errors = {}
+		# Trimmed text
+		self.text = ""
 	
 	def Dispose(self):
 		pass
 	
-	def IncrementChangeCount(self):
-		self.changeCount += 1
-		self.parent.IncrementChildrenChangeCount()
-	
 	def Load(self, domNode):
 		self.domNode = domNode
+		self.StripText()
+	
+	def StripText(self):
+		lines = str( self.domNode.data ).strip().splitlines()
+		self.text = '\n'.join( line.strip() for line in lines )
 	
 	def GetText(self):
-		return str(self.domNode.data)
+		return self.text
 
 
-class XmlNodeComment(layout_module.XmlNode):
+class XmlNodeText(XmlNodeData):
+	def __init__(self, *args, **kwargs):
+		XmlNodeData.__init__(self, *args, **kwargs)
+	
+	def CombineWith(self, nodeText):
+		self.domNode.data += nodeText.domNode.data
+		self.StripText()
+
+
+class XmlNodeComment(XmlNodeData):
+	def __init__(self, *args, **kwargs):
+		XmlNodeData.__init__(self, *args, **kwargs)
+
+
+class XmlNodeAttribute(layout_module.XmlNode, XmlNodeChild):
 	def __init__(self, parent, *args, **kwargs):
 		layout_module.XmlNode.__init__(self, *args, **kwargs)
+		XmlNodeChild.__init__(self, parent)
 		
-		# The XmlNode parent
-		self.parent = parent
-		
-		# The xml.dom.Comment
+		# The xml.dom.Attr
 		self.domNode =  None
-		
-		# Incremented each time a change is made on this node
-		self.changeCount = 0
-		
-		# Errors detected on this node
-		self.errors = {}
 	
 	def Dispose(self):
 		pass
 	
-	def IncrementChangeCount(self):
-		self.changeCount += 1
-		self.parent.IncrementChildrenChangeCount()
-	
 	def Load(self, domNode):
 		self.domNode = domNode
 	
-	def GetText(self):
-		return str(self.domNode.data)
+	def GetName(self):
+		return str(self.domNode.name)
+	
+	def GetValue(self):
+		return str(self.domNode.nodeValue)

@@ -30,7 +30,7 @@ class ReCompileDataArchiveCommand(Command):
 		return "Recompiles all files in the data archive (sim.dar)"
 
 	def GetToolBarImageName(self):
-		return "package-x-generic.png"
+		return "package-x-generic"
 
 	def Execute(self):
 		# Retreive tha application object so we can retreive the 

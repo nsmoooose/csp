@@ -35,7 +35,7 @@ class XmlWindow(wx.stc.StyledTextCtrl):
 		
 		# Remove empty lines
 		lines = []
-		for line in fullText.split("\n"):
+		for line in fullText.splitlines():
 			if line.strip():
 				lines.append( line )
 		fullText = "\n".join( lines )

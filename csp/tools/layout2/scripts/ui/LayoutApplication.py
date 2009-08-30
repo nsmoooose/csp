@@ -11,6 +11,8 @@ from csp.tools.layout2.layout_module import *
 from csp.tools.layout2.scripts.document.DocumentRegistry import DocumentRegistry
 from MainFrame import MainFrame
 from SelectDataDirectoryDialog import SelectDataDirectoryDialog
+from ArtProvider import SearchInDirectoriesArtProvider
+from ArtProvider import MissingImageArtProvider
 
 class LayoutApplication(wx.App):
 	"""This is a singleton instance of the entire application. It contains information
@@ -49,6 +51,12 @@ class LayoutApplication(wx.App):
 		readmeFile = os.path.join(os.getcwd(), 'start.txt')
 		if not os.path.isfile(readmeFile):
 			return False
+
+		wx.ArtProvider.Insert( SearchInDirectoriesArtProvider(
+			['images',
+			os.path.join('images', 'famfamfam_silk_icons_v013'),
+			]) )
+		wx.ArtProvider.Insert( MissingImageArtProvider() )
 
 		self.Configuration = shelve.open('.csplayout')
 

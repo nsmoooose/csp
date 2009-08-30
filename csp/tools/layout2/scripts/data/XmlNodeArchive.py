@@ -20,9 +20,9 @@ class XmlNodeArchiveFactory(XmlNodeFactory):
 class XmlNodeObjectDocument(XmlNodeDocument):
 	def CheckErrors(self):
 		if isinstance(self.rootElement, XmlNodeObject):
-			self.rootElement.errors.pop("XmlNodeObjectDocument", None)
+			self.rootElement.SetError("XmlNodeObjectDocument", None)
 		else:
-			self.rootElement.errors["XmlNodeObjectDocument"] = "Root element should be <Object>"
+			self.rootElement.SetError("XmlNodeObjectDocument", "Root element should be <Object>")
 
 
 class XmlNodeObject(layout_module.XmlNodeObject, XmlNodeElement):
@@ -31,20 +31,19 @@ class XmlNodeObject(layout_module.XmlNodeObject, XmlNodeElement):
 		XmlNodeElement.__init__(self, parent, documentOwner, *args, **kwargs)
 	
 	def CheckErrors(self):
-		if self.domNode.hasAttribute("class"):
-			self.errors.pop("MissingClassAttribute", None)
+		if 'class' in self.attributes:
+			self.SetError("MissingClassAttribute", None)
 		else:
-			self.errors["MissingClassAttribute"] = "<Object> must have a class attribute"
+			self.SetError("MissingClassAttribute", "<Object> must have a class attribute")
 			return
 		
-		classAttribute = str( self.domNode.getAttribute("class") )
 		interfaceRegistry = csplib.InterfaceRegistry.getInterfaceRegistry()
-		interface = interfaceRegistry.getInterface(classAttribute)
+		interface = interfaceRegistry.getInterface( self.attributes['class'].GetValue() )
 		
 		if interface is None:
-			self.errors["UnknownClassAttribute"] = "<Object> has an unknown class attribute"
+			self.SetError("UnknownClassAttribute", "<Object> has an unknown class attribute")
 		else:
-			self.errors.pop("UnknownClassAttribute", None)
+			self.SetError("UnknownClassAttribute", None)
 
 
 class XmlNodeString(layout_module.XmlNodeString, XmlNodeElement):
@@ -55,6 +54,6 @@ class XmlNodeString(layout_module.XmlNodeString, XmlNodeElement):
 	def CheckErrors(self):
 		for child in self.childNodes:
 			if isinstance( child, (XmlNodeText, XmlNodeComment) ):
-				child.errors.pop("XmlNodeString", None)
+				child.SetError("XmlNodeString", None)
 			else:
-				child.errors["XmlNodeString"] = "Only text and comments are allowed in <String>"
+				child.SetError("XmlNodeString", "Only text and comments are allowed in <String>")

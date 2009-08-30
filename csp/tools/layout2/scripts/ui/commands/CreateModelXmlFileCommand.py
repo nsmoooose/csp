@@ -12,7 +12,7 @@ class CreateModelXmlFileCommand(Command):
         return "Creates a model XML file for a OSG model file (*.osg|*.ive)."
 
     def GetToolBarImageName(self):
-        return "generic.png"
+        return "generic"
 
     def Execute(self):
 	

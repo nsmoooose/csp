@@ -54,7 +54,7 @@ class XmlPropertiesPane(FilePropertiesPane):
 			'attribute': 'tag_blue',
 			'element': 'tag',
 			'object': 'brick',
-			'string': 'textfield'
+			'string': 'xml-node-string'
 		}
 	
 	def on_DocumentChanged(self, document):

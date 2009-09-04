@@ -52,8 +52,9 @@ class LayoutApplication(wx.App):
 		if not os.path.isfile(readmeFile):
 			return False
 
-		wx.ArtProvider.Insert( SearchInDirectoriesArtProvider(
-			['images',
+		wx.ArtProvider.Insert( SearchInDirectoriesArtProvider([
+			os.path.join('images', 'csp'),
+			os.path.join('images', 'tango-icon-theme'),
 			os.path.join('images', 'famfamfam_silk_icons_v013'),
 			]) )
 		wx.ArtProvider.Insert( MissingImageArtProvider() )

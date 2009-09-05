@@ -7,7 +7,7 @@ from XmlPropertiesPaneItem import ItemUpdaterElement
 from XmlPropertiesPaneItem import ItemUpdaterText
 from XmlPropertiesPaneItem import ItemUpdaterComment
 from XmlPropertiesPaneItem import ItemUpdaterAttribute
-from XmlArchivePropertiesPaneItem import ItemUpdaterObject
+from XmlPropertiesPaneItemArchive import ItemUpdaterObject
 from ...data.XmlNode import XmlNodeDocument
 from ...data.XmlNode import XmlNodeElement
 from ...data.XmlNode import XmlNodeText

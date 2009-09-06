@@ -10,7 +10,7 @@ class UnknownXmlNode(Exception):
 class InconsistencyInXmlNodeTree(Exception):
 	pass
 
-class XmlNodeFactory:
+class XmlNodeFactory(object):
 	def __init__(self, documentOwner):
 		self.documentOwner = documentOwner
 	
@@ -84,6 +84,7 @@ class XmlNodeDocument(layout_module.XmlNodeDocument):
 		
 		self.nodesBeforeRootElement = []
 		self.rootElement = self.documentOwner.NodeFactory().CreateXmlNode(self, self.domNode.documentElement)
+		self.rootElement.CheckErrors()
 		self.nodesAfterRootElement = []
 		
 		self.CheckErrors()
@@ -174,6 +175,10 @@ class XmlNodeChild(object):
 		
 		self.changeCount = xmlNodeElement.changeCount
 		self.errors = xmlNodeElement.errors
+		# TODO: how errors are cleaned when a XmlNodeArchive is transformed to a XmlNodeElement ?
+	
+	def Dispose(self):
+		pass
 	
 	def IncrementChangeCount(self):
 		self.changeCount += 1
@@ -197,7 +202,8 @@ class XmlNodeChild(object):
 				errorCountDelta = 1
 				self.IncrementChangeCount()
 		
-		self.parent.ChangeChildrenErrorCount(errorCountDelta)
+		if errorCountDelta:
+			self.parent.ChangeChildrenErrorCount(errorCountDelta)
 
 
 class XmlNodeElement(layout_module.XmlNodeElement, XmlNodeChild):
@@ -254,11 +260,13 @@ class XmlNodeElement(layout_module.XmlNodeElement, XmlNodeChild):
 		xmlNodeElement.childNodes = []
 		
 		# Copy all remaining member data
-		XmlNodeChild.TakeFrom(self, xmlNodeElement)
+		super(XmlNodeElement, self).TakeFrom(self, xmlNodeElement)
 		self.childrenChangeCount = xmlNodeElement.childrenChangeCount
 		self.childrenErrorCount = xmlNodeElement.childrenErrorCount
 	
 	def Dispose(self):
+		super(XmlNodeElement, self).Dispose()
+		
 		for attribute in self.attributes.itervalues():
 			attribute.Dispose()
 		self.attributes = {}
@@ -290,6 +298,7 @@ class XmlNodeElement(layout_module.XmlNodeElement, XmlNodeChild):
 			child.Load(domChild)
 		
 		self.CombineTextNodes()
+		self.PostLoad()
 		self.CheckErrors()
 	
 	def CombineTextNodes(self):
@@ -311,6 +320,9 @@ class XmlNodeElement(layout_module.XmlNodeElement, XmlNodeChild):
 			del self.childNodes[ self.childNodes.index(child) ]
 			self.domNode.removeChild( child.domNode )
 			child.Dispose()
+	
+	def PostLoad(self):
+		pass
 	
 	def CheckErrors(self):
 		pass
@@ -368,9 +380,6 @@ class XmlNodeData(layout_module.XmlNode, XmlNodeChild):
 		# Trimmed text
 		self.text = ""
 	
-	def Dispose(self):
-		pass
-	
 	def Load(self, domNode):
 		self.domNode = domNode
 		self.StripText()
@@ -404,9 +413,6 @@ class XmlNodeAttribute(layout_module.XmlNode, XmlNodeChild):
 		
 		# The xml.dom.Attr
 		self.domNode =  None
-	
-	def Dispose(self):
-		pass
 	
 	def Load(self, domNode):
 		self.domNode = domNode

@@ -2,7 +2,7 @@
 import wx
 
 from AutoFitTextCtrl import AutoFitTextCtrl
-from ...data.XmlNode import XmlNodeAttribute
+from ...data import XmlNode
 
 class ItemUpdater(object):
 	def __init__(self, propertiesPane, *args, **kwargs):
@@ -13,9 +13,19 @@ class ItemUpdater(object):
 	
 	def GetErrorMessage(self, item, node):
 		return '\n'.join( "- %s" % error for error in node.errors.itervalues() )
+	
+	def SetItemImage(self, item, image):
+		self.propertiesPane.tree.SetItemImage(item, self.propertiesPane.TreeImages()[image])
+	
+	def SetItemWindow(self, item, node, itemWindow):
+		self.propertiesPane.tree.DeleteItemWindow(item)
+		errorMessage = self.GetErrorMessage(item, node)
+		if errorMessage or itemWindow is not None:
+			itemWindow = ItemWindowWithError(self.propertiesPane.tree, errorMessage, itemWindow)
+			self.propertiesPane.tree.SetItemWindow(item, itemWindow)
 
 
-class ItemUpdaterNoChild(ItemUpdater):
+class ItemUpdaterWithoutChildren(ItemUpdater):
 	def UpdateItem(self, item, node):
 		if item.xmlChangeCount != node.changeCount:
 			self.UpdateLocalChanges(item, node)
@@ -25,57 +35,56 @@ class ItemUpdaterNoChild(ItemUpdater):
 		pass
 
 
-class ItemUpdaterData(ItemUpdaterNoChild):
+class ItemUpdaterData(ItemUpdaterWithoutChildren):
 	def UpdateLocalChanges(self, item, node):
-		self.propertiesPane.tree.DeleteItemWindow(item)
+		if self.propertiesPane.tree.GetItemImage(item) < 0:
+			self.SetItemImage( item, self.GetItemImage() )
+			self.propertiesPane.tree.SetItemText( item, self.GetItemText() )
+		
 		itemWindow = AutoFitTextCtrl(self.propertiesPane.tree, node.GetText(), style = wx.TE_READONLY)
-		errorMessage = self.GetErrorMessage(item, node)
-		if errorMessage:
-			itemWindowWithError = ItemWindowWithError(self.propertiesPane.tree, errorMessage, itemWindow)
-			self.propertiesPane.tree.SetItemWindow(item, itemWindowWithError)
-		else:
-			self.propertiesPane.tree.SetItemWindow(item, itemWindow)
+		self.SetItemWindow(item, node, itemWindow)
+	
+	def GetItemImage(self):
+		return ''
+	
+	def GetItemText(self):
+		return ''
 
 
 class ItemUpdaterText(ItemUpdaterData):
-	def UpdateLocalChanges(self, item, node):
-		if not self.propertiesPane.tree.GetItemText(item):
-			self.propertiesPane.tree.SetItemText(item, "Text")
-			self.propertiesPane.tree.SetItemImage(item, self.propertiesPane.TreeImages()['text'])
-		
-		super(ItemUpdaterText, self).UpdateLocalChanges(item, node)
+	NodeClass = XmlNode.XmlNodeText
+	
+	def GetItemImage(self):
+		return 'text'
+	
+	def GetItemText(self):
+		return 'Text'
 
 
 class ItemUpdaterComment(ItemUpdaterData):
-	def UpdateLocalChanges(self, item, node):
-		if not self.propertiesPane.tree.GetItemText(item):
-			self.propertiesPane.tree.SetItemText(item, "Comment")
-			self.propertiesPane.tree.SetItemImage(item, self.propertiesPane.TreeImages()['comment'])
-		
-		super(ItemUpdaterComment, self).UpdateLocalChanges(item, node)
+	NodeClass = XmlNode.XmlNodeComment
+	
+	def GetItemImage(self):
+		return 'comment'
+	
+	def GetItemText(self):
+		return 'Comment'
 
 
-class ItemUpdaterAttribute(ItemUpdaterNoChild):
+class ItemUpdaterAttribute(ItemUpdaterWithoutChildren):
+	NodeClass = XmlNode.XmlNodeAttribute
+	
 	def UpdateLocalChanges(self, item, node):
-		itemText = node.GetName()
-		if itemText:
-			self.propertiesPane.tree.SetItemText(item, itemText)
-		else:
-			self.propertiesPane.tree.SetItemText(item, "Attribute")
+		if self.propertiesPane.tree.GetItemImage(item) < 0:
+			self.SetItemImage(item, 'attribute')
 		
-		self.propertiesPane.tree.SetItemImage(item, self.propertiesPane.TreeImages()['attribute'])
+		self.propertiesPane.tree.SetItemText( item, node.GetName() )
 		
-		self.propertiesPane.tree.DeleteItemWindow(item)
 		itemWindow = AutoFitTextCtrl(self.propertiesPane.tree, node.GetValue(), style = wx.TE_READONLY)
-		errorMessage = self.GetErrorMessage(item, node)
-		if errorMessage:
-			itemWindowWithError = ItemWindowWithError(self.propertiesPane.tree, errorMessage, itemWindow)
-			self.propertiesPane.tree.SetItemWindow(item, itemWindowWithError)
-		else:
-			self.propertiesPane.tree.SetItemWindow(item, itemWindow)
+		self.SetItemWindow(item, node, itemWindow)
 
 
-class ItemUpdaterChildren(ItemUpdater):
+class ItemUpdaterWithChildren(ItemUpdater):
 	def UpdateItem(self, item, node):
 		if item.xmlChangeCount != node.changeCount:
 			self.UpdateLocalChanges(item, node)
@@ -91,12 +100,11 @@ class ItemUpdaterChildren(ItemUpdater):
 			
 			item.xmlChildrenChangeCount = node.childrenChangeCount
 	
+	def UpdateLocalChanges(self, item, node):
+		pass
+	
 	def GetNodeChildren(self, node):
-		for child in node.GetChildren():
-			if isinstance(child, XmlNodeAttribute):
-				if child.GetName() == 'name':
-					continue
-			yield child
+		return node.GetChildren()
 	
 	def AddRemoveChildren(self, item, node):
 		nodeChildren = [ nodeChild for nodeChild in self.GetNodeChildren(node) ]
@@ -156,7 +164,7 @@ class ItemUpdaterChildren(ItemUpdater):
 			itemChild = self.propertiesPane.tree.GetNextSibling(itemChild)
 	
 	def GetErrorMessage(self, item, node):
-		message = super(ItemUpdaterChildren, self).GetErrorMessage(item, node)
+		message = super(ItemUpdaterWithChildren, self).GetErrorMessage(item, node)
 		childrenErrorCount = node.childrenErrorCount
 		if childrenErrorCount:
 			childrenMessage = "- There are %d errors in children nodes" % node.childrenErrorCount
@@ -168,33 +176,32 @@ class ItemUpdaterChildren(ItemUpdater):
 			return message
 
 
-class ItemUpdaterDocument(ItemUpdaterChildren):
+class ItemUpdaterDocument(ItemUpdaterWithChildren):
+	NodeClass = XmlNode.XmlNodeDocument
+	
 	def UpdateLocalChanges(self, item, node):
-		self.propertiesPane.tree.DeleteItemWindow(item)
-		rootWindow = self.propertiesPane.CreateRootWindow()
-		errorMessage = self.GetErrorMessage(item, node)
-		if errorMessage:
-			itemWindowWithError = ItemWindowWithError(self.propertiesPane.tree, errorMessage, rootWindow)
-			self.propertiesPane.tree.SetItemWindow(item, itemWindowWithError)
-		else:
-			self.propertiesPane.tree.SetItemWindow(item, rootWindow)
+		itemWindow = self.propertiesPane.CreateRootWindow()
+		self.SetItemWindow(item, node, itemWindow)
 
 
-class ItemUpdaterElement(ItemUpdaterChildren):
+class ItemUpdaterElement(ItemUpdaterWithChildren):
+	NodeClass = XmlNode.XmlNodeElement
+	
 	def UpdateLocalChanges(self, item, node):
-		itemText = node.GetAttributeValue('name')
-		if itemText:
-			self.propertiesPane.tree.SetItemText(item, itemText)
-		else:
-			self.propertiesPane.tree.SetItemText(item, "<" + node.domNode.tagName + ">")
+		if self.propertiesPane.tree.GetItemImage(item) < 0:
+			self.SetItemImage( item, self.GetItemImage() )
 		
-		self.propertiesPane.tree.SetItemImage(item, self.propertiesPane.TreeImages()['element'])
-		
-		self.propertiesPane.tree.DeleteItemWindow(item)
-		errorMessage = self.GetErrorMessage(item, node)
-		if errorMessage:
-			itemErrorImage = ItemErrorImage(self.propertiesPane.tree, errorMessage)
-			self.propertiesPane.tree.SetItemWindow(item, itemErrorImage)
+		self.propertiesPane.tree.SetItemText( item, self.GetItemText(node) )
+		self.SetItemWindow( item, node, self.GetItemWindow(node) )
+	
+	def GetItemImage(self):
+		return 'element'
+	
+	def GetItemText(self, node):
+		return '<' + node.domNode.tagName + '>'
+	
+	def GetItemWindow(self, node):
+		return None
 
 
 class ItemErrorImage(wx.StaticBitmap):
@@ -208,15 +215,18 @@ class ItemWindowWithError(wx.Panel):
 	def __init__(self, parent, errorMessage, itemWindow, *args, **kwargs):
 		wx.Panel.__init__(self, parent, *args, **kwargs)
 		
+		self.SetOwnBackgroundColour( parent.GetBackgroundColour() )
+		
 		sizer = wx.BoxSizer(wx.HORIZONTAL)
 		self.SetSizer(sizer)
 		
-		itemErrorImage = ItemErrorImage(self, errorMessage)
-		sizer.AddF( itemErrorImage, wx.SizerFlags().Center() )
+		if errorMessage:
+			itemErrorImage = ItemErrorImage(self, errorMessage)
+			sizer.AddF( itemErrorImage, wx.SizerFlags().Center() )
+			sizer.AddSpacer(5)
 		
-		sizer.AddSpacer(5)
-		
-		itemWindow.Reparent(self)
-		sizer.AddF( itemWindow, wx.SizerFlags().Center() )
+		if itemWindow is not None:
+			itemWindow.Reparent(self)
+			sizer.AddF( itemWindow, wx.SizerFlags().Center().Border(wx.TOP | wx.BOTTOM, 2) )
 		
 		self.Fit()

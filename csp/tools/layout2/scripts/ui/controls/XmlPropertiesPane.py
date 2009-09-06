@@ -2,18 +2,8 @@
 import wx
 
 from FilePropertiesPane import FilePropertiesPane
-from XmlPropertiesPaneItem import ItemUpdaterDocument
-from XmlPropertiesPaneItem import ItemUpdaterElement
-from XmlPropertiesPaneItem import ItemUpdaterText
-from XmlPropertiesPaneItem import ItemUpdaterComment
-from XmlPropertiesPaneItem import ItemUpdaterAttribute
-from XmlPropertiesPaneItemArchive import ItemUpdaterObject
-from ...data.XmlNode import XmlNodeDocument
-from ...data.XmlNode import XmlNodeElement
-from ...data.XmlNode import XmlNodeText
-from ...data.XmlNode import XmlNodeComment
-from ...data.XmlNode import XmlNodeAttribute
-from ...data.XmlNodeArchive import XmlNodeObject
+import XmlPropertiesPaneItem
+import XmlPropertiesPaneItemArchive
 
 class XmlPropertiesPane(FilePropertiesPane):
 	imageList = None
@@ -27,13 +17,37 @@ class XmlPropertiesPane(FilePropertiesPane):
 		
 		self.InitItemForXmlNode( self.root, self.document.GetXmlNodeDocument() )
 		
-		self.itemUpdaterDocument = ItemUpdaterDocument(self)
-		self.itemUpdaterElement = ItemUpdaterElement(self)
-		self.itemUpdaterText = ItemUpdaterText(self)
-		self.itemUpdaterComment = ItemUpdaterComment(self)
-		self.itemUpdaterAttribute = ItemUpdaterAttribute(self)
-		
-		self.itemUpdaterObject = ItemUpdaterObject(self)
+		self.itemUpdaters = [
+			XmlPropertiesPaneItemArchive.ItemUpdaterString(self),
+			XmlPropertiesPaneItemArchive.ItemUpdaterBool(self),
+			XmlPropertiesPaneItemArchive.ItemUpdaterInt(self),
+			XmlPropertiesPaneItemArchive.ItemUpdaterListTextItemInt(self),
+			XmlPropertiesPaneItemArchive.ItemUpdaterFloat(self),
+			XmlPropertiesPaneItemArchive.ItemUpdaterListTextItemFloat(self),
+			XmlPropertiesPaneItemArchive.ItemUpdaterReal(self),
+			XmlPropertiesPaneItemArchive.ItemUpdaterListTextItemReal(self),
+			XmlPropertiesPaneItemArchive.ItemUpdaterECEF(self),
+			XmlPropertiesPaneItemArchive.ItemUpdaterLLA(self),
+			XmlPropertiesPaneItemArchive.ItemUpdaterUTM(self),
+			XmlPropertiesPaneItemArchive.ItemUpdaterVector(self),
+			XmlPropertiesPaneItemArchive.ItemUpdaterMatrix(self),
+			XmlPropertiesPaneItemArchive.ItemUpdaterQuat(self),
+			XmlPropertiesPaneItemArchive.ItemUpdaterDate(self),
+			XmlPropertiesPaneItemArchive.ItemUpdaterEnum(self),
+			XmlPropertiesPaneItemArchive.ItemUpdaterExternal(self),
+			XmlPropertiesPaneItemArchive.ItemUpdaterListTextItemExternal(self),
+			XmlPropertiesPaneItemArchive.ItemUpdaterKey(self),
+			XmlPropertiesPaneItemArchive.ItemUpdaterListTextItemKey(self),
+			XmlPropertiesPaneItemArchive.ItemUpdaterPath(self),
+			XmlPropertiesPaneItemArchive.ItemUpdaterListTextItemPath(self),
+			XmlPropertiesPaneItemArchive.ItemUpdaterList(self),
+			XmlPropertiesPaneItemArchive.ItemUpdaterObject(self),
+			XmlPropertiesPaneItem.ItemUpdaterDocument(self),
+			XmlPropertiesPaneItem.ItemUpdaterElement(self),
+			XmlPropertiesPaneItem.ItemUpdaterText(self),
+			XmlPropertiesPaneItem.ItemUpdaterComment(self),
+			XmlPropertiesPaneItem.ItemUpdaterAttribute(self),
+			]
 		
 		self.on_DocumentChanged(self.document)
 	
@@ -53,13 +67,29 @@ class XmlPropertiesPane(FilePropertiesPane):
 	
 	def FillImageList(self):
 		return {
+			'string': 'xml-node-string',
+			'bool': 'xml-node-bool',
+			'int': 'xml-node-integer',
+			'float': 'xml-node-float',
+			'real': 'xml-node-real',
+			'ecef': 'world',
+			'lla': 'world',
+			'utm': 'world',
+			'vector': 'xml-node-vector3',
+			'matrix': 'xml-node-matrix3',
+			'quat': 'arrow_rotate_anticlockwise',
+			'date': 'date',
+			'enum': 'text_list_numbers',
+			'external': 'attach',
+			'key': 'key',
+			'path': 'brick_link',
+			'list': 'text_list_bullets',
+			'object': 'brick',
 			'root': 'page_white_code',
+			'element': 'tag',
 			'text': 'text_align_left',
 			'comment': 'comment',
 			'attribute': 'tag_blue',
-			'element': 'tag',
-			'object': 'brick',
-			'string': 'xml-node-string'
 		}
 	
 	def on_DocumentChanged(self, document):
@@ -67,18 +97,10 @@ class XmlPropertiesPane(FilePropertiesPane):
 		self.UpdateItem(self.root, nodeDocument)
 	
 	def UpdateItem(self, item, node):
-		if isinstance(node, XmlNodeDocument):
-			self.itemUpdaterDocument.UpdateItem(item, node)
-		elif isinstance(node, XmlNodeObject):
-			self.itemUpdaterObject.UpdateItem(item, node)
-		elif isinstance(node, XmlNodeElement):
-			self.itemUpdaterElement.UpdateItem(item, node)
-		elif isinstance(node, XmlNodeText):
-			self.itemUpdaterText.UpdateItem(item, node)
-		elif isinstance(node, XmlNodeComment):
-			self.itemUpdaterComment.UpdateItem(item, node)
-		elif isinstance(node, XmlNodeAttribute):
-			self.itemUpdaterAttribute.UpdateItem(item, node)
+		for itemUpdater in self.itemUpdaters:
+			if isinstance(node, itemUpdater.NodeClass):
+				itemUpdater.UpdateItem(item, node)
+				break
 	
 	def InitItemForXmlNode(self, item, xmlNode):
 		item.xmlNode = xmlNode

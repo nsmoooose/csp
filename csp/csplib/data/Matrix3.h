@@ -61,7 +61,7 @@ public: // BaseType
 	std::string asString() const;
 
 	/// Type representation.
-	std::string typeString() const { return "Matrix3"; }
+	std::string typeString() const { return "type::Matrix3"; }
 
 	/// Serialize from a Reader.
 	void serialize(Reader&);

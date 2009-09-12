@@ -221,6 +221,13 @@ class ItemUpdaterEnum(ItemUpdaterSimple):
 	
 	def GetItemImage(self):
 		return 'enum'
+	
+	def GetItemWindow(self, node):
+		choices = list(node.allowedValues)
+		value = node.GetText()
+		if value not in choices:
+			choices.append( value )
+		return wx.ComboBox(self.propertiesPane.tree, value = value, choices = choices, style = wx.CB_READONLY)
 
 
 class ItemUpdaterExternalData(object):
@@ -268,13 +275,20 @@ class ItemUpdaterList(ItemUpdaterNodeArchive):
 	def GetItemImage(self):
 		return 'list'
 	
+	def GetItemWindow(self, node):
+		if node.hasTextItems:
+			return AutoFitTextCtrl(self.propertiesPane.tree, node.GetAttributeValue('type'), style = wx.TE_READONLY)
+		else:
+			return None
+	
 	def GetNodeChildren(self, node):
 		for child in super(ItemUpdaterList, self).GetNodeChildren(node):
 			if isinstance(child, XmlNodeAttribute):
 				if child.GetName() == 'type':
 					continue
-			if isinstance(child, XmlNodeText):
-				continue
+			elif node.TextItemClass:
+				if isinstance(child, XmlNodeText):
+					continue
 			yield child
 
 

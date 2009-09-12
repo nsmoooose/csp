@@ -193,7 +193,7 @@ public:
 		return TypeAdapter(object->*member);
 	}
 	virtual TypeAdapter const getScalarPrototype() const {
-		static const T prototype;
+		static T prototype;
 		return TypeAdapter(prototype);
 	}
 	virtual void set(OBJECT *object, TypeAdapter const &v) {
@@ -250,7 +250,7 @@ public:
 		return TypeAdapter(object->*member);
 	}
 	virtual TypeAdapter const getScalarPrototype() const {
-		static const T prototype;
+		static T prototype;
 		return TypeAdapter(prototype);
 	}
 	virtual void set(OBJECT *object, TypeAdapter const &v) {
@@ -307,7 +307,7 @@ public:
 		(object->*member).clear();
 	}
 	virtual TypeAdapter const getScalarPrototype() const {
-		static const T prototype;
+		static T prototype;
 		return TypeAdapter(prototype);
 	}
 	virtual void serialize(OBJECT const *object, Writer &writer) const {

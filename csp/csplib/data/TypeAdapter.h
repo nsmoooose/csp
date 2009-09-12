@@ -90,15 +90,15 @@ public:
 	explicit TypeAdapter(BASETYPE const &x): type(TYPE_##BASETYPE) { var.o = reinterpret_cast<void const*>(&x); }
 #endif // SWIG
 
+	BASETYPE_ADAPTER(Object);
 	BASETYPE_ADAPTER(ECEF);
 	BASETYPE_ADAPTER(EnumLink);
 	BASETYPE_ADAPTER(External);
 	BASETYPE_ADAPTER(Key);
-	BASETYPE_ADAPTER(LinkCore);
 	BASETYPE_ADAPTER(LinkBase);
+	BASETYPE_ADAPTER(LinkCore);
 	BASETYPE_ADAPTER(LLA);
 	BASETYPE_ADAPTER(Matrix3);
-	BASETYPE_ADAPTER(Object);
 	BASETYPE_ADAPTER(Path);
 	BASETYPE_ADAPTER(Quat);
 	BASETYPE_ADAPTER(Real);
@@ -128,6 +128,7 @@ public:
 				break;
 		}
 	}
+#endif // SWIG
 
 	// objects
 
@@ -135,6 +136,34 @@ public:
 	double getFloatingPoint() const { DoubleCheck(); return var.d; }
 	std::string getString() const { StringCheck(); return s; }
 	
+#define BASETYPE_GET(BASETYPE) \
+	BASETYPE const & get##BASETYPE() const { \
+		TypeCheck(type == TYPE_##BASETYPE, #BASETYPE " type expected"); \
+		return *reinterpret_cast<BASETYPE const *>(var.o); \
+	}
+
+	BASETYPE_GET(Object);
+	BASETYPE_GET(ECEF)
+	BASETYPE_GET(EnumLink)
+	BASETYPE_GET(External)
+	BASETYPE_GET(Key)
+	BASETYPE_GET(LinkBase)
+	BASETYPE_GET(LLA)
+	BASETYPE_GET(Matrix3)
+	BASETYPE_GET(Path)
+	BASETYPE_GET(Quat)
+	BASETYPE_GET(Real)
+	BASETYPE_GET(SimDate)
+	BASETYPE_GET(Table1)
+	BASETYPE_GET(Table2)
+	BASETYPE_GET(Table3)
+	BASETYPE_GET(UTM)
+	BASETYPE_GET(Vector3)
+
+#undef BASETYPE_GET
+
+#ifndef SWIG
+
 	template <typename T>
 	void setCoordinate(T & x) const {
 		assert(var.o);
@@ -149,26 +178,6 @@ public:
 		}
 	}
 
-	void set(SimDate & x) const;
-
-	void set(LLA & x) const;
-	void set(UTM & x) const;
-	void set(ECEF & x) const;
-
-	void set(Vector3 & x) const;
-	void set(Matrix3 & x) const;
-	void set(Quat & x) const;
-	void set(Real & x) const;
-	void set(Table1 & x) const;
-	void set(Table2 & x) const;
-	void set(Table3 & x) const;
-	void set(External & x) const;
-	void set(Key & x) const;
-	void set(Path & x) const;
-
-	void set(EnumLink &x) const;
-	void set(LinkBase &x) const;
-
 	void set(short &x) const { IntCheck(); x = static_cast<short>(var.i); }
 	void set(char &x) const { IntCheck(); x = static_cast<char>(var.i); }
 	void set(int &x) const { IntCheck(); x = static_cast<int>(var.i); }
@@ -177,6 +186,23 @@ public:
 	void set(double &x) const { DoubleCheck(); x = static_cast<double>(var.d); }
 	void set(unsigned int &x) const { IntCheck(); x = static_cast<unsigned int>(var.i); }
 	void set(std::string &x) const { StringCheck(); x = s; }
+
+	void set(ECEF & x) const;
+	void set(EnumLink &x) const;
+	void set(External & x) const;
+	void set(Key & x) const;
+	void set(LinkBase &x) const;
+	void set(LLA & x) const;
+	void set(Matrix3 & x) const;
+	void set(Path & x) const;
+	void set(Quat & x) const;
+	void set(Real & x) const;
+	void set(SimDate & x) const;
+	void set(Table1 & x) const;
+	void set(Table2 & x) const;
+	void set(Table3 & x) const;
+	void set(UTM & x) const;
+	void set(Vector3 & x) const;
 
 	// Implemented in Link.h
 	template <typename Q>
@@ -207,7 +233,7 @@ private:
 	void failConvert(const char *typestr) const;
 
 	void TypeCheck(bool test, std::string msg) const {
-		if (!(test)) {
+		if (!test) {
 			msg = __repr__() + ": " + msg;
 			throw TypeMismatch(msg);
 		}

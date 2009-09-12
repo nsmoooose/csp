@@ -23,6 +23,18 @@
 %include "csp/csplib/util/Export.h"
 %include "csp/csplib/util/Namespace.h"
 %include "csp/csplib/data/BaseType.h"
+
+%exception {
+	try {
+		$action
+	} catch (CSP(TypeMismatch) &e) {
+		e.clear();
+		SWIG_exception(SWIG_TypeError, e.getMessage().c_str());
+	} catch (CSP(Exception) &e) {
+		e.clear();
+		SWIG_exception(SWIG_RuntimeError, e.getMessage().c_str());
+	}
+}
 %include "csp/csplib/data/TypeAdapter.h"
 
 %exception {

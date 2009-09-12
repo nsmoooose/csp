@@ -130,6 +130,7 @@ public:
 	virtual TypeAdapter const get(OBJECT *) const {
 		throw TypeMismatch("get() '" + name + "': not supported for variables of type vector<>.");
 	}
+	virtual TypeAdapter const getScalarPrototype() const = 0;
 	bool isRequired() const { return required; };
 	std::string getName() const { return name; }
 	virtual void serialize(OBJECT const *, Writer &) const { assert(0); }
@@ -191,6 +192,10 @@ public:
 	virtual TypeAdapter const get(OBJECT *object) const {
 		return TypeAdapter(object->*member);
 	}
+	virtual TypeAdapter const getScalarPrototype() const {
+		static const T prototype;
+		return TypeAdapter(prototype);
+	}
 	virtual void set(OBJECT *object, TypeAdapter const &v) {
 		try {
 			if (mask != 0) {
@@ -244,6 +249,10 @@ public:
 	virtual TypeAdapter const get(OBJECT *object) const {
 		return TypeAdapter(object->*member);
 	}
+	virtual TypeAdapter const getScalarPrototype() const {
+		static const T prototype;
+		return TypeAdapter(prototype);
+	}
 	virtual void set(OBJECT *object, TypeAdapter const &v) {
 		try {
 			v.set(object->*member);
@@ -296,6 +305,10 @@ public:
 	}
 	virtual void clear(OBJECT *object) {
 		(object->*member).clear();
+	}
+	virtual TypeAdapter const getScalarPrototype() const {
+		static const T prototype;
+		return TypeAdapter(prototype);
 	}
 	virtual void serialize(OBJECT const *object, Writer &writer) const {
 		VT const &m = object->*member;
@@ -401,6 +414,10 @@ public:
 	/** Append a value to an interface variable list.
 	 */
 	virtual void push_back(Object *o, std::string const &name, const TypeAdapter &v) const = 0;
+	
+	/** Get a prototype of an interface variable.
+	 */
+	virtual const TypeAdapter getScalarPrototype(std::string const &name) const = 0;
 	
 	/** Clear an interface variable list.
 	 */
@@ -552,6 +569,12 @@ public:
 			throw TypeMismatch("push_back(\"" + name + "\"): Object class does not match interface.");
 		}
 		getAccessor(name)->push_back(object, v);
+	}
+
+	/** Get a prototype of an interface variable.
+	 */
+	virtual const TypeAdapter getScalarPrototype(std::string const &name) const {
+		return getAccessor(name)->getScalarPrototype();
 	}
 	
 	/** Clear an interface variable list.

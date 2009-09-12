@@ -118,6 +118,11 @@ void InterfaceProxy::push_back(Object *o, std::string const &varname, const Type
 	oi->push_back(o, varname, v);
 }
 
+const TypeAdapter InterfaceProxy::getScalarPrototype(std::string const &varname) const {
+	ObjectInterfaceBase *oi = findInterface(varname, true);
+	return oi->getScalarPrototype(varname);
+}
+
 void InterfaceProxy::set_enum(Object *o, std::string const &varname, std::string const &v) {
 	set(o, varname, TypeAdapter(v));
 }

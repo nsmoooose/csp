@@ -167,12 +167,22 @@ public:
 	/** Get the class name of the corresponding object.
 	 */
 	virtual const char *getClassName() const;
-	
-#ifndef SWIG
 
 	/** Get the value of an interface variable.
 	 */
 	const TypeAdapter get(Object *o, std::string const &varname) const;
+	
+	/** Get a prototype of an interface variable.
+	 *
+	 *  If the interface variable is of type T, return a T.
+	 *  If the interface variable is of type vector<T>, return a T.
+	 *
+	 *  @param varname The name of the member variable.
+	 *  @returns A prototype corresponding to the specified variable name.
+	 */
+	const TypeAdapter getScalarPrototype(std::string const &varname) const;
+	
+#ifndef SWIG
 
 	/** Set the value of an interface variable.
 	 */

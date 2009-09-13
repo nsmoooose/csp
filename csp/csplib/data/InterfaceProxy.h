@@ -266,6 +266,12 @@ public:
 	 */
 	bool isSubclass(hasht const &chash) const;
 
+	/** Test if the object class of this interface is abstract.
+	 *
+	 *  Abstract base classes cannot be instantiated.
+	 */
+	virtual bool isAbstract() const { return true; }
+
 	/** Test if the object class of this interface is static.
 	 *
 	 *  Instances of static object classes are cached when loaded from a data
@@ -459,7 +465,7 @@ inline hasht classhash_helper(std::string const &class_name, const fprint32 sign
 		static void serialize(_M_classname *object, CSP(Reader) &reader); \
 		static void serialize(_M_classname const *object, CSP(Writer) &writer); \
 		virtual CSP(Object)* createObject() const { return CSP(__csp_object_factory)<_M_classname, _M_abstract>::create(); } \
-		virtual bool isVirtual() const { return _M_abstract; } \
+		virtual bool isAbstract() const { return _M_abstract; } \
 		virtual bool isStatic() const { return _M_static; } \
 		virtual CSP(hasht) getClassHash() const { return _M_classname::_getClassHash(); } \
 		virtual const char * getClassName() const { return _M_classname::_getClassName(); } \

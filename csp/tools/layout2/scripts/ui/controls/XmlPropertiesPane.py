@@ -15,7 +15,8 @@ class XmlPropertiesPane(FilePropertiesPane):
 		wx.GetApp().GetDocumentRegistry().ReferenceDocument(self.document)
 		self.document.GetChangedSignal().Connect(self.on_DocumentChanged)
 		
-		self.InitItemForXmlNode( self.root, self.document.GetXmlNodeDocument() )
+		self.InitItemForXmlNode(self.root, self.document.GetXmlNodeDocument(), 0)
+		self.tree.Bind(wx.EVT_TREE_ITEM_EXPANDING, self.on_TreeItemExpanding)
 		
 		self.itemUpdaters = [
 			XmlPropertiesPaneItemArchive.ItemUpdaterString(self),
@@ -96,13 +97,22 @@ class XmlPropertiesPane(FilePropertiesPane):
 		nodeDocument = self.document.GetXmlNodeDocument()
 		self.UpdateItem(self.root, nodeDocument)
 	
+	def on_TreeItemExpanding(self, event):
+		item = event.GetItem()
+		node = item.xmlNode
+		for itemUpdater in self.itemUpdaters:
+			if isinstance(node, itemUpdater.NodeClass):
+				itemUpdater.ItemExpanding(item)
+				break
+	
 	def UpdateItem(self, item, node):
 		for itemUpdater in self.itemUpdaters:
 			if isinstance(node, itemUpdater.NodeClass):
 				itemUpdater.UpdateItem(item, node)
 				break
 	
-	def InitItemForXmlNode(self, item, xmlNode):
+	def InitItemForXmlNode(self, item, xmlNode, level):
 		item.xmlNode = xmlNode
 		item.xmlChangeCount = -1
 		item.xmlChildrenChangeCount = -1
+		item.level = level

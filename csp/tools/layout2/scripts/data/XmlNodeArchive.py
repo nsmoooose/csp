@@ -558,7 +558,12 @@ class XmlNodeObject(layout_module.XmlNodeObject, XmlNodeContainer):
 	def CheckErrors(self):
 		super(XmlNodeObject, self).CheckErrors()
 		
-		childErrors = ["XmlNodeObject.unknownElement", "XmlNodeObject.unknownName", "XmlNodeObject.badType"]
+		childErrors = [
+			"XmlNodeObject.parseXML",
+			"XmlNodeObject.unknownElement",
+			"XmlNodeObject.unknownName",
+			"XmlNodeObject.badType",
+			]
 		
 		self.namedChildNodes = {}
 		for child in self.childNodes:
@@ -577,6 +582,7 @@ class XmlNodeObject(layout_module.XmlNodeObject, XmlNodeContainer):
 			self.SetError("MissingClassAttribute", "<%s> must have a class attribute" % self.tag)
 			self.SetError("UnknownClassAttribute", None)
 			self.SetError("BadClassAttribute", None)
+			self.CleanRequiredNameErrors()
 			self.CleanChildErrors(childErrors)
 			return
 		else:
@@ -589,6 +595,7 @@ class XmlNodeObject(layout_module.XmlNodeObject, XmlNodeContainer):
 		if interface is None:
 			self.SetError("UnknownClassAttribute", "<%s> has an unknown class attribute" % self.tag)
 			self.SetError("BadClassAttribute", None)
+			self.CleanRequiredNameErrors()
 			self.CleanChildErrors(childErrors)
 			return
 		else:
@@ -596,14 +603,34 @@ class XmlNodeObject(layout_module.XmlNodeObject, XmlNodeContainer):
 		
 		selfVariableType = self.GetSelfVariableType()
 		if selfVariableType and selfVariableType[0] == 'type' and selfVariableType[1] == self.variableType:
-			if interface.isSubclass(selfVariableType[2]):
-				self.SetError("BadClassAttribute", None)
+			if interface.isAbstract():
+				self.SetError("BadClassAttribute", "Attribute class %s is abstract" % classAttributeValue)
 			else:
-				self.SetError("BadClassAttribute", "Attribute class must be %s or a descendant" % selfVariableType[2])
+				if interface.isSubclass(selfVariableType[2]):
+					self.SetError("BadClassAttribute", None)
+				else:
+					self.SetError("BadClassAttribute", "Attribute class must be %s or a descendant" % selfVariableType[2])
 		else:
 			self.SetError("BadClassAttribute", None)
 		
-		for requiredName in interface.getRequiredNames():
+		parseXMLError = None
+		if not interface.isAbstract():
+			object = interface.createObject()
+			try:
+				object.parseXML( self.GetText() )
+			except csplib.ParseException, error:
+				parseXMLError = error.getMessage()
+				error.clear()
+		
+		requiredNames = interface.getRequiredNames()
+		
+		requiredNameErrors = [ error for error in self.errors if error.startswith('requiredName_') ]
+		for error in requiredNameErrors:
+			requiredName = error[len('requiredName_'):]
+			if requiredName not in requiredNames:
+				self.SetError(error, None)
+		
+		for requiredName in requiredNames:
 			if requiredName in self.namedChildNodes:
 				self.SetError("requiredName_%s" % requiredName, None)
 			else:
@@ -611,10 +638,20 @@ class XmlNodeObject(layout_module.XmlNodeObject, XmlNodeContainer):
 		
 		for child in self.childNodes:
 			if isinstance( child, XmlNodeComment ):
+				child.SetError("XmlNodeObject.parseXML", None)
 				child.SetError("XmlNodeObject.unknownElement", None)
 				child.SetError("XmlNodeObject.unknownName", None)
 				child.SetError("XmlNodeObject.badType", None)
 				continue
+			
+			if isinstance( child, XmlNodeText ):
+				child.SetError("XmlNodeObject.parseXML", parseXMLError)
+				child.SetError("XmlNodeObject.unknownElement", None)
+				child.SetError("XmlNodeObject.unknownName", None)
+				child.SetError("XmlNodeObject.badType", None)
+				continue
+			else:
+				child.SetError("XmlNodeObject.parseXML", None)
 			
 			if isinstance(child, XmlNodeArchive):
 				child.SetError("XmlNodeObject.unknownElement", None)
@@ -644,6 +681,11 @@ class XmlNodeObject(layout_module.XmlNodeObject, XmlNodeContainer):
 			elif not self.CheckVariableType(childVariableType, child):
 				child.SetError( "XmlNodeObject.badType", None )
 				print "BUG: unknown archive type"
+	
+	def CleanRequiredNameErrors(self):
+		requiredNameErrors = [ error for error in self.errors if error.startswith('requiredName_') ]
+		for error in requiredNameErrors:
+			self.SetError(error, None)
 	
 	def GetInterface(self):
 		interfaceRegistry = csplib.InterfaceRegistry.getInterfaceRegistry()

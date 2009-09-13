@@ -94,8 +94,7 @@ class XmlPropertiesPane(FilePropertiesPane):
 		}
 	
 	def on_DocumentChanged(self, document):
-		nodeDocument = self.document.GetXmlNodeDocument()
-		self.UpdateItem(self.root, nodeDocument)
+		self.UpdateItem(self.root)
 	
 	def on_TreeItemExpanding(self, event):
 		item = event.GetItem()
@@ -105,10 +104,11 @@ class XmlPropertiesPane(FilePropertiesPane):
 				itemUpdater.ItemExpanding(item)
 				break
 	
-	def UpdateItem(self, item, node):
+	def UpdateItem(self, item):
+		node = item.xmlNode
 		for itemUpdater in self.itemUpdaters:
 			if isinstance(node, itemUpdater.NodeClass):
-				itemUpdater.UpdateItem(item, node)
+				itemUpdater.UpdateItem(item)
 				break
 	
 	def InitItemForXmlNode(self, item, xmlNode, level):

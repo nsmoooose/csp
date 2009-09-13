@@ -8,44 +8,44 @@ class ItemUpdater(object):
 	def __init__(self, propertiesPane, *args, **kwargs):
 		self.propertiesPane = propertiesPane
 	
-	def UpdateItem(self, item, node):
+	def UpdateItem(self, item):
 		pass
 	
 	def ItemExpanding(self, item):
 		pass
 	
-	def GetErrorMessage(self, item, node):
+	def GetErrorMessage(self, node):
 		return '\n'.join( "- %s" % error for error in node.errors.itervalues() )
 	
 	def SetItemImage(self, item, image):
 		self.propertiesPane.tree.SetItemImage(item, self.propertiesPane.TreeImages()[image])
 	
-	def SetItemWindow(self, item, node, itemWindow):
+	def SetItemWindow(self, item, itemWindow):
 		self.propertiesPane.tree.DeleteItemWindow(item)
-		errorMessage = self.GetErrorMessage(item, node)
+		errorMessage = self.GetErrorMessage(item.xmlNode)
 		if errorMessage or itemWindow is not None:
 			itemWindow = ItemWindowWithError(self.propertiesPane.tree, errorMessage, itemWindow)
 			self.propertiesPane.tree.SetItemWindow(item, itemWindow)
 
 
 class ItemUpdaterWithoutChildren(ItemUpdater):
-	def UpdateItem(self, item, node):
-		if item.xmlChangeCount != node.changeCount:
-			self.UpdateLocalChanges(item, node)
-			item.xmlChangeCount = node.changeCount
+	def UpdateItem(self, item):
+		if item.xmlChangeCount != item.xmlNode.changeCount:
+			self.UpdateLocalChanges(item)
+			item.xmlChangeCount = item.xmlNode.changeCount
 	
-	def UpdateLocalChanges(self, item, node):
+	def UpdateLocalChanges(self, item):
 		pass
 
 
 class ItemUpdaterData(ItemUpdaterWithoutChildren):
-	def UpdateLocalChanges(self, item, node):
+	def UpdateLocalChanges(self, item):
 		if self.propertiesPane.tree.GetItemImage(item) < 0:
 			self.SetItemImage( item, self.GetItemImage() )
 			self.propertiesPane.tree.SetItemText( item, self.GetItemText() )
 		
-		itemWindow = AutoFitTextCtrl(self.propertiesPane.tree, node.GetText(), style = wx.TE_READONLY)
-		self.SetItemWindow(item, node, itemWindow)
+		itemWindow = AutoFitTextCtrl(self.propertiesPane.tree, item.xmlNode.GetText(), style = wx.TE_READONLY)
+		self.SetItemWindow(item, itemWindow)
 	
 	def GetItemImage(self):
 		return ''
@@ -77,45 +77,45 @@ class ItemUpdaterComment(ItemUpdaterData):
 class ItemUpdaterAttribute(ItemUpdaterWithoutChildren):
 	NodeClass = XmlNode.XmlNodeAttribute
 	
-	def UpdateLocalChanges(self, item, node):
+	def UpdateLocalChanges(self, item):
 		if self.propertiesPane.tree.GetItemImage(item) < 0:
 			self.SetItemImage(item, 'attribute')
 		
-		self.propertiesPane.tree.SetItemText( item, node.GetName() )
+		self.propertiesPane.tree.SetItemText( item, item.xmlNode.GetName() )
 		
-		itemWindow = AutoFitTextCtrl(self.propertiesPane.tree, node.GetValue(), style = wx.TE_READONLY)
-		self.SetItemWindow(item, node, itemWindow)
+		itemWindow = AutoFitTextCtrl(self.propertiesPane.tree, item.xmlNode.GetValue(), style = wx.TE_READONLY)
+		self.SetItemWindow(item, itemWindow)
 
 
 class ItemUpdaterWithChildren(ItemUpdater):
-	def UpdateItem(self, item, node):
+	def UpdateItem(self, item):
 		firstUpdate = item.xmlChangeCount == -1
 		
-		if item.xmlChangeCount != node.changeCount:
-			self.UpdateLocalChanges(item, node)
+		if item.xmlChangeCount != item.xmlNode.changeCount:
+			self.UpdateLocalChanges(item)
 			
 			if self.propertiesPane.tree.IsExpanded(item):
-				if self.AddRemoveChildren(item, node):
+				if self.AddRemoveChildren(item):
 					# New nodes where added, force an update
 					item.xmlChildrenChangeCount -= 1
 			else:
-				if len(list( self.GetNodeChildren(node) )):
+				if len(list( self.GetNodeChildren(item.xmlNode) )):
 					self.propertiesPane.tree.SetItemHasChildren(item, True)
 					
 					# Force an update when expanding
-					if item.xmlChildrenChangeCount == node.childrenChangeCount:
+					if item.xmlChildrenChangeCount == item.xmlNode.childrenChangeCount:
 						item.xmlChildrenChangeCount -= 1
 				else:
 					self.propertiesPane.tree.DeleteChildren(item)
 					self.propertiesPane.tree.SetItemHasChildren(item, False)
 			
-			item.xmlChangeCount = node.changeCount
+			item.xmlChangeCount = item.xmlNode.changeCount
 		
 		if self.propertiesPane.tree.IsExpanded(item):
-			if item.xmlChildrenChangeCount != node.childrenChangeCount:
-				self.UpdateChildren(item, node)
+			if item.xmlChildrenChangeCount != item.xmlNode.childrenChangeCount:
+				self.UpdateChildren(item)
 				
-				item.xmlChildrenChangeCount = node.childrenChangeCount
+				item.xmlChildrenChangeCount = item.xmlNode.childrenChangeCount
 		
 		if firstUpdate and item.level == 1:
 			# Expand the XML rootElement
@@ -123,19 +123,19 @@ class ItemUpdaterWithChildren(ItemUpdater):
 	
 	def ItemExpanding(self, item):
 		if item.xmlChildrenChangeCount != item.xmlNode.childrenChangeCount:
-			self.AddRemoveChildren(item, item.xmlNode)
-			self.UpdateChildren(item, item.xmlNode)
+			self.AddRemoveChildren(item)
+			self.UpdateChildren(item)
 			
 			item.xmlChildrenChangeCount = item.xmlNode.childrenChangeCount
 	
-	def UpdateLocalChanges(self, item, node):
+	def UpdateLocalChanges(self, item):
 		pass
 	
 	def GetNodeChildren(self, node):
 		return node.GetChildren()
 	
-	def AddRemoveChildren(self, item, node):
-		nodeChildren = list( self.GetNodeChildren(node) )
+	def AddRemoveChildren(self, item):
+		nodeChildren = list( self.GetNodeChildren(item.xmlNode) )
 		
 		# Remove unused items
 		itemsToRemove = []
@@ -182,14 +182,12 @@ class ItemUpdaterWithChildren(ItemUpdater):
 			yield child
 			child = self.propertiesPane.tree.GetNextSibling(child)
 	
-	def UpdateChildren(self, item, node):
-		itemChild, unused = self.propertiesPane.tree.GetFirstChild(item)
-		for nodeChild in self.GetNodeChildren(node):
-			self.propertiesPane.UpdateItem(itemChild, nodeChild)
-			itemChild = self.propertiesPane.tree.GetNextSibling(itemChild)
+	def UpdateChildren(self, item):
+		for itemChild in self.GetItemChildren(item):
+			self.propertiesPane.UpdateItem(itemChild)
 	
-	def GetErrorMessage(self, item, node):
-		message = super(ItemUpdaterWithChildren, self).GetErrorMessage(item, node)
+	def GetErrorMessage(self, node):
+		message = super(ItemUpdaterWithChildren, self).GetErrorMessage(node)
 		childrenErrorCount = node.childrenErrorCount
 		if childrenErrorCount:
 			childrenMessage = "- There are %d errors in children nodes" % node.childrenErrorCount
@@ -204,20 +202,20 @@ class ItemUpdaterWithChildren(ItemUpdater):
 class ItemUpdaterDocument(ItemUpdaterWithChildren):
 	NodeClass = XmlNode.XmlNodeDocument
 	
-	def UpdateLocalChanges(self, item, node):
+	def UpdateLocalChanges(self, item):
 		itemWindow = self.propertiesPane.CreateRootWindow()
-		self.SetItemWindow(item, node, itemWindow)
+		self.SetItemWindow(item, itemWindow)
 
 
 class ItemUpdaterElement(ItemUpdaterWithChildren):
 	NodeClass = XmlNode.XmlNodeElement
 	
-	def UpdateLocalChanges(self, item, node):
+	def UpdateLocalChanges(self, item):
 		if self.propertiesPane.tree.GetItemImage(item) < 0:
 			self.SetItemImage( item, self.GetItemImage() )
 		
-		self.propertiesPane.tree.SetItemText( item, self.GetItemText(node) )
-		self.SetItemWindow( item, node, self.GetItemWindow(node) )
+		self.propertiesPane.tree.SetItemText( item, self.GetItemText(item.xmlNode) )
+		self.SetItemWindow( item, self.GetItemWindow(item.xmlNode) )
 	
 	def GetItemImage(self):
 		return 'element'

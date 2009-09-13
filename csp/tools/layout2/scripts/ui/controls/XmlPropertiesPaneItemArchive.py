@@ -9,12 +9,12 @@ from ...data.XmlNode import XmlNodeAttribute
 from ...data import XmlNodeArchive
 
 class ItemUpdaterListTextItem(ItemUpdaterWithoutChildren):
-	def UpdateLocalChanges(self, item, node):
+	def UpdateLocalChanges(self, item):
 		if self.propertiesPane.tree.GetItemImage(item) < 0:
 			self.SetItemImage( item, self.GetItemImage() )
-			self.propertiesPane.tree.SetItemText( item, self.GetItemText(node) )
+			self.propertiesPane.tree.SetItemText( item, self.GetItemText(item.xmlNode) )
 		
-		self.SetItemWindow( item, node, self.GetItemWindow(node) )
+		self.SetItemWindow( item, self.GetItemWindow(item.xmlNode) )
 	
 	def GetItemImage(self):
 		return ''

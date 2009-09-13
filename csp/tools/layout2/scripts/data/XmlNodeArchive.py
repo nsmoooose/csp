@@ -596,10 +596,10 @@ class XmlNodeObject(layout_module.XmlNodeObject, XmlNodeContainer):
 		
 		selfVariableType = self.GetSelfVariableType()
 		if selfVariableType and selfVariableType[0] == 'type' and selfVariableType[1] == self.variableType:
-			if selfVariableType[2] == classAttributeValue:
+			if interface.isSubclass(selfVariableType[2]):
 				self.SetError("BadClassAttribute", None)
 			else:
-				self.SetError("BadClassAttribute", "Attribute class must be %s" % selfVariableType[2])
+				self.SetError("BadClassAttribute", "Attribute class must be %s or a descendant" % selfVariableType[2])
 		else:
 			self.SetError("BadClassAttribute", None)
 		

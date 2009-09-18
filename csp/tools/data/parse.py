@@ -275,10 +275,7 @@ class IntHandler(SimpleHandler):
 		SimpleHandler.__init__(self, id, base, name, attrs)
 	
 	def end(self):
-		if self._c.startswith('0x'):
-			self._element = int(self._c, 16)
-		else:
-			self._element = int(self._c)
+		self._element = int(self._c, 0)
 
 
 class BoolHandler(SimpleHandler):
@@ -407,10 +404,7 @@ class PathHandler(SimpleHandler):
 		return p
 
 	def end(self):
-		if self._attrs.has_key("source"):
-			source = self._attrs["source"]
-		else:
-			source = self._c.strip()
+		source = self._c.strip()
 		source = adjust_path(self._base, source)
 		self._element = source
 		self._paths.append(source)
@@ -424,10 +418,7 @@ class ExternalHandler(SimpleHandler):
 		SimpleHandler.__init__(self, id, base, name, attrs)
 
 	def end(self):
-		if self._attrs.has_key("source"):
-			source = self._attrs["source"]
-		else:
-			source = self._c.strip()
+		source = self._c.strip()
 		source = apply(os.path.join, source.split("/"))
 		self._element = source
 		self._externals.append(source)

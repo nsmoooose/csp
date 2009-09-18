@@ -184,31 +184,72 @@ class XmlNodeBool(layout_module.XmlNodeBool, XmlNodeSimple):
 			self.SetError( "parseXML", "Only true or false are allowed in <%s>" % self.tag )
 
 
-class XmlNodeInt(layout_module.XmlNodeInt, XmlNodeSimple):
+class XmlNodeIntData(object):
+	def CheckErrors(self):
+		try:
+			int( self.GetText(), 0 )
+			self.SetError( "parseXML", None )
+		except ValueError, error:
+			self.SetError( "parseXML", str(error) )
+
+
+class XmlNodeInt(layout_module.XmlNodeInt, XmlNodeIntData, XmlNodeSimple):
 	tag = 'Int'
 	variableTypes = ['int8', 'uint8', 'int16', 'uint16', 'int', 'uint']
 	
 	def __init__(self, parent, documentOwner, *args, **kwargs):
 		layout_module.XmlNodeInt.__init__(self, *args, **kwargs)
 		XmlNodeSimple.__init__(self, parent, documentOwner, *args, **kwargs)
+	
+	def CheckErrors(self):
+		XmlNodeIntData.CheckErrors(self)
+		XmlNodeSimple.CheckErrors(self)
 
 
-class XmlNodeFloat(layout_module.XmlNodeFloat, XmlNodeSimple):
+class XmlNodeFloatData(object):
+	def CheckErrors(self):
+		try:
+			float( self.GetText() )
+			self.SetError( "parseXML", None )
+		except ValueError, error:
+			self.SetError( "parseXML", str(error) )
+
+
+class XmlNodeFloat(layout_module.XmlNodeFloat, XmlNodeFloatData, XmlNodeSimple):
 	tag = 'Float'
 	variableTypes = ['float', 'double']
 	
 	def __init__(self, parent, documentOwner, *args, **kwargs):
 		layout_module.XmlNodeFloat.__init__(self, *args, **kwargs)
 		XmlNodeSimple.__init__(self, parent, documentOwner, *args, **kwargs)
+	
+	def CheckErrors(self):
+		XmlNodeFloatData.CheckErrors(self)
+		XmlNodeSimple.CheckErrors(self)
 
 
-class XmlNodeReal(layout_module.XmlNodeReal, XmlNodeSimple):
+class XmlNodeRealData(object):
+	def CheckErrors(self):
+		real = csplib.Real()
+		try:
+			real.parseXML( self.GetText() )
+			self.SetError( "parseXML", None )
+		except csplib.ParseException, error:
+			self.SetError( "parseXML", error.getMessage() )
+			error.clear()
+
+
+class XmlNodeReal(layout_module.XmlNodeReal, XmlNodeRealData, XmlNodeSimple):
 	tag = 'Real'
 	variableType = 'Real'
 	
 	def __init__(self, parent, documentOwner, *args, **kwargs):
 		layout_module.XmlNodeReal.__init__(self, *args, **kwargs)
 		XmlNodeSimple.__init__(self, parent, documentOwner, *args, **kwargs)
+	
+	def CheckErrors(self):
+		XmlNodeRealData.CheckErrors(self)
+		XmlNodeSimple.CheckErrors(self)
 
 
 class XmlNodeECEF(layout_module.XmlNodeECEF, XmlNodeSimple):
@@ -341,31 +382,58 @@ class XmlNodeEnum(layout_module.XmlNodeEnum, XmlNodeSimple):
 			self.SetError( "parseXML", "The enumeration value must be chosen amongst: \n   * %s" % '\n   * '.join(self.allowedValues) )
 
 
-class XmlNodeExternal(layout_module.XmlNodeExternal, XmlNodeSimple):
+class XmlNodeExternalData(object):
+	def CheckErrors(self):
+		pass
+
+
+class XmlNodeExternal(layout_module.XmlNodeExternal, XmlNodeExternalData, XmlNodeSimple):
 	tag = 'External'
 	variableType = 'External'
 	
 	def __init__(self, parent, documentOwner, *args, **kwargs):
 		layout_module.XmlNodeExternal.__init__(self, *args, **kwargs)
 		XmlNodeSimple.__init__(self, parent, documentOwner, *args, **kwargs)
+	
+	def CheckErrors(self):
+		XmlNodeExternalData.CheckErrors(self)
+		XmlNodeSimple.CheckErrors(self)
 
 
-class XmlNodeKey(layout_module.XmlNodeKey, XmlNodeSimple):
+class XmlNodeKeyData(object):
+	def CheckErrors(self):
+		pass
+
+
+class XmlNodeKey(layout_module.XmlNodeKey, XmlNodeKeyData, XmlNodeSimple):
 	tag = 'Key'
 	variableType = 'Key'
 	
 	def __init__(self, parent, documentOwner, *args, **kwargs):
 		layout_module.XmlNodeKey.__init__(self, *args, **kwargs)
 		XmlNodeSimple.__init__(self, parent, documentOwner, *args, **kwargs)
+	
+	def CheckErrors(self):
+		XmlNodeKeyData.CheckErrors(self)
+		XmlNodeSimple.CheckErrors(self)
 
 
-class XmlNodePath(layout_module.XmlNodePath, XmlNodeSimple):
+class XmlNodePathData(object):
+	def CheckErrors(self):
+		pass
+
+
+class XmlNodePath(layout_module.XmlNodePath, XmlNodePathData, XmlNodeSimple):
 	tag = 'Path'
 	variableType = 'Path'
 	
 	def __init__(self, parent, documentOwner, *args, **kwargs):
 		layout_module.XmlNodePath.__init__(self, *args, **kwargs)
 		XmlNodeSimple.__init__(self, parent, documentOwner, *args, **kwargs)
+	
+	def CheckErrors(self):
+		XmlNodePathData.CheckErrors(self)
+		XmlNodeSimple.CheckErrors(self)
 
 
 class XmlNodeListTextItem(XmlNodeChild):
@@ -380,42 +448,42 @@ class XmlNodeListTextItem(XmlNodeChild):
 		return self.value
 
 
-class XmlNodeListTextItemInt(XmlNodeListTextItem):
+class XmlNodeListTextItemInt(XmlNodeIntData, XmlNodeListTextItem):
 	tag = 'Int'
 	type = 'int'
 	group = 'builtin'
 	variableTypes = ['int8', 'uint8', 'int16', 'uint16', 'int', 'uint']
 
 
-class XmlNodeListTextItemFloat(XmlNodeListTextItem):
+class XmlNodeListTextItemFloat(XmlNodeFloatData, XmlNodeListTextItem):
 	tag = 'Float'
 	type = 'float'
 	group = 'builtin'
 	variableTypes = ['float', 'double']
 
 
-class XmlNodeListTextItemReal(XmlNodeListTextItem):
+class XmlNodeListTextItemReal(XmlNodeRealData, XmlNodeListTextItem):
 	tag = 'Real'
 	type = 'real'
 	group = 'type'
 	variableTypes = ['Real']
 
 
-class XmlNodeListTextItemExternal(XmlNodeListTextItem):
+class XmlNodeListTextItemExternal(XmlNodeExternalData, XmlNodeListTextItem):
 	tag = 'External'
 	type = 'external'
 	group = 'type'
 	variableTypes = ['External']
 
 
-class XmlNodeListTextItemKey(XmlNodeListTextItem):
+class XmlNodeListTextItemKey(XmlNodeKeyData, XmlNodeListTextItem):
 	tag = 'Key'
 	type = 'key'
 	group = 'type'
 	variableTypes = ['Key']
 
 
-class XmlNodeListTextItemPath(XmlNodeListTextItem):
+class XmlNodeListTextItemPath(XmlNodePathData, XmlNodeListTextItem):
 	tag = 'Path'
 	type = 'path'
 	group = 'type'
@@ -463,7 +531,9 @@ class XmlNodeList(layout_module.XmlNodeList, XmlNodeContainer):
 				if typeAttributeValue == ItemClass.type:
 					self.TextItemClass = ItemClass
 					for value in self.GetText().split():
-						self.textItems.append( ItemClass(self, value) )
+						item = ItemClass(self, value)
+						self.textItems.append(item)
+						item.CheckErrors()
 					break
 	
 	def GetChildren(self):

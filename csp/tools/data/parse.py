@@ -219,7 +219,7 @@ class ListHandler(SimpleHandler):
 	def validateChild(self, name, attrs):
 		if self._type is not None:
 			return 0
-		return name in ('List', 'Enum', 'Path', 'Int', 'Bool', 'Number', 'Float',
+		return name in ('Enum', 'Path', 'Int', 'Bool', 'Number', 'Float',
 		                'String', 'Date', 'Vector', 'Matrix', 'External', 'Key',
 		                'Object', 'Quat', 'LLA', "UTM", "ECEF")
 
@@ -236,21 +236,6 @@ class ListHandler(SimpleHandler):
 					y.parseXML(x)
 					return y
 				f = spread
-			elif self._type == "path":
-				def path(x, base = self._base):
-					y = csplib.Path()
-					x = adjust_path(base, x)
-					y.setPath(x)
-					return y
-				f = path
-				self._paths.extend(list)
-			elif self._type == "external":
-				def external(x):
-					y = csplib.External()
-					y.setSource(x)
-					return y
-				f = external
-				self._externals.extend(list)
 			elif self._type == "key":
 				f = csplib.Key
 			else:

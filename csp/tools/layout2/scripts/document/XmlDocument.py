@@ -56,5 +56,9 @@ class XmlDocumentFactory():
 	def CreateDocument(self):
 		"""Returns a new document that will be added in the DocumentRegistry."""
 		document = XmlDocument(self.fileName)
-		document.Load()
+		try:
+			document.Load()
+		except:
+			document.Dispose()
+			raise
 		return document

@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+import os
+import wx
 from XmlNode import XmlNodeFactory
 from XmlNode import XmlNodeDocument
 from XmlNode import XmlNodeElement
@@ -382,22 +384,13 @@ class XmlNodeEnum(layout_module.XmlNodeEnum, XmlNodeSimple):
 			self.SetError( "parseXML", "The enumeration value must be chosen amongst: \n   * %s" % '\n   * '.join(self.allowedValues) )
 
 
-class XmlNodeExternalData(object):
-	def CheckErrors(self):
-		pass
-
-
-class XmlNodeExternal(layout_module.XmlNodeExternal, XmlNodeExternalData, XmlNodeSimple):
+class XmlNodeExternal(layout_module.XmlNodeExternal, XmlNodeSimple):
 	tag = 'External'
 	variableType = 'External'
 	
 	def __init__(self, parent, documentOwner, *args, **kwargs):
 		layout_module.XmlNodeExternal.__init__(self, *args, **kwargs)
 		XmlNodeSimple.__init__(self, parent, documentOwner, *args, **kwargs)
-	
-	def CheckErrors(self):
-		XmlNodeExternalData.CheckErrors(self)
-		XmlNodeSimple.CheckErrors(self)
 
 
 class XmlNodeKeyData(object):
@@ -418,22 +411,85 @@ class XmlNodeKey(layout_module.XmlNodeKey, XmlNodeKeyData, XmlNodeSimple):
 		XmlNodeSimple.CheckErrors(self)
 
 
-class XmlNodePathData(object):
-	def CheckErrors(self):
-		pass
-
-
-class XmlNodePath(layout_module.XmlNodePath, XmlNodePathData, XmlNodeSimple):
+class XmlNodePath(layout_module.XmlNodePath, XmlNodeSimple):
 	tag = 'Path'
 	variableType = 'Path'
 	
 	def __init__(self, parent, documentOwner, *args, **kwargs):
 		layout_module.XmlNodePath.__init__(self, *args, **kwargs)
 		XmlNodeSimple.__init__(self, parent, documentOwner, *args, **kwargs)
+		
+		# The XmlObjectDocument referenced by the Path
+		self.subDocument = None
+		
+		# If the subDocument can't be opened, contains the error message
+		self.loadError = None
+	
+	def Dispose(self):
+		super(XmlNodePath, self).Dispose()
+		self.ReleaseSubDocument()
+	
+	def PostLoad(self):
+		self.ReleaseSubDocument()
+		self.loadError = None
+		
+		fullName = self.GetFullName()
+		if fullName is None:
+			return
+		
+		if not os.path.exists(fullName):
+			return
+		
+		# Get the document from the DocumentRegistry
+		documentRegistry = wx.GetApp().GetDocumentRegistry()
+		try:
+			self.subDocument = documentRegistry.GetOrCreateDocument( self.documentOwner.DocumentFactory(fullName) )
+		except Exception, error:
+			self.loadError = "Cannot open xml file.\n" + str(error)
+			return
+		self.subDocument.GetChangedSignal().Connect(self.on_SubDocumentChanged)
+	
+	def ReleaseSubDocument(self):
+		if self.subDocument is not None:
+			self.subDocument.GetChangedSignal().Disconnect(self.on_SubDocumentChanged)
+			wx.GetApp().GetDocumentRegistry().ReleaseDocument(self.subDocument)
+			self.subDocument = None
+	
+	def GetFullName(self):
+		if self.documentOwner.dotPath is None:
+			return None
+		
+		path = self.GetText()
+		if not path:
+			return None
+		
+		if path[0] == '.':
+			# Absolute path
+			path = path.split('.')[1:]
+		else:
+			# Relative path
+			path = self.documentOwner.dotPath[:-1] + path.split('.')
+		
+		fullName = self.documentOwner.xmlPath
+		for name in path:
+			if not name:
+				return None
+			fullName = os.path.join(fullName, name)
+		
+		return fullName + '.xml'
+	
+	def GetChildren(self):
+		if self.subDocument is not None:
+			yield self.subDocument.xmlNodeDocument
+		
+		for child in super(XmlNodePath, self).GetChildren():
+			yield child
 	
 	def CheckErrors(self):
-		XmlNodePathData.CheckErrors(self)
-		XmlNodeSimple.CheckErrors(self)
+		super(XmlNodePath, self).CheckErrors()
+	
+	def on_SubDocumentChanged(self, subDocument):
+		pass
 
 
 class XmlNodeListTextItem(XmlNodeChild):
@@ -469,25 +525,11 @@ class XmlNodeListTextItemReal(XmlNodeRealData, XmlNodeListTextItem):
 	variableTypes = ['Real']
 
 
-class XmlNodeListTextItemExternal(XmlNodeExternalData, XmlNodeListTextItem):
-	tag = 'External'
-	type = 'external'
-	group = 'type'
-	variableTypes = ['External']
-
-
 class XmlNodeListTextItemKey(XmlNodeKeyData, XmlNodeListTextItem):
 	tag = 'Key'
 	type = 'key'
 	group = 'type'
 	variableTypes = ['Key']
-
-
-class XmlNodeListTextItemPath(XmlNodePathData, XmlNodeListTextItem):
-	tag = 'Path'
-	type = 'path'
-	group = 'type'
-	variableTypes = ['Path']
 
 
 class XmlNodeList(layout_module.XmlNodeList, XmlNodeContainer):
@@ -498,9 +540,7 @@ class XmlNodeList(layout_module.XmlNodeList, XmlNodeContainer):
 		XmlNodeListTextItemInt,
 		XmlNodeListTextItemFloat,
 		XmlNodeListTextItemReal,
-		XmlNodeListTextItemExternal,
 		XmlNodeListTextItemKey,
-		XmlNodeListTextItemPath,
 		]
 	
 	def __init__(self, parent, documentOwner, *args, **kwargs):

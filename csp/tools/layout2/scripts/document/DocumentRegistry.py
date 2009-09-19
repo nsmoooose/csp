@@ -34,6 +34,7 @@ class DocumentRegistry:
 		if document is None:
 			document = documentFactory.CreateDocument()
 			if document.GetUniqueId() != uniqueId:
+				document.Dispose()
 				raise BadUniqueIdError()
 			self.documents[uniqueId] = document
 		

@@ -230,17 +230,11 @@ class ItemUpdaterEnum(ItemUpdaterSimple):
 		return wx.ComboBox(self.propertiesPane.tree, value = value, choices = choices, style = wx.CB_READONLY)
 
 
-class ItemUpdaterExternalData(object):
+class ItemUpdaterExternal(ItemUpdaterSimple):
+	NodeClass = XmlNodeArchive.XmlNodeExternal
+	
 	def GetItemImage(self):
 		return 'external'
-
-
-class ItemUpdaterExternal(ItemUpdaterExternalData, ItemUpdaterSimple):
-	NodeClass = XmlNodeArchive.XmlNodeExternal
-
-
-class ItemUpdaterListTextItemExternal(ItemUpdaterExternalData, ItemUpdaterListTextItem):
-	NodeClass = XmlNodeArchive.XmlNodeListTextItemExternal
 
 
 class ItemUpdaterKeyData(object):
@@ -256,17 +250,11 @@ class ItemUpdaterListTextItemKey(ItemUpdaterKeyData, ItemUpdaterListTextItem):
 	NodeClass = XmlNodeArchive.XmlNodeListTextItemKey
 
 
-class ItemUpdaterPathData(object):
+class ItemUpdaterPath(ItemUpdaterSimple):
+	NodeClass = XmlNodeArchive.XmlNodePath
+	
 	def GetItemImage(self):
 		return 'path'
-
-
-class ItemUpdaterPath(ItemUpdaterPathData, ItemUpdaterSimple):
-	NodeClass = XmlNodeArchive.XmlNodePath
-
-
-class ItemUpdaterListTextItemPath(ItemUpdaterPathData, ItemUpdaterListTextItem):
-	NodeClass = XmlNodeArchive.XmlNodeListTextItemPath
 
 
 class ItemUpdaterList(ItemUpdaterNodeArchive):

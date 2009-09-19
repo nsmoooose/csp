@@ -203,8 +203,15 @@ class ItemUpdaterDocument(ItemUpdaterWithChildren):
 	NodeClass = XmlNode.XmlNodeDocument
 	
 	def UpdateLocalChanges(self, item):
-		itemWindow = self.propertiesPane.CreateRootWindow()
-		self.SetItemWindow(item, itemWindow)
+		if item is self.propertiesPane.root:
+			self.SetItemWindow( item, self.propertiesPane.CreateRootWindow() )
+		else:
+			if self.propertiesPane.tree.GetItemImage(item) < 0:
+				self.SetItemImage(item, 'root')
+				self.propertiesPane.tree.SetItemText(item, 'XML document')
+			
+			itemWindow = AutoFitTextCtrl(self.propertiesPane.tree, item.xmlNode.documentOwner.GetFileName(), style = wx.TE_READONLY)
+			self.SetItemWindow(item, itemWindow)
 
 
 class ItemUpdaterElement(ItemUpdaterWithChildren):

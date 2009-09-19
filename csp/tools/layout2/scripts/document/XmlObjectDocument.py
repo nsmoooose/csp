@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import os
 from XmlDocument import XmlDocument
 from ..data.XmlNodeArchive import XmlNodeArchiveFactory
 from ..data.XmlNodeArchive import XmlNodeObjectDocument
@@ -6,8 +7,26 @@ from ..data.XmlNodeArchive import XmlNodeObjectDocument
 class XmlObjectDocument(XmlDocument):
 	"""Document representing an object in a XML file."""
 	
-	def __init__(self, *args, **kwargs):
+	def __init__(self, xmlPath, *args, **kwargs):
 		XmlDocument.__init__(self, *args, **kwargs)
+		
+		# The root path of CSP Archive XML files
+		self.xmlPath = xmlPath
+		if self.xmlPath is not None:
+			self.xmlPath = os.path.abspath( self.xmlPath )
+		
+		# The relative dot path below xmlPath
+		self.dotPath = None
+		filePath = os.path.abspath( self.GetFileName() )
+		if filePath.startswith(self.xmlPath):
+			filePath = filePath[len(self.xmlPath):]
+			self.dotPath = []
+			while True:
+				(filePath, tail) = os.path.split(filePath)
+				if tail != '':
+					self.dotPath.insert(0, tail)
+				else:
+					break;
 	
 	def New(self):
 		if self.xmlNodeDocument is not None:
@@ -25,10 +44,14 @@ class XmlObjectDocument(XmlDocument):
 		if self.nodeFactory is None:
 			self.nodeFactory = XmlNodeArchiveFactory(self)
 		return self.nodeFactory
+	
+	def DocumentFactory(self, fileName):
+		return XmlObjectDocumentFactory(self.xmlPath, fileName)
 
 
 class XmlObjectDocumentFactory():
-	def __init__(self, fileName):
+	def __init__(self, xmlPath, fileName):
+		self.xmlPath = xmlPath
 		self.fileName = fileName
 	
 	def GetUniqueId(self):
@@ -37,6 +60,10 @@ class XmlObjectDocumentFactory():
 	
 	def CreateDocument(self):
 		"""Returns a new document that will be added in the DocumentRegistry."""
-		document = XmlObjectDocument(self.fileName)
-		document.Load()
+		document = XmlObjectDocument(self.xmlPath, self.fileName)
+		try:
+			document.Load()
+		except:
+			document.Dispose()
+			raise
 		return document

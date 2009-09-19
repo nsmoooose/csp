@@ -33,5 +33,9 @@ class SceneDocumentFactory():
 	def CreateDocument(self):
 		"""Returns a new document that will be added in the DocumentRegistry."""
 		document = SceneDocument(self.fileName)
-		document.SetRootNode(self.node)
+		try:
+			document.SetRootNode(self.node)
+		except:
+			document.Dispose()
+			raise
 		return document

@@ -19,8 +19,6 @@ class FileCommandRegistry:
 		self.RegisterCommandForFileExtensions( ('.osg', '.ive'), OpenOsgModelFileCommand() )
 
 	def RegisterCommandForFileExtensions(self, extensions, fileCommand):
-		"""Called by FileCommands to register themselves"""
-		
 		if isinstance(extensions, str):
 			extensions = [extensions]
 			

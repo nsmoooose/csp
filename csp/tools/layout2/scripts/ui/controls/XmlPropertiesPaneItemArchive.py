@@ -126,6 +126,9 @@ class ItemUpdaterECEF(ItemUpdaterSimple):
 	
 	def GetItemImage(self):
 		return 'ecef'
+	
+	def GetItemWindow(self, node):
+		return ItemVector(self.propertiesPane.tree, node)
 
 
 class ItemUpdaterLLA(ItemUpdaterSimple):

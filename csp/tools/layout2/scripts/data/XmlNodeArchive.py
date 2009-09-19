@@ -123,7 +123,6 @@ class XmlNodeContainer(XmlNodeArchive):
 						child.SetError( "%s.badType" % self.__class__.__name__, None )
 					elif isinstance(child, XmlNodePath):
 						child.SetError( "%s.badType" % self.__class__.__name__, None )
-						# TODO: check <Object> referenced by <Path>
 					else:
 						child.SetError( "%s.badType" % self.__class__.__name__, "This element must be of type <%s> or <%s>" % (XmlNodeObject.tag, XmlNodePath.tag) )
 			
@@ -261,6 +260,23 @@ class XmlNodeECEF(layout_module.XmlNodeECEF, XmlNodeSimple):
 	def __init__(self, parent, documentOwner, *args, **kwargs):
 		layout_module.XmlNodeECEF.__init__(self, *args, **kwargs)
 		XmlNodeSimple.__init__(self, parent, documentOwner, *args, **kwargs)
+	
+	def CheckErrors(self):
+		super(XmlNodeECEF, self).CheckErrors()
+		
+		ecef = csplib.ECEF()
+		try:
+			ecef.parseXML( self.GetText() )
+			self.SetError( "parseXML", None )
+		except csplib.ParseException, error:
+			self.SetError( "parseXML", error.getMessage() )
+			error.clear()
+	
+	def GetStringValues(self):
+		values = self.GetText().split(None, 2)
+		for index in range(len(values), 3):
+			values.append('')
+		return values
 
 
 class XmlNodeLLA(layout_module.XmlNodeLLA, XmlNodeSimple):
@@ -270,6 +286,17 @@ class XmlNodeLLA(layout_module.XmlNodeLLA, XmlNodeSimple):
 	def __init__(self, parent, documentOwner, *args, **kwargs):
 		layout_module.XmlNodeLLA.__init__(self, *args, **kwargs)
 		XmlNodeSimple.__init__(self, parent, documentOwner, *args, **kwargs)
+	
+	def CheckErrors(self):
+		super(XmlNodeLLA, self).CheckErrors()
+		
+		lla = csplib.LLA()
+		try:
+			lla.parseXML( self.GetText() )
+			self.SetError( "parseXML", None )
+		except csplib.ParseException, error:
+			self.SetError( "parseXML", error.getMessage() )
+			error.clear()
 
 
 class XmlNodeUTM(layout_module.XmlNodeUTM, XmlNodeSimple):
@@ -279,6 +306,17 @@ class XmlNodeUTM(layout_module.XmlNodeUTM, XmlNodeSimple):
 	def __init__(self, parent, documentOwner, *args, **kwargs):
 		layout_module.XmlNodeUTM.__init__(self, *args, **kwargs)
 		XmlNodeSimple.__init__(self, parent, documentOwner, *args, **kwargs)
+	
+	def CheckErrors(self):
+		super(XmlNodeUTM, self).CheckErrors()
+		
+		utm = csplib.UTM()
+		try:
+			utm.parseXML( self.GetText() )
+			self.SetError( "parseXML", None )
+		except csplib.ParseException, error:
+			self.SetError( "parseXML", error.getMessage() )
+			error.clear()
 
 
 class XmlNodeVector(layout_module.XmlNodeVector, XmlNodeSimple):
@@ -340,6 +378,17 @@ class XmlNodeQuat(layout_module.XmlNodeQuat, XmlNodeSimple):
 	def __init__(self, parent, documentOwner, *args, **kwargs):
 		layout_module.XmlNodeQuat.__init__(self, *args, **kwargs)
 		XmlNodeSimple.__init__(self, parent, documentOwner, *args, **kwargs)
+	
+	def CheckErrors(self):
+		super(XmlNodeQuat, self).CheckErrors()
+		
+		quat = csplib.Quat()
+		try:
+			quat.parseXML( self.GetText() )
+			self.SetError( "parseXML", None )
+		except csplib.ParseException, error:
+			self.SetError( "parseXML", error.getMessage() )
+			error.clear()
 
 
 class XmlNodeDate(layout_module.XmlNodeDate, XmlNodeSimple):
@@ -349,6 +398,17 @@ class XmlNodeDate(layout_module.XmlNodeDate, XmlNodeSimple):
 	def __init__(self, parent, documentOwner, *args, **kwargs):
 		layout_module.XmlNodeDate.__init__(self, *args, **kwargs)
 		XmlNodeSimple.__init__(self, parent, documentOwner, *args, **kwargs)
+	
+	def CheckErrors(self):
+		super(XmlNodeDate, self).CheckErrors()
+		
+		simDate = csplib.SimDate()
+		try:
+			simDate.parseXML( self.GetText() )
+			self.SetError( "parseXML", None )
+		except csplib.ParseException, error:
+			self.SetError( "parseXML", error.getMessage() )
+			error.clear()
 
 
 class XmlNodeEnum(layout_module.XmlNodeEnum, XmlNodeSimple):
@@ -381,7 +441,7 @@ class XmlNodeEnum(layout_module.XmlNodeEnum, XmlNodeSimple):
 		if not self.allowedValues or self.GetText() in self.allowedValues:
 			self.SetError( "parseXML", None )
 		else:
-			self.SetError( "parseXML", "The enumeration value must be chosen amongst: \n   * %s" % '\n   * '.join(self.allowedValues) )
+			self.SetError( "parseXML", "The enumeration value must be chosen amongst %s" % ', '.join(self.allowedValues) )
 
 
 class XmlNodeExternal(layout_module.XmlNodeExternal, XmlNodeSimple):
@@ -424,6 +484,10 @@ class XmlNodePath(layout_module.XmlNodePath, XmlNodeSimple):
 		
 		# If the subDocument can't be opened, contains the error message
 		self.loadError = None
+		
+		# A cache of the subDocument error counters
+		self.subDocumentErrorCount = 0
+		self.subDocumentChildrenErrorCount = 0
 	
 	def Dispose(self):
 		super(XmlNodePath, self).Dispose()
@@ -445,15 +509,23 @@ class XmlNodePath(layout_module.XmlNodePath, XmlNodeSimple):
 		try:
 			self.subDocument = documentRegistry.GetOrCreateDocument( self.documentOwner.DocumentFactory(fullName) )
 		except Exception, error:
-			self.loadError = "Cannot open xml file.\n" + str(error)
+			self.loadError = str(error)
 			return
 		self.subDocument.GetChangedSignal().Connect(self.on_SubDocumentChanged)
+		
+		self.UpdateSubDocumentErrorCount()
 	
 	def ReleaseSubDocument(self):
 		if self.subDocument is not None:
 			self.subDocument.GetChangedSignal().Disconnect(self.on_SubDocumentChanged)
 			wx.GetApp().GetDocumentRegistry().ReleaseDocument(self.subDocument)
 			self.subDocument = None
+			
+			self.ChangeChildrenErrorCount(-self.subDocumentErrorCount)
+			self.subDocumentErrorCount = 0
+			
+			self.ChangeChildrenErrorCount(-self.subDocumentChildrenErrorCount)
+			self.subDocumentChildrenErrorCount = 0
 	
 	def GetFullName(self):
 		if self.documentOwner.dotPath is None:
@@ -479,17 +551,61 @@ class XmlNodePath(layout_module.XmlNodePath, XmlNodeSimple):
 		return fullName + '.xml'
 	
 	def GetChildren(self):
-		if self.subDocument is not None:
-			yield self.subDocument.xmlNodeDocument
-		
 		for child in super(XmlNodePath, self).GetChildren():
 			yield child
+		
+		if self.subDocument is not None:
+			yield self.subDocument.xmlNodeDocument
 	
 	def CheckErrors(self):
 		super(XmlNodePath, self).CheckErrors()
+		
+		fullName = self.GetFullName()
+		if fullName is None:
+			self.SetError( "parseXML", "Invalid path" )
+		elif not os.path.exists(fullName):
+			self.SetError( "parseXML", 'The file "%s" does not exist' % fullName )
+		else:
+			self.SetError( "parseXML", None )
+		
+		if self.loadError is None:
+			self.SetError( "loadError", None )
+		else:
+			self.SetError( "loadError", 'Cannot open xml file "%s":\n%s' % (fullName, self.loadError) )
+		
+		if self.subDocument is None:
+			self.SetError( "BadClassAttribute", None )
+		else:
+			selfVariableType = self.GetSelfVariableType()
+			if not selfVariableType or selfVariableType[0] != 'type' or selfVariableType[1] != XmlNodeObject.variableType:
+				self.SetError( "BadClassAttribute", None )
+			else:
+				rootElement = self.subDocument.xmlNodeDocument.rootElement
+				if not isinstance(rootElement, XmlNodeObject):
+					self.SetError( "BadClassAttribute", None )
+				else:
+					errorMessage = 'Attribute class of root element of "%s" must be %s or a descendant' % (fullName, selfVariableType[2])
+					interface = rootElement.GetInterface()
+					if interface is None:
+						self.SetError( "BadClassAttribute", errorMessage )
+					elif interface.isAbstract():
+						self.SetError( "BadClassAttribute", 'Attribute class %s of root element of "%s" is abstract' % (rootElement.GetAttributeValue('class'), fullName) )
+					elif interface.isSubclass(selfVariableType[2]):
+						self.SetError( "BadClassAttribute", None )
+					else:
+						self.SetError( "BadClassAttribute", errorMessage )
 	
 	def on_SubDocumentChanged(self, subDocument):
-		pass
+		self.UpdateSubDocumentErrorCount()
+		self.CheckErrors()
+		self.IncrementChangeCount()
+	
+	def UpdateSubDocumentErrorCount(self):
+		self.ChangeChildrenErrorCount(len(self.subDocument.xmlNodeDocument.errors) - self.subDocumentErrorCount)
+		self.subDocumentErrorCount = len(self.subDocument.xmlNodeDocument.errors)
+		
+		self.ChangeChildrenErrorCount(self.subDocument.xmlNodeDocument.childrenErrorCount - self.subDocumentChildrenErrorCount)
+		self.subDocumentChildrenErrorCount = self.subDocument.xmlNodeDocument.childrenErrorCount
 
 
 class XmlNodeListTextItem(XmlNodeChild):

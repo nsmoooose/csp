@@ -12,11 +12,14 @@ class XmlObjectDocument(XmlDocument):
 		
 		# The root path of CSP Archive XML files
 		self.xmlPath = xmlPath
-		if self.xmlPath is not None:
-			self.xmlPath = os.path.abspath( self.xmlPath )
 		
 		# The relative dot path below xmlPath
 		self.dotPath = None
+		
+		if self.xmlPath is None:
+			return
+		
+		self.xmlPath = os.path.abspath( self.xmlPath )
 		filePath = os.path.abspath( self.GetFileName() )
 		if filePath.startswith(self.xmlPath):
 			filePath = filePath[len(self.xmlPath):]

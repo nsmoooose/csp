@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import wx
-from xml.dom import pulldom
+import xml.dom.pulldom
+import xml.dom.minidom
 
 from FileCommand import FileCommand
 from OpenUnknownXmlFileCommand import OpenUnknownXmlFileCommand
@@ -34,8 +35,16 @@ class OpenXmlFileCommand(FileCommand):
 		try:
 			rootObjectName = self.GetRootObjectName( self.GetFileName() )
 		except Exception, error:
+			loadError = str(error)
+			
+			# The error message from xml.dom.minidom is far better than from xml.dom.pulldom
+			try:
+				xml.dom.minidom.parse( self.GetFileName() )
+			except Exception, error:
+				loadError = str(error)
+			
 			wx.MessageDialog(wx.GetApp().GetTopWindow(),
-				"Cannot open xml file.\n" + str(error),
+				"Cannot open xml file.\n" + loadError,
 				"Error loading XML file",
 				style = wx.OK | wx.ICON_ERROR).ShowModal()
 			return
@@ -53,9 +62,9 @@ class OpenXmlFileCommand(FileCommand):
 		command.Execute()
 	
 	def GetRootObjectName(self, fileName):
-		events = pulldom.parse(fileName)
+		events = xml.dom.pulldom.parse(fileName)
 		for (event, node) in events:
-			if event == pulldom.START_ELEMENT:
+			if event == xml.dom.pulldom.START_ELEMENT:
 				if node.tagName == "Object":
 					return node.getAttribute("class")
 				else:

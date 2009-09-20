@@ -31,7 +31,7 @@ class XmlWindow(wx.stc.StyledTextCtrl):
 		return self.document
 	
 	def on_DocumentChanged(self, document):
-		fullText = document.xmlNodeDocument.domNode.toprettyxml()
+		fullText = document.GetXmlNodeDocument().domNode.toprettyxml()
 		
 		# Remove empty lines
 		lines = []

@@ -56,8 +56,11 @@ class XmlPropertiesPane(FilePropertiesPane):
 			]
 		
 		self.on_DocumentChanged(self.document)
+		self.RestoreTreeItemsState( self.root, self.document.viewData.get('XmlPropertiesPane', {}) )
 	
 	def Dispose(self):
+		self.document.viewData['XmlPropertiesPane'] = self.SaveTreeItemsState(self.root)
+		
 		self.document.GetChangedSignal().Disconnect(self.on_DocumentChanged)
 		wx.GetApp().GetDocumentRegistry().ReleaseDocument(self.document)
 		self.document = None
@@ -100,15 +103,19 @@ class XmlPropertiesPane(FilePropertiesPane):
 		}
 	
 	def on_DocumentChanged(self, document):
+		self.tree.Freeze()
 		self.UpdateItem(self.root)
+		self.tree.Thaw()
 	
 	def on_TreeItemExpanding(self, event):
+		self.tree.Freeze()
 		item = event.GetItem()
 		node = item.xmlNode
 		for itemUpdater in self.itemUpdaters:
 			if isinstance(node, itemUpdater.NodeClass):
 				itemUpdater.ItemExpanding(item)
 				break
+		self.tree.Thaw()
 	
 	def UpdateItem(self, item):
 		node = item.xmlNode
@@ -122,3 +129,51 @@ class XmlPropertiesPane(FilePropertiesPane):
 		item.xmlChangeCount = -1
 		item.xmlChildrenChangeCount = -1
 		item.level = level
+	
+	def SaveTreeItemsState(self, item):
+		childrenState = {}
+		for child in self.GetItemChildren(item):
+			itemState = ItemState()
+			if self.tree.IsSelected(child):
+				itemState.isSelected = True
+			if self.tree.IsExpanded(child):
+				itemState.isExpanded = True
+				itemState.childrenState = self.SaveTreeItemsState(child)
+			if itemState.HasNonDefaultValue():
+				childrenState[child.xmlNode] = itemState
+		return childrenState
+	
+	def RestoreTreeItemsState(self, item, childrenState):
+		for child in self.GetItemChildren(item):
+			if child.xmlNode in childrenState:
+				itemState = childrenState[child.xmlNode]
+				if itemState.isSelected:
+					self.SelectItem(child)
+				if itemState.isExpanded:
+					self.tree.Expand(child)
+					self.RestoreTreeItemsState(child, itemState.childrenState)
+	
+	def GetItemChildren(self, item):
+		child, unused = self.tree.GetFirstChild(item)
+		while child is not None:
+			yield child
+			child = self.tree.GetNextSibling(child)
+	
+	def SelectItem(self, item):
+		# Workaround for a refresh bug in wx.lib.customtreectrl.CustomTreeCtrl.EnsureVisible
+		self.GetSizer().Hide(self.tree)
+		
+		self.tree.EnsureVisible(item)
+		self.tree.SelectItem(item)
+		
+		self.GetSizer().Show(self.tree)
+		self.GetSizer().Layout()
+
+class ItemState(object):
+	def __init__(self):
+		self.isSelected = False
+		self.isExpanded = False
+		self.childrenState = {}
+	
+	def HasNonDefaultValue(self):
+		return self.isSelected or self.isExpanded

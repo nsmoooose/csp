@@ -139,7 +139,7 @@ class ItemUpdaterWithChildren(ItemUpdater):
 		
 		# Remove unused items
 		itemsToRemove = []
-		for itemChild in self.GetItemChildren(item):
+		for itemChild in self.propertiesPane.GetItemChildren(item):
 			if itemChild.xmlNode not in nodeChildren:
 				itemsToRemove.append(itemChild)
 		
@@ -176,14 +176,8 @@ class ItemUpdaterWithChildren(ItemUpdater):
 		self.propertiesPane.InitItemForXmlNode(item, xmlNode, parentItem.level + 1)
 		return item
 	
-	def GetItemChildren(self, item):
-		child, unused = self.propertiesPane.tree.GetFirstChild(item)
-		while child is not None:
-			yield child
-			child = self.propertiesPane.tree.GetNextSibling(child)
-	
 	def UpdateChildren(self, item):
-		for itemChild in self.GetItemChildren(item):
+		for itemChild in self.propertiesPane.GetItemChildren(item):
 			self.propertiesPane.UpdateItem(itemChild)
 	
 	def GetErrorMessage(self, node):

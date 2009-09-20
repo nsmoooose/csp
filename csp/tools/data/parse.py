@@ -427,7 +427,6 @@ class KeyHandler(SimpleHandler):
 class _LUTHandler(SimpleHandler):
 	handlers = {
 		"Values"       : FloatListHandler,
-		"Method"       : StringHandler,
 	}
 
 	members = handlers.keys()

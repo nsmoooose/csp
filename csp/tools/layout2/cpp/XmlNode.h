@@ -16,6 +16,8 @@ class XmlNode : public Referenced
 	public:
 		XmlNode();
 		virtual ~XmlNode();
+
+		static unsigned int nbInstances;
 };
 
 class XmlNodeDocument : public XmlNode
@@ -111,6 +113,11 @@ class XmlNodeExternal : public XmlNodeElement
 };
 
 class XmlNodeKey : public XmlNodeElement
+{
+	public:
+};
+
+class XmlNodeLUT : public XmlNodeElement
 {
 	public:
 };

@@ -253,6 +253,47 @@ class ItemUpdaterListTextItemKey(ItemUpdaterKeyData, ItemUpdaterListTextItem):
 	NodeClass = XmlNodeArchive.XmlNodeListTextItemKey
 
 
+class ItemUpdaterLUT(ItemUpdaterNodeArchive):
+	def GetItemImage(self):
+		return 'lut'
+
+
+class ItemUpdaterTable1(ItemUpdaterLUT):
+	NodeClass = XmlNodeArchive.XmlNodeTable1
+
+
+class ItemUpdaterTable2(ItemUpdaterLUT):
+	NodeClass = XmlNodeArchive.XmlNodeTable2
+
+
+class ItemUpdaterTable3(ItemUpdaterLUT):
+	NodeClass = XmlNodeArchive.XmlNodeTable3
+
+
+class ItemUpdaterBreaks(ItemUpdaterNodeArchive):
+	def GetItemImage(self):
+		return 'list'
+
+
+class ItemUpdaterBreaks0(ItemUpdaterBreaks):
+	NodeClass = XmlNodeArchive.XmlNodeBreaks0
+
+
+class ItemUpdaterBreaks1(ItemUpdaterBreaks):
+	NodeClass = XmlNodeArchive.XmlNodeBreaks1
+
+
+class ItemUpdaterBreaks2(ItemUpdaterBreaks):
+	NodeClass = XmlNodeArchive.XmlNodeBreaks2
+
+
+class ItemUpdaterValues(ItemUpdaterNodeArchive):
+	NodeClass = XmlNodeArchive.XmlNodeValues
+	
+	def GetItemImage(self):
+		return 'list'
+
+
 class ItemUpdaterPath(ItemUpdaterSimple):
 	NodeClass = XmlNodeArchive.XmlNodePath
 	

@@ -29,6 +29,13 @@ class XmlNodeArchiveFactory(XmlNodeFactory):
 				XmlNodeEnum,
 				XmlNodeExternal,
 				XmlNodeKey,
+				XmlNodeTable1,
+				XmlNodeTable2,
+				XmlNodeTable3,
+				XmlNodeBreaks0,
+				XmlNodeBreaks1,
+				XmlNodeBreaks2,
+				XmlNodeValues,
 				XmlNodePath,
 				XmlNodeList,
 				XmlNodeObject,
@@ -110,6 +117,13 @@ class XmlNodeContainer(XmlNodeArchive):
 				XmlNodeEnum,
 				XmlNodeExternal,
 				XmlNodeKey,
+				XmlNodeTable1,
+				XmlNodeTable2,
+				XmlNodeTable3,
+				XmlNodeBreaks0,
+				XmlNodeBreaks1,
+				XmlNodeBreaks2,
+				XmlNodeValues,
 				XmlNodePath,
 				]:
 				if childVariableType == NodeClass.variableType:
@@ -469,6 +483,57 @@ class XmlNodeKey(layout_module.XmlNodeKey, XmlNodeKeyData, XmlNodeSimple):
 	def CheckErrors(self):
 		XmlNodeKeyData.CheckErrors(self)
 		XmlNodeSimple.CheckErrors(self)
+
+
+class XmlNodeLUT(layout_module.XmlNodeLUT, XmlNodeArchive):
+	def __init__(self, parent, documentOwner, *args, **kwargs):
+		layout_module.XmlNodeLUT.__init__(self, *args, **kwargs)
+		XmlNodeArchive.__init__(self, parent, documentOwner, *args, **kwargs)
+
+
+class XmlNodeTable1(XmlNodeLUT):
+	tag = 'Table1'
+	variableType = 'LUT<1>'
+
+
+class XmlNodeTable2(XmlNodeLUT):
+	tag = 'Table2'
+	variableType = 'LUT<2>'
+
+
+class XmlNodeTable3(XmlNodeLUT):
+	tag = 'Table3'
+	variableType = 'LUT<3>'
+
+
+class XmlNodeBreaks(XmlNodeArchive):
+	def __init__(self, parent, documentOwner, *args, **kwargs):
+		layout_module.XmlNodeElement.__init__(self, *args, **kwargs)
+		XmlNodeArchive.__init__(self, parent, documentOwner, *args, **kwargs)
+
+
+class XmlNodeBreaks0(XmlNodeBreaks):
+	tag = 'Breaks0'
+	variableType = ''
+
+
+class XmlNodeBreaks1(XmlNodeBreaks):
+	tag = 'Breaks1'
+	variableType = ''
+
+
+class XmlNodeBreaks2(XmlNodeBreaks):
+	tag = 'Breaks2'
+	variableType = ''
+
+
+class XmlNodeValues(XmlNodeArchive):
+	tag = 'Values'
+	variableType = ''
+	
+	def __init__(self, parent, documentOwner, *args, **kwargs):
+		layout_module.XmlNodeElement.__init__(self, *args, **kwargs)
+		XmlNodeArchive.__init__(self, parent, documentOwner, *args, **kwargs)
 
 
 class XmlNodePath(layout_module.XmlNodePath, XmlNodeSimple):

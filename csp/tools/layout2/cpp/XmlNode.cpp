@@ -8,53 +8,55 @@ namespace layout
 
 // Pure XML Nodes:
 
+unsigned int XmlNode::nbInstances = 0;
+
 XmlNode::XmlNode()
 {
+	++nbInstances;
+	//std::cout << "XmlNode::nbInstances = " << nbInstances << std::endl;
 }
 
 XmlNode::~XmlNode()
 {
+	--nbInstances;
+	//std::cout << "XmlNode::nbInstances = " << nbInstances << std::endl;
 }
 
 
 XmlNodeDocument::XmlNodeDocument()
 {
-	std::cout << "XmlNodeDocument::XmlNodeDocument()" << std::endl;
+	//std::cout << "XmlNodeDocument::XmlNodeDocument()" << std::endl;
 }
 
 XmlNodeDocument::~XmlNodeDocument()
 {
-	std::cout << "XmlNodeDocument::~XmlNodeDocument()" << std::endl;
+	//std::cout << "XmlNodeDocument::~XmlNodeDocument()" << std::endl;
 }
 
 
 XmlNodeElement::XmlNodeElement()
 {
-	std::cout << "XmlNodeElement::XmlNodeElement()" << std::endl;
 }
 
 XmlNodeElement::~XmlNodeElement()
 {
-	std::cout << "XmlNodeElement::~XmlNodeElement()" << std::endl;
 }
 
 
-// csplib builtin data archive Nodes:
+// csplib archive builtin data Nodes:
 
 
-// csplib simple type data archive Nodes:
+// csplib archive simple type data Nodes:
 
 
-// csplib Object type data archive Node:
+// csplib archive Object type data Node:
 
 XmlNodeObject::XmlNodeObject()
 {
-	std::cout << "XmlNodeObject::XmlNodeObject()" << std::endl;
 }
 
 XmlNodeObject::~XmlNodeObject()
 {
-	std::cout << "XmlNodeObject::~XmlNodeObject()" << std::endl;
 }
 
 } // namespace layout

@@ -18,11 +18,11 @@ class XmlNodeFactory(object):
 		if domNode.nodeType == domNode.ELEMENT_NODE:
 			return XmlNodeElement(parent, self.documentOwner)
 		elif domNode.nodeType == domNode.TEXT_NODE or domNode.nodeType == domNode.CDATA_SECTION_NODE:
-			return XmlNodeText(parent)
+			return XmlNodeText(parent, self.documentOwner)
 		elif domNode.nodeType == domNode.COMMENT_NODE:
-			return XmlNodeComment(parent)
+			return XmlNodeComment(parent, self.documentOwner)
 		elif domNode.nodeType == domNode.ATTRIBUTE_NODE:
-			return XmlNodeAttribute(parent)
+			return XmlNodeAttribute(parent, self.documentOwner)
 		else:
 			raise UnknownXmlNode()
 
@@ -130,6 +130,8 @@ class XmlNodeDocument(layout_module.XmlNodeDocument):
 	
 	def ChangeChildrenErrorCount(self, childErrorCount):
 		self.childrenErrorCount += childErrorCount
+		if childErrorCount != 0:
+			self.IncrementChangeCount()
 	
 	def Save(self, fileName):
 		if self.domNode is not None:
@@ -160,9 +162,12 @@ class XmlNodeDocument(layout_module.XmlNodeDocument):
 
 
 class XmlNodeChild(object):
-	def __init__(self, parent):
+	def __init__(self, parent, documentOwner):
 		# The XmlNode parent
 		self.parent = parent
+		
+		# The XmlObjectDocument that own this node
+		self.documentOwner = documentOwner
 		
 		# Incremented each time a change is made on this node
 		self.changeCount = 0
@@ -210,10 +215,7 @@ class XmlNodeElement(layout_module.XmlNodeElement, XmlNodeChild):
 	def __init__(self, parent, documentOwner, *args, **kwargs):
 		if ( type(self) is XmlNodeElement ):
 			layout_module.XmlNodeElement.__init__(self, *args, **kwargs)
-		XmlNodeChild.__init__(self, parent)
-		
-		# The XmlObjectDocument that own this node
-		self.documentOwner = documentOwner
+		XmlNodeChild.__init__(self, parent, documentOwner)
 		
 		# The xml.dom.Element
 		self.domNode = None
@@ -330,6 +332,8 @@ class XmlNodeElement(layout_module.XmlNodeElement, XmlNodeChild):
 	def ChangeChildrenErrorCount(self, childErrorCount):
 		self.childrenErrorCount += childErrorCount
 		self.parent.ChangeChildrenErrorCount(childErrorCount)
+		if childErrorCount != 0:
+			self.IncrementChangeCount()
 	
 	def Rename(self, newName):
 		if self.domNode.tagName == newName:
@@ -370,9 +374,9 @@ class XmlNodeElement(layout_module.XmlNodeElement, XmlNodeChild):
 
 
 class XmlNodeData(layout_module.XmlNode, XmlNodeChild):
-	def __init__(self, parent, *args, **kwargs):
+	def __init__(self, parent, documentOwner, *args, **kwargs):
 		layout_module.XmlNode.__init__(self, *args, **kwargs)
-		XmlNodeChild.__init__(self, parent)
+		XmlNodeChild.__init__(self, parent, documentOwner)
 		
 		# The xml.dom.Text or xml.dom.Comment
 		self.domNode =  None
@@ -390,6 +394,11 @@ class XmlNodeData(layout_module.XmlNode, XmlNodeChild):
 	
 	def GetText(self):
 		return self.text
+	
+	def SetText(self, newText):
+		self.domNode.data = newText
+		self.StripText()
+		self.IncrementChangeCount()
 
 
 class XmlNodeText(XmlNodeData):
@@ -407,9 +416,9 @@ class XmlNodeComment(XmlNodeData):
 
 
 class XmlNodeAttribute(layout_module.XmlNode, XmlNodeChild):
-	def __init__(self, parent, *args, **kwargs):
+	def __init__(self, parent, documentOwner, *args, **kwargs):
 		layout_module.XmlNode.__init__(self, *args, **kwargs)
-		XmlNodeChild.__init__(self, parent)
+		XmlNodeChild.__init__(self, parent, documentOwner)
 		
 		# The xml.dom.Attr
 		self.domNode =  None
@@ -422,3 +431,7 @@ class XmlNodeAttribute(layout_module.XmlNode, XmlNodeChild):
 	
 	def GetValue(self):
 		return str(self.domNode.nodeValue)
+	
+	def SetValue(self, newValue):
+		self.domNode.nodeValue = newValue
+		self.IncrementChangeCount()

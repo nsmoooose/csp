@@ -63,6 +63,30 @@ class XmlNodeArchive(XmlNodeElement):
 				texts.append( child.GetText() )
 		return '\n'.join(texts)
 	
+	def SetText(self, newText):
+		# Set and keep only the first XmlNodeText
+		textNodes = []
+		for child in self.childNodes:
+			if isinstance(child, XmlNodeText):
+				textNodes.append(child)
+		
+		for child in textNodes[1:]:
+			del self.childNodes[ self.childNodes.index(child) ]
+			self.domNode.removeChild( child.domNode )
+			child.Dispose()
+		
+		if textNodes:
+			textNodes[0].SetText(newText)
+		else:
+			newDomNode = self.documentOwner.GetXmlNodeDocument().domNode.createTextNode(newText)
+			self.domNode.appendChild(newDomNode)
+			newChild = self.documentOwner.NodeFactory().CreateXmlNode(self, newDomNode)
+			self.childNodes.append(newChild)
+			newChild.Load(newDomNode)
+		
+		self.CheckErrors()
+		self.IncrementChangeCount()
+	
 	def GetSelfVariableType(self):
 		if isinstance(self.parent, XmlNodeContainer):
 			return self.parent.GetChildVariableType(self)
@@ -663,7 +687,8 @@ class XmlNodePath(layout_module.XmlNodePath, XmlNodeSimple):
 	def on_SubDocumentChanged(self, subDocument):
 		self.UpdateSubDocumentErrorCount()
 		self.CheckErrors()
-		self.IncrementChangeCount()
+		self.IncrementChildrenChangeCount()
+		self.documentOwner.EmitChangedSignal()
 	
 	def UpdateSubDocumentErrorCount(self):
 		self.ChangeChildrenErrorCount(len(self.subDocument.xmlNodeDocument.errors) - self.subDocumentErrorCount)
@@ -674,8 +699,8 @@ class XmlNodePath(layout_module.XmlNodePath, XmlNodeSimple):
 
 
 class XmlNodeListTextItem(XmlNodeChild):
-	def __init__(self, parent, value):
-		XmlNodeChild.__init__(self, parent)
+	def __init__(self, parent, documentOwner, value):
+		XmlNodeChild.__init__(self, parent, documentOwner)
 		self.value = value
 	
 	def GetChildren(self):
@@ -683,6 +708,14 @@ class XmlNodeListTextItem(XmlNodeChild):
 	
 	def GetText(self):
 		return self.value
+	
+	def SetText(self, newText):
+		newValue = newText.split()
+		if newValue:
+			self.value = newValue[0]
+			self.parent.TextItemHasChanged()
+			self.CheckErrors()
+			self.IncrementChangeCount()
 
 
 class XmlNodeListTextItemInt(XmlNodeIntData, XmlNodeListTextItem):
@@ -752,7 +785,7 @@ class XmlNodeList(layout_module.XmlNodeList, XmlNodeContainer):
 				if typeAttributeValue == ItemClass.type:
 					self.TextItemClass = ItemClass
 					for value in self.GetText().split():
-						item = ItemClass(self, value)
+						item = ItemClass(self, self.documentOwner, value)
 						self.textItems.append(item)
 						item.CheckErrors()
 					break
@@ -827,6 +860,9 @@ class XmlNodeList(layout_module.XmlNodeList, XmlNodeContainer):
 	
 	def GetChildScalarPrototype(self, child):
 		return self.GetSelfScalarPrototype()
+	
+	def TextItemHasChanged(self):
+		self.SetText( '\n'.join([textItem.GetText() for textItem in self.textItems]) )
 
 
 class XmlNodeObject(layout_module.XmlNodeObject, XmlNodeContainer):

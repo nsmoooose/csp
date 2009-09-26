@@ -42,6 +42,3 @@ class CheckCommand(Command):
 		tool = Command.AppendInToolBar(self, parent, toolbar, controlId)
 		toolbar.ToggleTool( controlId, self.checked )
 		return tool
-	
-	def Execute(self):
-		pass

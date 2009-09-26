@@ -11,14 +11,14 @@ class SceneDocument(FileDocument):
 		
 	def SetRootNode(self, node):
 		self.node = node
-		self.GetChangedSignal().Emit(self)
+		self.EmitChangedSignal()
 		
 	def GetRootNode(self):
 		return self.node
 
 	def Clear(self):
 		self.node = None
-		self.GetChangedSignal().Emit(self)
+		self.EmitChangedSignal()
 
 
 class SceneDocumentFactory():

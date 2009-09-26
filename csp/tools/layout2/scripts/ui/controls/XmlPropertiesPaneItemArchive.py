@@ -7,6 +7,7 @@ from AutoFitTextCtrl import AutoFitTextCtrl
 from ...data.XmlNode import XmlNodeText
 from ...data.XmlNode import XmlNodeAttribute
 from ...data import XmlNodeArchive
+from ..commands.ModifyXmlCommand import ModifyXmlDataCommand
 
 class ItemUpdaterListTextItem(ItemUpdaterWithoutChildren):
 	def UpdateLocalChanges(self, item):
@@ -14,7 +15,7 @@ class ItemUpdaterListTextItem(ItemUpdaterWithoutChildren):
 			self.SetItemImage( item, self.GetItemImage() )
 			self.propertiesPane.tree.SetItemText( item, self.GetItemText(item.xmlNode) )
 		
-		self.SetItemWindow( item, self.GetItemWindow(item.xmlNode) )
+		self.SetItemWindow( item, self.GetItemWindow(item.xmlNode), self.GetModifyWindow(item.xmlNode) )
 	
 	def GetItemImage(self):
 		return ''
@@ -24,6 +25,9 @@ class ItemUpdaterListTextItem(ItemUpdaterWithoutChildren):
 	
 	def GetItemWindow(self, node):
 		return AutoFitTextCtrl(self.propertiesPane.tree, node.GetText(), style = wx.TE_READONLY)
+	
+	def GetModifyWindow(self, node):
+		return ModifyWindowSimple
 
 
 class ItemUpdaterNodeArchive(ItemUpdaterElement):
@@ -52,11 +56,23 @@ class ItemUpdaterSimple(ItemUpdaterNodeArchive):
 	def GetItemWindow(self, node):
 		return AutoFitTextCtrl(self.propertiesPane.tree, node.GetText(), style = wx.TE_READONLY)
 	
+	def GetModifyWindow(self, node):
+		return ModifyWindowSimple
+	
 	def GetNodeChildren(self, node):
 		for child in super(ItemUpdaterSimple, self).GetNodeChildren(node):
 			if isinstance(child, XmlNodeText):
 				continue
 			yield child
+
+
+class ModifyWindowSimple(wx.TextCtrl):
+	def __init__(self, parent, node):
+		wx.TextCtrl.__init__(self, parent, value = node.GetText(), style = wx.TE_MULTILINE | wx.TE_DONTWRAP)
+		self.node = node
+	
+	def GetCommand(self):
+		return ModifyXmlDataCommand( self.node, self.GetValue() )
 
 
 class ItemUpdaterString(ItemUpdaterSimple):
@@ -79,7 +95,21 @@ class ItemUpdaterBool(ItemUpdaterSimple):
 		if value not in choices:
 			value = text
 			choices.append( value )
-		return wx.ComboBox(self.propertiesPane.tree, value = value, choices = choices, style = wx.CB_READONLY)
+		itemWindow = wx.ComboBox(self.propertiesPane.tree, value = value, choices = choices, style = wx.CB_READONLY)
+		itemWindow.Bind(wx.EVT_COMBOBOX, ComboBoxHandler(node).onCombobox)
+		return itemWindow
+	
+	def GetModifyWindow(self, node):
+		return None
+
+
+class ComboBoxHandler(object):
+	def __init__(self, node):
+		self.node = node
+	
+	def onCombobox(self, event):
+		command = ModifyXmlDataCommand( self.node, event.GetString() )
+		wx.CallLater(1, command.Execute)
 
 
 class ItemUpdaterIntData(object):
@@ -128,7 +158,10 @@ class ItemUpdaterECEF(ItemUpdaterSimple):
 		return 'ecef'
 	
 	def GetItemWindow(self, node):
-		return ItemVector(self.propertiesPane.tree, node)
+		return ItemWindowMatrix(self.propertiesPane.tree, node, 1, 3)
+	
+	def GetModifyWindow(self, node):
+		return ModifyWindowVector
 
 
 class ItemUpdaterLLA(ItemUpdaterSimple):
@@ -152,31 +185,43 @@ class ItemUpdaterVector(ItemUpdaterSimple):
 		return 'vector'
 	
 	def GetItemWindow(self, node):
-		return ItemVector(self.propertiesPane.tree, node)
+		return ItemWindowMatrix(self.propertiesPane.tree, node, 1, 3)
+	
+	def GetModifyWindow(self, node):
+		return ModifyWindowVector
 
 
-class ItemVector(wx.Panel):
-	def __init__(self, parent, node, *args, **kwargs):
-		wx.Panel.__init__(self, parent, *args, **kwargs)
+class ModifyWindowMatrixGeneric(wx.Panel):
+	def __init__(self, parent, node):
+		wx.Panel.__init__(self, parent)
+		self.node = node
 		
-		self.SetOwnBackgroundColour( parent.GetBackgroundColour() )
+		sizer = wx.GridSizer( rows = self.GetRows(), cols = self.GetCols() )
+		self.SetSizer(sizer)
 		
-		editSizer = wx.BoxSizer(wx.HORIZONTAL)
-		self.SetSizer(editSizer)
-		
-		editBitmap = wx.ArtProvider.GetBitmap('pencil', size = (16, 16))
-		editButton = wx.BitmapButton(self, bitmap = editBitmap)
-		editSizer.AddF( editButton, wx.SizerFlags().Center() )
-		editSizer.AddSpacer(5)
-		
-		vectorSizer = wx.GridSizer(rows = 0, cols = 3)
-		editSizer.AddF( vectorSizer, wx.SizerFlags().Center() )
+		self.textCtrl = []
 		
 		for value in node.GetStringValues():
-			textCtrl = AutoFitTextCtrl(self, value, style = wx.TE_READONLY)
-			vectorSizer.AddF( textCtrl, wx.SizerFlags().Expand() )
-		
-		self.Fit()
+			textCtrl = wx.TextCtrl( self, value = value )
+			sizer.AddF( textCtrl, wx.SizerFlags().Expand() )
+			self.textCtrl.append( textCtrl )
+	
+	def GetCommand(self):
+		textRows = []
+		for row in range( self.GetRows() ):
+			textCols = []
+			for cols in range( self.GetCols() ):
+				textCols.append( self.textCtrl[ row * self.GetCols() + cols ].GetValue() )
+			textRows.append( ' '.join(textCols) )
+		return ModifyXmlDataCommand( self.node, '\n'.join(textRows) )
+
+
+class ModifyWindowVector(ModifyWindowMatrixGeneric):
+	def GetRows(self):
+		return 1
+	
+	def GetCols(self):
+		return 3
 
 
 class ItemUpdaterMatrix(ItemUpdaterSimple):
@@ -186,16 +231,19 @@ class ItemUpdaterMatrix(ItemUpdaterSimple):
 		return 'matrix'
 	
 	def GetItemWindow(self, node):
-		return ItemMatrix(self.propertiesPane.tree, node)
+		return ItemWindowMatrix(self.propertiesPane.tree, node, 3, 3)
+	
+	def GetModifyWindow(self, node):
+		return ModifyWindowMatrix
 
 
-class ItemMatrix(wx.Panel):
-	def __init__(self, parent, node, *args, **kwargs):
+class ItemWindowMatrix(wx.Panel):
+	def __init__(self, parent, node, rows, cols, *args, **kwargs):
 		wx.Panel.__init__(self, parent, *args, **kwargs)
 		
 		self.SetOwnBackgroundColour( parent.GetBackgroundColour() )
 		
-		sizer = wx.GridSizer(rows = 3, cols = 3)
+		sizer = wx.GridSizer(rows = rows, cols = cols)
 		self.SetSizer(sizer)
 		
 		for value in node.GetStringValues():
@@ -203,6 +251,14 @@ class ItemMatrix(wx.Panel):
 			sizer.AddF( textCtrl, wx.SizerFlags().Expand() )
 		
 		self.Fit()
+
+
+class ModifyWindowMatrix(ModifyWindowMatrixGeneric):
+	def GetRows(self):
+		return 3
+	
+	def GetCols(self):
+		return 3
 
 
 class ItemUpdaterQuat(ItemUpdaterSimple):
@@ -230,7 +286,12 @@ class ItemUpdaterEnum(ItemUpdaterSimple):
 		value = node.GetText()
 		if value not in choices:
 			choices.append( value )
-		return wx.ComboBox(self.propertiesPane.tree, value = value, choices = choices, style = wx.CB_READONLY)
+		itemWindow = wx.ComboBox(self.propertiesPane.tree, value = value, choices = choices, style = wx.CB_READONLY)
+		itemWindow.Bind(wx.EVT_COMBOBOX, ComboBoxHandler(node).onCombobox)
+		return itemWindow
+	
+	def GetModifyWindow(self, node):
+		return None
 
 
 class ItemUpdaterExternal(ItemUpdaterSimple):
@@ -299,6 +360,9 @@ class ItemUpdaterPath(ItemUpdaterSimple):
 	
 	def GetItemImage(self):
 		return 'path'
+	
+	def GetModifyWindow(self, node):
+		return None
 
 
 class ItemUpdaterList(ItemUpdaterNodeArchive):

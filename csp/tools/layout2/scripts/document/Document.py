@@ -32,6 +32,9 @@ class Document:
 	
 	def GetChangedSignal(self):
 		return self.changedSignal
+	
+	def EmitChangedSignal(self):
+		self.changedSignal.Emit(self)
 
 	def Dispose(self):
 		self.changedSignal.Dispose()

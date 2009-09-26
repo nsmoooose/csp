@@ -21,14 +21,14 @@ class OutputDocument(Document):
 
 	def WriteLine(self, text):
 		self.lines.append(text)
-		self.GetChangedSignal().Emit(self)
+		self.EmitChangedSignal()
 
 	def GetLines(self):
 		return self.lines
 
 	def Clear(self):
 		self.lines = []
-		self.GetChangedSignal().Emit(self)
+		self.EmitChangedSignal()
 
 
 class OutputDocumentFactory():

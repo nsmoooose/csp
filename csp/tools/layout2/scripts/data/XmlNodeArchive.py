@@ -46,6 +46,9 @@ class XmlNodeArchiveFactory(XmlNodeFactory):
 		return super(XmlNodeArchiveFactory, self).CreateXmlNode(parent, domNode)
 
 class XmlNodeObjectDocument(XmlNodeDocument):
+	def LoadDependencies(self):
+		self.rootElement.LoadDependencies()
+	
 	def CheckErrors(self):
 		super(XmlNodeObjectDocument, self).CheckErrors()
 		
@@ -71,7 +74,7 @@ class XmlNodeArchive(XmlNodeElement):
 				textNodes.append(child)
 		
 		for child in textNodes[1:]:
-			del self.childNodes[ self.childNodes.index(child) ]
+			self.childNodes.remove( child )
 			self.domNode.removeChild( child.domNode )
 			child.Dispose()
 		
@@ -577,12 +580,20 @@ class XmlNodePath(layout_module.XmlNodePath, XmlNodeSimple):
 		# A cache of the subDocument error counters
 		self.subDocumentErrorCount = 0
 		self.subDocumentChildrenErrorCount = 0
+		
+		# Protects on_SubDocumentChanged from being called recursively when in a dependency cycle
+		self.subDocumentChangedInProgress = False
 	
 	def Dispose(self):
 		super(XmlNodePath, self).Dispose()
 		self.ReleaseSubDocument()
 	
-	def PostLoad(self):
+	def LoadDependencies(self):
+		super(XmlNodePath, self).LoadDependencies()
+		self.LoadLocalDependencies()
+		self.CheckErrors()
+	
+	def LoadLocalDependencies(self):
 		self.ReleaseSubDocument()
 		self.loadError = None
 		
@@ -596,18 +607,19 @@ class XmlNodePath(layout_module.XmlNodePath, XmlNodeSimple):
 		# Get the document from the DocumentRegistry
 		documentRegistry = wx.GetApp().GetDocumentRegistry()
 		try:
-			self.subDocument = documentRegistry.GetOrCreateDocument( self.documentOwner.DocumentFactory(fullName) )
+			self.subDocument = documentRegistry.GetOrCreateDocument( self.documentOwner.DocumentFactory(fullName), self.documentOwner )
 		except Exception, error:
 			self.loadError = str(error)
 			return
-		self.subDocument.GetChangedSignal().Connect(self.on_SubDocumentChanged)
 		
+		self.subDocument.GetChangedSignal().Connect(self.on_SubDocumentChanged)
 		self.UpdateSubDocumentErrorCount()
 	
 	def ReleaseSubDocument(self):
 		if self.subDocument is not None:
-			self.subDocument.GetChangedSignal().Disconnect(self.on_SubDocumentChanged)
-			wx.GetApp().GetDocumentRegistry().ReleaseDocument(self.subDocument)
+			if self.subDocument.GetChangedSignal() is not None:
+				self.subDocument.GetChangedSignal().Disconnect(self.on_SubDocumentChanged)
+			wx.GetApp().GetDocumentRegistry().ReleaseDocument(self.subDocument, self.documentOwner)
 			self.subDocument = None
 			
 			self.ChangeChildrenErrorCount(-self.subDocumentErrorCount)
@@ -662,6 +674,11 @@ class XmlNodePath(layout_module.XmlNodePath, XmlNodeSimple):
 		else:
 			self.SetError( "loadError", 'Cannot open xml file "%s":\n%s' % (fullName, self.loadError) )
 		
+		if self.inDependencyCycle():
+			self.SetError( "DependencyCycle", 'Dependency cycles are not allowed in <%s>' % self.tag )
+		else:
+			self.SetError( "DependencyCycle", None )
+		
 		if self.subDocument is None:
 			self.SetError( "BadClassAttribute", None )
 		else:
@@ -685,17 +702,38 @@ class XmlNodePath(layout_module.XmlNodePath, XmlNodeSimple):
 						self.SetError( "BadClassAttribute", errorMessage )
 	
 	def on_SubDocumentChanged(self, subDocument):
-		self.UpdateSubDocumentErrorCount()
-		self.CheckErrors()
-		self.IncrementChildrenChangeCount()
-		self.documentOwner.EmitChangedSignal()
+		if not self.subDocumentChangedInProgress:
+			self.subDocumentChangedInProgress = True
+			self.UpdateSubDocumentErrorCount()
+			self.CheckErrors()
+			self.IncrementChildrenChangeCount()
+			self.documentOwner.EmitChangedSignal()
+			self.subDocumentChangedInProgress = False
 	
 	def UpdateSubDocumentErrorCount(self):
-		self.ChangeChildrenErrorCount(len(self.subDocument.xmlNodeDocument.errors) - self.subDocumentErrorCount)
-		self.subDocumentErrorCount = len(self.subDocument.xmlNodeDocument.errors)
-		
-		self.ChangeChildrenErrorCount(self.subDocument.xmlNodeDocument.childrenErrorCount - self.subDocumentChildrenErrorCount)
-		self.subDocumentChildrenErrorCount = self.subDocument.xmlNodeDocument.childrenErrorCount
+		if self.inDependencyCycle():
+			self.ChangeChildrenErrorCount(-self.subDocumentErrorCount)
+			self.subDocumentErrorCount = 0
+			
+			self.ChangeChildrenErrorCount(-self.subDocumentChildrenErrorCount)
+			self.subDocumentChildrenErrorCount = 0
+		else:
+			self.ChangeChildrenErrorCount(len(self.subDocument.xmlNodeDocument.errors) - self.subDocumentErrorCount)
+			self.subDocumentErrorCount = len(self.subDocument.xmlNodeDocument.errors)
+			
+			self.ChangeChildrenErrorCount(self.subDocument.xmlNodeDocument.childrenErrorCount - self.subDocumentChildrenErrorCount)
+			self.subDocumentChildrenErrorCount = self.subDocument.xmlNodeDocument.childrenErrorCount
+	
+	def inDependencyCycle(self):
+		if self.subDocument is None:
+			return False
+		else:
+			return self.subDocument in self.documentOwner.GetAllReferrers()
+	
+	def SetText(self, newText):
+		super(XmlNodePath, self).SetText(newText)
+		self.LoadLocalDependencies()
+		self.CheckErrors()
 
 
 class XmlNodeListTextItem(XmlNodeChild):

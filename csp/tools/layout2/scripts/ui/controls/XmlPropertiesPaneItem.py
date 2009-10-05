@@ -119,7 +119,7 @@ class ItemUpdaterWithChildren(ItemUpdater):
 					# New nodes where added, force an update
 					item.xmlChildrenChangeCount -= 1
 			else:
-				if len(list( self.GetNodeChildren(item.xmlNode) )):
+				if len(list( self.GetNodeChildren(item) )):
 					self.propertiesPane.tree.SetItemHasChildren(item, True)
 					
 					# Force an update when expanding
@@ -151,11 +151,11 @@ class ItemUpdaterWithChildren(ItemUpdater):
 	def UpdateLocalChanges(self, item):
 		pass
 	
-	def GetNodeChildren(self, node):
-		return node.GetChildren()
+	def GetNodeChildren(self, item):
+		return item.xmlNode.GetChildren()
 	
 	def AddRemoveChildren(self, item):
-		nodeChildren = list( self.GetNodeChildren(item.xmlNode) )
+		nodeChildren = list( self.GetNodeChildren(item) )
 		
 		# Remove unused items
 		itemsToRemove = []

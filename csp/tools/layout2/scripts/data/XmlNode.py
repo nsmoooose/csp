@@ -185,6 +185,9 @@ class XmlNodeChild(object):
 	def Dispose(self):
 		pass
 	
+	def LoadDependencies(self):
+		pass
+	
 	def IncrementChangeCount(self):
 		self.changeCount += 1
 		self.parent.IncrementChildrenChangeCount()
@@ -319,12 +322,16 @@ class XmlNodeElement(layout_module.XmlNodeElement, XmlNodeChild):
 				lastNodeText = None
 		
 		for child in nodeTextToRemove:
-			del self.childNodes[ self.childNodes.index(child) ]
+			self.childNodes.remove( child )
 			self.domNode.removeChild( child.domNode )
 			child.Dispose()
 	
 	def PostLoad(self):
 		pass
+	
+	def LoadDependencies(self):
+		for child in self.childNodes:
+			child.LoadDependencies()
 	
 	def CheckErrors(self):
 		pass

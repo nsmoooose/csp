@@ -38,14 +38,14 @@ class ItemUpdaterNodeArchive(ItemUpdaterElement):
 				return itemText
 		return super(ItemUpdaterNodeArchive, self).GetItemText(node)
 	
-	def GetNodeChildren(self, node):
-		if isinstance(node.parent, XmlNodeArchive.XmlNodeObject):
-			return self.GetNodeChildrenWithoutNameAttribute(node)
+	def GetNodeChildren(self, item):
+		if isinstance(item.xmlNode.parent, XmlNodeArchive.XmlNodeObject):
+			return self.GetNodeChildrenWithoutNameAttribute(item)
 		else:
-			return super(ItemUpdaterNodeArchive, self).GetNodeChildren(node)
+			return super(ItemUpdaterNodeArchive, self).GetNodeChildren(item)
 	
-	def GetNodeChildrenWithoutNameAttribute(self, node):
-		for child in super(ItemUpdaterNodeArchive, self).GetNodeChildren(node):
+	def GetNodeChildrenWithoutNameAttribute(self, item):
+		for child in super(ItemUpdaterNodeArchive, self).GetNodeChildren(item):
 			if isinstance(child, XmlNodeAttribute):
 				if child.GetName() == 'name':
 					continue
@@ -59,8 +59,8 @@ class ItemUpdaterSimple(ItemUpdaterNodeArchive):
 	def GetModifyWindow(self, node):
 		return ModifyWindowSimple
 	
-	def GetNodeChildren(self, node):
-		for child in super(ItemUpdaterSimple, self).GetNodeChildren(node):
+	def GetNodeChildren(self, item):
+		for child in super(ItemUpdaterSimple, self).GetNodeChildren(item):
 			if isinstance(child, XmlNodeText):
 				continue
 			yield child
@@ -361,8 +361,18 @@ class ItemUpdaterPath(ItemUpdaterSimple):
 	def GetItemImage(self):
 		return 'path'
 	
-	def GetModifyWindow(self, node):
-		return None
+	def GetNodeChildren(self, item):
+		ancestors = []
+		parentItem = item
+		while parentItem is not None:
+			ancestors.append( parentItem.xmlNode )
+			parentItem = self.propertiesPane.tree.GetItemParent(parentItem)
+		
+		for child in super(ItemUpdaterPath, self).GetNodeChildren(item):
+			# Bloc infinite recursion when in a dependency cycle
+			if child in ancestors:
+				continue
+			yield child
 
 
 class ItemUpdaterList(ItemUpdaterNodeArchive):
@@ -377,12 +387,12 @@ class ItemUpdaterList(ItemUpdaterNodeArchive):
 		else:
 			return None
 	
-	def GetNodeChildren(self, node):
-		for child in super(ItemUpdaterList, self).GetNodeChildren(node):
+	def GetNodeChildren(self, item):
+		for child in super(ItemUpdaterList, self).GetNodeChildren(item):
 			if isinstance(child, XmlNodeAttribute):
 				if child.GetName() == 'type':
 					continue
-			elif node.TextItemClass:
+			elif item.xmlNode.TextItemClass:
 				if isinstance(child, XmlNodeText):
 					continue
 			yield child
@@ -401,8 +411,8 @@ class ItemUpdaterObject(ItemUpdaterNodeArchive):
 		else:
 			return None
 	
-	def GetNodeChildren(self, node):
-		for child in super(ItemUpdaterObject, self).GetNodeChildren(node):
+	def GetNodeChildren(self, item):
+		for child in super(ItemUpdaterObject, self).GetNodeChildren(item):
 			if isinstance(child, XmlNodeAttribute):
 				if child.GetName() == 'class':
 					continue

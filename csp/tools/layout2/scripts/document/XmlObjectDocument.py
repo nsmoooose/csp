@@ -30,18 +30,12 @@ class XmlObjectDocument(XmlDocument):
 					self.dotPath.insert(0, tail)
 				else:
 					break;
+
+	def PostCreate(self):
+		self.xmlNodeDocument.LoadDependencies()
 	
-	def New(self):
-		if self.xmlNodeDocument is not None:
-			self.xmlNodeDocument.Dispose()
-		self.xmlNodeDocument = XmlNodeObjectDocument(self)
-		self.xmlNodeDocument.New()
-	
-	def Load(self):
-		if self.xmlNodeDocument is not None:
-			self.xmlNodeDocument.Dispose()
-		self.xmlNodeDocument = XmlNodeObjectDocument(self)
-		self.xmlNodeDocument.Load(self.GetFileName())
+	def CreateXmlNodeDocument(self):
+		return XmlNodeObjectDocument(self)
 	
 	def NodeFactory(self):
 		if self.nodeFactory is None:

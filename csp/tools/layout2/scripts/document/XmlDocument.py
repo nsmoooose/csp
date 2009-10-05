@@ -26,14 +26,17 @@ class XmlDocument(FileDocument):
 	def New(self):
 		if self.xmlNodeDocument is not None:
 			self.xmlNodeDocument.Dispose()
-		self.xmlNodeDocument = XmlNodeDocument(self)
+		self.xmlNodeDocument = self.CreateXmlNodeDocument()
 		self.xmlNodeDocument.New()
 	
 	def Load(self):
 		if self.xmlNodeDocument is not None:
 			self.xmlNodeDocument.Dispose()
-		self.xmlNodeDocument = XmlNodeDocument(self)
+		self.xmlNodeDocument = self.CreateXmlNodeDocument()
 		self.xmlNodeDocument.Load(self.GetFileName())
+	
+	def CreateXmlNodeDocument(self):
+		return XmlNodeDocument(self)
 	
 	def Save(self):
 		self.xmlNodeDocument.Save(self.GetFileName() + ".new.xml")

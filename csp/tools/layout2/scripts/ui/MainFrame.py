@@ -31,6 +31,10 @@ from commands.CreateInterfaceInformationDocumentCommand import CreateInterfaceIn
 from commands.TogglePaneCommand import TogglePaneCommand
 from commands.DefaultLayoutCommand import DefaultLayoutCommand
 
+from commands.UndoCommand import UndoCommand
+from commands.RedoCommand import RedoCommand
+from commands.ShowActionHistoryCommand import ShowActionHistoryCommand
+
 class MainFrame(wx.Frame):
 	"""This is the top window that contains all controls used by the layout editor.
 	It contains the main menu, toolbar, tree control and the rendered scene.
@@ -66,6 +70,10 @@ class MainFrame(wx.Frame):
 			SaveAllDocumentsCommand(),
 			None,
 			QuitCommand() ]
+		editMenuCommands = [
+			ShowActionHistoryCommand(),
+			UndoCommand(),
+			RedoCommand() ]
 		viewMenuCommands = [
 			MoveCameraToHomeCommand(),
 			None,
@@ -85,6 +93,10 @@ class MainFrame(wx.Frame):
 			SaveCurrentDocumentCommand(),
 			CloseCurrentDocumentCommand(),
 			None,
+			UndoCommand(),
+			RedoCommand(),
+			ShowActionHistoryCommand(),
+			None,
 			MoveCameraToHomeCommand(),
 			ReCompileDataArchiveCommand(),
 			None,
@@ -100,6 +112,7 @@ class MainFrame(wx.Frame):
 		menuBar = wx.MenuBar()
 		self.SetMenuBar(menuBar)
 		menuBar.Append(controlFactory.GenerateMenuItems(self, fileMenuCommands), "File")
+		menuBar.Append(controlFactory.GenerateMenuItems(self, editMenuCommands), "Edit")
 		menuBar.Append(controlFactory.GenerateMenuItems(self, viewMenuCommands), "View")
 		menuBar.Append(controlFactory.GenerateMenuItems(self, toolsMenuCommands), "Tools")
 

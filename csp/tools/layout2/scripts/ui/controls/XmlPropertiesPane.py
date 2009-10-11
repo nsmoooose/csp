@@ -8,6 +8,32 @@ import XmlPropertiesPaneItemArchive
 class XmlPropertiesPane(FilePropertiesPane):
 	imageList = None
 	imageListItems = {}
+	imageListItemNames = {
+		'string': 'xml-node-string',
+		'bool': 'xml-node-bool',
+		'int': 'xml-node-integer',
+		'float': 'xml-node-float',
+		'real': 'xml-node-real',
+		'ecef': 'world',
+		'lla': 'world',
+		'utm': 'world',
+		'vector': 'xml-node-vector3',
+		'matrix': 'xml-node-matrix3',
+		'quat': 'arrow_rotate_anticlockwise',
+		'date': 'date',
+		'enum': 'text_list_numbers',
+		'external': 'attach',
+		'key': 'key',
+		'lut': 'chart_curve',
+		'path': 'brick_link',
+		'list': 'text_list_bullets',
+		'object': 'brick',
+		'root': 'page_white_code',
+		'element': 'tag',
+		'text': 'text_align_left',
+		'comment': 'comment',
+		'attribute': 'tag_blue',
+		}
 	
 	def __init__(self, parent, document, *args, **kwargs):
 		FilePropertiesPane.__init__(self, parent, document, rootLabel = "XML document", *args, **kwargs)
@@ -74,33 +100,8 @@ class XmlPropertiesPane(FilePropertiesPane):
 	def TreeImages(self):
 		return XmlPropertiesPane.imageListItems
 	
-	def FillImageList(self):
-		return {
-			'string': 'xml-node-string',
-			'bool': 'xml-node-bool',
-			'int': 'xml-node-integer',
-			'float': 'xml-node-float',
-			'real': 'xml-node-real',
-			'ecef': 'world',
-			'lla': 'world',
-			'utm': 'world',
-			'vector': 'xml-node-vector3',
-			'matrix': 'xml-node-matrix3',
-			'quat': 'arrow_rotate_anticlockwise',
-			'date': 'date',
-			'enum': 'text_list_numbers',
-			'external': 'attach',
-			'key': 'key',
-			'lut': 'chart_curve',
-			'path': 'brick_link',
-			'list': 'text_list_bullets',
-			'object': 'brick',
-			'root': 'page_white_code',
-			'element': 'tag',
-			'text': 'text_align_left',
-			'comment': 'comment',
-			'attribute': 'tag_blue',
-		}
+	def ImageListItemNames(self):
+		return self.imageListItemNames
 	
 	def on_DocumentChanged(self, document):
 		self.tree.Freeze()

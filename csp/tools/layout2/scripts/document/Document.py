@@ -1,3 +1,4 @@
+from ActionHistory import ActionHistory
 from csp.base.signals import Signal
 
 class Document:
@@ -15,11 +16,16 @@ class Document:
 		# List all documents that refer to this document.
 		# It is managed by the DocumentRegistry
 		self.referrers = []
+		
+		# Command history
+		self.actionHistory = ActionHistory(self)
 
 	def Dispose(self):
 		self.changedSignal.Dispose()
 		self.changedSignal = None
 		self.referrers = []
+		self.actionHistory.Dispose()
+		self.actionHistory = None
 
 	def GetName(self):
 		"""Returns the name of the document."""

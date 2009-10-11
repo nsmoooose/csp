@@ -7,7 +7,7 @@ from AutoFitTextCtrl import AutoFitTextCtrl
 from ...data.XmlNode import XmlNodeText
 from ...data.XmlNode import XmlNodeAttribute
 from ...data import XmlNodeArchive
-from ..commands.ModifyXmlCommand import ModifyXmlDataCommand
+from ..commands.ModifyXmlAction import ModifyXmlDataAction
 
 class ItemUpdaterListTextItem(ItemUpdaterWithoutChildren):
 	def UpdateLocalChanges(self, item):
@@ -27,7 +27,10 @@ class ItemUpdaterListTextItem(ItemUpdaterWithoutChildren):
 		return AutoFitTextCtrl(self.propertiesPane.tree, node.GetText(), style = wx.TE_READONLY)
 	
 	def GetModifyWindow(self, node):
-		return ModifyWindowSimple
+		return self.CreateModifyWindow
+	
+	def CreateModifyWindow(self, parent, node):
+		return ModifyWindowSimple( parent, node, self.GetItemText(node), self.GetActualImageName( self.GetItemImage() ) )
 
 
 class ItemUpdaterNodeArchive(ItemUpdaterElement):
@@ -57,7 +60,10 @@ class ItemUpdaterSimple(ItemUpdaterNodeArchive):
 		return AutoFitTextCtrl(self.propertiesPane.tree, node.GetText(), style = wx.TE_READONLY)
 	
 	def GetModifyWindow(self, node):
-		return ModifyWindowSimple
+		return self.CreateModifyWindow
+	
+	def CreateModifyWindow(self, parent, node):
+		return ModifyWindowSimple( parent, node, self.GetItemText(node), self.GetActualImageName( self.GetItemImage() ) )
 	
 	def GetNodeChildren(self, item):
 		for child in super(ItemUpdaterSimple, self).GetNodeChildren(item):
@@ -67,12 +73,14 @@ class ItemUpdaterSimple(ItemUpdaterNodeArchive):
 
 
 class ModifyWindowSimple(wx.TextCtrl):
-	def __init__(self, parent, node):
+	def __init__(self, parent, node, nodeName, imageName):
 		wx.TextCtrl.__init__(self, parent, value = node.GetText(), style = wx.TE_MULTILINE | wx.TE_DONTWRAP)
 		self.node = node
+		self.nodeName = nodeName
+		self.imageName = imageName
 	
 	def GetCommand(self):
-		return ModifyXmlDataCommand( self.node, self.GetValue() )
+		return ModifyXmlDataAction( self.nodeName, self.imageName, self.node, self.GetValue() )
 
 
 class ItemUpdaterString(ItemUpdaterSimple):
@@ -96,7 +104,8 @@ class ItemUpdaterBool(ItemUpdaterSimple):
 			value = text
 			choices.append( value )
 		itemWindow = wx.ComboBox(self.propertiesPane.tree, value = value, choices = choices, style = wx.CB_READONLY)
-		itemWindow.Bind(wx.EVT_COMBOBOX, ComboBoxHandler(node).onCombobox)
+		comboBoxHandler = ComboBoxHandler( node, self.GetItemText(node), self.GetActualImageName( self.GetItemImage() ) )
+		itemWindow.Bind(wx.EVT_COMBOBOX, comboBoxHandler.onCombobox)
 		return itemWindow
 	
 	def GetModifyWindow(self, node):
@@ -104,11 +113,13 @@ class ItemUpdaterBool(ItemUpdaterSimple):
 
 
 class ComboBoxHandler(object):
-	def __init__(self, node):
+	def __init__(self, node, nodeName, imageName):
 		self.node = node
+		self.nodeName = nodeName
+		self.imageName = imageName
 	
 	def onCombobox(self, event):
-		command = ModifyXmlDataCommand( self.node, event.GetString() )
+		command = ModifyXmlDataAction( self.nodeName, self.imageName, self.node, event.GetString() )
 		wx.CallLater(1, command.Execute)
 
 
@@ -161,7 +172,10 @@ class ItemUpdaterECEF(ItemUpdaterSimple):
 		return ItemWindowMatrix(self.propertiesPane.tree, node, 1, 3)
 	
 	def GetModifyWindow(self, node):
-		return ModifyWindowVector
+		return self.CreateModifyWindow
+	
+	def CreateModifyWindow(self, parent, node):
+		return ModifyWindowMatrix( parent, node, 1, 3, self.GetItemText(node), self.GetActualImageName( self.GetItemImage() ) )
 
 
 class ItemUpdaterLLA(ItemUpdaterSimple):
@@ -188,40 +202,10 @@ class ItemUpdaterVector(ItemUpdaterSimple):
 		return ItemWindowMatrix(self.propertiesPane.tree, node, 1, 3)
 	
 	def GetModifyWindow(self, node):
-		return ModifyWindowVector
-
-
-class ModifyWindowMatrixGeneric(wx.Panel):
-	def __init__(self, parent, node):
-		wx.Panel.__init__(self, parent)
-		self.node = node
-		
-		sizer = wx.GridSizer( rows = self.GetRows(), cols = self.GetCols() )
-		self.SetSizer(sizer)
-		
-		self.textCtrl = []
-		
-		for value in node.GetStringValues():
-			textCtrl = wx.TextCtrl( self, value = value )
-			sizer.AddF( textCtrl, wx.SizerFlags().Expand() )
-			self.textCtrl.append( textCtrl )
+		return self.CreateModifyWindow
 	
-	def GetCommand(self):
-		textRows = []
-		for row in range( self.GetRows() ):
-			textCols = []
-			for cols in range( self.GetCols() ):
-				textCols.append( self.textCtrl[ row * self.GetCols() + cols ].GetValue() )
-			textRows.append( ' '.join(textCols) )
-		return ModifyXmlDataCommand( self.node, '\n'.join(textRows) )
-
-
-class ModifyWindowVector(ModifyWindowMatrixGeneric):
-	def GetRows(self):
-		return 1
-	
-	def GetCols(self):
-		return 3
+	def CreateModifyWindow(self, parent, node):
+		return ModifyWindowMatrix( parent, node, 1, 3, self.GetItemText(node), self.GetActualImageName( self.GetItemImage() ) )
 
 
 class ItemUpdaterMatrix(ItemUpdaterSimple):
@@ -234,7 +218,10 @@ class ItemUpdaterMatrix(ItemUpdaterSimple):
 		return ItemWindowMatrix(self.propertiesPane.tree, node, 3, 3)
 	
 	def GetModifyWindow(self, node):
-		return ModifyWindowMatrix
+		return self.CreateModifyWindow
+	
+	def CreateModifyWindow(self, parent, node):
+		return ModifyWindowMatrix( parent, node, 3, 3, self.GetItemText(node), self.GetActualImageName( self.GetItemImage() ) )
 
 
 class ItemWindowMatrix(wx.Panel):
@@ -253,12 +240,33 @@ class ItemWindowMatrix(wx.Panel):
 		self.Fit()
 
 
-class ModifyWindowMatrix(ModifyWindowMatrixGeneric):
-	def GetRows(self):
-		return 3
+class ModifyWindowMatrix(wx.Panel):
+	def __init__(self, parent, node, rows, cols, nodeName, imageName):
+		wx.Panel.__init__(self, parent)
+		self.node = node
+		self.rows = rows
+		self.cols = cols
+		self.nodeName = nodeName
+		self.imageName = imageName
+		
+		sizer = wx.GridSizer( rows = self.rows, cols = self.cols )
+		self.SetSizer(sizer)
+		
+		self.textCtrl = []
+		
+		for value in node.GetStringValues():
+			textCtrl = wx.TextCtrl( self, value = value )
+			sizer.AddF( textCtrl, wx.SizerFlags().Expand() )
+			self.textCtrl.append( textCtrl )
 	
-	def GetCols(self):
-		return 3
+	def GetCommand(self):
+		textRows = []
+		for row in range( self.rows ):
+			textCols = []
+			for col in range( self.cols ):
+				textCols.append( self.textCtrl[ row * self.cols + col ].GetValue() )
+			textRows.append( ' '.join(textCols) )
+		return ModifyXmlDataAction( self.nodeName, self.imageName, self.node, '\n'.join(textRows) )
 
 
 class ItemUpdaterQuat(ItemUpdaterSimple):
@@ -287,7 +295,8 @@ class ItemUpdaterEnum(ItemUpdaterSimple):
 		if value not in choices:
 			choices.append( value )
 		itemWindow = wx.ComboBox(self.propertiesPane.tree, value = value, choices = choices, style = wx.CB_READONLY)
-		itemWindow.Bind(wx.EVT_COMBOBOX, ComboBoxHandler(node).onCombobox)
+		comboBoxHandler = ComboBoxHandler( node, self.GetItemText(node), self.GetActualImageName( self.GetItemImage() ) )
+		itemWindow.Bind(wx.EVT_COMBOBOX, comboBoxHandler.onCombobox)
 		return itemWindow
 	
 	def GetModifyWindow(self, node):

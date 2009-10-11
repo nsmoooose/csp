@@ -8,6 +8,9 @@ class FilePropertiesPane(wx.Panel):
 	imageListSize = (16, 16)
 	imageList = None
 	imageListItems = {}
+	imageListItemNames = {
+		"root": "page_white",
+		}
 	
 	def __init__(self, parent, document, rootLabel = "File document", *args, **kwargs):
 		wx.Panel.__init__(self, parent, *args, **kwargs)
@@ -23,7 +26,7 @@ class FilePropertiesPane(wx.Panel):
 		if self.GetImageList() is None:
 			width, height = FilePropertiesPane.imageListSize
 			self.SetImageList( wx.ImageList(width, height) )
-			for imageListItemKey, imageListItemName in self.FillImageList().iteritems():
+			for imageListItemKey, imageListItemName in self.ImageListItemNames().iteritems():
 				bitmap = wx.ArtProvider.GetBitmap(imageListItemName, size = FilePropertiesPane.imageListSize)
 				self.TreeImages()[imageListItemKey] = self.GetImageList().Add(bitmap)
 		
@@ -47,10 +50,8 @@ class FilePropertiesPane(wx.Panel):
 	def TreeImages(self):
 		return FilePropertiesPane.imageListItems
 	
-	def FillImageList(self):
-		return {
-			"root": "page_white",
-		}
+	def ImageListItemNames(self):
+		return self.imageListItemNames
 	
 	def CreateRootWindow(self):
 		return AutoFitTextCtrl(self.tree, self.document.GetFileName(), style = wx.TE_READONLY)

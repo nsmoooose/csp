@@ -3,8 +3,8 @@ import wx
 
 from AutoFitTextCtrl import AutoFitTextCtrl
 from ...data import XmlNode
-from ..commands.ModifyXmlCommand import ModifyXmlDataCommand
-from ..commands.ModifyXmlCommand import ModifyXmlAttributeCommand
+from ..commands.ModifyXmlAction import ModifyXmlDataAction
+from ..commands.ModifyXmlAction import ModifyXmlAttributeAction
 
 class ItemUpdater(object):
 	def __init__(self, propertiesPane, *args, **kwargs):
@@ -22,12 +22,15 @@ class ItemUpdater(object):
 	def SetItemImage(self, item, image):
 		self.propertiesPane.tree.SetItemImage(item, self.propertiesPane.TreeImages()[image])
 	
-	def SetItemWindow(self, item, itemWindow, modifyWindowClass = None):
+	def SetItemWindow(self, item, itemWindow, modifyWindowFactory = None):
 		self.propertiesPane.tree.DeleteItemWindow(item)
 		errorMessage = self.GetErrorMessage(item.xmlNode)
 		if errorMessage or itemWindow is not None:
-			itemWindow = ItemWindowWithError(self.propertiesPane.tree, errorMessage, itemWindow, modifyWindowClass, item.xmlNode)
+			itemWindow = ItemWindowWithError(self.propertiesPane.tree, errorMessage, itemWindow, modifyWindowFactory, item.xmlNode)
 			self.propertiesPane.tree.SetItemWindow(item, itemWindow)
+	
+	def GetActualImageName(self, itemImageName):
+		return self.propertiesPane.ImageListItemNames()[ itemImageName ]
 
 
 class ItemUpdaterWithoutChildren(ItemUpdater):
@@ -47,22 +50,27 @@ class ItemUpdaterData(ItemUpdaterWithoutChildren):
 			self.propertiesPane.tree.SetItemText( item, self.GetItemText() )
 		
 		itemWindow = AutoFitTextCtrl(self.propertiesPane.tree, item.xmlNode.GetText(), style = wx.TE_READONLY)
-		self.SetItemWindow(item, itemWindow, ModifyWindowData)
+		self.SetItemWindow(item, itemWindow, self.CreateModifyWindow)
 	
 	def GetItemImage(self):
 		return ''
 	
 	def GetItemText(self):
 		return ''
+	
+	def CreateModifyWindow(self, parent, node):
+		return ModifyWindowData( parent, node, self.GetItemText(), self.GetActualImageName( self.GetItemImage() ) )
 
 
 class ModifyWindowData(wx.TextCtrl):
-	def __init__(self, parent, node):
+	def __init__(self, parent, node, nodeName, imageName):
 		wx.TextCtrl.__init__(self, parent, value = node.GetText(), style = wx.TE_MULTILINE | wx.TE_DONTWRAP)
 		self.node = node
+		self.nodeName = nodeName
+		self.imageName = imageName
 	
 	def GetCommand(self):
-		return ModifyXmlDataCommand( self.node, self.GetValue() )
+		return ModifyXmlDataAction( self.nodeName, self.imageName, self.node, self.GetValue() )
 
 
 class ItemUpdaterText(ItemUpdaterData):
@@ -95,16 +103,20 @@ class ItemUpdaterAttribute(ItemUpdaterWithoutChildren):
 		self.propertiesPane.tree.SetItemText( item, item.xmlNode.GetName() )
 		
 		itemWindow = AutoFitTextCtrl(self.propertiesPane.tree, item.xmlNode.GetValue(), style = wx.TE_READONLY)
-		self.SetItemWindow(item, itemWindow, ModifyWindowAttribute)
+		self.SetItemWindow(item, itemWindow, self.CreateModifyWindow)
+	
+	def CreateModifyWindow(self, parent, node):
+		return ModifyWindowAttribute( parent, node, self.GetActualImageName('attribute') )
 
 
 class ModifyWindowAttribute(wx.TextCtrl):
-	def __init__(self, parent, node):
+	def __init__(self, parent, node, imageName):
 		wx.TextCtrl.__init__( self, parent, value = node.GetValue() )
 		self.node = node
+		self.imageName = imageName
 	
 	def GetCommand(self):
-		return ModifyXmlAttributeCommand( self.node, self.GetValue() )
+		return ModifyXmlAttributeAction( self.imageName, self.node, self.GetValue() )
 
 
 class ItemUpdaterWithChildren(ItemUpdater):
@@ -259,10 +271,10 @@ class ItemErrorImage(wx.StaticBitmap):
 
 
 class ItemWindowWithError(wx.Panel):
-	def __init__(self, parent, errorMessage, itemWindow, modifyWindowClass, node, *args, **kwargs):
+	def __init__(self, parent, errorMessage, itemWindow, modifyWindowFactory, node, *args, **kwargs):
 		wx.Panel.__init__(self, parent, *args, **kwargs)
 		
-		self.modifyWindowClass = modifyWindowClass
+		self.modifyWindowFactory = modifyWindowFactory
 		self.node = node
 		
 		self.SetOwnBackgroundColour( parent.GetBackgroundColour() )
@@ -279,7 +291,7 @@ class ItemWindowWithError(wx.Panel):
 			itemWindow.Reparent(self)
 			sizer.AddF( itemWindow, wx.SizerFlags().Center().Border(wx.TOP | wx.BOTTOM, 2) )
 			
-			if modifyWindowClass is not None:
+			if modifyWindowFactory is not None:
 				sizer.AddSpacer(5)
 				editBitmap = wx.ArtProvider.GetBitmap('pencil', size = (16, 16))
 				editButton = wx.BitmapButton(self, bitmap = editBitmap)
@@ -290,7 +302,7 @@ class ItemWindowWithError(wx.Panel):
 	
 	def onEditButton(self, event):
 		command = None
-		modifyDialog = ModifyDialog(self, self.modifyWindowClass, self.node)
+		modifyDialog = ModifyDialog(self, self.modifyWindowFactory, self.node)
 		if modifyDialog.ShowModal() == wx.ID_OK:
 			command = modifyDialog.modifyWindow.GetCommand()
 			wx.CallLater(1, command.Execute)
@@ -298,13 +310,13 @@ class ItemWindowWithError(wx.Panel):
 
 
 class ModifyDialog(wx.Dialog):
-	def __init__(self, parent, modifyWindowClass, node, *args, **kwargs):
+	def __init__(self, parent, modifyWindowFactory, node, *args, **kwargs):
 		wx.Dialog.__init__(self, parent, style = wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER, *args, **kwargs)
 		
 		sizer = wx.BoxSizer(wx.VERTICAL)
 		self.SetSizer(sizer)
 		
-		self.modifyWindow = modifyWindowClass(self, node)
+		self.modifyWindow = modifyWindowFactory(self, node)
 		sizer.AddF( self.modifyWindow, wx.SizerFlags().Expand().Proportion(1).Border(wx.ALL, 5) )
 		
 		sizer.Add( self.CreateButtonSizer(wx.OK | wx.CANCEL) )

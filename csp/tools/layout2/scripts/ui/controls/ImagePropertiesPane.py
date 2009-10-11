@@ -6,6 +6,12 @@ from FilePropertiesPane import FilePropertiesPane
 class ImagePropertiesPane(FilePropertiesPane):
 	imageList = None
 	imageListItems = {}
+	imageListItemNames = {
+		'root': 'page_white_picture',
+		'imageSize': 'shape_handles',
+		'width': 'tag_blue',
+		'height': 'tag_blue',
+		}
 	
 	def __init__(self, parent, document, *args, **kwargs):
 		FilePropertiesPane.__init__(self, parent, document, rootLabel = "Image document", *args, **kwargs)
@@ -34,10 +40,5 @@ class ImagePropertiesPane(FilePropertiesPane):
 	def TreeImages(self):
 		return ImagePropertiesPane.imageListItems
 	
-	def FillImageList(self):
-		return {
-			'root': 'page_white_picture',
-			'imageSize': 'shape_handles',
-			'width': 'tag_blue',
-			'height': 'tag_blue',
-		}
+	def ImageListItemNames(self):
+		return self.imageListItemNames

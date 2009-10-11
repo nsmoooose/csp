@@ -28,20 +28,20 @@ class Command:
 	def GetToolTipText(self):
 		"""Returns a text to use when the mouse is hoovering 
 		over the command button in a toolbar."""
-		return ""
+		return self.GetCaption()
 
 	def GetToolBarImageName(self):
 		"""Returns the name of the image file for this command.
 		The name will be used to load the file into a
 		toolbar button."""
-		return "generic"
+		return ""
 
 	def Enable(self, enable = True):
 		self.enabled = enable
 		for menuItem in self.menuItems:
 			menuItem.Enable(self.enabled)
 		for tool in self.tools:
-			tool.Enable(self.enabled)
+			tool.GetToolBar().EnableTool( tool.GetId(), self.enabled )
 		return self
 
 	def IsEnabled(self):
@@ -56,11 +56,16 @@ class Command:
 		return menuItem
 	
 	def SetMenuItemBitmap(self, menuItem):
-		bitmap = wx.ArtProvider.GetBitmap( self.GetToolBarImageName(), client = wx.ART_MENU, size = (16, 16) )
-		menuItem.SetBitmap(bitmap)
+		imageName = self.GetToolBarImageName()
+		if imageName:
+			bitmap = wx.ArtProvider.GetBitmap( imageName, client = wx.ART_MENU, size = (16, 16) )
+			menuItem.SetBitmap(bitmap)
 
 	def AppendInToolBar(self, parent, toolbar, controlId):
-		bitmap = wx.ArtProvider.GetBitmap( self.GetToolBarImageName(), client = wx.ART_TOOLBAR, size = toolbar.GetToolBitmapSize() )
+		imageName = self.GetToolBarImageName()
+		if not imageName:
+			imageName = 'generic'
+		bitmap = wx.ArtProvider.GetBitmap( imageName, client = wx.ART_TOOLBAR, size = toolbar.GetToolBitmapSize() )
 		tool = toolbar.AddLabelTool( id = controlId, label = self.GetCaption(), bitmap = bitmap, kind = self.GetKind(), shortHelp = self.GetToolTipText(), longHelp = self.GetToolTipText() )
 		tool.Enable(self.enabled)
 		parent.Bind(wx.EVT_TOOL, EventToCommandExecutionAdapter(self).Execute, tool)

@@ -42,7 +42,7 @@ public:
     Pixel pixel;
 };
 
-#define MercatorProjectionUrl "/kh?v=36&x=%(x)d&y=%(y)d&z=%(z)d"
+#define MercatorProjectionUrl "/kh/v=48&x=%(x)d&y=%(y)d&z=%(z)d&s=Galileo"
 #define MercatorProjectionFile "z%(z)d-x%(x)d-y%(y)d"
 
 class MercatorProjection {

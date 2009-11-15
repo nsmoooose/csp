@@ -2,8 +2,9 @@
 
 from csp.tools.layout2.layout_module import OsgModelWindow
 from GraphicsWindow import GraphicsWindow
+from DocumentNotebookPage import DocumentNotebookPage
 
-class ModelWindow(GraphicsWindow):
+class ModelWindow(GraphicsWindow, DocumentNotebookPage):
 	def __init__(self, *args, **kwargs):
 		GraphicsWindow.__init__(self, *args, **kwargs)
 

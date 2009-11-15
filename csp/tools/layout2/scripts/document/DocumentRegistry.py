@@ -12,9 +12,20 @@ class DocumentRegistry:
 	GetDocumentRegistry() method on the wx application object"""
 	
 	def __init__(self):
+		# The list of opened documents
 		self.documents = {}
+		
+		# The current document (the document that is managed by the selected page)
 		self.currentDocument = None
 		self.currentDocumentChangedSignal = Signal()
+		
+		# The active document (the actual document that is currently edited.
+		# This can be a sub-document of the current document, or the current document itself)
+		self.activeDocument = None
+		self.activeDocumentChangedSignal = Signal()
+		
+		# Protection to avoid recursion when removing a document member of a 
+		# dependency cycle
 		self.releasesInProgress = set()
 
 	def GetCurrentDocumentChangedSignal(self):
@@ -22,6 +33,12 @@ class DocumentRegistry:
 		this signal is emitted to all listeners. The document
 		is attached to the signal as the first argument."""
 		return self.currentDocumentChangedSignal
+
+	def GetActiveDocumentChangedSignal(self):
+		"""Whenever the active document is replaced by another
+		this signal is emitted to all listeners. The document
+		is attached to the signal as the first argument."""
+		return self.activeDocumentChangedSignal
 
 	def GetOrCreateDocument(self, documentFactory, documentReferrer = None):
 		"""Get a document based on its uniqueId.
@@ -109,6 +126,20 @@ class DocumentRegistry:
 
 	def GetCurrentDocument(self):
 		return self.currentDocument
+	
+	def SetActiveDocument(self, document):
+		"""Changes the active document to the specified one."""
+
+		# Make sure that there is a document change at all. Compare 
+		# with the existing document.
+		if document is self.activeDocument:
+			return
+
+		self.activeDocument = document
+		self.activeDocumentChangedSignal.Emit(document)
+
+	def GetActiveDocument(self):
+		return self.activeDocument
 
 	def GetByUniqueId(self, uniqueId):
 		"""Returns the document with the specified uniqueId. If it

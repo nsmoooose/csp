@@ -1,9 +1,10 @@
 #!/usr/bin/env python
+import weakref
 import wx
 
 from XmlPropertiesPaneItem import ItemUpdaterWithoutChildren
 from XmlPropertiesPaneItem import ItemUpdaterElement
-from AutoFitTextCtrl import AutoFitTextCtrl
+from XmlPropertiesPaneItem import ItemWindowSimple
 from ...data.XmlNode import XmlNodeText
 from ...data.XmlNode import XmlNodeAttribute
 from ...data import XmlNodeArchive
@@ -15,7 +16,7 @@ class ItemUpdaterListTextItem(ItemUpdaterWithoutChildren):
 			self.SetItemImage( item, self.GetItemImage() )
 			self.propertiesPane.tree.SetItemText( item, self.GetItemText(item.xmlNode) )
 		
-		self.SetItemWindow( item, self.GetItemWindow(item.xmlNode), self.GetModifyWindow(item.xmlNode) )
+		self.SetItemWindow( item, self.GetItemWindow(item), self.GetModifyWindow(item.xmlNode) )
 	
 	def GetItemImage(self):
 		return ''
@@ -23,8 +24,8 @@ class ItemUpdaterListTextItem(ItemUpdaterWithoutChildren):
 	def GetItemText(self, node):
 		return '<' + node.tag + '>'
 	
-	def GetItemWindow(self, node):
-		return AutoFitTextCtrl(self.propertiesPane.tree, node.GetText(), style = wx.TE_READONLY)
+	def GetItemWindow(self, item):
+		return ItemWindowSimple(self.propertiesPane.tree, item, value = item.xmlNode.GetText(), style = wx.TE_READONLY)
 	
 	def GetModifyWindow(self, node):
 		return self.CreateModifyWindow
@@ -56,8 +57,8 @@ class ItemUpdaterNodeArchive(ItemUpdaterElement):
 
 
 class ItemUpdaterSimple(ItemUpdaterNodeArchive):
-	def GetItemWindow(self, node):
-		return AutoFitTextCtrl(self.propertiesPane.tree, node.GetText(), style = wx.TE_READONLY)
+	def GetItemWindow(self, item):
+		return ItemWindowSimple(self.propertiesPane.tree, item, value = item.xmlNode.GetText(), style = wx.TE_READONLY)
 	
 	def GetModifyWindow(self, node):
 		return self.CreateModifyWindow
@@ -79,7 +80,7 @@ class ModifyWindowSimple(wx.TextCtrl):
 		self.nodeName = nodeName
 		self.imageName = imageName
 	
-	def GetCommand(self):
+	def GetAction(self):
 		return ModifyXmlDataAction( self.nodeName, self.imageName, self.node, self.GetValue() )
 
 
@@ -96,31 +97,54 @@ class ItemUpdaterBool(ItemUpdaterSimple):
 	def GetItemImage(self):
 		return 'bool'
 	
-	def GetItemWindow(self, node):
+	def GetItemWindow(self, item):
 		choices = ['true', 'false']
-		text = node.GetText()
+		text = item.xmlNode.GetText()
 		value = text.lower()
 		if value not in choices:
 			value = text
 			choices.append( value )
-		itemWindow = wx.ComboBox(self.propertiesPane.tree, value = value, choices = choices, style = wx.CB_READONLY)
-		comboBoxHandler = ComboBoxHandler( node, self.GetItemText(node), self.GetActualImageName( self.GetItemImage() ) )
-		itemWindow.Bind(wx.EVT_COMBOBOX, comboBoxHandler.onCombobox)
+		itemWindow = ItemWindowComboBox(
+			self.propertiesPane.tree,
+			item,
+			value = value,
+			choices = choices,
+			nodeName = self.GetItemText(item.xmlNode),
+			imageName = self.GetActualImageName( self.GetItemImage() ),
+			style = wx.CB_READONLY)
 		return itemWindow
 	
 	def GetModifyWindow(self, node):
 		return None
 
 
-class ComboBoxHandler(object):
-	def __init__(self, node, nodeName, imageName):
-		self.node = node
+class ItemWindowComboBox(wx.ComboBox):
+	def __init__(self, tree, item, value, choices, nodeName, imageName, style = 0, *args, **kwargs):
+		wx.ComboBox.__init__(self, tree, value = value, choices = choices, style = style, *args, **kwargs)
+		self.Bind(wx.EVT_SET_FOCUS, self.on_SetFocus)
+		self.Bind(wx.EVT_COMBOBOX, self.on_Combobox)
+		
+		self.tree = weakref.ref(tree)
+		self.item = weakref.ref(item)
 		self.nodeName = nodeName
 		self.imageName = imageName
 	
-	def onCombobox(self, event):
-		command = ModifyXmlDataAction( self.nodeName, self.imageName, self.node, event.GetString() )
-		wx.CallLater(1, command.Execute)
+	def on_SetFocus(self, event):
+		event.Skip()
+		tree = self.tree()
+		if tree is None:
+			return
+		item = self.item()
+		if item is None:
+			return
+		tree.SelectItem(item)
+	
+	def on_Combobox(self, event):
+		item = self.item()
+		if item is None:
+			return
+		action = ModifyXmlDataAction( self.nodeName, self.imageName, item.xmlNode, event.GetString() )
+		wx.CallLater(1, action.Execute)
 
 
 class ItemUpdaterIntData(object):
@@ -168,8 +192,8 @@ class ItemUpdaterECEF(ItemUpdaterSimple):
 	def GetItemImage(self):
 		return 'ecef'
 	
-	def GetItemWindow(self, node):
-		return ItemWindowMatrix(self.propertiesPane.tree, node, 1, 3)
+	def GetItemWindow(self, item):
+		return ItemWindowMatrix(self.propertiesPane.tree, item, 1, 3)
 	
 	def GetModifyWindow(self, node):
 		return self.CreateModifyWindow
@@ -198,8 +222,8 @@ class ItemUpdaterVector(ItemUpdaterSimple):
 	def GetItemImage(self):
 		return 'vector'
 	
-	def GetItemWindow(self, node):
-		return ItemWindowMatrix(self.propertiesPane.tree, node, 1, 3)
+	def GetItemWindow(self, item):
+		return ItemWindowMatrix(self.propertiesPane.tree, item, 1, 3)
 	
 	def GetModifyWindow(self, node):
 		return self.CreateModifyWindow
@@ -214,8 +238,8 @@ class ItemUpdaterMatrix(ItemUpdaterSimple):
 	def GetItemImage(self):
 		return 'matrix'
 	
-	def GetItemWindow(self, node):
-		return ItemWindowMatrix(self.propertiesPane.tree, node, 3, 3)
+	def GetItemWindow(self, item):
+		return ItemWindowMatrix(self.propertiesPane.tree, item, 3, 3)
 	
 	def GetModifyWindow(self, node):
 		return self.CreateModifyWindow
@@ -225,16 +249,16 @@ class ItemUpdaterMatrix(ItemUpdaterSimple):
 
 
 class ItemWindowMatrix(wx.Panel):
-	def __init__(self, parent, node, rows, cols, *args, **kwargs):
-		wx.Panel.__init__(self, parent, *args, **kwargs)
+	def __init__(self, tree, item, rows, cols, *args, **kwargs):
+		wx.Panel.__init__(self, tree, *args, **kwargs)
 		
-		self.SetOwnBackgroundColour( parent.GetBackgroundColour() )
+		self.SetOwnBackgroundColour( tree.GetBackgroundColour() )
 		
 		sizer = wx.GridSizer(rows = rows, cols = cols)
 		self.SetSizer(sizer)
 		
-		for value in node.GetStringValues():
-			textCtrl = AutoFitTextCtrl(self, value, style = wx.TE_READONLY)
+		for value in item.xmlNode.GetStringValues():
+			textCtrl = ItemWindowSimple(self, item, tree = tree, value = value, style = wx.TE_READONLY)
 			sizer.AddF( textCtrl, wx.SizerFlags().Expand() )
 		
 		self.Fit()
@@ -259,7 +283,7 @@ class ModifyWindowMatrix(wx.Panel):
 			sizer.AddF( textCtrl, wx.SizerFlags().Expand() )
 			self.textCtrl.append( textCtrl )
 	
-	def GetCommand(self):
+	def GetAction(self):
 		textRows = []
 		for row in range( self.rows ):
 			textCols = []
@@ -289,14 +313,19 @@ class ItemUpdaterEnum(ItemUpdaterSimple):
 	def GetItemImage(self):
 		return 'enum'
 	
-	def GetItemWindow(self, node):
-		choices = list(node.allowedValues)
-		value = node.GetText()
+	def GetItemWindow(self, item):
+		choices = list(item.xmlNode.allowedValues)
+		value = item.xmlNode.GetText()
 		if value not in choices:
 			choices.append( value )
-		itemWindow = wx.ComboBox(self.propertiesPane.tree, value = value, choices = choices, style = wx.CB_READONLY)
-		comboBoxHandler = ComboBoxHandler( node, self.GetItemText(node), self.GetActualImageName( self.GetItemImage() ) )
-		itemWindow.Bind(wx.EVT_COMBOBOX, comboBoxHandler.onCombobox)
+		itemWindow = ItemWindowComboBox(
+			self.propertiesPane.tree,
+			item,
+			value = value,
+			choices = choices,
+			nodeName = self.GetItemText(item.xmlNode),
+			imageName = self.GetActualImageName( self.GetItemImage() ),
+			style = wx.CB_READONLY)
 		return itemWindow
 	
 	def GetModifyWindow(self, node):
@@ -390,9 +419,9 @@ class ItemUpdaterList(ItemUpdaterNodeArchive):
 	def GetItemImage(self):
 		return 'list'
 	
-	def GetItemWindow(self, node):
-		if node.hasTextItems:
-			return AutoFitTextCtrl(self.propertiesPane.tree, node.GetAttributeValue('type'), style = wx.TE_READONLY)
+	def GetItemWindow(self, item):
+		if item.xmlNode.hasTextItems:
+			return ItemWindowSimple(self.propertiesPane.tree, item, value = item.xmlNode.GetAttributeValue('type'), style = wx.TE_READONLY)
 		else:
 			return None
 	
@@ -413,10 +442,10 @@ class ItemUpdaterObject(ItemUpdaterNodeArchive):
 	def GetItemImage(self):
 		return 'object'
 	
-	def GetItemWindow(self, node):
-		classAttribute = node.GetAttributeValue('class')
+	def GetItemWindow(self, item):
+		classAttribute = item.xmlNode.GetAttributeValue('class')
 		if classAttribute:
-			return AutoFitTextCtrl(self.propertiesPane.tree, classAttribute, style = wx.TE_READONLY)
+			return ItemWindowSimple(self.propertiesPane.tree, item, value = classAttribute, style = wx.TE_READONLY)
 		else:
 			return None
 	

@@ -24,7 +24,8 @@ class ShowActionHistoryCommand(ActionHistoryCommand):
 			self.Enable(False)
 	
 	def Execute(self):
-		actionHistoryDialog = ActionHistoryDialog( wx.GetApp().GetTopWindow(), title = self.GetCaption(), actionHistory = self.actionHistory )
+		title = "Action history of %s" % self.actionHistory.documentOwner.GetName()
+		actionHistoryDialog = ActionHistoryDialog( wx.GetApp().GetTopWindow(), title = title, actionHistory = self.actionHistory )
 		if actionHistoryDialog.ShowModal() == wx.ID_OK:
 			pass
 		actionHistoryDialog.Destroy()
@@ -62,14 +63,9 @@ class ActionHistoryDialog(wx.Dialog):
 	
 	def FillListView(self):
 		itemIndex = 0
-		nextAction = None
-		masked = False
 		
-		for action in self.actionHistory.VisibleActions():
-			if action.state == action.Done:
-				self.listView.InsertImageStringItem( itemIndex, 'Undo', self.ImageListItem('edit-undo') )
-			else:
-				self.listView.InsertImageStringItem( itemIndex, 'Redo', self.ImageListItem('edit-redo') )
+		for action in self.actionHistory.doneActions:
+			self.listView.InsertImageStringItem( itemIndex, 'Undo', self.ImageListItem('edit-undo') )
 			
 			imageName = action.GetImageName()
 			if imageName:
@@ -77,14 +73,22 @@ class ActionHistoryDialog(wx.Dialog):
 			else:
 				self.listView.SetStringItem( itemIndex, self.descriptionColumn, action.GetDescription() )
 			
-			if masked:
+			if action.IsIrreversible():
 				self.listView.SetItemTextColour(itemIndex, self.maskedColor)
+			
+			itemIndex += 1
+		
+		for action in reversed( self.actionHistory.undoneActions ):
+			self.listView.InsertImageStringItem( itemIndex, 'Redo', self.ImageListItem('edit-redo') )
+			
+			imageName = action.GetImageName()
+			if imageName:
+				self.listView.SetStringItem( itemIndex, self.descriptionColumn, action.GetDescription(), self.ImageListItem(imageName) )
 			else:
-				if action.IsIrreversible() or action.IsMaskedByOtherThan(nextAction):
-					masked = True
-					self.listView.SetItemTextColour(itemIndex, self.maskedColor)
-				
-				nextAction = action
+				self.listView.SetStringItem( itemIndex, self.descriptionColumn, action.GetDescription() )
+			
+			if action.IsIrreversible():
+				self.listView.SetItemTextColour(itemIndex, self.maskedColor)
 			
 			itemIndex += 1
 	

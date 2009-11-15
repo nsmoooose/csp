@@ -12,15 +12,16 @@ class ActionHistoryCommand(Command):
 		self.Enable(False)
 		
 		documentRegistry = wx.GetApp().GetDocumentRegistry()
-		documentRegistry.GetCurrentDocumentChangedSignal().Connect(self.on_CurrentDocumentChanged)
+		documentRegistry.GetActiveDocumentChangedSignal().Connect(self.on_ActiveDocumentChanged)
 	
-	def on_CurrentDocumentChanged(self, document):
+	def on_ActiveDocumentChanged(self, document):
+		if self.actionHistory is not None:
+			if self.actionHistory.GetChangedSignal() is not None:
+				self.actionHistory.GetChangedSignal().Disconnect(self.on_ActionHistoryChanged)
+		
 		if document is None:
-			if self.actionHistory is not None:
-				if self.actionHistory.GetChangedSignal() is not None:
-					self.actionHistory.GetChangedSignal().Disconnect(self.on_ActionHistoryChanged)
-				self.actionHistory = None
-				self.Enable(False)
+			self.actionHistory = None
+			self.Enable(False)
 		else:
 			self.actionHistory = document.actionHistory
 			self.actionHistory.GetChangedSignal().Connect(self.on_ActionHistoryChanged)

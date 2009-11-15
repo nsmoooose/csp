@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import wx
 
+from DocumentNotebook import DocumentNotebook
 from FilePropertiesPane import FilePropertiesPane
 import XmlPropertiesPaneItem
 import XmlPropertiesPaneItemArchive
@@ -38,11 +39,15 @@ class XmlPropertiesPane(FilePropertiesPane):
 	def __init__(self, parent, document, *args, **kwargs):
 		FilePropertiesPane.__init__(self, parent, document, rootLabel = "XML document", *args, **kwargs)
 		
+		DocumentNotebook.Instance.GetPageUnselectedSignal().Connect(self.on_PageUnselectedSignal)
+		DocumentNotebook.Instance.GetPageSelectedSignal().Connect(self.on_PageSelectedSignal)
+		
 		wx.GetApp().GetDocumentRegistry().ReferenceDocument(self.document)
 		self.document.GetChangedSignal().Connect(self.on_DocumentChanged)
 		
 		self.InitItemForXmlNode(self.root, self.document.GetXmlNodeDocument(), 0)
 		self.tree.Bind(wx.EVT_TREE_ITEM_EXPANDING, self.on_TreeItemExpanding)
+		self.tree.Bind(wx.EVT_TREE_SEL_CHANGED, self.on_TreeSelChanged)
 		
 		self.itemUpdaters = [
 			XmlPropertiesPaneItemArchive.ItemUpdaterString(self),
@@ -82,10 +87,10 @@ class XmlPropertiesPane(FilePropertiesPane):
 			]
 		
 		self.on_DocumentChanged(self.document)
-		self.RestoreTreeItemsState( self.root, self.document.viewData.get('XmlPropertiesPane', {}) )
 	
 	def Dispose(self):
-		self.document.viewData['XmlPropertiesPane'] = self.SaveTreeItemsState(self.root)
+		DocumentNotebook.Instance.GetPageUnselectedSignal().Disconnect(self.on_PageUnselectedSignal)
+		DocumentNotebook.Instance.GetPageSelectedSignal().Disconnect(self.on_PageSelectedSignal)
 		
 		self.document.GetChangedSignal().Disconnect(self.on_DocumentChanged)
 		wx.GetApp().GetDocumentRegistry().ReleaseDocument(self.document)
@@ -103,6 +108,12 @@ class XmlPropertiesPane(FilePropertiesPane):
 	def ImageListItemNames(self):
 		return self.imageListItemNames
 	
+	def on_PageUnselectedSignal(self, page):
+		page.externalData['XmlPropertiesPane'] = self.SaveTreeItemsState(self.root)
+	
+	def on_PageSelectedSignal(self, page):
+		self.RestoreTreeItemsState( self.root, page.externalData.get('XmlPropertiesPane') )
+	
 	def on_DocumentChanged(self, document):
 		self.tree.Freeze()
 		self.UpdateItem(self.root)
@@ -118,6 +129,12 @@ class XmlPropertiesPane(FilePropertiesPane):
 				break
 		self.tree.Thaw()
 	
+	def on_TreeSelChanged(self, event):
+		item = event.GetItem()
+		node = item.xmlNode
+		documentRegistry = wx.GetApp().GetDocumentRegistry()
+		documentRegistry.SetActiveDocument( node.documentOwner )
+	
 	def UpdateItem(self, item):
 		node = item.xmlNode
 		for itemUpdater in self.itemUpdaters:
@@ -132,27 +149,30 @@ class XmlPropertiesPane(FilePropertiesPane):
 		item.level = level
 	
 	def SaveTreeItemsState(self, item):
-		childrenState = {}
-		for child in self.GetItemChildren(item):
-			itemState = ItemState()
-			if self.tree.IsSelected(child):
-				itemState.isSelected = True
-			if self.tree.IsExpanded(child):
-				itemState.isExpanded = True
-				itemState.childrenState = self.SaveTreeItemsState(child)
-			if itemState.HasNonDefaultValue():
-				childrenState[child.xmlNode] = itemState
-		return childrenState
+		itemState = ItemState()
+		if self.tree.IsSelected(item):
+			itemState.isSelected = True
+		if self.tree.IsExpanded(item):
+			itemState.isExpanded = True
+			for child in self.GetItemChildren(item):
+				childItemState = self.SaveTreeItemsState(child)
+				if childItemState.HasNonDefaultValue():
+					itemState.childrenState[child.xmlNode] = childItemState
+		return itemState
 	
-	def RestoreTreeItemsState(self, item, childrenState):
-		for child in self.GetItemChildren(item):
-			if child.xmlNode in childrenState:
-				itemState = childrenState[child.xmlNode]
-				if itemState.isSelected:
-					self.SelectItem(child)
-				if itemState.isExpanded:
-					self.tree.Expand(child)
-					self.RestoreTreeItemsState(child, itemState.childrenState)
+	def RestoreTreeItemsState(self, item, itemState):
+		if itemState is None:
+			return
+		if itemState.isSelected:
+			self.SelectItem(item)
+		if itemState.isExpanded:
+			self.tree.Expand(item)
+			defaultItemState = ItemState()
+			for child in self.GetItemChildren(item):
+				childItemState = itemState.childrenState.get(child.xmlNode, defaultItemState)
+				self.RestoreTreeItemsState(child, childItemState)
+		else:
+			self.tree.Collapse(item)
 	
 	def GetItemChildren(self, item):
 		child, unused = self.tree.GetFirstChild(item)

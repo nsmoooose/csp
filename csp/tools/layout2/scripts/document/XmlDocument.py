@@ -12,16 +12,16 @@ class XmlDocument(FileDocument):
 		self.xmlNodeDocument = None
 		self.nodeFactory = None
 		
-		# Can be used by views of the document to store private data.
-		# Each view must use a unique key.
-		self.viewData = {}
+		# Can be used by any object to store private data.
+		# Each object must use a unique key.
+		self.externalData = {}
 	
 	def Dispose(self):
 		FileDocument.Dispose(self)
 		self.xmlNodeDocument.Dispose()
 		self.xmlNodeDocument = None
 		self.nodeFactory = None
-		self.viewData = {}
+		self.externalData = {}
 	
 	def New(self):
 		if self.xmlNodeDocument is not None:

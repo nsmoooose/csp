@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import weakref
 import wx
 
 from AutoFitTextCtrl import AutoFitTextCtrl
@@ -49,7 +50,7 @@ class ItemUpdaterData(ItemUpdaterWithoutChildren):
 			self.SetItemImage( item, self.GetItemImage() )
 			self.propertiesPane.tree.SetItemText( item, self.GetItemText() )
 		
-		itemWindow = AutoFitTextCtrl(self.propertiesPane.tree, item.xmlNode.GetText(), style = wx.TE_READONLY)
+		itemWindow = ItemWindowSimple(self.propertiesPane.tree, item, value = item.xmlNode.GetText(), style = wx.TE_READONLY)
 		self.SetItemWindow(item, itemWindow, self.CreateModifyWindow)
 	
 	def GetItemImage(self):
@@ -69,7 +70,7 @@ class ModifyWindowData(wx.TextCtrl):
 		self.nodeName = nodeName
 		self.imageName = imageName
 	
-	def GetCommand(self):
+	def GetAction(self):
 		return ModifyXmlDataAction( self.nodeName, self.imageName, self.node, self.GetValue() )
 
 
@@ -102,7 +103,7 @@ class ItemUpdaterAttribute(ItemUpdaterWithoutChildren):
 		
 		self.propertiesPane.tree.SetItemText( item, item.xmlNode.GetName() )
 		
-		itemWindow = AutoFitTextCtrl(self.propertiesPane.tree, item.xmlNode.GetValue(), style = wx.TE_READONLY)
+		itemWindow = ItemWindowSimple(self.propertiesPane.tree, item, value = item.xmlNode.GetValue(), style = wx.TE_READONLY)
 		self.SetItemWindow(item, itemWindow, self.CreateModifyWindow)
 	
 	def CreateModifyWindow(self, parent, node):
@@ -115,7 +116,7 @@ class ModifyWindowAttribute(wx.TextCtrl):
 		self.node = node
 		self.imageName = imageName
 	
-	def GetCommand(self):
+	def GetAction(self):
 		return ModifyXmlAttributeAction( self.imageName, self.node, self.GetValue() )
 
 
@@ -236,7 +237,7 @@ class ItemUpdaterDocument(ItemUpdaterWithChildren):
 				self.SetItemImage(item, 'root')
 				self.propertiesPane.tree.SetItemText(item, 'XML document')
 			
-			itemWindow = AutoFitTextCtrl(self.propertiesPane.tree, item.xmlNode.documentOwner.GetFileName(), style = wx.TE_READONLY)
+			itemWindow = ItemWindowSimple(self.propertiesPane.tree, item, value = item.xmlNode.documentOwner.GetFileName(), style = wx.TE_READONLY)
 			self.SetItemWindow(item, itemWindow)
 
 
@@ -248,7 +249,7 @@ class ItemUpdaterElement(ItemUpdaterWithChildren):
 			self.SetItemImage( item, self.GetItemImage() )
 		
 		self.propertiesPane.tree.SetItemText( item, self.GetItemText(item.xmlNode) )
-		self.SetItemWindow( item, self.GetItemWindow(item.xmlNode), self.GetModifyWindow(item.xmlNode) )
+		self.SetItemWindow( item, self.GetItemWindow(item), self.GetModifyWindow(item.xmlNode) )
 	
 	def GetItemImage(self):
 		return 'element'
@@ -256,11 +257,32 @@ class ItemUpdaterElement(ItemUpdaterWithChildren):
 	def GetItemText(self, node):
 		return '<' + node.domNode.tagName + '>'
 	
-	def GetItemWindow(self, node):
+	def GetItemWindow(self, item):
 		return None
 	
 	def GetModifyWindow(self, node):
 		return None
+
+
+class ItemWindowSimple(AutoFitTextCtrl):
+	def __init__(self, parent, item, tree = None, value = wx.EmptyString, style = 0, *args, **kwargs):
+		AutoFitTextCtrl.__init__(self, parent, value = value, style = style, *args, **kwargs)
+		self.Bind(wx.EVT_SET_FOCUS, self.on_SetFocus)
+		
+		if tree is None:
+			tree = parent
+		self.tree = weakref.ref(tree)
+		self.item = weakref.ref(item)
+	
+	def on_SetFocus(self, event):
+		event.Skip()
+		tree = self.tree()
+		if tree is None:
+			return
+		item = self.item()
+		if item is None:
+			return
+		tree.SelectItem(item)
 
 
 class ItemErrorImage(wx.StaticBitmap):
@@ -295,17 +317,17 @@ class ItemWindowWithError(wx.Panel):
 				sizer.AddSpacer(5)
 				editBitmap = wx.ArtProvider.GetBitmap('pencil', size = (16, 16))
 				editButton = wx.BitmapButton(self, bitmap = editBitmap)
-				editButton.Bind(wx.EVT_BUTTON, self.onEditButton)
+				editButton.Bind(wx.EVT_BUTTON, self.on_EditButton)
 				sizer.AddF( editButton, wx.SizerFlags().Center() )
 		
 		self.Fit()
 	
-	def onEditButton(self, event):
-		command = None
+	def on_EditButton(self, event):
+		action = None
 		modifyDialog = ModifyDialog(self, self.modifyWindowFactory, self.node)
 		if modifyDialog.ShowModal() == wx.ID_OK:
-			command = modifyDialog.modifyWindow.GetCommand()
-			wx.CallLater(1, command.Execute)
+			action = modifyDialog.modifyWindow.GetAction()
+			wx.CallLater(1, action.Execute)
 		modifyDialog.Destroy()
 
 

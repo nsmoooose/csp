@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 import wx
 
-class OutputWindow(wx.Panel):
+from DocumentNotebookPage import DocumentNotebookPage
+
+class OutputWindow(wx.Panel, DocumentNotebookPage):
 	"""This window holds a multi line text box that displays
 	a log of events from any process that is sending message
 	signals. For example when we are compiling a new sim.dar

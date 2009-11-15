@@ -2,6 +2,8 @@
 import wx
 import wx.aui
 
+from csp.base.signals import Signal
+
 class DocumentNotebook(wx.aui.AuiNotebook):
 	"""This class handles the UI of all opened documents in tab views.
 	
@@ -16,6 +18,8 @@ class DocumentNotebook(wx.aui.AuiNotebook):
 	def __init__(self, *args, **kwargs):
 		wx.aui.AuiNotebook.__init__(self, style = wx.NO_BORDER | wx.aui.AUI_NB_DEFAULT_STYLE | wx.aui.AUI_NB_WINDOWLIST_BUTTON, *args, **kwargs)
 		
+		self.pageUnselectedSignal = Signal()
+		self.pageSelectedSignal = Signal()
 		self.inhibitCurrentDocumentChange = False
 		
 		self.Bind(wx.aui.EVT_AUINOTEBOOK_PAGE_CHANGED, self.on_PageChanged)
@@ -23,18 +27,36 @@ class DocumentNotebook(wx.aui.AuiNotebook):
 	
 	def on_PageChanged(self, event):
 		if not self.inhibitCurrentDocumentChange:
+			oldSelection = event.GetOldSelection()
+			if oldSelection != -1:
+				oldPage = self.GetPage(oldSelection)
+				oldPage.on_PageUnselected()
+				self.pageUnselectedSignal.Emit(oldPage)
 			newSelection = event.GetSelection()
 			newPage = self.GetPage(newSelection)
-			documentRegistry = wx.GetApp().GetDocumentRegistry()
-			documentRegistry.SetCurrentDocument(newPage.GetDocument())
+			newPage.on_PageSelected()
+			self.pageSelectedSignal.Emit(newPage)
 	
 	def on_PageClose(self, event):
 		documentRegistry = wx.GetApp().GetDocumentRegistry()
 		documentRegistry.SetCurrentDocument(None)
+		documentRegistry.SetActiveDocument(None)
 		
 		currentSelection = event.GetSelection()
 		currentPage = self.GetPage(currentSelection)
 		currentPage.Dispose()
+
+	def GetPageUnselectedSignal(self):
+		"""Whenever the current page is replaced by another
+		this signal is emitted to all listeners. The page
+		is attached to the signal as the first argument."""
+		return self.pageUnselectedSignal
+
+	def GetPageSelectedSignal(self):
+		"""Whenever the current page is replaced by another
+		this signal is emitted to all listeners. The page
+		is attached to the signal as the first argument."""
+		return self.pageSelectedSignal
 	
 	def AddDocumentPage(self, PageClass, document, caption = None, select = True):
 		page = PageClass(self, style = wx.BORDER_NONE)
@@ -51,6 +73,7 @@ class DocumentNotebook(wx.aui.AuiNotebook):
 		
 		documentRegistry = wx.GetApp().GetDocumentRegistry()
 		documentRegistry.SetCurrentDocument(None)
+		documentRegistry.SetActiveDocument(None)
 		
 		currentPage = self.GetPage(currentSelection)
 		currentPage.Dispose()
@@ -63,6 +86,7 @@ class DocumentNotebook(wx.aui.AuiNotebook):
 		
 		documentRegistry = wx.GetApp().GetDocumentRegistry()
 		documentRegistry.SetCurrentDocument(None)
+		documentRegistry.SetActiveDocument(None)
 		
 		while self.GetPageCount() != 0:
 			currentPage = self.GetPage(0)

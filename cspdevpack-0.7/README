@@ -1,0 +1,30 @@
+Combat Simulator Project - Devpack 0.6 for Windows
+
+This package contains header files and prebuilt libraries of third-party
+packages needed to build CSP.  This package is provided simply as a convenience
+to those building CSP on the Microsoft Windows platform; the original source
+distributions of these libraries may also be downloaded from their respective
+websites and built manually.
+
+See COPYING and LICENSES for details about the third-party libraries included
+in this package.
+
+Note that in addition to these libraries, the Microsoft Platform SDK and
+Microsoft Visual C++ compiler may be needed to build CSP from source.  Also
+be aware that the CSP build system uses the CSPDEVPACK environment variable
+to locate the devpack libraries and headers.  This variable is set FOR THE
+CURRENT USER ONLY via the registry during the installation process.  You
+may need to manually configure this variable if the devpack installation
+is shared between multiple users on a single machine.
+
+All binary libraries included in this package were built under Microsoft
+Windows XP SP2 using the Microsoft 32-bit C/C++ Optimizing Compiler Version
+14.00.50727.42, with the exception of OpenAL, which was copied directly from
+the OpenAL 1.1 SDK.  Unless otherwise noted, the /O2 and /MD compiler switches
+and the /RELEASE switch were used.  The libraries depend on standard system
+libraries, as well as Microsoft Visual C++ runtime libraries (msvcr80.dll and
+msvcrp80.dll), which are not included in this package.
+
+For more information, visit http://csp.sf.net/wiki/Devpack.  Questions or
+comments should be posted to the forums at http://csp.sf.net/forum.
+

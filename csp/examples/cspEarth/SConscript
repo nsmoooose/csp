@@ -22,6 +22,8 @@ build.Program(env,
 	name = 'cspEarth',
 	sources = [
 		'Program.cpp',
+		'InputHandler.h',
+		'InputHandler.cpp'
 	],
 	deps = ['osg', 'csplib', 'cspsim'],
 	aliases = ['examples', 'cspEarth'])

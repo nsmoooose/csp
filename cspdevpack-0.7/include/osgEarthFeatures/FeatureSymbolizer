@@ -1,0 +1,167 @@
+/* --*-c++-*-- */
+/* osgEarth - Dynamic map generation toolkit for OpenSceneGraph
+ * Copyright 2008-2009 Pelican Ventures, Inc.
+ * http://osgearth.org
+ *
+ * osgEarth is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>
+ */
+
+#ifndef OSGEARTHFEATURES_FEATURE_SYMBOLIZER_H
+#define OSGEARTHFEATURES_FEATURE_SYMBOLIZER_H 1
+
+#include <osgEarthFeatures/Common>
+#include <osgEarthFeatures/FeatureModelSource>
+#include <osgEarthSymbology/Symbolizer>
+#include <osg/Node>
+
+namespace osgEarth { namespace Features
+{
+
+    class OSGEARTHFEATURES_EXPORT FeatureSymbolizerContext : public Symbology::SymbolizerContext
+    {
+    public:
+        FeatureSymbolizerContext(FeatureModelSource* model, 
+                                 osg::Referenced* buildData) : _featureModel(model), _buildData(buildData) {}
+
+        FeatureModelSource* getModelSource() { return _featureModel.get(); }
+        osg::Referenced* getBuildData() { return _buildData.get(); }
+
+    protected:
+        osg::ref_ptr<FeatureModelSource> _featureModel;
+        osg::ref_ptr<osg::Referenced> _buildData;
+    };
+
+    
+    class OSGEARTHFEATURES_EXPORT FeatureSymbolizerInput : public Symbology::SymbolizerInput
+    {
+    public:
+        FeatureSymbolizerInput(const FeatureList& features) : _features(features) {}
+        const FeatureList& getFeatures() const { return _features; }
+
+    protected:
+        const FeatureList& _features;
+    };
+
+    /**
+     * A FeatureSymbolizer.
+     */
+    class SymbolizerFactory;
+    class OSGEARTHFEATURES_EXPORT FeatureSymbolizer : public Symbology::Symbolizer
+    {
+    public:
+        FeatureSymbolizer(SymbolizerFactory* factory) : _factory(factory) {}
+
+        virtual bool update(
+            const Symbology::SymbolizerInput* dataInput,
+            const Symbology::Style* style,
+            osg::Group* attachPoint,
+            Symbology::SymbolizerContext* context,
+            Symbology::Symbolizer::State* state );
+
+        SymbolizerFactory* getSymbolizerFactory() { return _factory.get(); }
+
+    protected:
+
+        osg::ref_ptr<SymbolizerFactory> _factory;
+    };
+
+    /**
+     * A FeatureSymbolizer.
+     */
+    class OSGEARTHFEATURES_EXPORT GridFeatureSymbolizer : public FeatureSymbolizer
+    {
+    public:
+        GridFeatureSymbolizer(SymbolizerFactory* factory, const Symbology::Query& query) : FeatureSymbolizer(factory), _query(query) {}
+
+        virtual bool update(
+            const Symbology::SymbolizerInput* dataInput,
+            const Symbology::Style* style,
+            osg::Group* attachPoint,
+            Symbology::SymbolizerContext* context,
+            Symbology::Symbolizer::State* state );
+
+        virtual osg::Group* gridAndCreateNodeForStyle(
+            const Symbology::Style* style,
+            const Symbology::Query& query,
+            FeatureSymbolizerContext* context );
+
+    protected:
+        Symbology::Query _query;
+    };
+
+
+#if 0
+    class OSGEARTHFEATURES_EXPORT FeatureNodeSelector : public osg::Group
+    {
+    public:
+        FeatureNodeSelector(FeatureModelSource* model) : _model(model), _dirtySelection(true) {}
+        virtual void traverse(osg::NodeVisitor& nv);
+        void dirtySelection() { _dirtySelection = true;}
+
+        virtual osg::Node* createGridSymbolizerNode(
+            const Symbology::Style* style,
+            const Symbology::Query& query,
+            FeatureSymbolizerContext* context) { return 0; }
+
+        virtual osg::Node* createSymbolizerNode(
+            const Symbology::Style* style, 
+            const FeatureList& features, 
+            FeatureSymbolizerContext* ctx ) = 0;
+
+    protected:
+        bool _dirtySelection;
+        osg::ref_ptr<FeatureModelSource> _model;
+    };
+#endif
+
+    class OSGEARTHFEATURES_EXPORT SymbolizerFactory : public osg::Referenced
+    {
+    public:
+        virtual osg::Node* createNodeForStyle(
+            const Symbology::Style* style,
+            const FeatureList& features,
+            FeatureSymbolizerContext* context,
+            osg::Node** out_newNode = 0L ) = 0;
+
+        virtual FeatureModelSource* getFeatureModelSource() = 0;
+    };
+
+
+    class OSGEARTHFEATURES_EXPORT FeatureSymbolizerGraph : public osg::Group
+    {
+    public:
+        FeatureSymbolizerGraph(SymbolizerFactory* factory) : _factory(factory), _dirty(true) {}
+        virtual void traverse(osg::NodeVisitor& nv);
+        void dirty() { _dirty = true;}
+
+        virtual osg::Node* createGridSymbolizerNode(
+            const Symbology::Style* style,
+            const Symbology::Query& query,
+            FeatureSymbolizerContext* context);
+
+        virtual osg::Node* createSymbolizerNode(
+            const Symbology::Style* style, 
+            const FeatureList& features, 
+            FeatureSymbolizerContext* ctx );
+
+    protected:
+        osg::ref_ptr<SymbolizerFactory> _factory;
+        bool _dirty;
+    };
+
+
+
+}}
+
+#endif

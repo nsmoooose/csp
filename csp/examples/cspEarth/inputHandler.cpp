@@ -8,6 +8,7 @@
 #include "inputHandler.h"
 
 extern void dumpSceneToDisk();
+extern void showNodeNames();
 extern osgEarthUtil::EarthManipulator* getManipulator();
 
 
@@ -42,6 +43,12 @@ bool inputHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdap
 				// dump root node of scene to disk
 				{
 					dumpSceneToDisk();				
+					return true;
+				}
+				if (ea.getKey()==osgGA::GUIEventAdapter::KEY_F3)
+				// dump root node of scene to disk
+				{
+					showNodeNames();
 					return true;
 				}
 				if (ea.getKey() >= '1' && ea.getKey() <= '5')

@@ -27,6 +27,7 @@
 #include <osgDB/WriteFile>
 #include <osgGA/FlightManipulator>
 #include <osg/Group>
+#include <osg/NodeCallback>
 #include <osgEarthUtil/Viewpoint>
 #include <osgEarthUtil/EarthManipulator>
 
@@ -34,6 +35,7 @@
 #include <iostream>
 
 #include "InputHandler.h"
+#include "ShowNodeNamesVisitor.h"
 
 using namespace csp;
 
@@ -48,7 +50,79 @@ osgEarthUtil::EarthManipulator* manip;
 *  are normally serialized directly from xml files.
 */
 
-osg::Camera* createHUD()
+class StatsOverlayCallback : public osg::NodeCallback
+{
+public:
+	StatsOverlayCallback() : _counter( 0. ) {}
+
+	virtual void operator()( osg::Node* node, osg::NodeVisitor* nv )
+	{
+		std::cout<<"Camera update callback - pre traverse"<<node<<std::endl;
+		_counter += .1;
+		traverse( node, nv );
+	}
+
+protected:
+	float _counter;
+};
+
+//class InsertCallbacksVisitor : public osg::NodeVisitor
+//{
+//
+//   public:
+//   
+//        InsertCallbacksVisitor():osg::NodeVisitor(osg::NodeVisitor::TRAVERSE_ALL_CHILDREN)
+//        {
+//        }
+//        
+//        virtual void apply(osg::Node& node)
+//        {
+////             node.setUpdateCallback(new UpdateCallback());
+////             node.setCullCallback(new CullCallback());
+//             traverse(node);
+//        }
+//
+//        virtual void apply(osg::Geode& geode)
+//        {
+////            geode.setUpdateCallback(new UpdateCallback());
+//			geode.setUpdateCallback(new StatsOverlayCallback());
+//            
+//            //note, it makes no sense to attach a cull callback to the node
+//            //at there are no nodes to traverse below the geode, only
+//            //drawables, and as such the Cull node callbacks is ignored.
+//            //If you wish to control the culling of drawables
+//            //then use a drawable cullback...
+//
+//            for(unsigned int i=0;i<geode.getNumDrawables();++i)
+//            {
+////                geode.getDrawable(i)->setUpdateCallback(new DrawableUpdateCallback());
+////                geode.getDrawable(i)->setCullCallback(new DrawableCullCallback());
+////                geode.getDrawable(i)->setDrawCallback(new DrawableDrawCallback());
+//            }
+//        }
+//        
+//        virtual void apply(osg::Transform& node)
+//        {
+//            apply((osg::Node&)node);
+//        }
+//};
+
+void showNodeNames()
+{
+	osgViewer::ViewerBase::Scenes viewerScenes;
+	osgViewer::Scene* scene;
+	ShowNodeNamesVisitor snnv( true );
+
+	viewer.getScenes(viewerScenes, true);
+	for (osgViewer::ViewerBase::Scenes::iterator it = viewerScenes.begin(); it!=viewerScenes.end(); ++it)
+	{
+		scene = *it;
+		osg::Node* node = scene->getSceneData();
+		node->accept( snnv );
+	}
+}
+
+osg::Camera* createStatsOverlay()
 {
     // create a camera to set up the projection and model view matrices, and the subgraph to draw in the HUD
     osg::Camera* camera = new osg::Camera;
@@ -75,6 +149,7 @@ osg::Camera* createHUD()
     {
 
         osg::Geode* geode = new osg::Geode();
+		geode->setDataVariance( osg::Object::DYNAMIC );
 
         std::string timesFont("fonts/arial.ttf");
 
@@ -85,78 +160,17 @@ osg::Camera* createHUD()
         osg::Vec3 position(150.0f,800.0f,0.0f);
         osg::Vec3 delta(0.0f,-120.0f,0.0f);
 
-        {
-            osgText::Text* text = new  osgText::Text;
-            geode->addDrawable( text );
+        osgText::Text* text = new  osgText::Text;
+		text->setDataVariance( osg::Object::DYNAMIC );
+        geode->addDrawable( text );
 
-            text->setFont(timesFont);
-            text->setPosition(position);
-            text->setText("Head Up Displays are simple :-)");
+        text->setFont(timesFont);
+        text->setPosition(position);
+        text->setText("And finally set the Camera's RenderOrder to POST_RENDER\n"
+                      "to make sure it's drawn last.");
 
-            position += delta;
-        }    
-
-
-        {
-            osgText::Text* text = new  osgText::Text;
-            geode->addDrawable( text );
-
-            text->setFont(timesFont);
-            text->setPosition(position);
-            text->setText("All you need to do is create your text in a subgraph.");
-
-            position += delta;
-        }    
-
-
-        {
-            osgText::Text* text = new  osgText::Text;
-            geode->addDrawable( text );
-
-            text->setFont(timesFont);
-            text->setPosition(position);
-            text->setText("Then place an osg::Camera above the subgraph\n"
-                          "to create an orthographic projection.\n");
-
-            position += delta;
-        } 
-
-        {
-            osgText::Text* text = new  osgText::Text;
-            geode->addDrawable( text );
-
-            text->setFont(timesFont);
-            text->setPosition(position);
-            text->setText("Set the Camera's ReferenceFrame to ABSOLUTE_RF to ensure\n"
-                          "it remains independent from any external model view matrices.");
-
-            position += delta;
-        } 
-
-        {
-            osgText::Text* text = new  osgText::Text;
-            geode->addDrawable( text );
-
-            text->setFont(timesFont);
-            text->setPosition(position);
-            text->setText("And set the Camera's clear mask to just clear the depth buffer.");
-
-            position += delta;
-        }    
-
-        {
-            osgText::Text* text = new  osgText::Text;
-            geode->addDrawable( text );
-
-            text->setFont(timesFont);
-            text->setPosition(position);
-            text->setText("And finally set the Camera's RenderOrder to POST_RENDER\n"
-                          "to make sure it's drawn last.");
-
-            position += delta;
-        }    
-
-
+        position += delta;
+        
         {
             osg::BoundingBox bb;
             for(unsigned int i=0;i<geode->getNumDrawables();++i)
@@ -194,8 +208,9 @@ osg::Camera* createHUD()
             geode->addDrawable(geom);
         }
 
+		geode->setUpdateCallback(new StatsOverlayCallback());
         camera->addChild(geode);
-    }
+	}
 
     return camera;
 }
@@ -262,11 +277,11 @@ void setupCameraAndContext(osgViewer::Viewer& viewer, int windowWidth, int windo
     viewer.addSlave(camera.get(), osg::Matrixd(), osg::Matrixd::scale(aspectRatioScale,1.0,1.0));
 
 	// create HUD camera
-	osg::Camera* hudCamera = createHUD();
-    hudCamera->setGraphicsContext(gc.get());
-    hudCamera->setViewport(0,0,gc.get()->getTraits()->width, gc.get()->getTraits()->height);
+	osg::Camera* overlayCamera = createStatsOverlay();
+    overlayCamera->setGraphicsContext(gc.get());
+    overlayCamera->setViewport(0,0,gc.get()->getTraits()->width, gc.get()->getTraits()->height);
 
-    viewer.addSlave(hudCamera, false);
+    viewer.addSlave(overlayCamera, false);
 }
 
 void dumpSceneToDisk()
@@ -348,6 +363,11 @@ int main( int argc, char **argv )
 	osg::ref_ptr<osg::Node> topNode = new osg::Node;
 
 	osg::Group* group = new osg::Group;
+	group->setName("root group");
+
+	// insert all the callbacks
+    //InsertCallbacksVisitor icv;
+    //group->accept(icv);
 
 	// =====================================================================
 	// construct the viewer
@@ -371,7 +391,7 @@ int main( int argc, char **argv )
 
 	// Set scene data
 	group->addChild(globe.get());
-	//group->addChild(my_model->getModel().get());
+	group->addChild(my_model->getModel().get());
 
 	//viewer.setSceneData(my_model->getModel().get());
 	viewer.setSceneData(group);

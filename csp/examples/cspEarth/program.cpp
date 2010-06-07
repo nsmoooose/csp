@@ -41,6 +41,7 @@ using namespace csp;
 
 osgViewer::Viewer viewer;
 osgEarthUtil::EarthManipulator* manip;
+osg::ref_ptr<osg::Camera> statsCamera = new osg::Camera;
 
 /** This sample application will manually create a single object model
 *  to be displayed in a scene. A object model represents basic info
@@ -53,59 +54,15 @@ osgEarthUtil::EarthManipulator* manip;
 class StatsOverlayCallback : public osg::NodeCallback
 {
 public:
-	StatsOverlayCallback() : _counter( 0. ) {}
+	StatsOverlayCallback() {}
 
 	virtual void operator()( osg::Node* node, osg::NodeVisitor* nv )
 	{
-		std::cout<<"Camera update callback - pre traverse"<<node<<std::endl;
-		_counter += .1;
 		traverse( node, nv );
 	}
 
 protected:
-	float _counter;
 };
-
-//class InsertCallbacksVisitor : public osg::NodeVisitor
-//{
-//
-//   public:
-//   
-//        InsertCallbacksVisitor():osg::NodeVisitor(osg::NodeVisitor::TRAVERSE_ALL_CHILDREN)
-//        {
-//        }
-//        
-//        virtual void apply(osg::Node& node)
-//        {
-////             node.setUpdateCallback(new UpdateCallback());
-////             node.setCullCallback(new CullCallback());
-//             traverse(node);
-//        }
-//
-//        virtual void apply(osg::Geode& geode)
-//        {
-////            geode.setUpdateCallback(new UpdateCallback());
-//			geode.setUpdateCallback(new StatsOverlayCallback());
-//            
-//            //note, it makes no sense to attach a cull callback to the node
-//            //at there are no nodes to traverse below the geode, only
-//            //drawables, and as such the Cull node callbacks is ignored.
-//            //If you wish to control the culling of drawables
-//            //then use a drawable cullback...
-//
-//            for(unsigned int i=0;i<geode.getNumDrawables();++i)
-//            {
-////                geode.getDrawable(i)->setUpdateCallback(new DrawableUpdateCallback());
-////                geode.getDrawable(i)->setCullCallback(new DrawableCullCallback());
-////                geode.getDrawable(i)->setDrawCallback(new DrawableDrawCallback());
-//            }
-//        }
-//        
-//        virtual void apply(osg::Transform& node)
-//        {
-//            apply((osg::Node&)node);
-//        }
-//};
 
 void showNodeNames()
 {
@@ -122,10 +79,79 @@ void showNodeNames()
 	}
 }
 
-osg::Camera* createStatsOverlay()
+
+osg::ref_ptr<osg::Geode> createStatsGeometry()
+{
+
+    osg::ref_ptr<osg::Geode> geode = new osg::Geode();
+	geode->setDataVariance( osg::Object::DYNAMIC );
+	geode->setName("overlay");
+
+    std::string timesFont("fonts/arial.ttf");
+
+    // turn lighting off for the text and disable depth test to ensure it's always ontop.
+    osg::StateSet* stateset = geode->getOrCreateStateSet();
+    stateset->setMode(GL_LIGHTING,osg::StateAttribute::OFF);
+
+    osg::Vec3 position(150.0f,800.0f,0.0f);
+    osg::Vec3 delta(0.0f,-120.0f,0.0f);
+
+    osgText::Text* text = new  osgText::Text;
+	text->setDataVariance( osg::Object::DYNAMIC );
+    geode->addDrawable( text );
+
+    text->setFont(timesFont);
+    text->setPosition(position);
+    text->setText("And finally set the Camera's RenderOrder to POST_RENDER\n"
+                    "to make sure it's drawn last.");
+
+    position += delta;
+        
+    {
+        osg::BoundingBox bb;
+        for(unsigned int i=0;i<geode->getNumDrawables();++i)
+        {
+            bb.expandBy(geode->getDrawable(i)->getBound());
+        }
+
+        osg::Geometry* geom = new osg::Geometry;
+
+        osg::Vec3Array* vertices = new osg::Vec3Array;
+        float depth = bb.zMin()-0.1;
+        vertices->push_back(osg::Vec3(bb.xMin(),bb.yMax(),depth));
+        vertices->push_back(osg::Vec3(bb.xMin(),bb.yMin(),depth));
+        vertices->push_back(osg::Vec3(bb.xMax(),bb.yMin(),depth));
+        vertices->push_back(osg::Vec3(bb.xMax(),bb.yMax(),depth));
+        geom->setVertexArray(vertices);
+
+        osg::Vec3Array* normals = new osg::Vec3Array;
+        normals->push_back(osg::Vec3(0.0f,0.0f,1.0f));
+        geom->setNormalArray(normals);
+        geom->setNormalBinding(osg::Geometry::BIND_OVERALL);
+
+        osg::Vec4Array* colors = new osg::Vec4Array;
+        colors->push_back(osg::Vec4(1.0f,1.0,0.8f,0.2f));
+        geom->setColorArray(colors);
+        geom->setColorBinding(osg::Geometry::BIND_OVERALL);
+
+        geom->addPrimitiveSet(new osg::DrawArrays(GL_QUADS,0,4));
+
+        osg::StateSet* stateset = geom->getOrCreateStateSet();
+        stateset->setMode(GL_BLEND,osg::StateAttribute::ON);
+        //stateset->setAttribute(new osg::PolygonOffset(1.0f,1.0f),osg::StateAttribute::ON);
+        stateset->setRenderingHint(osg::StateSet::TRANSPARENT_BIN);
+
+        geode->addDrawable(geom);
+    }
+
+	geode->setUpdateCallback(new StatsOverlayCallback());
+	return geode;
+}
+
+osg::ref_ptr<osg::Camera> createStatsOverlayCamera()
 {
     // create a camera to set up the projection and model view matrices, and the subgraph to draw in the HUD
-    osg::Camera* camera = new osg::Camera;
+	osg::ref_ptr<osg::Camera> camera = statsCamera;
 
     // set the projection matrix
     camera->setProjectionMatrix(osg::Matrix::ortho2D(0,1280,0,1024));
@@ -142,77 +168,9 @@ osg::Camera* createStatsOverlay()
 
     // we don't want the camera to grab event focus from the viewers main camera(s).
     camera->setAllowEventFocus(false);
-    
 
-
-    // add to this camera a subgraph to render
-    {
-
-        osg::Geode* geode = new osg::Geode();
-		geode->setDataVariance( osg::Object::DYNAMIC );
-
-        std::string timesFont("fonts/arial.ttf");
-
-        // turn lighting off for the text and disable depth test to ensure it's always ontop.
-        osg::StateSet* stateset = geode->getOrCreateStateSet();
-        stateset->setMode(GL_LIGHTING,osg::StateAttribute::OFF);
-
-        osg::Vec3 position(150.0f,800.0f,0.0f);
-        osg::Vec3 delta(0.0f,-120.0f,0.0f);
-
-        osgText::Text* text = new  osgText::Text;
-		text->setDataVariance( osg::Object::DYNAMIC );
-        geode->addDrawable( text );
-
-        text->setFont(timesFont);
-        text->setPosition(position);
-        text->setText("And finally set the Camera's RenderOrder to POST_RENDER\n"
-                      "to make sure it's drawn last.");
-
-        position += delta;
-        
-        {
-            osg::BoundingBox bb;
-            for(unsigned int i=0;i<geode->getNumDrawables();++i)
-            {
-                bb.expandBy(geode->getDrawable(i)->getBound());
-            }
-
-            osg::Geometry* geom = new osg::Geometry;
-
-            osg::Vec3Array* vertices = new osg::Vec3Array;
-            float depth = bb.zMin()-0.1;
-            vertices->push_back(osg::Vec3(bb.xMin(),bb.yMax(),depth));
-            vertices->push_back(osg::Vec3(bb.xMin(),bb.yMin(),depth));
-            vertices->push_back(osg::Vec3(bb.xMax(),bb.yMin(),depth));
-            vertices->push_back(osg::Vec3(bb.xMax(),bb.yMax(),depth));
-            geom->setVertexArray(vertices);
-
-            osg::Vec3Array* normals = new osg::Vec3Array;
-            normals->push_back(osg::Vec3(0.0f,0.0f,1.0f));
-            geom->setNormalArray(normals);
-            geom->setNormalBinding(osg::Geometry::BIND_OVERALL);
-
-            osg::Vec4Array* colors = new osg::Vec4Array;
-            colors->push_back(osg::Vec4(1.0f,1.0,0.8f,0.2f));
-            geom->setColorArray(colors);
-            geom->setColorBinding(osg::Geometry::BIND_OVERALL);
-
-            geom->addPrimitiveSet(new osg::DrawArrays(GL_QUADS,0,4));
-
-            osg::StateSet* stateset = geom->getOrCreateStateSet();
-            stateset->setMode(GL_BLEND,osg::StateAttribute::ON);
-            //stateset->setAttribute(new osg::PolygonOffset(1.0f,1.0f),osg::StateAttribute::ON);
-            stateset->setRenderingHint(osg::StateSet::TRANSPARENT_BIN);
-
-            geode->addDrawable(geom);
-        }
-
-		geode->setUpdateCallback(new StatsOverlayCallback());
-        camera->addChild(geode);
-	}
-
-    return camera;
+	//camera->addChild( createStatsGeometry() );
+    return camera.get();
 }
 
 void setupCameraAndContext(osgViewer::Viewer& viewer, int windowWidth, int windowHeight)
@@ -277,11 +235,11 @@ void setupCameraAndContext(osgViewer::Viewer& viewer, int windowWidth, int windo
     viewer.addSlave(camera.get(), osg::Matrixd(), osg::Matrixd::scale(aspectRatioScale,1.0,1.0));
 
 	// create HUD camera
-	osg::Camera* overlayCamera = createStatsOverlay();
+	osg::ref_ptr<osg::Camera> overlayCamera = createStatsOverlayCamera();
     overlayCamera->setGraphicsContext(gc.get());
     overlayCamera->setViewport(0,0,gc.get()->getTraits()->width, gc.get()->getTraits()->height);
 
-    viewer.addSlave(overlayCamera, false);
+    viewer.addSlave(overlayCamera.get(), false);
 }
 
 void dumpSceneToDisk()
@@ -358,16 +316,13 @@ int main( int argc, char **argv )
 	// smoothing and more things.
 	my_model->loadModel();
 
+	// read osgEarth config file and create the globe
 	std::cout << "reading osgEarth config file: " << osgEarthFileName << std::endl;
 	osg::ref_ptr<osg::Node> globe = osgDB::readNodeFile(osgEarthFileName);
 	osg::ref_ptr<osg::Node> topNode = new osg::Node;
 
 	osg::Group* group = new osg::Group;
 	group->setName("root group");
-
-	// insert all the callbacks
-    //InsertCallbacksVisitor icv;
-    //group->accept(icv);
 
 	// =====================================================================
 	// construct the viewer
@@ -376,6 +331,8 @@ int main( int argc, char **argv )
     viewer.addEventHandler(new osgViewer::WindowSizeHandler);
 	viewer.addEventHandler(new osgViewer::ScreenCaptureHandler);
 
+	// modify the key mapping of an osg default event handler
+	// this is just to demonstrate the principle, no real use case behind it...
 	osgViewer::View::EventHandlers eventHandlers = viewer.getEventHandlers();
 	// iterate through the viewer's event handlers and modify their default behavior
 	for (osgViewer::View::EventHandlers::iterator it = eventHandlers.begin(); it != eventHandlers.end(); ++it)
@@ -389,20 +346,24 @@ int main( int argc, char **argv )
 	}
 
 
-	// Set scene data
-	group->addChild(globe.get());
-	group->addChild(my_model->getModel().get());
+	// Create overlay data
+	osg::ref_ptr<osg::Geode> statsGeometry = createStatsGeometry();
+	group->addChild( statsGeometry );
+	
+	// add the osgEarth globe to the scene
+	group->addChild( globe.get() );
+	group->addChild( my_model->getModel().get() );
 
 	//viewer.setSceneData(my_model->getModel().get());
-	viewer.setSceneData(group);
+	viewer.setSceneData( group );
 	//viewer.setSceneData(globe.get());
 
 	// create camera and context
-	setupCameraAndContext(viewer, windowWidth, windowHeight);
+	setupCameraAndContext( viewer, windowWidth, windowHeight );
 
-	//dumpSceneToDisk(group, "test");
-	//dumpSceneToDisk(globe.get(), "globe");
-	//dumpSceneToDisk(my_model->getModel().get(), "object");
+	// the overlay geometry is added to an individual camera
+	// QUESTION: But why isn't it rendered by the primary cam?!?
+	statsCamera->addChild( statsGeometry );
 
 	//viewer.setCameraManipulator(new osgGA::FlightManipulator);
 
@@ -422,7 +383,8 @@ int main( int argc, char **argv )
 	// run the viewers frame loop
     viewer.realize();
 
-    // main loop (note, window toolkits which take control over the main loop will require a window redraw callback containing the code below.)
+    // main loop (note, window toolkits which take control over the main loop will require 
+	// a window redraw callback containing the code below.)
     while(!viewer.done())
     {
         viewer.frame();

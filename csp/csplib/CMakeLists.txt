@@ -1,0 +1,8 @@
+SET(LIB_NAME csplib)
+
+MESSAGE("csp_SOURCE_DIR: ${csp_SOURCE_DIR}")
+INCLUDE_DIRECTORIES(${csp_SOURCE_DIR})
+
+ADD_LIBRARY(${LIB_NAME} SHARED  
+	"data/Archive.cpp"
+)

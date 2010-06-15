@@ -7,3 +7,7 @@ ADD_LIBRARY(${LIB_NAME} SHARED
 	${SOURCE_AND_HEADER_PATH}/data/Archive.h
 	${SOURCE_AND_HEADER_PATH}/data/Archive.cpp
 )
+
+# make sure csplib_config is run initially, because it creates a 
+# config file needed by csplib
+ADD_DEPENDENCIES(csplib csplib_config)

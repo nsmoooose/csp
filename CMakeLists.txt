@@ -9,10 +9,18 @@ SET(EXECUTABLE_OUTPUT_PATH ${OUTPUT_BINDIR})
 MESSAGE("exe out: ${EXECUTABLE_OUTPUT_PATH}")
 MESSAGE("out bindir: ${OUTPUT_BINDIR}")
 
+SET(OUTPUT_LIBDIR ${PROJECT_BINARY_DIR}/lib)
+MAKE_DIRECTORY(${OUTPUT_LIBDIR})
+SET(LIBRARY_OUTPUT_PATH ${OUTPUT_LIBDIR})
+MESSAGE("lib output path: ${LIBRARY_OUTPUT_PATH}")
+
 IF (WIN32)
 	SET(CMAKE_DEBUG_POSTFIX  "d")
+	ADD_DEFINITIONS( -D__WIN32__ -D_CRT_SECURE_NO_DEPRECATE -D_USE_MATH_DEFINES)
+	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /nologo /wd4251 /wd4275 /wd4290")
 ENDIF (WIN32)
 
+#${CMAKE_SOURCE_DIR}/CMakeModules contains custom CMake modules to find our project specific dependencies
 SET(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/CMakeModules;${CMAKE_MODULE_PATH}")
 
 # this calls the script FindCSPDEVPACK.cmake in CMakeModules
@@ -21,6 +29,9 @@ FIND_PACKAGE(CSPDEVPACK)
 
 # FindPythonLibs sets the PYTHON_INCLUDE_DIRS and PYTHON_LIBRARIES variables
 INCLUDE(FindPythonLibs)
+# FindPythonInterp sets PYTHON_EXECUTABLE and PYTHONINTERP_FOUND
+INCLUDE(FindPythonInterp)
+
 INCLUDE_DIRECTORIES(BEFORE
 					${csp_SOURCE_DIR}
 					${PYTHON_INCLUDE_DIRS}
@@ -72,36 +83,6 @@ ADD_SUBDIRECTORY(csp/cspsim)
 # MAKE_DIRECTORY(${OUTPUT_BINDIR})
 # SET(EXECUTABLE_OUTPUT_PATH ${OUTPUT_BINDIR})
 
-# IF (WIN32)
-# SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP /GR /Zi /EHsc /W2 /nologo /wd4251 /wd4275 /wd4290")
-# SET(CMAKE_DEBUG_POSTFIX  "d")
-# ADD_DEFINITIONS(-DWIN32 -D__WIN32__ -D_USRDLL -D_DLL -D_CRT_SECURE_NO_DEPRECATE -D_USE_MATH_DEFINES)
-# ENDIF (WIN32)
-
-# INCLUDE_DIRECTORIES(BEFORE ${CSPDEVPACK-0.7_DIR}/include
-                   # )
-				   
-# LINK_DIRECTORIES(BEFORE ${CSPDEVPACK-0.7_DIR}/lib
-                # )
-
-# SET(SOURCE_FILES "csp/csplib/data/Archive.cpp"
-   # )
-				 
-# SET(HEADER_FILES "data/Archive.h"
-				 # "data/DataArchive.h"
-   # )
-				   
-# ADD_LIBRARY(csplib ${SOURCE_FILES}
-                   # ${HEADER_FILES}
-			# )
-
-# TARGET_LINK_LIBRARIES(csplib   ccgnu2.lib 
-							   # sigc-2.0.lib 
-							   # advapi32.lib 
-							   # ws2_32.lib 
-							   # glu32.lib
-							   # opengl32.lib 
-                     # )
 
 # INSTALL(TARGETS cspEarth
        # RUNTIME DESTINATION "c:/temp/bin")

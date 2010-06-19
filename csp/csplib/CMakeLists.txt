@@ -7,7 +7,6 @@ IF (WIN32)
 	ADD_DEFINITIONS(-D_USRDLL -D_DLL)
 ENDIF (WIN32)
 
-MESSAGE("csp_SOURCE_DIR: ${csp_SOURCE_DIR}")
 SET (SOURCE_AND_HEADER_PATH ${csp_SOURCE_DIR}/csp/csplib)
 				   
 ADD_LIBRARY(${LIB_NAME} SHARED 
@@ -176,15 +175,27 @@ TARGET_LINK_LIBRARIES(${LIB_NAME} ccgnu2.lib
 								  sigc-2.0.lib
 					 )
 
-# ClientServerMessages.cpp and ClientServerMessages.h are created by trc.py on the fly
-# from ClientServerMessages.net. This needs to be done prior to compiling csplib,
-# so we use a pre-build command to run the Python script
-ADD_CUSTOM_COMMAND(TARGET csplib
-				   PRE_BUILD
-				   COMMAND ${PYTHON_EXECUTABLE} ${csp_SOURCE_DIR}/csp/tools/trc/trc.py --source=ClientServerMessages.cpp --header=ClientServerMessages.h ClientServerMessages.net
-				   WORKING_DIRECTORY ${csp_SOURCE_DIR}/csp/csplib/net
-				   COMMENT "create ClientServerMessages.h/.cpp from ClientServerMessages.net"
-				  )
+#SET_TARGET_PROPERTIES(${LIB_NAME} PROPERTIES PREFIX "../../../bin/")
+
+
+# ADD_CUSTOM_COMMAND(TARGET ${LIB_NAME}
+				   # PRE_BUILD
+				   # COMMAND ${PYTHON_EXECUTABLE} ${csp_SOURCE_DIR}/csp/tools/trc/trc.py --source=ClientServerMessages.cpp --header=ClientServerMessages.h ClientServerMessages.net
+				   # WORKING_DIRECTORY ${csp_SOURCE_DIR}/csp/csplib/net
+				   # COMMENT "create ClientServerMessages.h/.cpp from ClientServerMessages.net"
+				  # )
+
+# We want all dlls and libs of this project in the same directory. Visual Studio puts project output files
+# into individual directories per configuration (e.h. "debug" and "release"), so we have to copy the files
+# from there into our own output dir in a separate step. CAUTION: The copy command uses hard-coded environment 
+# variables from Visual Studio. They should work for 2008 and 2010, but maybe not for future versions
+IF(MSVC_IDE)
+	ADD_CUSTOM_COMMAND(TARGET ${LIB_NAME}
+					   POST_BUILD
+					   COMMAND copy $(InputDir)$(ConfigurationName)\\*.* $(InputDir)..\\..\\bin
+					   COMMENT "copy output files to common directory"
+					  )
+ENDIF(MSVC_IDE)
 
 # csplib needs a config file created by csplib_config, so make sure csplib_config exists
 ADD_DEPENDENCIES(csplib csplib_config)

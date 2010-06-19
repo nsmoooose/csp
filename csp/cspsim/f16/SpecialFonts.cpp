@@ -156,7 +156,7 @@ osgText::Font::Glyph* ReverseAltFont::getGlyph(const osgText::FontResolution& fo
 			// probably be a better choice, but i haven't made that glyph yet in my test font ;-)
 			Glyph *reference = getGlyph(fontRes, '0');
 			Glyph *normal = getGlyph(fontRes, charcode % 128);
-			Glyph *reverse = new osgText::Font::Glyph;
+			Glyph *reverse = new osgText::Font::Glyph(0);
 			int reference_width = reference->s();
 			int reference_height = reference->t();
 			int source_width = normal->s();

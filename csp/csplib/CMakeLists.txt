@@ -197,5 +197,16 @@ IF(MSVC_IDE)
 					  )
 ENDIF(MSVC_IDE)
 
+# Some source and header files are created by trc.py on the fly
+# This needs to be done prior to compiling, so we use a custom target to run trc.py
+ADD_CUSTOM_COMMAND(TARGET ${LIB_NAME}
+				   PRE_BUILD
+				   COMMAND ${PYTHON_EXECUTABLE} 
+						   ${csp_SOURCE_DIR}/csp/tools/trc/trc.py 
+						   --source=${csp_SOURCE_DIR}/csp/csplib/net/ClientServerMessages.cpp 
+						   --header=${csp_SOURCE_DIR}/csp/csplib/net/ClientServerMessages.h 
+						   ${csp_SOURCE_DIR}/csp/csplib/net/ClientServerMessages.net
+				  )
+
 # csplib needs a config file created by csplib_config, so make sure csplib_config exists
 ADD_DEPENDENCIES(csplib csplib_config)

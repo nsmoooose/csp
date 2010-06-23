@@ -24,6 +24,11 @@ IF (WIN32)
 		# TODO: Find out why optimization doesn't work (Trac ticket [csp] #23)
 		SET(CMAKE_CXX_FLAGS_RELEASE "/MD /Od /Ob2 /D NDEBUG")
 		SET(CMAKE_CXX_FLAGS_RELWITHDEBINFO "/MD /Zi /Od /Ob1 /D NDEBUG")
+		# The following compiler warnings has been disabled:
+		# warning C4251: 'X' : struct 'Y' needs to have dll-interface to be used by clients of class 'Z' 
+		# warning C4275: non dll-interface class 'X' used as base for dll-interface class 'Y'
+		# warning C4290: C++ exception specification ignored except to indicate a function is not __declspec(nothrow)
+		# warning C4305: The identifier is converted to a smaller type, resulting in loss of information (double to float conversion)
 		SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /nologo /wd4251 /wd4275 /wd4290 /wd4305")
 		OPTION(csp_MSVC_VERSIONED_DLL "Set to ON to build with versioned dll names" ON)
 		
@@ -90,6 +95,13 @@ SET(OSG_LIBS
 	osgUtil
 	OpenThreads
    )
+   
+SET(OSGEARTH_LIBS
+    osgEarth.lib 
+	osgEarthSymbology.lib 
+	osgEarthUtil.lib 
+	osgEarthFeatures.lib
+   )
 
 SET(OPENGL_LIBS
     glu32
@@ -100,27 +112,7 @@ ADD_SUBDIRECTORY(csp/csplib/util)
 ADD_SUBDIRECTORY(csp/csplib)
 ADD_SUBDIRECTORY(csp/cspwf)
 ADD_SUBDIRECTORY(csp/cspsim)
-#ADD_SUBDIRECTORY(csp/examples)
-
-# Some source and header files are created by trc.py on the fly
-# This needs to be done prior to compiling csplib, # so we use a custom target to run trc.py
-ADD_CUSTOM_TARGET(generators
-	COMMAND ${PYTHON_EXECUTABLE} 
-			${csp_SOURCE_DIR}/csp/tools/trc/trc.py 
-			--source=${csp_SOURCE_DIR}/csp/csplib/net/ClientServerMessages.cpp 
-			--header=${csp_SOURCE_DIR}/csp/csplib/netClientServerMessages.h 
-			${csp_SOURCE_DIR}/csp/csplib/net/ClientServerMessages.net
-	COMMAND ${PYTHON_EXECUTABLE} 
-			${csp_SOURCE_DIR}/csp/tools/trc/trc.py 
-			--source=${csp_SOURCE_DIR}/csp/cspsim/battlefield/BattlefieldMessages.cpp 
-			--header=${csp_SOURCE_DIR}/csp/cspsim/battlefield/BattlefieldMessages.h 
-			${csp_SOURCE_DIR}/csp/cspsim/battlefield/BattlefieldMessages.net
-	COMMAND ${PYTHON_EXECUTABLE} 			
-			${csp_SOURCE_DIR}/csp/tools/trc/trc.py 
-			--source=${csp_SOURCE_DIR}/csp/cspsim/ObjectUpdate.cpp 
-			--header=${csp_SOURCE_DIR}/csp/cspsim/ObjectUpdate.h 
-			${csp_SOURCE_DIR}/csp/cspsim/ObjectUpdate.net
-   )
+ADD_SUBDIRECTORY(csp/examples/cspEarth)
 
 # INSTALL(TARGETS cspEarth
        # RUNTIME DESTINATION "c:/temp/bin")

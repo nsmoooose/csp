@@ -12,7 +12,7 @@ csp/data/input/*.hid
 csp/data/terrain/*
 csp/parser.out
 csp/parsetab.py
-csp/csplib/net/ClientServerMessages.h
+#csp/csplib/net/ClientServerMessages.h
 csp/csplib/util/Config.h
-csp/cspsim/ObjectUpdate.h
-csp/cspsim/battlefield/BattlefieldMessages.h
+#csp/cspsim/ObjectUpdate.h
+#csp/cspsim/battlefield/BattlefieldMessages.h

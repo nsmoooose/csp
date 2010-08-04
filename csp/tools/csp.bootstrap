@@ -55,9 +55,6 @@ if not sys.modules.get('csp_bootstrap'):
 	CSP_PATH = os.sep.join(parts[:-1])
 	ROOT = os.sep.join([CSP_PATH, 'csp'])
 
-	if not os.path.exists(os.sep.join([ROOT, '.svn'])):
-		print 'Warning: %s does not contain .svn.' % ROOT
-
 	if not os.path.exists(os.sep.join([ROOT, '__init__.py'])):
 		print 'Warning: %s does not contain __init__.py' % ROOT
 

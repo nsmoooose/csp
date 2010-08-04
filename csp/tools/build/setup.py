@@ -25,7 +25,6 @@ if __name__ == '__main__':
 
 from csp.tools.build import autoconf
 from csp.tools.build import builders
-from csp.tools.build import buildlog
 from csp.tools.build import registry
 from csp.tools.build import scons
 from csp.tools.build import util
@@ -190,7 +189,7 @@ def FinalizePackages(env):
 	registry.BuildRegistry.Build(env)
 
 
-def GlobalSetup(env, distributed=1, short_messages=None, default_message=None, config=None, with_swig=1, timer=1):
+def GlobalSetup(env, distributed=1, default_message=None, config=None, with_swig=1, timer=1):
 	options = scons.GetOptions()
 	# TODO remove ssoptions altogether; options.num_jobs should work in 0.97 and newer
 	# versions of scons.
@@ -204,12 +203,7 @@ def GlobalSetup(env, distributed=1, short_messages=None, default_message=None, c
 		util.SetDefaultMessage(env, default_message)
 	if with_swig:
 		builders.AddSwigSupport(env)
-	if short_messages is None:
-		short_messages = options.no_progress
 	builders.AddBuilders(env)
-	buildlog.InitializeLogging(env)
-	if short_messages:
-		buildlog.SetShortMessages(env)
 	if distributed and num_jobs > 1:
 		scons.SetDistributed(env)
 	util.AddPhonyTarget(env, 'config')

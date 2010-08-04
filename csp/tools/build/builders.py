@@ -24,7 +24,6 @@ if __name__ == '__main__':
 
 
 from csp.tools.build import scons
-from csp.tools.build import buildlog
 
 import os
 import re
@@ -107,7 +106,6 @@ def AddDoxygen(env):
 def AddCopyFile(env):
 	def copy(target, source, env):
 		source, target = source[0].abspath, target[0].abspath
-		buildlog.Log('shutil.copy("%s", "%s")' % (source, target))
 		shutil.copy(source, target)
 	CopyFile = SCons.Builder.Builder(action=SCons.Action.Action(copy, '$COPYFILECOMSTR'))
 	env.Append(BUILDERS = {'CopyFile': CopyFile})
@@ -117,10 +115,8 @@ def AddLinkFile(env):
 	def symlink(target, source, env):
 		source, target = source[0].abspath, target[0].abspath
 		if os.name=='posix':
-			buildlog.Log('os.link("%s", "%s")' % (source, target))
 			os.link(source, target)
 		else:
-			buildlog.Log('shutil.copy("%s", "%s")' % (source, target))
 			shutil.copy(source, target)
 	LinkFile = SCons.Builder.Builder(action=SCons.Action.Action(symlink, '$SYMLINKCOMSTR'))
 	env.Append(BUILDERS = {'LinkFile': LinkFile})

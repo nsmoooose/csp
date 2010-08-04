@@ -23,8 +23,8 @@ if __name__ == '__main__':
 
 from csp.tools.build import util
 from csp.tools.build import scons
+from subprocess import Popen, PIPE
 
-import os
 import pickle
 import re
 
@@ -51,7 +51,7 @@ def CheckPythonVersion(minimum):
 
 
 def GetGCCVersion():
-	version = os.popen('gcc -dumpversion').read().strip()
+	version = Popen('gcc -dumpversion', shell=True, stdout=PIPE).stdout.read().strip()
 	try:
 		return tuple(map(int, version.split('.')))
 	except:
@@ -61,7 +61,8 @@ def GetGCCVersion():
 def CheckSwig(context, min_version, not_versions=[]):
 	ok = 0
 	_checking(context, 'swig', reset_cached=1)
-	swig_in, swig_out, swig_err = os.popen3('%s -version' % context.env.get('SWIG', 'swig'), 't')
+	p = Popen(['%s' % context.env.get('SWIG', 'swig'), '-version'], stdin=PIPE, stdout=PIPE, stderr=PIPE, close_fds=True)
+	swig_in, swig_out, swig_err = p.stdin, p.stdout, p.stderr
 	if swig_err is not None:
 		output = swig_err.readlines() + swig_out.readlines()
 		output = " ".join(map(lambda x: x.strip(), output))
@@ -120,7 +121,8 @@ def _CheckPkgConfigWorks(context):
 	global HAS_PKG_CONFIG
 	if HAS_PKG_CONFIG is None:
 		_checking(context, 'pkg-config', reset_cached=1)
-		_, output, error = os.popen3('pkg-config --version')
+		p = Popen('pkg-config --version', shell=True, stdin=PIPE, stdout=PIPE, stderr=PIPE)
+		_, output, error = p.stdin, p.stdout, p.stderr
 		version = output.read().strip()
 		error = error.read().strip()
 		if not error and re.match(r'\d', version) is not None:
@@ -140,7 +142,7 @@ def CheckPkgConfig(context, lib, version=None, lib_name=None, command='pkg-confi
 	if not has_pkg_config:
 		context.Result("unknown (need pkg-config)")
 		return 0
-	output = os.popen('%s %s %s' % (command, version_flag, lib))
+	output = Popen('%s %s %s' % (command, version_flag, lib), shell=True, stdout=PIPE).stdout
 	ok = 0
 	if output is not None:
 		lib_version = output.readline().strip()
@@ -157,7 +159,8 @@ def CheckPkgConfig(context, lib, version=None, lib_name=None, command='pkg-confi
 def CheckCommandVersion(context, lib, command, min_version=None, lib_name=None):
 	if lib_name is None: lib_name = lib
 	_checking(context, lib, min_version, reset_cached=1)
-	_, output, error = os.popen3(command)
+	p = Popen(command, shell=True, stdin=PIPE, stdout=PIPE, stderr=PIPE, close_fds=True)
+	_, output, error = p.stdin, p.stdout, p.stderr
 	version = output.read().strip()
 	error = error.read().strip()
 	ok = not error and (util.CompareVersions(version, min_version) >= 0)

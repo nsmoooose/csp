@@ -66,7 +66,7 @@ class Environment:
 	def Initialize(klass, default_message=None, opts=None):
 		settings = klass()
 		help = settings.__doc__
-		
+
 		if default_message is None:
 			default_message = 'No targets specified; try scons -h for help.'
 
@@ -74,7 +74,7 @@ class Environment:
 		GlobalSetup(env, default_message=default_message)
 
 		if opts is None:
-			opts = SCons.Options.Options()
+			opts = SCons.Variables.Variables()
 
 		if hasattr(settings, 'options'):
 			settings.options(opts)
@@ -108,11 +108,11 @@ def ReadPackages(env, packages, **kw):
 	from csp.tools import build
 	kw.setdefault('duplicate', 0)
 	kw.setdefault('exports', 'env build')
-	has_build_dir = 'build_dir' in kw
+	has_variant_dir = 'variant_dir' in kw
 	result = []
 	for package in packages:
-		if not has_build_dir:
-			kw['build_dir'] = '%s/.bin' % package
+		if not has_variant_dir:
+			kw['variant_dir'] = '%s/.bin' % package
 		targets = env.SConscript('%s/SConscript' % package, **kw)
 		if targets:
 			if type(targets) != type([]): targets = [targets]

@@ -51,7 +51,9 @@ def CheckPythonVersion(minimum):
 
 
 def GetGCCVersion():
-	version = Popen('gcc -dumpversion', shell=True, stdout=PIPE).stdout.read().strip()
+	p = Popen('gcc -dumpversion', shell=True, stdout=PIPE)
+	out, err = p.communicate()
+	version = out.strip()
 	try:
 		return tuple(map(int, version.split('.')))
 	except:
@@ -62,9 +64,9 @@ def CheckSwig(context, min_version, not_versions=[]):
 	ok = 0
 	_checking(context, 'swig', reset_cached=1)
 	p = Popen(['%s' % context.env.get('SWIG', 'swig'), '-version'], stdin=PIPE, stdout=PIPE, stderr=PIPE, close_fds=True)
-	swig_in, swig_out, swig_err = p.stdin, p.stdout, p.stderr
+	swig_out, swig_err = p.communicate()
 	if swig_err is not None:
-		output = swig_err.readlines() + swig_out.readlines()
+		output = swig_err.splitlines() + swig_out.splitlines()
 		output = " ".join(map(lambda x: x.strip(), output))
 		match = re.search(r'SWIG Version (\d+\.\d+.\d+)', output)
 		if match is not None:
@@ -122,9 +124,9 @@ def _CheckPkgConfigWorks(context):
 	if HAS_PKG_CONFIG is None:
 		_checking(context, 'pkg-config', reset_cached=1)
 		p = Popen('pkg-config --version', shell=True, stdin=PIPE, stdout=PIPE, stderr=PIPE)
-		_, output, error = p.stdin, p.stdout, p.stderr
-		version = output.read().strip()
-		error = error.read().strip()
+		output, error = p.communicate()
+		version = output.strip()
+		error = error.strip()
 		if not error and re.match(r'\d', version) is not None:
 			HAS_PKG_CONFIG = 1
 			context.Result("yes (%s)" % version)
@@ -142,10 +144,11 @@ def CheckPkgConfig(context, lib, version=None, lib_name=None, command='pkg-confi
 	if not has_pkg_config:
 		context.Result("unknown (need pkg-config)")
 		return 0
-	output = Popen('%s %s %s' % (command, version_flag, lib), shell=True, stdout=PIPE).stdout
+	p = Popen('%s %s %s' % (command, version_flag, lib), shell=True, stdout=PIPE, stderr=PIPE)
+	output, error = p.communicate()
 	ok = 0
 	if output is not None:
-		lib_version = output.readline().strip()
+		lib_version = output.strip()
 		ok = (version is None) or (util.CompareVersions(lib_version, version) >= 0)
 	if ok:
 		context.Result("yes (%s)" % lib_version)
@@ -160,9 +163,9 @@ def CheckCommandVersion(context, lib, command, min_version=None, lib_name=None):
 	if lib_name is None: lib_name = lib
 	_checking(context, lib, min_version, reset_cached=1)
 	p = Popen(command, shell=True, stdin=PIPE, stdout=PIPE, stderr=PIPE, close_fds=True)
-	_, output, error = p.stdin, p.stdout, p.stderr
-	version = output.read().strip()
-	error = error.read().strip()
+	output, error = p.communicate()
+	version = output.strip()
+	error = error.strip()
 	ok = not error and (util.CompareVersions(version, min_version) >= 0)
 	if ok:
 		context.Result("yes (%s)" % version)

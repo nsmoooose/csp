@@ -30,11 +30,6 @@ class ProjectTree(wx.TreeCtrl):
 
 		for root, dirs, files in os.walk(directory):
 			parentNode = self.nodeDictionary[root]
-			if '.svn' in dirs:
-				dirs.remove('.svn')
-			if '_svn' in dirs:
-				dirs.remove('_svn')
-				
 			dirs.sort()
 			files.sort()
 			for subDirectory in dirs:

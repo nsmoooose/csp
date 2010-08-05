@@ -20,8 +20,8 @@ class ReCompileDataArchiveCommand(Command):
 	"""This command will recompile the sim.dar file located in the bin directory
 	of this application. This makes it possible to use the latest demo version
 	of CSP and the latest release version of layout tool together. In that case
-	you won't need any development tools at all on windows. (you will only need 
-	tortoise svn or subversion in order to check out the xml directory only)."""
+	you won't need any development tools at all on windows. (you will only need
+	the version control in order to check out the xml directory only)."""
 
 	def GetCaption(self):
 		return "Recompile data archive"

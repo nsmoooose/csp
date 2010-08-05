@@ -120,7 +120,7 @@ def make_demo(version):
 	DP_BIN = os.path.join(CSPDEVPACK, 'bin')
 
 	print 'Copying data from %s to %s' % (TEMPLATE, DEMO)
-	copy_tree(TEMPLATE, DEMO, exclude=r'^\.svn$')
+	copy_tree(TEMPLATE, DEMO)
 
 	DIST_DIR = os.path.join(DEMO, 'bin')
 	print 'Running py2exe to create %s' % DIST_DIR
@@ -159,7 +159,7 @@ def make_demo(version):
 	IMAGES = os.path.join(LAYOUT_DIR, 'images')
 	if not os.path.exists(DATA_TARGET):
 		print 'Copying data from %s to %s' % (IMAGES, DATA_TARGET)
-		copy_tree(IMAGES, DATA_TARGET, exclude=r'^\.svn$|\.py$|\.pyc$')
+		copy_tree(IMAGES, DATA_TARGET, exclude=r'^\.py$|\.pyc$')
 	shutil.copyfile(os.path.join(LAYOUT_DIR, 'start.txt'), os.path.join(DEMO, 'start.txt'))
 
 	print 'Writing README header'

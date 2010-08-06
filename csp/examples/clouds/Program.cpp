@@ -29,6 +29,7 @@
 #include <osgGA/TrackballManipulator>
 #include <osgGA/FlightManipulator>
 #include <osgGA/DriveManipulator>
+#include <osgGA/StateSetManipulator>
 
 #include <osgDB/Registry>
 #include <osgDB/ReadFile>
@@ -36,7 +37,10 @@
 #include <osgViewer/Viewer>
 #include <osgViewer/ViewerEventHandlers>
 
+#include <csp/csplib/data/Date.h>
 #include <csp/cspsim/ObjectModel.h>
+#include <csp/cspsim/sky/Sky.h>
+#include <csp/cspsim/sky/SkyGroup.h>
 #include <csp/cspsim/weather/clouds/CloudBox.h>
 #include <csp/cspsim/weather/clouds/CloudMath.h>
 #include <csp/cspsim/weather/clouds/CloudRegistry.h>
@@ -120,11 +124,8 @@ osg::Drawable* createAxis(const osg::Vec3& corner,const osg::Vec3& xdir,const os
     return geom;
 }
 
-osg::Group* createModel()
+void addModel(osg::Group* root)
 {
-    // create the root node which will hold the model.
-    osg::Group* root = new osg::Group();
-
     // add the drawable into a single goede to be shared...
     osg::Billboard* center = new osg::Billboard();
     center->setMode(osg::Billboard::POINT_ROT_EYE);
@@ -164,35 +165,13 @@ osg::Group* createModel()
     root->addChild(y_arrow);
     root->addChild(z_arrow);
     root->addChild(axis);
-
-    return root;
-}
-
-void addClouds(osg::Group* model, CloudRegistry::CloudVector& clouds, float radius, int count) {
-	CloudRegistry::CloudVector::size_type cloudIndex = 0;
-
-	float angle = osg::PI * 2 / count;
-	for(int i = 0;i<count;++i, ++cloudIndex) {
-		// Wrap around when there is no more clouds.
-		if(cloudIndex >= clouds.size()) 
-			cloudIndex = 0;
-
-		float x = cos(static_cast<float>(i) * angle) * radius;
-		float y = sin(static_cast<float>(i) * angle) * radius;
-		float z = sin(static_cast<float>(i) * angle * 3) * 10;
-
-		osg::ref_ptr<osg::MatrixTransform> transformation = new osg::MatrixTransform();
-		transformation->setMatrix(osg::Matrix::translate(x, y, z));
-		transformation->addChild(clouds.at(cloudIndex).get());
-		model->addChild(transformation.get());
-	}
 }
 
 void addRandomClouds(osg::Group* model, CloudRegistry::CloudVector& clouds, osg::Vec3 dimensions, int count) {
 	CloudRegistry::CloudVector::size_type cloudIndex = 0;
 	for(int i=0;i<count;++i, ++cloudIndex) {
 		// Wrap around when there is no more clouds.
-		if(cloudIndex >= clouds.size()) 
+		if(cloudIndex >= clouds.size())
 			cloudIndex = 0;
 
 		float x = CloudMath::GenerateRandomNumber(0 - dimensions.x(), dimensions.x());
@@ -223,6 +202,49 @@ private:
 	}
 };
 
+/** This is the date and time for this application. */
+double global_date = 0.0;
+
+/** When we have significantly changed date and time we can set this variable to force
+ * 	a complete update of the sky dome. */
+bool force_update_of_sky_dome = false;
+
+/** This class is responsible for updating stars, sun, moon and the sky dome
+ *	for each frame. */
+class SkyUpdateCallback : public osg::NodeCallback
+{
+	virtual void operator()(osg::Node* node, osg::NodeVisitor*)
+	{
+		csp::SkyGroup* skyGroup = dynamic_cast<csp::SkyGroup*>(node);
+		if(skyGroup) {
+			skyGroup->sky()->update(global_date, force_update_of_sky_dome);
+			force_update_of_sky_dome = false;
+		}
+	}
+};
+
+void addSky(osg::Group* root) {
+	/* Place the sky on its own camera to not disturb the near far
+	   planes. */
+	osg::ref_ptr<osg::Camera> camera = new osg::Camera;
+	camera->setRenderOrder(osg::Camera::PRE_RENDER);
+	root->addChild(camera);
+
+	// The sky group contains stars, sky dome, sun and moon.
+	global_date = csp::SimDate(2008, 12, 31, 17, 59, 0).getJulianDate();
+	osg::ref_ptr<csp::SkyGroup> skyGroup = new csp::SkyGroup();
+	skyGroup->setUpdateCallback(new SkyUpdateCallback());
+	camera->addChild(skyGroup.get());
+}
+
+osg::ref_ptr<osg::Group> addClouds(osg::Group* root) {
+	osg::ref_ptr<osg::Group> cloudGroup = new osg::Group();
+	root->addChild(cloudGroup.get());
+	CloudRegistry::CloudVector clouds = CloudRegistry::CreateDefaultClouds();
+	addRandomClouds(cloudGroup.get(), clouds, osg::Vec3(100, 100, 20), 40);
+	return cloudGroup;
+}
+
 int main(int, char**) {
 	std::string search_path = "./data/images/";
 	csp::ObjectModel::setDataFilePathList(search_path);
@@ -244,19 +266,21 @@ int main(int, char**) {
     // construct the viewer
     osgViewer::Viewer viewer;
     viewer.addEventHandler(new osgViewer::StatsHandler());
-    
-    // Create a x, y, z model.
-	osg::ref_ptr<osg::Group> model = createModel();
+    viewer.addEventHandler(new osgGA::StateSetManipulator(viewer.getCamera()->getOrCreateStateSet()));
 
-	CloudRegistry::CloudVector clouds = CloudRegistry::CreateDefaultClouds();
-	// Add clouds
-	// addClouds(model.get(), clouds, 50, 10);
-	// addClouds(model.get(), clouds, 100, 18);
-	addRandomClouds(model.get(), clouds, osg::Vec3(100, 100, 20), 40);
+	// create the root node which will hold the model.
+	osg::ref_ptr<osg::Group> root = new osg::Group();
 
-	// Set scene data
-    viewer.setSceneData(model.get());
+	addSky(root.get());
+	addModel(root.get());
+	osg::ref_ptr<osg::Group> cloudGroup = addClouds(root.get());
 
-    // run the viewers frame loop
+	osg::ref_ptr<osgGA::TrackballManipulator> manipulator = new osgGA::TrackballManipulator();
+	viewer.setCameraManipulator(manipulator.get());
+    viewer.setSceneData(root.get());
+	viewer.getCamera()->setClearMask(GL_DEPTH_BUFFER_BIT);
+	viewer.realize();
+	manipulator->setNode(cloudGroup.get());
+	manipulator->home(0.0f);
     return viewer.run();
 }

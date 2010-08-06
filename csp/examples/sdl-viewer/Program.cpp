@@ -11,6 +11,7 @@
 #include <csp/cspsim/Config.h>
 #include <csp/cspsim/ObjectModel.h>
 #include <csp/cspsim/sky/Sky.h>
+#include <csp/cspsim/sky/SkyGroup.h>
 #include <csp/cspsim/Theater.h>
 #include <csp/cspsim/TerrainObject.h>
 #include <csp/cspsim/Shader.h>
@@ -29,7 +30,6 @@
 #include <osgViewer/ViewerEventHandlers>
 
 #include "SDLViewer.h"
-#include "SkyGroup.h"
 
 #include <csp/cspwf/Label.h>
 #include <csp/cspwf/MultiControlContainer.h>

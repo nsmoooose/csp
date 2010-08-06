@@ -13,7 +13,7 @@ class Sky;
  *  It also contains a transformation to make the sky follow the camera. Independent
  *  on where the camera is positioned.
  */
-class SkyGroup : public osg::Transform {
+class CSPSIM_EXPORT SkyGroup : public osg::Transform {
 public:
 	SkyGroup();
 

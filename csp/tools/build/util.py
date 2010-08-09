@@ -38,10 +38,8 @@ def Glob(path):
 	return result
 
 
-def AddPhonyTarget(env, target, message=''):
-	def nop(target, source, env): pass
-	def msg(target, source, env, message=message): return message
-	env.Alias(target, Builder(action=Action(nop, msg))(env, target, ''))
+def AddPhonyTarget(env, target):
+	env.AlwaysBuild(env.Alias(target, [], Action([])))
 
 
 def CompareVersions(a, b):
@@ -104,11 +102,6 @@ def RemoveFlags(env, **kw):
 						flags.remove(flag)
 					except ValueError:
 						pass
-
-
-def SetDefaultMessage(env, message):
-	AddPhonyTarget(env, 'default', message)
-	env.Default('default')
 
 
 def Apply(builder, sources, **overrides):

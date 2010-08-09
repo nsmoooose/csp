@@ -203,3 +203,4 @@ env = Environment.Initialize()
 env.ReadPackages(PACKAGES)
 env.FinalizePackages()
 
+Default("all")

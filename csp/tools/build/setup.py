@@ -62,15 +62,12 @@ class Environment:
 		env = MyEnvironment.Initialize()
 	'''
 
-	def Initialize(klass, default_message=None, opts=None):
+	def Initialize(klass, opts=None):
 		settings = klass()
 		help = settings.__doc__
 
-		if default_message is None:
-			default_message = 'No targets specified; try scons -h for help.'
-
 		env = SCons.Environment.Environment()
-		GlobalSetup(env, default_message=default_message)
+		GlobalSetup(env)
 
 		if opts is None:
 			opts = SCons.Variables.Variables()
@@ -189,7 +186,7 @@ def FinalizePackages(env):
 	registry.BuildRegistry.Build(env)
 
 
-def GlobalSetup(env, distributed=1, default_message=None, config=None, with_swig=1, timer=1):
+def GlobalSetup(env, distributed=1, config=None, with_swig=1, timer=1):
 	options = scons.GetOptions()
 	# TODO remove ssoptions altogether; options.num_jobs should work in 0.97 and newer
 	# versions of scons.
@@ -199,8 +196,6 @@ def GlobalSetup(env, distributed=1, default_message=None, config=None, with_swig
 	except AttributeError:
 		num_jobs = options.num_jobs
 
-	if default_message is not None:
-		util.SetDefaultMessage(env, default_message)
 	if with_swig:
 		builders.AddSwigSupport(env)
 	builders.AddBuilders(env)

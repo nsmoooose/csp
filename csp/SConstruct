@@ -23,7 +23,7 @@ import sys
 from tools import build
 
 build.CheckSConsVersion('0.96.93')
-build.CheckPythonVersion('2.2.2')
+build.CheckPythonVersion('2.5.0')
 build.DevpackConfig.SetMinimumVersion('0.6')
 
 

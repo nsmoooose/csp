@@ -22,6 +22,13 @@
  *
  **/
 
+/* OSG has defined a lot of these nice type of tests of version. But
+   that was introduced in a rather late version of OSG (2.9.5) so I made
+   a copy of that define here to support older versions. */
+#ifndef OSG_MIN_VERSION_REQUIRED
+#define OSG_MIN_VERSION_REQUIRED(MAJOR, MINOR, PATCH) ((OPENSCENEGRAPH_MAJOR_VERSION>MAJOR) || (OPENSCENEGRAPH_MAJOR_VERSION==MAJOR && (OPENSCENEGRAPH_MINOR_VERSION>MINOR || (OPENSCENEGRAPH_MINOR_VERSION==MINOR && OPENSCENEGRAPH_PATCH_VERSION>=PATCH))))
+#endif
+
 #include <csp/cspsim/f16/SpecialFonts.h>
 #include <csp/cspsim/Config.h>
 #include <csp/csplib/util/FileUtility.h>
@@ -156,7 +163,11 @@ osgText::Font::Glyph* ReverseAltFont::getGlyph(const osgText::FontResolution& fo
 			// probably be a better choice, but i haven't made that glyph yet in my test font ;-)
 			Glyph *reference = getGlyph(fontRes, '0');
 			Glyph *normal = getGlyph(fontRes, charcode % 128);
+#if OSG_MIN_VERSION_REQUIRED(2,9,7)
 			Glyph *reverse = new osgText::Font::Glyph(0);
+#else
+			Glyph *reverse = new osgText::Font::Glyph;
+#endif
 			int reference_width = reference->s();
 			int reference_height = reference->t();
 			int source_width = normal->s();

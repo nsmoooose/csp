@@ -120,11 +120,11 @@ class Compiler:
 	def dumpBadPaths(self, all, paths):
 		badpaths = filter(lambda x, a=all: not a.has_key(x), paths.keys())
 		if len(badpaths) > 0:
-			self.compilerSignal.Emit(CompilerEvent(Error, "Found %d broken path(s):" % len(badpaths)))
+			self.compilerSignal.Emit(CompilerEvent(Compiler.Error, "Found %d broken path(s):" % len(badpaths)))
 			idx = 0
 			for path in badpaths:
 				idx = idx + 1
-				self.compilerSignal.Emit(CompilerEvent(Error, "%03d: Path '%s'" % (idx, path)))
+				self.compilerSignal.Emit(CompilerEvent(Compiler.Error, "%03d: Path '%s'" % (idx, str(path))))
 				objects = {}
 				for obj in paths[path]: objects[obj] = 1
-				self.compilerSignal.Emit(CompilerEvent(Error, "   : defined in '" + "'\n    defined in '".join(objects.keys()) + "'"))
+				self.compilerSignal.Emit(CompilerEvent(Compiler.Error, "   : defined in '" + "'\n    defined in '".join(objects.keys()) + "'"))

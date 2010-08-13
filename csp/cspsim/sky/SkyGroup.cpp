@@ -2,12 +2,12 @@
 #include <csp/cspsim/sky/OrbitalBodyModel.h>
 #include <csp/cspsim/sky/Sky.h>
 #include <csp/cspsim/sky/SkyDome.h>
+#include <csp/cspsim/sky/SkyGroup.h>
 #include <csp/cspsim/sky/SolarSystem.h>
+#include <csp/cspsim/sky/StarDome.h>
 #include <osg/LightSource>
 #include <osgDB/ReadFile>
 #include <osgUtil/CullVisitor>
-
-#include "SkyGroup.h"
 
 namespace csp {
 

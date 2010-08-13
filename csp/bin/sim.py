@@ -182,7 +182,10 @@ def ensureDefaultHID(hid_file):
 	from the example input maps in csp/tools/hid/examples
 	"""
 	input_path = os.path.join(csp.dir, 'data', 'input')
-	if not os.path.exists(input_path): return
+	if not os.path.exists(input_path):
+		print("Creating: %s" % input_path)
+		os.mkdir(input_path)
+
 	output = os.path.join(input_path, '%s.hid' % hid_file)
 	if not os.path.exists(output):
 		from csp.tools.hid.compiler import MapCompiler

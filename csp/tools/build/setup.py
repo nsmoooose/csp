@@ -197,6 +197,9 @@ def GlobalSetup(env, distributed=1, config=None, with_swig=1, timer=1):
 		num_jobs = options.num_jobs
 
 	if with_swig:
+		import SCons.Tool.swig
+		if not SCons.Tool.swig.exists(env):
+			SCons.Tool.swig.generate(env)
 		builders.AddSwigSupport(env)
 	builders.AddBuilders(env)
 	if distributed and num_jobs > 1:

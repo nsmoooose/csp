@@ -41,6 +41,8 @@ namespace csp {
  */
 class GearAnimation: public Object {
 public:
+	CSP_DECLARE_ABSTRACT_OBJECT(GearAnimation)
+
 	virtual void setGearName(const std::string &name) { m_GearName = name; m_Prefix = "LandingGear." + name; }
 	std::string const &getGearName() const { return m_GearName; }
 

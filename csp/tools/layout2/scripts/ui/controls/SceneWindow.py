@@ -4,8 +4,9 @@ import wx.glcanvas
 
 from csp.tools.layout2.layout_module import *
 from GraphicsWindow import GraphicsWindow
+from DocumentNotebookPage import DocumentNotebookPage
 
-class SceneWindow(GraphicsWindow):
+class SceneWindow(GraphicsWindow, DocumentNotebookPage):
 	"""This class is making it possible to display the scene as 
 	a control in the wxPython framework. It contains a OsgGraphicsWindow
 	instance that is built with c++ and open scene graph. Signals are

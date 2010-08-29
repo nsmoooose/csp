@@ -1,6 +1,8 @@
 import wx
 
-class ImageWindow(wx.ScrolledWindow):
+from DocumentNotebookPage import DocumentNotebookPage
+
+class ImageWindow(wx.ScrolledWindow, DocumentNotebookPage):
 	"""This window holds a single bitmap control. It is used to display
 	an image loaded."""
 
@@ -13,12 +15,11 @@ class ImageWindow(wx.ScrolledWindow):
 		self.SetSizer(self.sizer)
 
 	def Dispose(self):
-		pass
+		documentRegistry = wx.GetApp().GetDocumentRegistry()
+		documentRegistry.ReleaseDocument(self.document)
+		self.document = None
 	
 	def SetDocument(self, document):
-		if document is None:
-			return
-
 		# Store a reference to the document for later use.
 		self.document = document
 

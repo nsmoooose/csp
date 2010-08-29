@@ -219,7 +219,7 @@ class ListHandler(SimpleHandler):
 	def validateChild(self, name, attrs):
 		if self._type is not None:
 			return 0
-		return name in ('List', 'Enum', 'Path', 'Int', 'Bool', 'Number', 'Float',
+		return name in ('Enum', 'Path', 'Int', 'Bool', 'Number', 'Float',
 		                'String', 'Date', 'Vector', 'Matrix', 'External', 'Key',
 		                'Object', 'Quat', 'LLA', "UTM", "ECEF")
 
@@ -236,21 +236,6 @@ class ListHandler(SimpleHandler):
 					y.parseXML(x)
 					return y
 				f = spread
-			elif self._type == "path":
-				def path(x, base = self._base):
-					y = csplib.Path()
-					x = adjust_path(base, x)
-					y.setPath(x)
-					return y
-				f = path
-				self._paths.extend(list)
-			elif self._type == "external":
-				def external(x):
-					y = csplib.External()
-					y.setSource(x)
-					return y
-				f = external
-				self._externals.extend(list)
 			elif self._type == "key":
 				f = csplib.Key
 			else:
@@ -275,10 +260,7 @@ class IntHandler(SimpleHandler):
 		SimpleHandler.__init__(self, id, base, name, attrs)
 	
 	def end(self):
-		if self._c.startswith('0x'):
-			self._element = int(self._c, 16)
-		else:
-			self._element = int(self._c)
+		self._element = int(self._c, 0)
 
 
 class BoolHandler(SimpleHandler):
@@ -407,10 +389,7 @@ class PathHandler(SimpleHandler):
 		return p
 
 	def end(self):
-		if self._attrs.has_key("source"):
-			source = self._attrs["source"]
-		else:
-			source = self._c.strip()
+		source = self._c.strip()
 		source = adjust_path(self._base, source)
 		self._element = source
 		self._paths.append(source)
@@ -424,10 +403,7 @@ class ExternalHandler(SimpleHandler):
 		SimpleHandler.__init__(self, id, base, name, attrs)
 
 	def end(self):
-		if self._attrs.has_key("source"):
-			source = self._attrs["source"]
-		else:
-			source = self._c.strip()
+		source = self._c.strip()
 		source = apply(os.path.join, source.split("/"))
 		self._element = source
 		self._externals.append(source)
@@ -451,7 +427,6 @@ class KeyHandler(SimpleHandler):
 class _LUTHandler(SimpleHandler):
 	handlers = {
 		"Values"       : FloatListHandler,
-		"Method"       : StringHandler,
 	}
 
 	members = handlers.keys()

@@ -53,8 +53,10 @@ class SourceGroup:
 			for file in self._sources:
 				if isinstance(file, SCons.Node.FS.File):
 					if file.get_suffix() == '.i':
-						wrapper, module = self._env.Swig(file, **self._options)
-						self._objects += self._env.SwigWrapper(wrapper, **self._options)
+						swigEnv = self._env.Clone()
+						if swigEnv.get('SWIGCXXFLAGS') is not None:
+							swigEnv.Replace(CXXFLAGS = swigEnv['SWIGCXXFLAGS'])
+						self._objects.append(swigEnv.SharedObject(file, **self._options))
 					elif file.get_suffix() != '.h':
 						self._objects.append(self._env.SharedObject(file, **self._options))
 				else:
@@ -217,12 +219,13 @@ class Generate(Target):
 
 	def _apply(self, objects):
 		command = self._command
+		objects = []
 		while 1:
 			match = re.search(r'{(.*?)}', command)
 			if match is None: break
 			var = match.group(1)
 			target = registry.BuildRegistry.GetTarget(var).build()[0]
-			objects = target
+			objects.append( target )
 			command = command[:match.start(0)] + target.abspath + command[match.end(0):]
 		self._env.Command(self._target, objects, SCons.Action.Action(command, '$GENERATECOMSTR'))
 		return self._target

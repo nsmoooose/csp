@@ -10,7 +10,7 @@ class PanDownCommand(Command):
         return "Pan down"
 
     def GetToolBarImageName(self):
-        return "arrow-down.png"
+        return "arrow-down"
 
     def Execute(self):
         pass

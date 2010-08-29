@@ -1,43 +1,56 @@
 #!/usr/bin/env python
 import wx
-import wx.glcanvas
 
-from csp.tools.layout2.layout_module import *
+from DocumentNotebookPage import DocumentNotebookPage
 
-class OutputWindow(wx.Window):
+class OutputWindow(wx.Panel, DocumentNotebookPage):
 	"""This window holds a multi line text box that displays
 	a log of events from any process that is sending message
 	signals. For example when we are compiling a new sim.dar
 	file."""
 
 	def __init__(self, *args, **kwargs):
-		wx.Window.__init__(self, *args, **kwargs)
+		wx.Panel.__init__(self, *args, **kwargs)
+		
+		self.sizer = wx.BoxSizer(wx.VERTICAL)
+		self.SetSizer(self.sizer)
+		
 		self.textCtrl = wx.TextCtrl(self, style = wx.BORDER_NONE | wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_DONTWRAP)
-		self.Bind(wx.EVT_SIZE, self.on_Size)
-		self.document = None
+		self.sizer.Add(self.textCtrl, proportion=1, flag=wx.EXPAND)
+		
+		self.outputDocument = None
+		self.nbLines = 0
 
 	def Dispose(self):
-		self.document.GetChangedSignal().Disconnect(self.on_DocumentChanged)
+		self.outputDocument.GetChangedSignal().Disconnect(self.on_DocumentChanged)
+		documentRegistry = wx.GetApp().GetDocumentRegistry()
+		documentRegistry.ReleaseDocument(self.outputDocument)
+		self.outputDocument = None
 	
-	def SetDocument(self, document):
-		if document is None:
-			return
-
-		# Store a reference to the document for later use.
-		self.document = document
-		self.document.GetChangedSignal().Connect(self.on_DocumentChanged)
+	def SetDocument(self, outputDocument):
+		# Store a reference to the outputDocument for later use.
+		self.outputDocument = outputDocument
+		self.outputDocument.GetChangedSignal().Connect(self.on_DocumentChanged)
 		
 		# Call the changed method in order to display the content
-		# from the document.
-		self.on_DocumentChanged(document)
+		# from the outputDocument.
+		self.textCtrl.Clear()
+		self.nbLines = 0
+		self.on_DocumentChanged(outputDocument)
 	
 	def GetDocument(self):
-		return self.document
+		return self.outputDocument
 
-	def on_Size(self, event):
-		width, height = self.GetClientSizeTuple()
-		self.textCtrl.SetSize(wx.Size(width, height))
-
-	def on_DocumentChanged(self, document):
-		self.textCtrl.SetValue(document.GetText())
-		self.textCtrl.SetInsertionPointEnd()
+	def on_DocumentChanged(self, outputDocument):
+		lines = outputDocument.GetLines()
+		newNbLines = len( lines )
+		
+		if self.nbLines > newNbLines:
+			# the outputDocument has been cleared
+			self.textCtrl.Clear()
+			self.nbLines = 0
+		
+		for line in lines[self.nbLines:]:
+			self.textCtrl.AppendText(line + '\n')
+		
+		self.nbLines = newNbLines

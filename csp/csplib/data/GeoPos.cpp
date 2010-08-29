@@ -520,7 +520,7 @@ void LLA::parseXML(const char* cdata) throw (ParseException) {
 			if(stream.fail()) {
 				std::stringstream message;
 				message << "SYNTAX ERROR: expecting 'latitude longitude altitude'. But was: " << cdata;
-				ParseException(message.str());
+				throw ParseException(message.str());
 			}
 			_lat = toRadians(X);
 			_lon = toRadians(Y);

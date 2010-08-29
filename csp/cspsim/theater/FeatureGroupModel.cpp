@@ -26,6 +26,9 @@
 
 namespace csp {
 
+CSP_XML_BEGIN(FeatureGroupModel)
+CSP_XML_END
+
 FeatureGroupModel::FeatureGroupModel() {}
 FeatureGroupModel::~FeatureGroupModel() {}
 

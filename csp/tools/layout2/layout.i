@@ -30,6 +30,7 @@
 #include <csp/tools/layout2/cpp/OsgModelWindow.h>
 #include <csp/tools/layout2/cpp/OsgSceneWindow.h>
 #include <csp/tools/layout2/cpp/OsgTerrainOverviewWindow.h>
+#include <csp/tools/layout2/cpp/XmlNode.h>
 %}
 
 %include "typemaps.i"
@@ -43,6 +44,8 @@
 %feature("director") ViewCallback;
 %feature("director") GraphCallback;
 %feature("director") LayoutNodeVisitor;
+%feature("director") XmlNode;
+%feature("director") XmlNodeDocument;
 
 #if defined(SWIGPYTHON)
 %typemap(in) (int argc, char **argv)
@@ -95,6 +98,14 @@ protected:
 };
 }
 
+namespace csp
+{
+%feature("ref")   Referenced "$this->_incref();"
+%feature("unref") Referenced "$this->_decref();"
+%ignore Referenced;
+class Referenced {};
+}
+
 %include "csp/csplib/util/swig/PythonSignals.i"
 
 TYPEMAP_PYSLOT_IN(void)
@@ -108,6 +119,7 @@ TYPEMAP_PYSLOT_IN(void)
 %include "csp/tools/layout2/cpp/OsgModelWindow.h"
 %include "csp/tools/layout2/cpp/OsgSceneWindow.h"
 %include "csp/tools/layout2/cpp/OsgTerrainOverviewWindow.h"
+%include "csp/tools/layout2/cpp/XmlNode.h"
 
 %extend csp::layout::OsgGraphicsWindow {
 	void connectToSetCurrent(sigc::slot<void> slot) {

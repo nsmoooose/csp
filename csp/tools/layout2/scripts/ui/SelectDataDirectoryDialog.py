@@ -15,7 +15,7 @@ class SelectDataDirectoryDialog(wx.Dialog):
 		horizontalSizer = wx.BoxSizer(wx.HORIZONTAL)
 		self.SetSizer(horizontalSizer)
 
-		bitmap = wx.Bitmap(os.path.join('images', 'splash.png'))
+		bitmap = wx.ArtProvider.GetBitmap('splash')
 		bitmapControl = wx.StaticBitmap(self, wx.ID_ANY, bitmap)
 		horizontalSizer.Add(bitmapControl, flag=wx.RIGHT|wx.ALIGN_CENTER, border=10)
 

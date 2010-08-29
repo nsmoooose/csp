@@ -38,6 +38,7 @@ namespace csp {
  */
 class FeatureGroupModel: public FeatureModel {
 public:
+	CSP_DECLARE_ABSTRACT_OBJECT(FeatureGroupModel)
 	FeatureGroupModel();
 	virtual ~FeatureGroupModel();
 };

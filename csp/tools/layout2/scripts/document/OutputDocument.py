@@ -8,15 +8,37 @@ class OutputDocument(Document):
 
 	def __init__(self, name):
 		Document.__init__(self, name)
-		self.text = ''
+		self.lines = []
+
+	@staticmethod
+	def MakeUniqueId(name):
+		return "OutputDocument:" + name
+	
+	def GetUniqueId(self):
+		"""Returns a unique Id identifying the document in the DocumentRegistry.
+		Inheriting classes should implement this method"""
+		return OutputDocument.MakeUniqueId( self.GetName() )
 
 	def WriteLine(self, text):
-		self.text += '\n' + text
-		self.GetChangedSignal().Emit(self)
+		self.lines.append(text)
+		self.EmitChangedSignal()
 
-	def GetText(self):
-		return self.text
+	def GetLines(self):
+		return self.lines
 
 	def Clear(self):
-		self.text = ''
-		self.GetChangedSignal().Emit(self)
+		self.lines = []
+		self.EmitChangedSignal()
+
+
+class OutputDocumentFactory():
+	def __init__(self, documentName):
+		self.documentName = documentName
+	
+	def GetUniqueId(self):
+		"""Returns a unique Id identifying the document in the DocumentRegistry."""
+		return OutputDocument.MakeUniqueId(self.documentName)
+	
+	def CreateDocument(self):
+		"""Returns a new document that will be added in the DocumentRegistry."""
+		return OutputDocument(self.documentName)

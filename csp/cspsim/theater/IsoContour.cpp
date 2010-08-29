@@ -27,6 +27,9 @@
 
 namespace csp {
 
+CSP_XML_BEGIN(IsoContour)
+CSP_XML_END
+
 CSP_XML_BEGIN(RectangularCurve)
 	CSP_DEF("width", m_Width, true)
 	CSP_DEF("height", m_Height, true)

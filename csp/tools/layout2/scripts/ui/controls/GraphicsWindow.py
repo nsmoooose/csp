@@ -3,8 +3,9 @@ import wx
 import wx.glcanvas
 
 from csp.tools.layout2.layout_module import *
+from DocumentNotebookPage import DocumentNotebookPage
 
-class GraphicsWindow(wx.glcanvas.GLCanvas):
+class GraphicsWindow(wx.glcanvas.GLCanvas, DocumentNotebookPage):
 	"""This class is making it possible to display 3D content as 
 	a control in the wxPython framework. It contains a OsgGraphicsWindow
 	instance that is built with c++ and open scene graph. Signals are
@@ -22,6 +23,10 @@ class GraphicsWindow(wx.glcanvas.GLCanvas):
 		self.graphicsWindow.clearSignals()
 		application = wx.GetApp()
 		application.GetIdleSignal().Disconnect(self.on_Idle)
+		
+		documentRegistry = wx.GetApp().GetDocumentRegistry()
+		documentRegistry.ReleaseDocument(self.document)
+		self.document = None
 	
 	def SetGraphicsWindow(self, graphicsWindow):
 		"""Sets the graphics implementation. The implementation is a c++ class

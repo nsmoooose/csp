@@ -16,7 +16,7 @@ class MoveCameraToHomeCommand(Command):
 		return "Moves the camera to the home position"
 
 	def GetToolBarImageName(self):
-		return "go-home.png"
+		return "go-home"
 
 	def Execute(self):
 		focusWindow = wx.Window.FindFocus()

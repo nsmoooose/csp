@@ -28,10 +28,7 @@
 
 namespace csp {
 
-CSP_XML_BEGIN(M2kGearAnimation)
-	CSP_DEF("absorber02_length", m_Absorber02Length, false)
-	CSP_DEF("absorber03_length", m_Absorber03Length, false)
-	CSP_DEF("offset", m_Offset, false)
+CSP_XML_BEGIN(GearAnimation)
 CSP_XML_END
 
 CSP_XML_BEGIN(GearSequenceAnimation)
@@ -65,6 +62,12 @@ void GearSequenceAnimation::registerChannels(Bus* bus) {
 	b_SteeringAngle = bus->registerLocalDataChannel<double>(prefix() + ".SteeringAngle", 0.0);
 }
 
+
+CSP_XML_BEGIN(M2kGearAnimation)
+	CSP_DEF("absorber02_length", m_Absorber02Length, false)
+	CSP_DEF("absorber03_length", m_Absorber03Length, false)
+	CSP_DEF("offset", m_Offset, false)
+CSP_XML_END
 
 void M2kGearAnimation::setCompression(double compression) {
 	const double compression_distance = compression * getCompressionScale();

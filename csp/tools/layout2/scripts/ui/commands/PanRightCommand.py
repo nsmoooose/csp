@@ -10,7 +10,7 @@ class PanRightCommand(Command):
         return "Pan right"
 
     def GetToolBarImageName(self):
-        return "arrow-right.png"
+        return "arrow-right"
 
     def Execute(self):
         pass

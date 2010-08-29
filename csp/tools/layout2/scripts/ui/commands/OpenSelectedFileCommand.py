@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-import os.path
 import wx
 from csp.tools.layout2.scripts.ui.controls.ProjectTree import ProjectTree
 from Command import Command
@@ -18,7 +17,7 @@ class OpenSelectedFileCommand(Command):
 		return "Open selected file in project tree"
 
 	def GetToolBarImageName(self):
-		return "document-open.png"
+		return "document-open"
 
 	def Execute(self):
 		"""Loads a document from the project tree."""
@@ -43,8 +42,7 @@ class OpenSelectedFileCommand(Command):
 		# Now we have a file name and all apropriate data to identify
 		# the file selected. This is the responsibility of the 
 		# FileCommandRegistry. Get a command and execute it.
-		fileRegistry = FileCommandRegistry()
-		command = fileRegistry.GetCommandForFile(fileName)
+		command = FileCommandRegistry.Instance.GetCommandForFile(fileName)
 		if command is not None:
 			command.Execute()
 		else:

@@ -27,6 +27,9 @@
 
 namespace csp {
 
+CSP_XML_BEGIN(FeatureModel)
+CSP_XML_END
+
 void FeatureModel::addSceneModel(FeatureSceneGroup *, LayoutTransform const &, ElevationCorrection const &) {
 }
 

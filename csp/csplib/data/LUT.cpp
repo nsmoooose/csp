@@ -488,7 +488,7 @@ std::string LUT<N,X>::asString() const {
 template <int N, class X>
 std::string LUT<N,X>::typeString() const {
 	std::ostringstream ss;
-	ss << "type::LUT" << N << ">";
+	ss << "type::LUT<" << N << ">";
 	return ss.str();
 }
 

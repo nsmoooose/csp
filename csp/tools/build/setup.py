@@ -186,7 +186,7 @@ def FinalizePackages(env):
 	registry.BuildRegistry.Build(env)
 
 
-def GlobalSetup(env, distributed=1, config=None, with_swig=1, timer=1):
+def GlobalSetup(env, distributed=1, config=None, timer=1):
 	options = scons.GetOptions()
 	# TODO remove ssoptions altogether; options.num_jobs should work in 0.97 and newer
 	# versions of scons.
@@ -196,11 +196,10 @@ def GlobalSetup(env, distributed=1, config=None, with_swig=1, timer=1):
 	except AttributeError:
 		num_jobs = options.num_jobs
 
-	if with_swig:
-		import SCons.Tool.swig
-		if not SCons.Tool.swig.exists(env):
-			SCons.Tool.swig.generate(env)
-		builders.AddSwigSupport(env)
+	import SCons.Tool.swig
+	if not SCons.Tool.swig.exists(env):
+		SCons.Tool.swig.generate(env)
+
 	builders.AddBuilders(env)
 	if distributed and num_jobs > 1:
 		scons.SetDistributed(env)

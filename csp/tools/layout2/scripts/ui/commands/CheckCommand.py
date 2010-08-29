@@ -34,11 +34,11 @@ class CheckCommand(Command):
 		menuItem = Command.AppendInMenu(self, parent, menu, controlId)
 		menuItem.Check(self.checked)
 		return menuItem
+	
+	def SetMenuItemBitmap(self, menuItem):
+		pass
 
 	def AppendInToolBar(self, parent, toolbar, controlId):
 		tool = Command.AppendInToolBar(self, parent, toolbar, controlId)
 		toolbar.ToggleTool( controlId, self.checked )
 		return tool
-	
-	def Execute(self):
-		pass

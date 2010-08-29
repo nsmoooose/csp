@@ -1,12 +1,19 @@
 #!/usr/bin/env python
 
-from Document import Document
+from FileDocument import FileDocument
 
-class ImageDocument(Document):
+class ImageDocument(FileDocument):
 	"""Document representing a single Image. """
 
-	def SetFileName(self, fileName):
-		self._fileName = fileName
 
-	def GetFileName(self):
-		return self._fileName
+class ImageDocumentFactory():
+	def __init__(self, fileName):
+		self.fileName = fileName
+	
+	def GetUniqueId(self):
+		"""Returns a unique Id identifying the document in the DocumentRegistry."""
+		return ImageDocument.MakeUniqueId(self.fileName)
+	
+	def CreateDocument(self):
+		"""Returns a new document that will be added in the DocumentRegistry."""
+		return ImageDocument(self.fileName)

@@ -1,10 +1,13 @@
 #!/usr/bin/env python
 import os.path
 import wx
-from csp.tools.layout2.scripts.document.SceneDocument import SceneDocument
-from XmlFileCommand import XmlFileCommand
+from FileCommand import FileCommand
+from ...data import DataTree
+from ...document.SceneDocument import SceneDocumentFactory
+from ..controls.SceneWindow import SceneWindow
+from ..controls.DocumentNotebook import DocumentNotebook
 
-class OpenCustomLayoutModelFileCommand(XmlFileCommand):
+class OpenCustomLayoutModelFileCommand(FileCommand):
 	
 	def GetCaption(self):
 		return "Open CustomLayoutModel file"
@@ -13,7 +16,7 @@ class OpenCustomLayoutModelFileCommand(XmlFileCommand):
 		return "Opens an existing layout file"
 	
 	def GetToolBarImageName(self):
-		return "document-open.png"
+		return "document-open"
 	
 	def Execute(self):
 		"""Load a feature group or feature model from the specified file.  The existing
@@ -34,13 +37,49 @@ class OpenCustomLayoutModelFileCommand(XmlFileCommand):
 		node = node_map.getRoot()
 		assert(node is not None and node.isGroup())
 		
-		# Create a document and add the root node to it. This will in
-		# turn signal the document added signal that is caught in the gui.
-		# This will create a 3D view.
-		document = SceneDocument('Scene')
-		document.SetRootNode(node)
-		application.GetDocumentRegistry().Add(document)
-		application.GetDocumentRegistry().SetCurrentDocument(document)
+		# Get the document from the DocumentRegistry
+		documentRegistry = application.GetDocumentRegistry()
+		document = documentRegistry.GetOrCreateDocument( SceneDocumentFactory(self.GetFileName(), node) )
+		
+		# Create a SceneWindow for the document and add it to the DocumentNotebook
+		DocumentNotebook.Instance.AddDocumentPage(SceneWindow, document)
 		
 		node.thisown = 0
-		return 1
+		
+	def GetGraph(self):
+		# Get the application object. This object is used to retreive the
+		# configuration object and the top window for this application.
+		application = wx.GetApp()
+		
+		# Get the top window for this application. The top window shall be the 
+		# parent for the open file dialog.
+		topWindow = application.GetTopWindow()
+		if topWindow == None:
+			return None
+		
+		# Retreive the filename. It is set by the parent class.
+		fileName = self.GetFileName()
+		
+		# Get the current xml path settings. We must check that the file we
+		# are loading is actually below this directory.
+		xmlPath = application.Configuration.get('LayoutApplication.XmlPath', '.')
+		
+		# Do a safety check that the file exists under the current project directory.
+		# This is mandatory since we have specified all paths to data files
+		# used by the renderer.
+		if not os.path.abspath(fileName).startswith(os.path.abspath(xmlPath)):
+			messageDialog = wx.MessageDialog(topWindow, 
+				'Cannot open xml files that are outside the XML path. To change the '
+				'XML path, rerun the program with the --xml option.\n\n'
+				'The current path is "%s".\n\n'
+				'The file to open is "%s".' % (xmlPath, fileName),
+				'Error loading XML file', style = wx.OK|wx.ICON_ERROR)
+			messageDialog.ShowModal()
+			return None
+		
+		# Parse all the xml file and all its child files used.
+		try:
+			return DataTree.Node.ParseFile(fileName, xmlPath)
+		except Exception, e:
+			wx.MessageDialog(topWindow, str(e), "Error loading XML file", style = wx.OK|wx.ICON_ERROR).ShowModal()
+			return None

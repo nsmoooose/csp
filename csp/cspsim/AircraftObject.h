@@ -77,7 +77,6 @@ protected:
 	virtual void bindChannels(Bus* bus);
 
 	virtual void postCreate();
-	virtual void convertXML();
 
 	// dynamic properties
 	DataChannel<double>::RefT b_Roll;

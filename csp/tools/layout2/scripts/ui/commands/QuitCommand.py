@@ -15,7 +15,7 @@ class QuitCommand(Command):
 		return "Quits this application"
 
 	def GetToolBarImageName(self):
-		return "quit.png"
+		return "quit"
 
 	def Execute(self):
 		application = wx.GetApp()

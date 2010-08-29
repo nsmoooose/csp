@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 import wx
 from csp import csplib
-from csp.tools.layout2.scripts.document.OutputDocument import OutputDocument
 from Command import Command
+from ...document.OutputDocument import OutputDocumentFactory
+from ..controls.OutputWindow import OutputWindow
+from ..controls.DocumentNotebook import DocumentNotebook
 
 class CreateInterfaceInformationDocumentCommand(Command):
 	"""Generates a text document describing all interface objects that exists within the
@@ -16,28 +18,29 @@ class CreateInterfaceInformationDocumentCommand(Command):
 		return "Create interface information document describing all object interfaces."
 
 	def GetToolBarImageName(self):
-		return "generic.png"
+		return "generic"
 
 	def Execute(self):
+		# Get a document from the DocumentRegistry, where we can add
+		# text information about all objects that CSP knows of.
+		documentName = 'Interface information'
 		application = wx.GetApp()
 		documentRegistry = application.GetDocumentRegistry()
+		outputDocument = documentRegistry.GetOrCreateDocument( OutputDocumentFactory(documentName) )
 
-		# Start by adding a document if it doesn't exist already.
-		documentName = 'Interface information'
-		outputDocument = documentRegistry.GetByName(documentName)
-
-		# If the document already exists we just make it current and returns.
-		# No need to regenerate it since this is static information generated
+		# If the document view already exists we just make it current and returns.
+		# No need to open a new view since this is static information generated
 		# during compile time.
-		if outputDocument is not None:
-			documentRegistry.SetCurrentDocument(outputDocument)
+		pages = DocumentNotebook.Instance.GetAllDocumentPages(outputDocument)
+		if len(pages) > 0:
+			# We don't create a new view, so we don't need to keep the
+			# reference created by the call to GetOrCreateDocument.
+			documentRegistry.ReleaseDocument(outputDocument)
+			DocumentNotebook.Instance.SetCurrentPage( pages[0] )
 			return
 
-		# Create a document where we can add text information about all objects
-		# that CSP knows of.
-		outputDocument = OutputDocument(documentName)
-		documentRegistry.Add(outputDocument)
-		documentRegistry.SetCurrentDocument(outputDocument)
+		# Create an OutputWindow for the document and add it to the DocumentNotebook
+		DocumentNotebook.Instance.AddDocumentPage(OutputWindow, outputDocument)
 
 		# Write general information about the document we are creating.
 		outputDocument.WriteLine(
@@ -81,5 +84,3 @@ class CreateInterfaceInformationDocumentCommand(Command):
 			# Write end of class.
 			outputDocument.WriteLine("};")
 			outputDocument.WriteLine("")
-
-

@@ -196,6 +196,8 @@ build.Generate(env,
 	command = '{csplib_config} > $TARGET',
 	targets = ['#/csplib/util/Config.h'])
 
+env.Depends('#/csplib/util/Uniform.h', '#/csplib/util/Config.h')
+
 
 build.SharedLibrary(expenv,
 	name = 'csplib',

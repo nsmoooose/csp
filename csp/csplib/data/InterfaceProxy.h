@@ -167,12 +167,22 @@ public:
 	/** Get the class name of the corresponding object.
 	 */
 	virtual const char *getClassName() const;
-	
-#ifndef SWIG
 
 	/** Get the value of an interface variable.
 	 */
 	const TypeAdapter get(Object *o, std::string const &varname) const;
+	
+	/** Get a prototype of an interface variable.
+	 *
+	 *  If the interface variable is of type T, return a T.
+	 *  If the interface variable is of type vector<T>, return a T.
+	 *
+	 *  @param varname The name of the member variable.
+	 *  @returns A prototype corresponding to the specified variable name.
+	 */
+	const TypeAdapter getScalarPrototype(std::string const &varname) const;
+	
+#ifndef SWIG
 
 	/** Set the value of an interface variable.
 	 */
@@ -255,6 +265,12 @@ public:
 	 *  @returns True if the object class is a superclass.
 	 */
 	bool isSubclass(hasht const &chash) const;
+
+	/** Test if the object class of this interface is abstract.
+	 *
+	 *  Abstract base classes cannot be instantiated.
+	 */
+	virtual bool isAbstract() const { return true; }
 
 	/** Test if the object class of this interface is static.
 	 *
@@ -449,7 +465,7 @@ inline hasht classhash_helper(std::string const &class_name, const fprint32 sign
 		static void serialize(_M_classname *object, CSP(Reader) &reader); \
 		static void serialize(_M_classname const *object, CSP(Writer) &writer); \
 		virtual CSP(Object)* createObject() const { return CSP(__csp_object_factory)<_M_classname, _M_abstract>::create(); } \
-		virtual bool isVirtual() const { return _M_abstract; } \
+		virtual bool isAbstract() const { return _M_abstract; } \
 		virtual bool isStatic() const { return _M_static; } \
 		virtual CSP(hasht) getClassHash() const { return _M_classname::_getClassHash(); } \
 		virtual const char * getClassName() const { return _M_classname::_getClassName(); } \

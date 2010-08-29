@@ -20,7 +20,7 @@ class FilePropertiesPane(wx.Panel):
 		sizer = wx.BoxSizer(wx.VERTICAL)
 		self.SetSizer(sizer)
 		
-		self.tree = customtreectrl.CustomTreeCtrl(self, style = customtreectrl.TR_DEFAULT_STYLE | customtreectrl.TR_HAS_VARIABLE_ROW_HEIGHT)
+		self.tree = customtreectrl.CustomTreeCtrl(self, agwStyle = customtreectrl.TR_DEFAULT_STYLE | customtreectrl.TR_HAS_VARIABLE_ROW_HEIGHT)
 		sizer.Add(self.tree, proportion = 1, flag = wx.EXPAND)
 		
 		if self.GetImageList() is None:

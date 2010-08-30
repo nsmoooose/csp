@@ -7,6 +7,6 @@ class FileCommand(Command):
 
 	def SetFileName(self, fileName):
 		self.fileName = fileName
-		
+
 	def GetFileName(self):
 		return self.fileName

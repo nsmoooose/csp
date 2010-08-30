@@ -35,6 +35,8 @@ from commands.UndoCommand import UndoCommand
 from commands.RedoCommand import RedoCommand
 from commands.ShowActionHistoryCommand import ShowActionHistoryCommand
 
+from commands.RefreshDirectoryCommand import RefreshDirectoryCommand
+
 class MainFrame(wx.Frame):
 	"""This is the top window that contains all controls used by the layout editor.
 	It contains the main menu, toolbar, tree control and the rendered scene.
@@ -142,6 +144,7 @@ class MainFrame(wx.Frame):
 		ProjectTree.Instance = ProjectTree(self)
 		ProjectTree.Instance.SetRootDirectory(application.Configuration['LayoutApplication.DataDirectory'])
 		ProjectTree.Instance.SetOpenCommand( OpenSelectedFileCommand() )
+		ProjectTree.Instance.SetContextCommands([RefreshDirectoryCommand()])
 
 		application.auiManager.AddPane( ProjectTree.Instance,
 			wx.aui.AuiPaneInfo().Name('Project')

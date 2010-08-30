@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 from csp.tools.layout2.layout_module import OsgTerrainOverviewWindow
 from GraphicsWindow import GraphicsWindow
 from DocumentNotebookPage import DocumentNotebookPage

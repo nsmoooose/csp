@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 import wx
 
 from DocumentNotebookPage import DocumentNotebookPage

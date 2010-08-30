@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 from Command import Command
 
 class CreateModelXmlFileCommand(Command):

@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 import wx
 from csp import csplib
 from Command import Command

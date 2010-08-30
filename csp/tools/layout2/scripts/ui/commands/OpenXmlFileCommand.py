@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 import wx
 import xml.dom.pulldom
 import xml.dom.minidom

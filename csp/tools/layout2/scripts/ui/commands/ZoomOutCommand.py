@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 from Command import Command
 from csp.tools.layout2.scripts.ui.controls.DocumentNotebook import DocumentNotebook
 from csp.tools.layout2.scripts.ui.controls.GraphicsWindow import GraphicsWindow

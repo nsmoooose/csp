@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 import wx
 from FileCommand import FileCommand
 from ...document.ImageDocument import ImageDocumentFactory

@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 import wx
 
 from csp.tools.layout2.scripts.ui.controls.SceneWindow import SceneWindow

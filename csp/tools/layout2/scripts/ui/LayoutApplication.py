@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 import dumbdbm
 import os.path
 import locale

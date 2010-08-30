@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 import wx
 
 from DocumentNotebook import DocumentNotebook

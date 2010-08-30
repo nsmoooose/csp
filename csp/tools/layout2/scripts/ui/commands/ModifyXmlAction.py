@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 from Action import Action
 
 class ModifyXmlDataAction(Action):

@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 import wx
 
 from controls.OutputPane import OutputPane

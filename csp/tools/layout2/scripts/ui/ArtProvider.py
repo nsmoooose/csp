@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 # Combat Simulator Project
 # Copyright (C) 2002-2009 The Combat Simulator Project
 # http://csp.sourceforge.net

@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 import os
 from XmlDocument import XmlDocument
 from ..data.XmlNodeArchive import XmlNodeArchiveFactory

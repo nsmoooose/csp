@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 import os
 import wx
 from FileCommand import FileCommand

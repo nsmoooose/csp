@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 from FileDocument import FileDocument
 from ..data.XmlNode import XmlNodeDocument
 from ..data.XmlNode import XmlNodeFactory

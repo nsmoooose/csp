@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 import os.path
 
 from Document import Document

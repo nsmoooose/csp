@@ -1,7 +1,6 @@
 import wx
 import wx.aui
 
-from ControlIdGenerator import ControlIdGenerator
 from CommandControlFactory import CommandControlFactory
 from controls.DocumentNotebook import DocumentNotebook
 from controls.OutputPane import OutputPane
@@ -50,19 +49,14 @@ class MainFrame(wx.Frame):
 		# Get the application object. This object is used to retreive the
 		# configuration object.
 		application = wx.GetApp()
-		
+
 		# Let the advanced user interface (aui) manage the MainFrame
 		application.auiManager = wx.aui.AuiManager(self)
-		
-		# Create a control id generator. This is used by all helper classes
-		# to actualy define an unique id for each control (menu, toolbar button)
-		# etc.
-		self.controlIdGenerator = ControlIdGenerator()
 
 		# Declare a class that is responsible for creating instances of
 		# menu items, toolbar buttons and keyboard shortcuts to command
 		# objects.
-		controlFactory = CommandControlFactory(self.controlIdGenerator)
+		controlFactory = CommandControlFactory()
 
 		fileMenuCommands = [
 			OpenSelectedFileCommand(),

@@ -4,12 +4,6 @@ from controls.OutputPane import OutputPane
 
 class CommandControlFactory:
 	"""A factory that creates ui controls that is bound to command objects."""
-	
-	def __init__(self, controlIdGenerator):
-		""" Constructs the control factory with a control id generator. The
-		generator is needed in order to create a unique id for each command
-		in the scope of the parent control."""
-		self.controlIdGenerator = controlIdGenerator
 
 	def GenerateMenuItems(self, parent, commands):
 		"""Creates a menu with all the commands specified in the commands array.
@@ -23,7 +17,7 @@ class CommandControlFactory:
 			
 			controlId = command.GetControlId()
 			if controlId is None:
-				controlId = self.controlIdGenerator.Generate()
+				controlId = wx.NewId()
 			
 			command.AppendInMenu(parent, menu, controlId)
 		return menu
@@ -36,13 +30,13 @@ class CommandControlFactory:
 			if command is None:
 				toolbar.AddSeparator()
 				continue
-			
+
 			controlId = command.GetControlId()
 			if controlId is None:
-				controlId = self.controlIdGenerator.Generate()
-			
+				controlId = wx.NewId()
+
 			command.AppendInToolBar(parent, toolbar, controlId)
-		
+
 		toolbar.Realize()
 
 class EventToCommandExecutionAdapter:

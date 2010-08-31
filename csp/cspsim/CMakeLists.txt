@@ -7,6 +7,12 @@ SET (SOURCE_AND_HEADER_PATH ${csp_SOURCE_DIR}/csp/cspsim)
 
 MESSAGE("SOURCE_AND_HEADER_PATH: ${SOURCE_AND_HEADER_PATH}")
 
+CONFIGURE_FILE(${SOURCE_AND_HEADER_PATH}/battlefield/BattlefieldMessages.cpp.in ${SOURCE_AND_HEADER_PATH}/battlefield/BattlefieldMessages.cpp)
+CONFIGURE_FILE(${SOURCE_AND_HEADER_PATH}/battlefield/BattlefieldMessages.h.in ${SOURCE_AND_HEADER_PATH}/battlefield/BattlefieldMessages.h)
+
+CONFIGURE_FILE(${SOURCE_AND_HEADER_PATH}/ObjectUpdate.cpp.in ${SOURCE_AND_HEADER_PATH}/ObjectUpdate.cpp)
+CONFIGURE_FILE(${SOURCE_AND_HEADER_PATH}/ObjectUpdate.h.in ${SOURCE_AND_HEADER_PATH}/ObjectUpdate.h)
+
 ADD_LIBRARY(${LIB_NAME} SHARED 
 			${SOURCE_AND_HEADER_PATH}/battlefield/Battlefield.cpp
 			${SOURCE_AND_HEADER_PATH}/battlefield/Battlefield.h

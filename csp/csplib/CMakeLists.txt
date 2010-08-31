@@ -8,7 +8,13 @@ IF (WIN32)
 ENDIF (WIN32)
 
 SET (SOURCE_AND_HEADER_PATH ${csp_SOURCE_DIR}/csp/csplib)
+	
+CONFIGURE_FILE(${SOURCE_AND_HEADER_PATH}/net/ClientServerMessages.cpp.in ${SOURCE_AND_HEADER_PATH}/net/ClientServerMessages.cpp)
 				   
+CONFIGURE_FILE(${SOURCE_AND_HEADER_PATH}/net/ClientServerMessages.h.in ${SOURCE_AND_HEADER_PATH}/net/ClientServerMessages.h)
+				   
+CONFIGURE_FILE(${SOURCE_AND_HEADER_PATH}/util/Config.h.in ${SOURCE_AND_HEADER_PATH}/util/Config.h)
+					   
 ADD_LIBRARY(${LIB_NAME} SHARED 
 	${SOURCE_AND_HEADER_PATH}/data/Archive.h
 	${SOURCE_AND_HEADER_PATH}/data/Archive.cpp

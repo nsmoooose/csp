@@ -1,1 +1,0 @@
-Please note: The .sln file provided here IS NOT INTENDED FOR BUILDING CSP! It is only for navigating through the source code. Running the build from within the Visual Studio GUI will result in tons of errors. Please have a look at the CSP Wiki to find build instructions for Windows: http://csp.sourceforge.net/wiki/Development

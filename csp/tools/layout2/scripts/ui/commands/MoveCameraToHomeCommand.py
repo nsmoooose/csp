@@ -1,6 +1,5 @@
 import wx
 
-from csp.tools.layout2.scripts.ui.controls.SceneWindow import SceneWindow
 from Command import Command
 
 class MoveCameraToHomeCommand(Command):
@@ -8,14 +7,9 @@ class MoveCameraToHomeCommand(Command):
 	the current scene control. If the current wx control isn't
 	a SceneWindow the command is ignored."""
 
-	def GetCaption(self):
-		return "Move camera to home"
-
-	def GetToolTipText(self):
-		return "Moves the camera to the home position"
-
-	def GetToolBarImageName(self):
-		return "go-home"
+	caption = "Move camera to home"
+	tooltip = "Moves the camera to the home position"
+	toolbarimage = "go-home"
 
 	def Execute(self):
 		focusWindow = wx.Window.FindFocus()
@@ -27,8 +21,13 @@ class MoveCameraToHomeCommand(Command):
 
 		# Test to see if the window is of the right type. If not
 		# we simply return and ignore this command.
-		if isinstance(focusWindow, SceneWindow) == False:
-			return
+		if hasattr(focusWindow, "MoveCameraToHome"):
+			focusWindow.MoveCameraToHome()
 
-		# All is well. Lets execute the command.
-		focusWindow.MoveCameraToHome()
+	@staticmethod
+	def Enabled():
+		focusWindow = wx.Window.FindFocus()
+		if focusWindow == None:
+			return False
+		return True if hasattr(focusWindow, "MoveCameraToHome") else False
+

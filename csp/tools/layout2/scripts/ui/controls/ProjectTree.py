@@ -1,8 +1,6 @@
 import os
 import wx
 
-from csp.tools.layout2.scripts.ui.commands.DirectoryCommand import DirectoryCommand
-from csp.tools.layout2.scripts.ui.commands.FileCommand import FileCommand
 from csp.tools.layout2.scripts.ui.CommandControlFactory import EventToCommandExecutionAdapter
 
 class ProjectTreeContextMenu(wx.Menu):
@@ -12,15 +10,12 @@ class ProjectTreeContextMenu(wx.Menu):
 		target = ProjectTree.Instance.GetSelectedFile()
 		isfile = os.path.isfile(target)
 
-		for command in ProjectTree.Instance.GetContextCommands():
-			if isinstance(command, FileCommand):
-				command.SetFileName(target)
-			if isinstance(command, DirectoryCommand):
-				command.SetDirectory(target)
-			if isfile and isinstance(command, FileCommand) or not isfile and isinstance(command, DirectoryCommand):
-				item = wx.MenuItem(self, wx.NewId(), command.GetCaption())
-				self.AppendItem(item)
-				self.Bind(wx.EVT_MENU, EventToCommandExecutionAdapter(command).Execute, item)
+		file_commands, directory_commands = ProjectTree.Instance.GetContextCommands()
+		commands = file_commands if isfile else directory_commands
+		for command in commands:
+			item = wx.MenuItem(self, wx.NewId(), command.caption)
+			self.AppendItem(item)
+			self.Bind(wx.EVT_MENU, EventToCommandExecutionAdapter(command).Execute, item)
 
 class ProjectTree(wx.TreeCtrl):
 	"""A tree control that provides information about all files
@@ -32,7 +27,8 @@ class ProjectTree(wx.TreeCtrl):
 	def __init__(self, parent):
 		wx.TreeCtrl.__init__(self, parent, style=wx.TR_HAS_BUTTONS|wx.TR_LINES_AT_ROOT)
 		self.Bind(wx.EVT_RIGHT_DOWN, self._right_mouse_down)
-		self.context_commands = []
+		self.context_file_commands = []
+		self.context_directory_commands = []
 
 	def _right_mouse_down(self, event):
 		"""Internal function for handling right mouse button. We do want to provide
@@ -41,19 +37,17 @@ class ProjectTree(wx.TreeCtrl):
 		if node.IsOk():
 			self.PopupMenu(ProjectTreeContextMenu(), event.GetPosition())
 
-	def SetContextCommands(self, commands):
+	def SetContextCommands(self, file_commands, directory_commands):
 		"""Sets the context menu commands that this tree control can use.
 		These are right click commands that you can do in this tree control
 		(to refresh, create new documents, rename or delete files)"""
-		for command in commands:
-			if not isinstance(command, (FileCommand, DirectoryCommand)):
-				raise TypeError("Command instance is of wrong type. Should be FileCommand or DirectoryCommand but where: %s" % command.__class__.__name__)
-		self.context_commands = commands
+		self.context_file_commands = file_commands
+		self.context_directory_commands = directory_commands
 
 	def GetContextCommands(self):
 		"""Returns an array of context commands that this control can use
 		for right clicking a file or folder."""
-		return self.context_commands
+		return (self.context_file_commands, self.context_directory_commands)
 
 	def SetRootDirectory(self, directory):
 		""" Sets the root directory that the tree should display. All subfolders

@@ -1,27 +1,25 @@
 import wx
 
-from ActionHistoryCommand import ActionHistoryCommand
+from Command import Command
 
-class RedoCommand(ActionHistoryCommand):
+class RedoCommand(Command):
 	"""Redo the last action."""
-	
-	def __init__(self):
-		ActionHistoryCommand.__init__(self)
-	
-	def GetCaption(self):
-		return "Redo"
-	
-	def GetToolTipText(self):
-		return "Redo the last action"
-	
-	def GetToolBarImageName(self):
-		return "edit-redo"
-	
-	def on_ActionHistoryChanged(self, actionHistory):
-		if actionHistory.CanRedo():
-			self.Enable(True)
-		else:
-			self.Enable(False)
-	
+
+	caption = "Redo"
+	tooltip = "Redo the last action"
+	toolbarimage = "edit-redo"
+
 	def Execute(self):
-		self.actionHistory.Redo()
+		documentRegistry = wx.GetApp().GetDocumentRegistry()
+		currentDocument = documentRegistry.GetCurrentDocument()
+		currentDocument.actionHistory.Redo()
+
+	@staticmethod
+	def Enabled():
+		documentRegistry = wx.GetApp().GetDocumentRegistry()
+		currentDocument = documentRegistry.GetCurrentDocument()
+		if currentDocument is None:
+			return False
+
+		return True if currentDocument.actionHistory.CanRedo() else False
+

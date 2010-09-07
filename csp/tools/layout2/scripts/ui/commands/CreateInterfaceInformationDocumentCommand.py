@@ -10,14 +10,9 @@ class CreateInterfaceInformationDocumentCommand(Command):
 	CSP project. Each property is documented with information about type and what information
 	can be assigned to it."""
 
-	def GetCaption(self):
-		return "Create interface information document"
-
-	def GetToolTipText(self):
-		return "Create interface information document describing all object interfaces."
-
-	def GetToolBarImageName(self):
-		return "generic"
+	caption = "Create interface information document"
+	tooltip = "Create interface information document describing all object interfaces."
+	toolbarimage = "generic"
 
 	def Execute(self):
 		# Get a document from the DocumentRegistry, where we can add

@@ -5,16 +5,10 @@ from ..controls.XmlWindow import XmlWindow
 from ..controls.DocumentNotebook import DocumentNotebook
 
 class OpenUnknownXmlFileCommand(FileCommand):
-	
-	def GetCaption(self):
-		return "Open unknown XML file"
-	
-	def GetToolTipText(self):
-		return "Opens an existing unknown XML file"
-	
-	def GetToolBarImageName(self):
-		return "document-open"
-	
+	caption = "Open unknown XML file"
+	tooltip = "Opens an existing unknown XML file"
+	toolbarimage = "document-open"
+
 	def Execute(self):
 		# Get the document from the DocumentRegistry
 		application = wx.GetApp()

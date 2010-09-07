@@ -8,14 +8,9 @@ class OpenOsgModelFileCommand(FileCommand):
     """Opens a single Open Scene Graph model file in its own window within
     the user interface. """
 
-    def GetCaption(self):
-        return "Open model file"
-
-    def GetToolTipText(self):
-        return "Opens an existing Open Scene Graph model file (.osg, .ive) file"
-
-    def GetToolBarImageName(self):
-        return "document-open"
+    caption = "Open model file"
+    tooltip = "Opens an existing Open Scene Graph model file (.osg, .ive) file"
+    toolbarimage = "document-open"
 
     def Execute(self):
 

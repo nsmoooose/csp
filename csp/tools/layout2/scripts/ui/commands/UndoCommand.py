@@ -1,27 +1,25 @@
 import wx
 
-from ActionHistoryCommand import ActionHistoryCommand
+from Command import Command
 
-class UndoCommand(ActionHistoryCommand):
+class UndoCommand(Command):
 	"""Undo the last action."""
-	
-	def __init__(self):
-		ActionHistoryCommand.__init__(self)
-	
-	def GetCaption(self):
-		return "Undo"
-	
-	def GetToolTipText(self):
-		return "Undo the last action"
-	
-	def GetToolBarImageName(self):
-		return "edit-undo"
-	
-	def on_ActionHistoryChanged(self, actionHistory):
-		if actionHistory.CanUndo():
-			self.Enable(True)
-		else:
-			self.Enable(False)
-	
+
+	caption = "Undo"
+	tooltip = "Undo the last action"
+	toolbarimage = "edit-undo"
+
 	def Execute(self):
-		self.actionHistory.Undo()
+		documentRegistry = wx.GetApp().GetDocumentRegistry()
+		currentDocument = documentRegistry.GetCurrentDocument()
+		currentDocument.actionHistory.Undo()
+
+	@staticmethod
+	def Enabled():
+		documentRegistry = wx.GetApp().GetDocumentRegistry()
+		currentDocument = documentRegistry.GetCurrentDocument()
+		if currentDocument is None:
+			return False
+
+		return True if currentDocument.actionHistory.CanUndo() else False
+

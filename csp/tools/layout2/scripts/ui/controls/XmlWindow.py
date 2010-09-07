@@ -31,7 +31,6 @@ class XmlWindow(wx.stc.StyledTextCtrl, DocumentNotebookPage):
 		documentRegistry = wx.GetApp().GetDocumentRegistry()
 		documentRegistry.GetActiveDocumentChangedSignal().Disconnect(self.on_ActiveDocumentChanged)
 		self.document.GetChangedSignal().Disconnect(self.on_DocumentChanged)
-		documentRegistry = wx.GetApp().GetDocumentRegistry()
 		documentRegistry.ReleaseDocument(self.document)
 		self.document = None
 		self.externalData = {}

@@ -1,14 +1,13 @@
 from Command import Command
 
 class PanLeftCommand(Command):
-    def GetCaption(self):
-        return "Pan left"
-
-    def GetToolTipText(self):
-        return "Pan left"
-
-    def GetToolBarImageName(self):
-        return "arrow-left"
+    caption = "Pan left"
+    tooltip = "Pan left"
+    toolbarimage = "arrow-left"
 
     def Execute(self):
         pass
+
+    @staticmethod
+    def Enabled():
+        return False

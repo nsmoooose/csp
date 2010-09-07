@@ -5,14 +5,9 @@ from Command import Command
 class SaveAllDocumentsCommand(Command):
     """Saves all opened documents."""
 
-    def GetCaption(self):
-        return "Save all files"
-
-    def GetToolTipText(self):
-        return "Save all files"
-
-    def GetToolBarImageName(self):
-        return "document-save"
+    caption = "Save all files"
+    tooltip = "Save all files"
+    toolbarimage = "document-save"
 
     def Execute(self):
 	application = wx.GetApp()
@@ -27,3 +22,10 @@ class SaveAllDocumentsCommand(Command):
 		if document.IsReadOnly():
 			continue
 		document.Save()
+
+    @staticmethod
+    def Enabled():
+	application = wx.GetApp()
+	documentRegistry = application.GetDocumentRegistry()
+        return len(documentRegistry.GetDocuments()) > 0
+

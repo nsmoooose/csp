@@ -1,15 +1,10 @@
-from DirectoryCommand import DirectoryCommand
+from Command import Command
 from csp.tools.layout2.scripts.ui.controls.ProjectTree import ProjectTree
 
-class RefreshDirectoryCommand(DirectoryCommand):
-    def GetCaption(self):
-        return "Refresh"
-
-    def GetToolTipText(self):
-        return "Refresh the directory"
-
-    def GetToolBarImageName(self):
-        return "generic"
+class RefreshDirectoryCommand(Command):
+    caption = "Refresh"
+    tooltip = "Refresh the directory"
+    toolbarimage = "generic"
 
     def Execute(self):
-        ProjectTree.Instance.Refresh(self.GetDirectory())
+        ProjectTree.Instance.Refresh(ProjectTree.Instance.GetSelectedFile())

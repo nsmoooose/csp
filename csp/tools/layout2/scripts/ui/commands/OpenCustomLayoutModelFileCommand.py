@@ -7,22 +7,17 @@ from ..controls.SceneWindow import SceneWindow
 from ..controls.DocumentNotebook import DocumentNotebook
 
 class OpenCustomLayoutModelFileCommand(FileCommand):
-	
-	def GetCaption(self):
-		return "Open CustomLayoutModel file"
-	
-	def GetToolTipText(self):
-		return "Opens an existing layout file"
-	
-	def GetToolBarImageName(self):
-		return "document-open"
-	
+
+	caption = "Open CustomLayoutModel file"
+	tooltip = "Opens an existing layout file"
+	toolbarimage = "document-open"
+
 	def Execute(self):
 		"""Load a feature group or feature model from the specified file.  The existing
 		graph, if any, will be discarded.  If file represents a feature model, a
 		default feature group is created at the root of the new graph.
 		"""
-		
+
 		# Get the application object. This object is used to retreive the
 		# configuration object and the top window for this application.
 		application = wx.GetApp()

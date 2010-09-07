@@ -4,23 +4,18 @@ from Command import Command
 from FileCommandRegistry import FileCommandRegistry
 
 class OpenSelectedFileCommand(Command):
-	"""Opens the selected file in the project tree of this 
+	"""Opens the selected file in the project tree of this
 	application. When this command is executed we are trying
 	to identify the type of file we are loading and then
 	executing the correct FileCommand."""
 
-	def GetCaption(self):
-		return "Open selected file"
-
-	def GetToolTipText(self):
-		return "Open selected file in project tree"
-
-	def GetToolBarImageName(self):
-		return "document-open"
+	caption = "Open selected file"
+	tooltip = "Open selected file in project tree"
+	toolbarimage = "document-open"
 
 	def Execute(self):
 		"""Loads a document from the project tree."""
-		
+
 		# Get the application object. This object is used to retreive the
 		# configuration object and the top window for this application.
 		application = wx.GetApp()

@@ -1,15 +1,13 @@
 from Command import Command
 
 class PanDownCommand(Command):
-
-    def GetCaption(self):
-        return "Pan down"
-
-    def GetToolTipText(self):
-        return "Pan down"
-
-    def GetToolBarImageName(self):
-        return "arrow-down"
+    caption = "Pan down"
+    tooltip = "Pan down"
+    toolbarimage = "arrow-down"
 
     def Execute(self):
         pass
+
+    @staticmethod
+    def Enabled():
+        return False

@@ -5,14 +5,9 @@ from Command import Command
 class SaveCurrentDocumentCommand(Command):
     """Saves the current document if it allows it."""
 
-    def GetCaption(self):
-        return "Save file"
-
-    def GetToolTipText(self):
-        return "Save file"
-
-    def GetToolBarImageName(self):
-        return "document-save"
+    caption = "Save file"
+    tooltip = "Save file"
+    toolbarimage = "document-save"
 
     def Execute(self):
 	application = wx.GetApp()
@@ -26,4 +21,11 @@ class SaveCurrentDocumentCommand(Command):
 	currentDocument = documentRegistry.GetCurrentDocument()
 	if currentDocument is not None and currentDocument.IsReadOnly() == False:
 		currentDocument.Save()
+
+    @staticmethod
+    def Enabled():
+	application = wx.GetApp()
+	documentRegistry = application.GetDocumentRegistry()
+	return False if documentRegistry.GetCurrentDocument() is None else True
+
 

@@ -23,14 +23,9 @@ class ReCompileDataArchiveCommand(Command):
 	you won't need any development tools at all on windows. (you will only need
 	the version control in order to check out the xml directory only)."""
 
-	def GetCaption(self):
-		return "Recompile data archive"
-
-	def GetToolTipText(self):
-		return "Recompiles all files in the data archive (sim.dar)"
-
-	def GetToolBarImageName(self):
-		return "package-x-generic"
+	caption = "Recompile data archive"
+	tooltip = "Recompiles all files in the data archive (sim.dar)"
+	toolbarimage = "package-x-generic"
 
 	def Execute(self):
 		# Retreive tha application object so we can retreive the 

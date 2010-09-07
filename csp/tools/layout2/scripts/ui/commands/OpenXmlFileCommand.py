@@ -14,16 +14,11 @@ class OpenXmlFileCommand(FileCommand):
 	When this command is executed we are trying
 	to identify the type of file XML we are loading and then
 	executing the correct XmlFileCommand."""
-	
-	def GetCaption(self):
-		return "Open XML file"
-	
-	def GetToolTipText(self):
-		return "Opens an existing XML file"
-	
-	def GetToolBarImageName(self):
-		return "document-open"
-	
+
+	caption = "Open XML file"
+	tooltip = "Opens an existing XML file"
+	toolbarimage = "document-open"
+
 	def Execute(self):
 		"""Load the dom from the specified file.
 		Execute the correct XmlFileCommand based on the root element in the dom."""
@@ -35,28 +30,28 @@ class OpenXmlFileCommand(FileCommand):
 			rootObjectName = self.GetRootObjectName( self.GetFileName() )
 		except Exception, error:
 			loadError = str(error)
-			
+
 			# The error message from xml.dom.minidom is far better than from xml.dom.pulldom
 			try:
 				xml.dom.minidom.parse( self.GetFileName() )
 			except Exception, error:
 				loadError = str(error)
-			
+
 			wx.MessageDialog(wx.GetApp().GetTopWindow(),
 				"Cannot open xml file.\n" + loadError,
 				"Error loading XML file",
 				style = wx.OK | wx.ICON_ERROR).ShowModal()
 			return
-		
+
 		if rootObjectName is None:
 			command = OpenUnknownXmlFileCommand()
 		elif rootObjectName == "GenericOsgTerrain":
-			command = OpenObjectXmlFileCommand( TerrainWindow )
+			command = OpenTerrainObjectXmlFileCommand()
 		elif rootObjectName == "CustomLayoutModel":
 			command = OpenCustomLayoutModelFileCommand()
 		else:
-			command = OpenObjectXmlFileCommand( XmlWindow )
-		
+			command = OpenObjectXmlFileCommand()
+
 		command.SetFileName( self.GetFileName() )
 		command.Execute()
 	

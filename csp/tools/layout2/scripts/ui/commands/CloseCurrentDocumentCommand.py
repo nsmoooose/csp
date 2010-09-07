@@ -7,14 +7,13 @@ class CloseCurrentDocumentCommand(Command):
 	"""The purpose of this command is to close the currently
 	edited document."""
 
-	def GetCaption(self):
-		return "Close"
-
-	def GetToolTipText(self):
-		return "Close current document"
-
-	def GetToolBarImageName(self):
-		return "generic"
+	caption = "Close"
+	tooltip = "Close current document"
+	toolbarimage = "generic"
 
 	def Execute(self):
 		DocumentNotebook.Instance.CloseCurrentPage()
+
+	@staticmethod
+	def Enabled():
+		return DocumentNotebook.Instance.GetCurrentPage() is not None

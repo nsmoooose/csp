@@ -34,7 +34,7 @@ class LayoutApplication(wx.App):
 		if sys.platform == "linux2":
 			# Change the default language of the application to english.
 			loc = wx.Locale(wx.LANGUAGE_ENGLISH)
-			locale.setlocale(locale.LC_ALL, 'en_US')
+			locale.setlocale(locale.LC_ALL, '')
 		elif sys.platform == "win32":
 			# Locale names is different in windows. What to use?
 			pass

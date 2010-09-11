@@ -1,0 +1,9 @@
+<?xml version="1.0" standalone="no"?>
+<Object class="CloudOpacityLevels">
+  <List name="levels" type="float">
+	0.0	0.1 0.3 0.4
+  </List>
+  <List name="opacity" type="float">
+	0.1 0.3 0.7 1.0
+  </List>
+</Object>

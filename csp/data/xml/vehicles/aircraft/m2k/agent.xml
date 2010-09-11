@@ -16,9 +16,9 @@
 				<List name="engine_set">
 					<Object class="Engine">
 						<Path name="thrust_data">thrust</Path>
-						<Vector name="thrust_direction">0.0 1.0 0.0</Vector>
-						<Vector name="engine_offset">0.0 0.0 0.0</Vector>
-						<Vector name="smoke_emitter_location">0.0 -5.5 0.522</Vector>
+						<Vector3 name="thrust_direction">0.0 1.0 0.0</Vector3>
+						<Vector3 name="engine_offset">0.0 0.0 0.0</Vector3>
+						<Vector3 name="smoke_emitter_location">0.0 -5.5 0.522</Vector3>
 					</Object>
 				</List>
 			</Object>

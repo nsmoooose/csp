@@ -54,6 +54,7 @@
 
 %exception;
 
+%include "csp/csplib/data/swig/Vector2.i"
 %include "csp/csplib/data/swig/Vector3.i"
 %include "csp/csplib/data/swig/GeoPos.i"
 %include "csp/csplib/data/swig/Key.i"

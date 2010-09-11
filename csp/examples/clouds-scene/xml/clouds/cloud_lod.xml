@@ -1,0 +1,6 @@
+<?xml version="1.0" standalone="no"?>
+<Object class="CloudLOD">
+  <Float name="distance1">3000</Float>
+  <Float name="distance2">5000</Float>
+  <Float name="distance3">8000</Float>
+</Object>

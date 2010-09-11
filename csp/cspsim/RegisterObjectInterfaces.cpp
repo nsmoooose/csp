@@ -52,6 +52,8 @@
 #include <csp/cspsim/theater/RandomForestModel.h>
 #include <csp/cspsim/Theater.h>
 #include <csp/cspsim/ThrustData.h>
+#include <csp/cspsim/weather/clouds/CloudCoverModel.h>
+#include <csp/cspsim/weather/clouds/CloudModel.h>
 
 namespace csp {
 
@@ -123,6 +125,13 @@ void CSPSIM_EXPORT registerAllObjectInterfaces() {
 	{ static RandomForestModel::__csp_interface_proxy instance; }
 	{ static Theater::__csp_interface_proxy instance; }
 	{ static ThrustData::__csp_interface_proxy instance; }
+	{ static weather::clouds::CloudOpacityLevels::__csp_interface_proxy instance; }
+	{ static weather::clouds::CloudColorLevels::__csp_interface_proxy instance; }
+	{ static weather::clouds::CloudBox::__csp_interface_proxy instance; }
+	{ static weather::clouds::CloudModel::__csp_interface_proxy instance; }
+	{ static weather::clouds::CloudLOD::__csp_interface_proxy instance; }
+	{ static weather::clouds::CloudSprite::__csp_interface_proxy instance; }
+	{ static weather::clouds::CloudCoverModel::__csp_interface_proxy instance; }
 }
 
 } // namespace csp

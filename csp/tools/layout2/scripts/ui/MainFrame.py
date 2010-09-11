@@ -112,7 +112,7 @@ class MainFrame(wx.Frame):
 		ProjectTree.Instance = ProjectTree(self)
 		ProjectTree.Instance.SetRootDirectory(application.Configuration['LayoutApplication.DataDirectory'])
 		ProjectTree.Instance.SetOpenCommand( OpenSelectedFileCommand )
-		ProjectTree.Instance.SetContextCommands([None], [RefreshDirectoryCommand])
+		ProjectTree.Instance.SetContextCommands([None], [RefreshDirectoryCommand, CloudBoxWizardCommand])
 
 		application.auiManager.AddPane( ProjectTree.Instance,
 			wx.aui.AuiPaneInfo().Name('Project')

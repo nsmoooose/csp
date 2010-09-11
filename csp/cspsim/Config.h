@@ -71,10 +71,11 @@ extern CSPSIM_EXPORT void setDataPath(const std::string& key, const std::string&
 
 
 struct ScreenSettings {
-	ScreenSettings() : width(1024), height(768), fullScreen(false) {}
+	ScreenSettings() : width(1024), height(768), fullScreen(false), clouds(false) {}
 	int width;
 	int height;
 	bool fullScreen;
+	bool clouds;
 };
 
 /**
@@ -87,7 +88,7 @@ extern CSPSIM_EXPORT std::string getUIPath();
 
 extern CSPSIM_EXPORT std::string getUILanguage();
 extern CSPSIM_EXPORT void setUILanguage(const std::string& language);
-	
+
 extern CSPSIM_EXPORT std::string getUITheme();
 extern CSPSIM_EXPORT void setUITheme(const std::string& themeName);
 

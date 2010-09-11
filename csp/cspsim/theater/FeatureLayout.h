@@ -46,7 +46,7 @@ class ElevationCorrection;
 /**
  * class FeatureLayout (ANONYMOUS)
  *
- * Positions and orients a FeatureModel.
+ * Positions (X, Y) and orients a FeatureModel.
  */
 class FeatureLayout: public Object {
 

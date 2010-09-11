@@ -1,0 +1,556 @@
+<?xml version="1.0" standalone="no"?>
+<Object class="CloudModel">
+  <List name="cloud_boxes">
+    <Object class="CloudBox">
+      <List name="sprites">
+        <Object class="CloudSprite">
+          <Vector3 name="position">4 5 2</Vector3>
+          <Float name="rotation">1.0472</Float>
+          <Vector2 name="size">5 6</Vector2>
+        </Object>
+        <Object class="CloudSprite">
+          <Vector3 name="position">-8 -2 -3</Vector3>
+          <Float name="rotation">2.82743</Float>
+          <Vector2 name="size">8 6</Vector2>
+        </Object>
+        <Object class="CloudSprite">
+          <Vector3 name="position">1 -2 2</Vector3>
+          <Float name="rotation">1.20428</Float>
+          <Vector2 name="size">6 6</Vector2>
+        </Object>
+        <Object class="CloudSprite">
+          <Vector3 name="position">1 5 -3</Vector3>
+          <Float name="rotation">0.785398</Float>
+          <Vector2 name="size">4 6</Vector2>
+        </Object>
+        <Object class="CloudSprite">
+          <Vector3 name="position">-6 1 0</Vector3>
+          <Float name="rotation">5.65487</Float>
+          <Vector2 name="size">6 6</Vector2>
+        </Object>
+        <Object class="CloudSprite">
+          <Vector3 name="position">0 -3 0</Vector3>
+          <Float name="rotation">1.29154</Float>
+          <Vector2 name="size">6 5</Vector2>
+        </Object>
+        <Object class="CloudSprite">
+          <Vector3 name="position">9 -7 3</Vector3>
+          <Float name="rotation">5.48033</Float>
+          <Vector2 name="size">5 6</Vector2>
+        </Object>
+        <Object class="CloudSprite">
+          <Vector3 name="position">4 3 1</Vector3>
+          <Float name="rotation">5.34071</Float>
+          <Vector2 name="size">5 5</Vector2>
+        </Object>
+        <Object class="CloudSprite">
+          <Vector3 name="position">0 14 -1</Vector3>
+          <Float name="rotation">5.20108</Float>
+          <Vector2 name="size">8 5</Vector2>
+        </Object>
+        <Object class="CloudSprite">
+          <Vector3 name="position">2 6 2</Vector3>
+          <Float name="rotation">4.39823</Float>
+          <Vector2 name="size">6 5</Vector2>
+        </Object>
+        <Object class="CloudSprite">
+          <Vector3 name="position">-6 -5 4</Vector3>
+          <Float name="rotation">3.08923</Float>
+          <Vector2 name="size">6 6</Vector2>
+        </Object>
+        <Object class="CloudSprite">
+          <Vector3 name="position">-12 2 1</Vector3>
+          <Float name="rotation">6.03884</Float>
+          <Vector2 name="size">4 5</Vector2>
+        </Object>
+        <Object class="CloudSprite">
+          <Vector3 name="position">-6 -5 0</Vector3>
+          <Float name="rotation">5.89921</Float>
+          <Vector2 name="size">7 5</Vector2>
+        </Object>
+        <Object class="CloudSprite">
+          <Vector3 name="position">6 11 0</Vector3>
+          <Float name="rotation">5.21853</Float>
+          <Vector2 name="size">4 6</Vector2>
+        </Object>
+        <Object class="CloudSprite">
+          <Vector3 name="position">2 -11 -1</Vector3>
+          <Float name="rotation">2.98451</Float>
+          <Vector2 name="size">7 5</Vector2>
+        </Object>
+        <Object class="CloudSprite">
+          <Vector3 name="position">-2 0 2</Vector3>
+          <Float name="rotation">3.19395</Float>
+          <Vector2 name="size">7 5</Vector2>
+        </Object>
+        <Object class="CloudSprite">
+          <Vector3 name="position">-6 3 -4</Vector3>
+          <Float name="rotation">0.750492</Float>
+          <Vector2 name="size">8 5</Vector2>
+        </Object>
+        <Object class="CloudSprite">
+          <Vector3 name="position">-12 -1 1</Vector3>
+          <Float name="rotation">2.96706</Float>
+          <Vector2 name="size">7 5</Vector2>
+        </Object>
+        <Object class="CloudSprite">
+          <Vector3 name="position">1 -1 4</Vector3>
+          <Float name="rotation">3.87463</Float>
+          <Vector2 name="size">6 6</Vector2>
+        </Object>
+        <Object class="CloudSprite">
+          <Vector3 name="position">-9 -11 1</Vector3>
+          <Float name="rotation">1.18682</Float>
+          <Vector2 name="size">4 5</Vector2>
+        </Object>
+        <Object class="CloudSprite">
+          <Vector3 name="position">10 5 3</Vector3>
+          <Float name="rotation">2.86234</Float>
+          <Vector2 name="size">5 5</Vector2>
+        </Object>
+        <Object class="CloudSprite">
+          <Vector3 name="position">2 3 4</Vector3>
+          <Float name="rotation">3.00197</Float>
+          <Vector2 name="size">7 5</Vector2>
+        </Object>
+        <Object class="CloudSprite">
+          <Vector3 name="position">6 4 4</Vector3>
+          <Float name="rotation">5.77704</Float>
+          <Vector2 name="size">8 5</Vector2>
+        </Object>
+        <Object class="CloudSprite">
+          <Vector3 name="position">5 -7 -2</Vector3>
+          <Float name="rotation">1.55334</Float>
+          <Vector2 name="size">4 5</Vector2>
+        </Object>
+        <Object class="CloudSprite">
+          <Vector3 name="position">1 -6 -4</Vector3>
+          <Float name="rotation">3.38594</Float>
+          <Vector2 name="size">4 5</Vector2>
+        </Object>
+        <Object class="CloudSprite">
+          <Vector3 name="position">-8 -4 0</Vector3>
+          <Float name="rotation">2.11185</Float>
+          <Vector2 name="size">7 5</Vector2>
+        </Object>
+        <Object class="CloudSprite">
+          <Vector3 name="position">-14 -1 1</Vector3>
+          <Float name="rotation">2.93215</Float>
+          <Vector2 name="size">7 5</Vector2>
+        </Object>
+        <Object class="CloudSprite">
+          <Vector3 name="position">-7 -2 3</Vector3>
+          <Float name="rotation">4.41568</Float>
+          <Vector2 name="size">7 6</Vector2>
+        </Object>
+        <Object class="CloudSprite">
+          <Vector3 name="position">-7 -9 2</Vector3>
+          <Float name="rotation">4.29351</Float>
+          <Vector2 name="size">4 6</Vector2>
+        </Object>
+        <Object class="CloudSprite">
+          <Vector3 name="position">8 2 -2</Vector3>
+          <Float name="rotation">0.785398</Float>
+          <Vector2 name="size">5 5</Vector2>
+        </Object>
+        <Object class="CloudSprite">
+          <Vector3 name="position">10 1 -3</Vector3>
+          <Float name="rotation">0.15708</Float>
+          <Vector2 name="size">6 5</Vector2>
+        </Object>
+        <Object class="CloudSprite">
+          <Vector3 name="position">4 12 -1</Vector3>
+          <Float name="rotation">4.2237</Float>
+          <Vector2 name="size">8 6</Vector2>
+        </Object>
+        <Object class="CloudSprite">
+          <Vector3 name="position">3 2 -4</Vector3>
+          <Float name="rotation">1.65806</Float>
+          <Vector2 name="size">5 6</Vector2>
+        </Object>
+        <Object class="CloudSprite">
+          <Vector3 name="position">-13 4 -1</Vector3>
+          <Float name="rotation">4.60767</Float>
+          <Vector2 name="size">6 6</Vector2>
+        </Object>
+        <Object class="CloudSprite">
+          <Vector3 name="position">8 4 0</Vector3>
+          <Float name="rotation">1.74533</Float>
+          <Vector2 name="size">6 6</Vector2>
+        </Object>
+        <Object class="CloudSprite">
+          <Vector3 name="position">8 -10 -3</Vector3>
+          <Float name="rotation">3.31613</Float>
+          <Vector2 name="size">8 5</Vector2>
+        </Object>
+        <Object class="CloudSprite">
+          <Vector3 name="position">6 5 -3</Vector3>
+          <Float name="rotation">4.7473</Float>
+          <Vector2 name="size">5 6</Vector2>
+        </Object>
+        <Object class="CloudSprite">
+          <Vector3 name="position">-4 -12 2</Vector3>
+          <Float name="rotation">2.61799</Float>
+          <Vector2 name="size">8 6</Vector2>
+        </Object>
+        <Object class="CloudSprite">
+          <Vector3 name="position">2 -11 1</Vector3>
+          <Float name="rotation">0.785398</Float>
+          <Vector2 name="size">7 5</Vector2>
+        </Object>
+        <Object class="CloudSprite">
+          <Vector3 name="position">-13 1 -1</Vector3>
+          <Float name="rotation">5.34071</Float>
+          <Vector2 name="size">8 5</Vector2>
+        </Object>
+        <Object class="CloudSprite">
+          <Vector3 name="position">-8 -8 -2</Vector3>
+          <Float name="rotation">5.13127</Float>
+          <Vector2 name="size">5 5</Vector2>
+        </Object>
+        <Object class="CloudSprite">
+          <Vector3 name="position">5 -13 0</Vector3>
+          <Float name="rotation">0.872665</Float>
+          <Vector2 name="size">8 5</Vector2>
+        </Object>
+        <Object class="CloudSprite">
+          <Vector3 name="position">-5 1 3</Vector3>
+          <Float name="rotation">5.18363</Float>
+          <Vector2 name="size">5 5</Vector2>
+        </Object>
+        <Object class="CloudSprite">
+          <Vector3 name="position">6 -11 2</Vector3>
+          <Float name="rotation">0.331613</Float>
+          <Vector2 name="size">4 6</Vector2>
+        </Object>
+        <Object class="CloudSprite">
+          <Vector3 name="position">4 -5 3</Vector3>
+          <Float name="rotation">5.74213</Float>
+          <Vector2 name="size">8 6</Vector2>
+        </Object>
+        <Object class="CloudSprite">
+          <Vector3 name="position">5 -3 -3</Vector3>
+          <Float name="rotation">2.3911</Float>
+          <Vector2 name="size">5 5</Vector2>
+        </Object>
+        <Object class="CloudSprite">
+          <Vector3 name="position">1 1 -4</Vector3>
+          <Float name="rotation">1.72788</Float>
+          <Vector2 name="size">5 5</Vector2>
+        </Object>
+        <Object class="CloudSprite">
+          <Vector3 name="position">-6 -11 2</Vector3>
+          <Float name="rotation">5.41052</Float>
+          <Vector2 name="size">6 6</Vector2>
+        </Object>
+        <Object class="CloudSprite">
+          <Vector3 name="position">-10 6 -1</Vector3>
+          <Float name="rotation">0.261799</Float>
+          <Vector2 name="size">5 5</Vector2>
+        </Object>
+        <Object class="CloudSprite">
+          <Vector3 name="position">4 9 0</Vector3>
+          <Float name="rotation">4.85202</Float>
+          <Vector2 name="size">7 5</Vector2>
+        </Object>
+        <Object class="CloudSprite">
+          <Vector3 name="position">-13 7 0</Vector3>
+          <Float name="rotation">1.91986</Float>
+          <Vector2 name="size">6 5</Vector2>
+        </Object>
+        <Object class="CloudSprite">
+          <Vector3 name="position">1 -1 -2</Vector3>
+          <Float name="rotation">1.62316</Float>
+          <Vector2 name="size">5 6</Vector2>
+        </Object>
+        <Object class="CloudSprite">
+          <Vector3 name="position">-7 -10 -3</Vector3>
+          <Float name="rotation">5.79449</Float>
+          <Vector2 name="size">4 6</Vector2>
+        </Object>
+        <Object class="CloudSprite">
+          <Vector3 name="position">11 2 -1</Vector3>
+          <Float name="rotation">2.98451</Float>
+          <Vector2 name="size">6 6</Vector2>
+        </Object>
+        <Object class="CloudSprite">
+          <Vector3 name="position">-2 8 -2</Vector3>
+          <Float name="rotation">5.77704</Float>
+          <Vector2 name="size">4 5</Vector2>
+        </Object>
+        <Object class="CloudSprite">
+          <Vector3 name="position">-10 8 1</Vector3>
+          <Float name="rotation">1.5708</Float>
+          <Vector2 name="size">7 5</Vector2>
+        </Object>
+        <Object class="CloudSprite">
+          <Vector3 name="position">6 -4 -1</Vector3>
+          <Float name="rotation">3.9968</Float>
+          <Vector2 name="size">4 6</Vector2>
+        </Object>
+        <Object class="CloudSprite">
+          <Vector3 name="position">3 -5 0</Vector3>
+          <Float name="rotation">3.59538</Float>
+          <Vector2 name="size">4 6</Vector2>
+        </Object>
+        <Object class="CloudSprite">
+          <Vector3 name="position">4 14 0</Vector3>
+          <Float name="rotation">2.54818</Float>
+          <Vector2 name="size">6 5</Vector2>
+        </Object>
+        <Object class="CloudSprite">
+          <Vector3 name="position">4 -1 -2</Vector3>
+          <Float name="rotation">4.95674</Float>
+          <Vector2 name="size">6 5</Vector2>
+        </Object>
+        <Object class="CloudSprite">
+          <Vector3 name="position">-3 0 -3</Vector3>
+          <Float name="rotation">4.24115</Float>
+          <Vector2 name="size">8 5</Vector2>
+        </Object>
+        <Object class="CloudSprite">
+          <Vector3 name="position">5 -9 3</Vector3>
+          <Float name="rotation">5.27089</Float>
+          <Vector2 name="size">8 5</Vector2>
+        </Object>
+        <Object class="CloudSprite">
+          <Vector3 name="position">-1 -2 3</Vector3>
+          <Float name="rotation">6.17847</Float>
+          <Vector2 name="size">6 5</Vector2>
+        </Object>
+        <Object class="CloudSprite">
+          <Vector3 name="position">13 -6 1</Vector3>
+          <Float name="rotation">4.41568</Float>
+          <Vector2 name="size">7 6</Vector2>
+        </Object>
+        <Object class="CloudSprite">
+          <Vector3 name="position">-6 2 -2</Vector3>
+          <Float name="rotation">4.83456</Float>
+          <Vector2 name="size">5 5</Vector2>
+        </Object>
+        <Object class="CloudSprite">
+          <Vector3 name="position">6 13 -1</Vector3>
+          <Float name="rotation">4.79966</Float>
+          <Vector2 name="size">7 5</Vector2>
+        </Object>
+        <Object class="CloudSprite">
+          <Vector3 name="position">-6 -4 -3</Vector3>
+          <Float name="rotation">5.75959</Float>
+          <Vector2 name="size">5 6</Vector2>
+        </Object>
+        <Object class="CloudSprite">
+          <Vector3 name="position">4 -11 1</Vector3>
+          <Float name="rotation">1.01229</Float>
+          <Vector2 name="size">4 6</Vector2>
+        </Object>
+        <Object class="CloudSprite">
+          <Vector3 name="position">-4 -8 -2</Vector3>
+          <Float name="rotation">4.20624</Float>
+          <Vector2 name="size">6 5</Vector2>
+        </Object>
+        <Object class="CloudSprite">
+          <Vector3 name="position">1 6 -1</Vector3>
+          <Float name="rotation">3.28122</Float>
+          <Vector2 name="size">6 6</Vector2>
+        </Object>
+        <Object class="CloudSprite">
+          <Vector3 name="position">4 2 -1</Vector3>
+          <Float name="rotation">1.0821</Float>
+          <Vector2 name="size">6 6</Vector2>
+        </Object>
+        <Object class="CloudSprite">
+          <Vector3 name="position">-10 1 0</Vector3>
+          <Float name="rotation">3.19395</Float>
+          <Vector2 name="size">4 5</Vector2>
+        </Object>
+        <Object class="CloudSprite">
+          <Vector3 name="position">1 1 -1</Vector3>
+          <Float name="rotation">0.785398</Float>
+          <Vector2 name="size">6 5</Vector2>
+        </Object>
+        <Object class="CloudSprite">
+          <Vector3 name="position">-10 4 3</Vector3>
+          <Float name="rotation">0</Float>
+          <Vector2 name="size">5 5</Vector2>
+        </Object>
+        <Object class="CloudSprite">
+          <Vector3 name="position">2 8 3</Vector3>
+          <Float name="rotation">4.55531</Float>
+          <Vector2 name="size">6 5</Vector2>
+        </Object>
+        <Object class="CloudSprite">
+          <Vector3 name="position">-5 -10 0</Vector3>
+          <Float name="rotation">2.93215</Float>
+          <Vector2 name="size">7 6</Vector2>
+        </Object>
+        <Object class="CloudSprite">
+          <Vector3 name="position">5 -6 -4</Vector3>
+          <Float name="rotation">2.75762</Float>
+          <Vector2 name="size">8 5</Vector2>
+        </Object>
+        <Object class="CloudSprite">
+          <Vector3 name="position">8 -5 3</Vector3>
+          <Float name="rotation">5.86431</Float>
+          <Vector2 name="size">4 6</Vector2>
+        </Object>
+        <Object class="CloudSprite">
+          <Vector3 name="position">7 1 2</Vector3>
+          <Float name="rotation">0.959931</Float>
+          <Vector2 name="size">5 6</Vector2>
+        </Object>
+        <Object class="CloudSprite">
+          <Vector3 name="position">-1 -7 3</Vector3>
+          <Float name="rotation">4.27606</Float>
+          <Vector2 name="size">5 6</Vector2>
+        </Object>
+        <Object class="CloudSprite">
+          <Vector3 name="position">-1 13 1</Vector3>
+          <Float name="rotation">6.16101</Float>
+          <Vector2 name="size">7 5</Vector2>
+        </Object>
+        <Object class="CloudSprite">
+          <Vector3 name="position">10 9 -3</Vector3>
+          <Float name="rotation">3.4383</Float>
+          <Vector2 name="size">4 5</Vector2>
+        </Object>
+        <Object class="CloudSprite">
+          <Vector3 name="position">-8 7 -2</Vector3>
+          <Float name="rotation">5.11381</Float>
+          <Vector2 name="size">5 5</Vector2>
+        </Object>
+        <Object class="CloudSprite">
+          <Vector3 name="position">-11 4 -1</Vector3>
+          <Float name="rotation">5.32325</Float>
+          <Vector2 name="size">8 6</Vector2>
+        </Object>
+        <Object class="CloudSprite">
+          <Vector3 name="position">-4 -1 2</Vector3>
+          <Float name="rotation">5.25344</Float>
+          <Vector2 name="size">6 5</Vector2>
+        </Object>
+        <Object class="CloudSprite">
+          <Vector3 name="position">-5 -3 1</Vector3>
+          <Float name="rotation">6.26573</Float>
+          <Vector2 name="size">6 5</Vector2>
+        </Object>
+        <Object class="CloudSprite">
+          <Vector3 name="position">8 9 2</Vector3>
+          <Float name="rotation">0.890118</Float>
+          <Vector2 name="size">5 6</Vector2>
+        </Object>
+        <Object class="CloudSprite">
+          <Vector3 name="position">-2 5 -1</Vector3>
+          <Float name="rotation">1.3439</Float>
+          <Vector2 name="size">6 6</Vector2>
+        </Object>
+        <Object class="CloudSprite">
+          <Vector3 name="position">-4 -5 1</Vector3>
+          <Float name="rotation">0.436332</Float>
+          <Vector2 name="size">6 5</Vector2>
+        </Object>
+        <Object class="CloudSprite">
+          <Vector3 name="position">11 5 -3</Vector3>
+          <Float name="rotation">5.65487</Float>
+          <Vector2 name="size">6 5</Vector2>
+        </Object>
+        <Object class="CloudSprite">
+          <Vector3 name="position">-1 7 4</Vector3>
+          <Float name="rotation">0.680678</Float>
+          <Vector2 name="size">4 5</Vector2>
+        </Object>
+        <Object class="CloudSprite">
+          <Vector3 name="position">5 1 4</Vector3>
+          <Float name="rotation">0</Float>
+          <Vector2 name="size">8 5</Vector2>
+        </Object>
+        <Object class="CloudSprite">
+          <Vector3 name="position">11 -9 -1</Vector3>
+          <Float name="rotation">5.044</Float>
+          <Vector2 name="size">8 6</Vector2>
+        </Object>
+        <Object class="CloudSprite">
+          <Vector3 name="position">-14 -3 0</Vector3>
+          <Float name="rotation">3.64774</Float>
+          <Vector2 name="size">4 6</Vector2>
+        </Object>
+        <Object class="CloudSprite">
+          <Vector3 name="position">13 0 -1</Vector3>
+          <Float name="rotation">1.97222</Float>
+          <Vector2 name="size">6 6</Vector2>
+        </Object>
+        <Object class="CloudSprite">
+          <Vector3 name="position">-6 -7 -2</Vector3>
+          <Float name="rotation">3.36849</Float>
+          <Vector2 name="size">4 6</Vector2>
+        </Object>
+        <Object class="CloudSprite">
+          <Vector3 name="position">-5 11 3</Vector3>
+          <Float name="rotation">2.89725</Float>
+          <Vector2 name="size">7 6</Vector2>
+        </Object>
+        <Object class="CloudSprite">
+          <Vector3 name="position">-2 5 -4</Vector3>
+          <Float name="rotation">5.48033</Float>
+          <Vector2 name="size">4 5</Vector2>
+        </Object>
+        <Object class="CloudSprite">
+          <Vector3 name="position">7 -11 0</Vector3>
+          <Float name="rotation">2.77507</Float>
+          <Vector2 name="size">8 5</Vector2>
+        </Object>
+        <Object class="CloudSprite">
+          <Vector3 name="position">1 9 -2</Vector3>
+          <Float name="rotation">1.15192</Float>
+          <Vector2 name="size">4 6</Vector2>
+        </Object>
+        <Object class="CloudSprite">
+          <Vector3 name="position">7 2 -4</Vector3>
+          <Float name="rotation">5.96903</Float>
+          <Vector2 name="size">8 5</Vector2>
+        </Object>
+        <Object class="CloudSprite">
+          <Vector3 name="position">13 2 -1</Vector3>
+          <Float name="rotation">2.3911</Float>
+          <Vector2 name="size">7 5</Vector2>
+        </Object>
+        <Object class="CloudSprite">
+          <Vector3 name="position">-2 7 2</Vector3>
+          <Float name="rotation">2.87979</Float>
+          <Vector2 name="size">6 6</Vector2>
+        </Object>
+        <Object class="CloudSprite">
+          <Vector3 name="position">8 6 3</Vector3>
+          <Float name="rotation">3.14159</Float>
+          <Vector2 name="size">8 5</Vector2>
+        </Object>
+        <Object class="CloudSprite">
+          <Vector3 name="position">3 10 -2</Vector3>
+          <Float name="rotation">1.20428</Float>
+          <Vector2 name="size">4 6</Vector2>
+        </Object>
+        <Object class="CloudSprite">
+          <Vector3 name="position">4 -11 -3</Vector3>
+          <Float name="rotation">1.78024</Float>
+          <Vector2 name="size">5 5</Vector2>
+        </Object>
+        <Object class="CloudSprite">
+          <Vector3 name="position">-5 4 -2</Vector3>
+          <Float name="rotation">5.89921</Float>
+          <Vector2 name="size">7 5</Vector2>
+        </Object>
+        <Object class="CloudSprite">
+          <Vector3 name="position">6 8 2</Vector3>
+          <Float name="rotation">5.32325</Float>
+          <Vector2 name="size">4 5</Vector2>
+        </Object>
+      </List>
+      <Path name="color">cloud_color</Path>
+      <Path name="opacity">cloud_opacity</Path>
+      <Path name="lod">cloud_lod</Path>
+      <Vector3 name="size">15 15 5</Vector3>
+    </Object>
+  </List>
+  <List name="cloud_box_positions">
+      <Vector3 name="position">0 0 0</Vector3>
+  </List>
+</Object>

@@ -35,6 +35,7 @@
 #include <csp/csplib/data/Link.h>
 #include <csp/csplib/data/Quat.h>
 #include <csp/csplib/data/Real.h>
+#include <csp/csplib/data/Vector2.h>
 #include <csp/csplib/data/Vector3.h>
 
 #endif // __CSPLIB_DATA_TYPES_H__

@@ -62,6 +62,7 @@ type_categories = {
 	'STRING_TYPE': ('std::string',),
 	'CSP_TYPE': (
 		'csp::Matrix3',
+		'csp::Vector2',
 		'csp::Vector3',
 		'csp::Quat',
 		'csp::Path',

@@ -215,8 +215,23 @@ class ItemUpdaterUTM(ItemUpdaterSimple):
 		return 'utm'
 
 
-class ItemUpdaterVector(ItemUpdaterSimple):
-	NodeClass = XmlNodeArchive.XmlNodeVector
+class ItemUpdaterVector2(ItemUpdaterSimple):
+	NodeClass = XmlNodeArchive.XmlNodeVector2
+	
+	def GetItemImage(self):
+		return 'vector'
+	
+	def GetItemWindow(self, item):
+		return ItemWindowMatrix(self.propertiesPane.tree, item, 1, 2)
+	
+	def GetModifyWindow(self, node):
+		return self.CreateModifyWindow
+	
+	def CreateModifyWindow(self, parent, node):
+		return ModifyWindowMatrix( parent, node, 1, 2, self.GetItemText(node), self.GetActualImageName( self.GetItemImage() ) )
+
+class ItemUpdaterVector3(ItemUpdaterSimple):
+	NodeClass = XmlNodeArchive.XmlNodeVector3
 	
 	def GetItemImage(self):
 		return 'vector'

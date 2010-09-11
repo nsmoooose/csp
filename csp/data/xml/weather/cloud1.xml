@@ -1,0 +1,9 @@
+<?xml version="1.0" standalone="no"?>
+<Object class="CloudModel">
+  <List name="cloud_boxes">
+	<Path>cloudbox01</Path>
+  </List>
+  <List name="cloud_box_positions">
+	<Vector3>0 0 0</Vector3>
+  </List>
+</Object>

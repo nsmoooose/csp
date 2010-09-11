@@ -113,6 +113,7 @@ class Quat;
 class Real;
 class SimDate;
 class UTM;
+class Vector2;
 class Vector3;
 
 

@@ -82,7 +82,12 @@ class XmlNodeUTM : public XmlNodeElement
 	public:
 };
 
-class XmlNodeVector : public XmlNodeElement
+class XmlNodeVector2 : public XmlNodeElement
+{
+	public:
+};
+
+class XmlNodeVector3 : public XmlNodeElement
 {
 	public:
 };

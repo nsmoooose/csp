@@ -448,7 +448,17 @@ class String(SimpleNode):
 	MakeDomNode = staticmethod(MakeDomNode)
 Node.Classes['String'] = String
 
-class Vector(SimpleNode):
+class Vector2(SimpleNode):
+	def init(self):
+		self._value = map(float, self._node.text.split())
+	def presave(self):
+		self._node.text = '%f %f   ' % tuple(self._value)
+	def MakeDomNode(name, value, doc=None):
+		return SimpleNode.MakeDomNode('String', name, '%f %f' % value, doc=doc)
+	MakeDomNode = staticmethod(MakeDomNode)
+Node.Classes['Vector2'] = Vector2
+
+class Vector3(SimpleNode):
 	def init(self):
 		self._value = map(float, self._node.text.split())
 	def presave(self):
@@ -456,7 +466,7 @@ class Vector(SimpleNode):
 	def MakeDomNode(name, value, doc=None):
 		return SimpleNode.MakeDomNode('String', name, '%f %f %f' % value, doc=doc)
 	MakeDomNode = staticmethod(MakeDomNode)
-Node.Classes['Vector'] = Vector
+Node.Classes['Vector3'] = Vector3
 
 class Bool(SimpleNode):
 	def init(self):
@@ -724,14 +734,14 @@ FeatureQuad:
 
 ObjectModel:
 	External model_path
-	Vector axis_0
-	Vector axis_1
-	Vector offset
+	Vector3 axis_0
+	Vector3 axis_1
+	Vector3 offset
 	Float polygon_offset
 	Bool lighting
 	Int cull_face
 	Float scale
-	List<Vector> contacts
+	List<Vector3> contacts
 	Bool smooth
 	Bool filter
 """

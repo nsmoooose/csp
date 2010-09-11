@@ -220,7 +220,7 @@ class ListHandler(SimpleHandler):
 		if self._type is not None:
 			return 0
 		return name in ('Enum', 'Path', 'Int', 'Bool', 'Number', 'Float',
-		                'String', 'Date', 'Vector', 'Matrix', 'External', 'Key',
+		                'String', 'Date', 'Vector2', 'Vector3', 'Matrix', 'External', 'Key',
 		                'Object', 'Quat', 'LLA', "UTM", "ECEF")
 
 	def end(self):
@@ -321,7 +321,16 @@ class UTMHandler(SimpleHandler):
 		self._element.parseXML(self._c.encode('ascii'))
 
 
-class VectorHandler(SimpleHandler):
+class Vector2Handler(SimpleHandler):
+	def __init__(self, id, base, name, attrs):
+		SimpleHandler.__init__(self, id, base, name, attrs)
+
+	def end(self):
+		self._element = csplib.Vector2()
+		self._element.parseXML(self._c.encode('ascii'))
+
+
+class Vector3Handler(SimpleHandler):
 	def __init__(self, id, base, name, attrs):
 		SimpleHandler.__init__(self, id, base, name, attrs)
 

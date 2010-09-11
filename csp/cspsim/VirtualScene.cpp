@@ -532,10 +532,6 @@ void VirtualScene::buildScene() {
 	m_NearObjectGroup = new osg::Group;
 	m_NearGroup->addChild(m_SkyLights.get());
 	m_NearGroup->addChild(m_NearObjectGroup.get());
-	
-	// TODO: Remove these calls and place them into some kind of weather object.
-	m_CloudGroup = new osg::Group;
-	m_NearGroup->addChild(m_CloudGroup.get());
 
 	//FIXME: why doesn't ALL_OPTIMIZATIONS work as expected?
 	//osgUtil::Optimizer opt;

@@ -34,7 +34,7 @@
 			<String name="default_configuration">BLANK BLANK *SMS</String>
 		</Object>
 		<Object class="DataEntryDisplay">
-			<Vector name="color">1.0 0.95 0.5</Vector>
+			<Vector3 name="color">1.0 0.95 0.5</Vector3>
 			<Float name="text_height">0.0038</Float>
 			<Float name="line_spacing">0.0040</Float>
 		</Object>
@@ -65,9 +65,9 @@
 				<List name="engine_set">
 					<Object class="F16Engine">
 						<Path name="thrust_data">thrust</Path>
-						<Vector name="thrust_direction">0.0 1.0 0.0</Vector>
-						<Vector name="engine_offset">0.0 0.0 0.0</Vector>
-						<Vector name="smoke_emitter_location">0.0 -5.5 0.522</Vector>
+						<Vector3 name="thrust_direction">0.0 1.0 0.0</Vector3>
+						<Vector3 name="engine_offset">0.0 0.0 0.0</Vector3>
+						<Vector3 name="smoke_emitter_location">0.0 -5.5 0.522</Vector3>
 					</Object>
 				</List>
 			</Object>

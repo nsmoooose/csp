@@ -1,4 +1,6 @@
 #include <osgDB/ReadFile>
+#include <csp/csplib/util/Log.h>
+#include <csp/csplib/util/undef.h>
 #include <csp/cspsim/weather/clouds/CloudTextureFactory.h>
 
 namespace csp {
@@ -25,10 +27,16 @@ osg::ref_ptr<osg::Texture2D> CloudTextureFactory::getTexture(const char* fileNam
 	TextureMap::iterator foundTexture = m_Textures.find(fileName);
 	if(foundTexture == m_Textures.end()) {
 		osg::ref_ptr<osg::Image> image = osgDB::readImageFile(fileName);
-		osg::ref_ptr<osg::Texture2D> texture = new osg::Texture2D;
-		texture->setImage(image.get());
-		m_Textures.insert(TextureMap::value_type(fileName, texture));
-		return texture;
+		if(image.valid()) {
+			osg::ref_ptr<osg::Texture2D> texture = new osg::Texture2D;
+			texture->setImage(image.get());
+			m_Textures.insert(TextureMap::value_type(fileName, texture));
+			CSPLOG(DEBUG, APP) << "Caching texture file: " << fileName;
+			return texture;
+		}
+		else {
+			CSPLOG(DEBUG, APP) << "Texture file not found: " << fileName;
+		}
 	}
 	return foundTexture->second;
 }

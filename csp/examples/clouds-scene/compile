@@ -1,0 +1,1 @@
+../../tools/data-compiler -s xml/ -d cloud_scene.dar

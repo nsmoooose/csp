@@ -45,7 +45,6 @@ map key:SHIFT-KP_MINUS    press       CAMERA_FOV_STEP_INC
 
 map key:F1          press       SPIN_THE_WORLD/B|SPIN_THE_WORLD_STOP/B
 map key:F2          press       RESET_SPIN
-map key:F3          press       TOGGLE_CLOUDS
 
 map key:o           press       PRINT_SCREEN
 map key:l           press       LABELS_TOGGLE

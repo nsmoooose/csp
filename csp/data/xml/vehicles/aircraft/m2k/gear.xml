@@ -9,9 +9,9 @@
 		<!-- all of these values are complete guesses for testing only!	-->
 		<Object class="LandingGear"> <!-- nosewheel -->
 			<String name="gear_name">FrontGear</String>
-			<!--Vector name="max_position">0.0 4.123 -1.600</Vector-->
-			<Vector name="max_position">0.0 4.420 -1.600</Vector>
-			<Vector name="motion">0 0 1.0</Vector>
+			<!--Vector3 name="max_position">0.0 4.123 -1.600</Vector3-->
+			<Vector3 name="max_position">0.0 4.420 -1.600</Vector3>
+			<Vector3 name="motion">0 0 1.0</Vector3>
 			<Real name="damage_limit">80000.0:10000.0</Real>
 			<Float name="compression_limit">0.5</Float>
 			<Float name="K">200000.0</Float>
@@ -39,9 +39,9 @@
 		</Object>
 		<Object class="LandingGear"> <!-- left main -->
 			<String name="gear_name">LeftGear</String>
-			<!--Vector name="max_position">-1.815 -0.796 -1.721</Vector-->
-			<Vector name="max_position">-1.780 -0.500 -1.680</Vector>
-			<Vector name="motion">-0.122 0 0.993</Vector>
+			<!--Vector3 name="max_position">-1.815 -0.796 -1.721</Vector3-->
+			<Vector3 name="max_position">-1.780 -0.500 -1.680</Vector3>
+			<Vector3 name="motion">-0.122 0 0.993</Vector3>
 			<Real name="damage_limit">80000.0</Real>
 			<Float name="compression_limit">0.5</Float>
 			<Float name="K">300000.0</Float>
@@ -68,9 +68,9 @@
 		</Object>
 		<Object class="LandingGear"> <!-- right main -->
 			<String name="gear_name">RightGear</String>
-			<!--Vector name="max_position">1.815 -0.796 -1.721</Vector-->
-			<Vector name="max_position">1.780 -0.500 -1.680</Vector>
-			<Vector name="motion">0.122 0 0.993</Vector>
+			<!--Vector3 name="max_position">1.815 -0.796 -1.721</Vector3-->
+			<Vector3 name="max_position">1.780 -0.500 -1.680</Vector3>
+			<Vector3 name="motion">0.122 0 0.993</Vector3>
 			<Real name="damage_limit">80000.0:10000.0</Real>
 			<Float name="compression_limit">0.5</Float>
 			<Float name="K">300000.0</Float>

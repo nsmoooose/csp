@@ -142,6 +142,7 @@ public:
 	__CSP_ARCHIVE(CSP(hasht), _hasht)
 	__CSP_ARCHIVE(CSP(SimDate), _SimDate);
 	__CSP_ARCHIVE(CSP(Matrix3), _Matrix3);
+	__CSP_ARCHIVE(CSP(Vector2), _Vector2);
 	__CSP_ARCHIVE(CSP(Vector3), _Vector3);
 	__CSP_ARCHIVE(CSP(Quat), _Quat);
 	__CSP_ARCHIVE(CSP(Real), _Real);
@@ -252,6 +253,7 @@ public:
 	inline void _Table1(Table1 const &x) { (*self) << x; }
 	inline void _Table2(Table2 const &x) { (*self) << x; }
 	inline void _Table3(Table3 const &x) { (*self) << x; }
+	inline void _Vector2(Vector2 const &x) { (*self) << x; }
 	inline void _Vector3(Vector3 const &x) { (*self) << x; }
 }
 #endif // SWIG

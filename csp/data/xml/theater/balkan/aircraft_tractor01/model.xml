@@ -2,8 +2,8 @@
 
 <Object class="ObjectModel">
     <External name="model_path">airbase/aircraft_tractor01/aircraft_tractor01.osg</External>
-    <Vector name="axis_0">1 0 0</Vector>
-    <Vector name="axis_1">0 1 0</Vector>
+    <Vector3 name="axis_0">1 0 0</Vector3>
+    <Vector3 name="axis_1">0 1 0</Vector3>
     <Bool name="smooth">true</Bool>
     <Bool name="filter">true</Bool>
 </Object>

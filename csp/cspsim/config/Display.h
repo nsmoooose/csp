@@ -38,7 +38,7 @@ typedef std::vector<std::string> StringVector;
  * to make changes permanent. See Configuration class for more information. */
 class CSPSIM_EXPORT Display: public Referenced {
 public:
-	Display(int width, int height, bool fullscreen);
+	Display(int width, int height, bool fullscreen, bool clouds);
 	virtual ~Display();
 
 	virtual int getWidth();
@@ -49,6 +49,9 @@ public:
 
 	virtual bool getFullscreen();
 	virtual void setFullscreen(bool fullscreen);
+
+	virtual bool getClouds();
+	virtual void setClouds(bool clouds);
 
 	/** Enumerates all display modes and returns them as a vector in the following
 	 *	format. NxN. Ex:
@@ -61,6 +64,7 @@ private:
 	int m_Width;
 	int m_Height;
 	bool m_Fullscreen;
+	bool m_Clouds;
 };
 
 } // end namespace config

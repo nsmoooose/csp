@@ -42,44 +42,47 @@ namespace config {
 
 %newobject Display::clone();
 
-typedef std::vector<std::string> StringVector;	
+typedef std::vector<std::string> StringVector;
 
 class Display {
 public:
-	Display(int width, int height, bool fullscreen);
-	virtual ~Display();
-	
-	virtual int getWidth();
-	virtual void setWidth(int width);
-	
-	virtual int getHeight();
-	virtual void setHeight(int height);
-	
-	virtual bool getFullscreen();
-	virtual void setFullscreen(bool fullscreen);
-	
-	virtual StringVector enumerateDisplayModes();
+        Display(int width, int height, bool fullscreen, bool clouds);
+        virtual ~Display();
 
-	virtual Display* clone();
+        virtual int getWidth();
+        virtual void setWidth(int width);
+
+        virtual int getHeight();
+        virtual void setHeight(int height);
+
+        virtual bool getFullscreen();
+        virtual void setFullscreen(bool fullscreen);
+
+        virtual bool getClouds();
+        virtual void setClouds(bool clouds);
+
+        virtual StringVector enumerateDisplayModes();
+
+        virtual Display* clone();
 };
 
 %newobject UserInterface::clone();
 
 class UserInterface {
 public:
-	UserInterface(const std::string& language, const std::string& theme);
-	virtual ~UserInterface();
-	
-	virtual std::string getLanguage();
-	virtual void setLanguage(const std::string& language);
-	
-	virtual std::string getTheme();
-	virtual void setTheme(const std::string& themeName);
-	
-	virtual UserInterface* clone();
-	
-	virtual StringVector enumerateThemes();
-	virtual StringVector enumerateLanguages();	
+        UserInterface(const std::string& language, const std::string& theme);
+        virtual ~UserInterface();
+
+        virtual std::string getLanguage();
+        virtual void setLanguage(const std::string& language);
+
+        virtual std::string getTheme();
+        virtual void setTheme(const std::string& themeName);
+
+        virtual UserInterface* clone();
+
+        virtual StringVector enumerateThemes();
+        virtual StringVector enumerateLanguages();
 };
 
 %newobject Configuration::getDisplay();
@@ -88,13 +91,13 @@ public:
 
 class Configuration {
 public:
-	Configuration(Display* display, UserInterface* userInterface);
-	virtual ~Configuration();
-	
-	virtual Display* getDisplay();
-	virtual UserInterface* getUserInterface();
-	
-	virtual Configuration* clone();
+        Configuration(Display* display, UserInterface* userInterface);
+        virtual ~Configuration();
+
+        virtual Display* getDisplay();
+        virtual UserInterface* getUserInterface();
+
+        virtual Configuration* clone();
 };
 
 } // namespace config

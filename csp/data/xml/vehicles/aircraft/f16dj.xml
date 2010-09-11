@@ -19,8 +19,8 @@
 	</Matrix>
 
 	<!-- initial cm offset relative to the 3d model origin -->
-	<!--Vector name="reference_center_of_mass_offset">0.0 -0.1 -0.07</Vector-->
-	<Vector name="reference_center_of_mass_offset">0.0 -0.1 -0.17</Vector>
+	<!--Vector3 name="reference_center_of_mass_offset">0.0 -0.1 -0.07</Vector3-->
+	<Vector3 name="reference_center_of_mass_offset">0.0 -0.1 -0.17</Vector3>
 
 	<Path name="human_systems">f16.systems</Path>
 	<Path name="remote_systems">f16.remote</Path>

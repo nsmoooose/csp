@@ -2,28 +2,28 @@
 
 <Object class="ObjectModel">
 	<External name="model_path">aircraft/f16/f16dj-cockpit.osg</External>
-	<Vector name="axis_0">1 0 0</Vector>
-	<Vector name="axis_1">0 1 0</Vector>
-	<Vector name="view_point">0.0 4.60 1.20</Vector>
-	<Vector name="hud_placement">0.0 5.0 1.15</Vector>
+	<Vector3 name="axis_0">1 0 0</Vector3>
+	<Vector3 name="axis_1">0 1 0</Vector3>
+	<Vector3 name="view_point">0.0 4.60 1.20</Vector3>
+	<Vector3 name="hud_placement">0.0 5.0 1.15</Vector3>
 	<Float name="hud_width">0.124</Float>
 	<Float name="hud_height">0.160</Float>
 	<Bool name="smooth">false</Bool>
 	<Enum name="effect">None</Enum>
 	<List name="debug_points">
 		<!-- view point -->
-		<Vector>0.0 4.45 1.19</Vector>
+		<Vector3>0.0 4.45 1.19</Vector3>
 	</List>
 	<List name="animations">
 		<Object class="DisplayScreen">
 			<String name="model_id">LeftMFD</String>
 			<String name="channel_name">LeftMFD</String>
-			<Vector name="offset">0 -0.01 0</Vector>
+			<Vector3 name="offset">0 -0.01 0</Vector3>
 		</Object>
 		<Object class="DisplayScreen">
 			<String name="model_id">RightMFD</String>
 			<String name="channel_name">RightMFD</String>
-			<Vector name="offset">0 -0.01 0</Vector>
+			<Vector3 name="offset">0 -0.01 0</Vector3>
 		</Object>
 		<Object class="AnimatedMomentarySwitch">
 			<String name="model_id">LEFT_OSB_00</String>
@@ -88,7 +88,7 @@
 		<Object class="DisplayScreen">
 			<String name="model_id">DED</String>
 			<String name="channel_name">DataEntryDisplay</String>
-			<Vector name="offset">-0.032 -0.023 0.009</Vector>
+			<Vector3 name="offset">-0.032 -0.023 0.009</Vector3>
 		</Object>
 		<Object class="AnimatedMomentarySwitch">
 			<String name="model_id">ICP.DataControlSwitch</String>
@@ -279,7 +279,7 @@
 		<Object class="DrivenRotation">
 			<String name="channel_name">Engine.RPM</String>
 			<String name="model_id">RPMPointer</String>
-			<Vector name="axis">0 0 1</Vector>
+			<Vector3 name="axis">0 0 1</Vector3>
 			<Bool name="pre_multiply">true</Bool>
 			<Table1 name="non_linear_scale">
 				<Breaks0 spacing="0.1">0 0.60 0.70 0.80 0.90 1.00 1.10</Breaks0>
@@ -292,7 +292,7 @@
 		<Object class="DrivenRotation">
 			<String name="channel_name">Engine.Nozzle</String>
 			<String name="model_id">NozzlePointer</String>
-			<Vector name="axis">0 0 1</Vector>
+			<Vector3 name="axis">0 0 1</Vector3>
 			<Bool name="pre_multiply">true</Bool>
 			<Float name="gain">240</Float>
 			<Float name="limit_0">0</Float>
@@ -305,7 +305,7 @@
 		<Object class="DrivenRotation">
 			<String name="channel_name">Engine.FTIT</String>
 			<String name="model_id">FTITPointer</String>
-			<Vector name="axis">0 0 1</Vector>
+			<Vector3 name="axis">0 0 1</Vector3>
 			<Bool name="pre_multiply">true</Bool>
 			<Table1 name="non_linear_scale">
 				<Breaks0 spacing="100">0 200 700 1000 1200</Breaks0>
@@ -324,7 +324,7 @@
 		<Object class="DrivenRotation">
 			<String name="channel_name">FlightDynamics.Alpha</String>
 			<String name="model_id">AOATape</String>
-			<Vector name="axis">0 0 1</Vector>
+			<Vector3 name="axis">0 0 1</Vector3>
 			<Bool name="pre_multiply">true</Bool>
 			<Float name="gain">269.3</Float>
 			<Float name="limit_0">-178</Float>
@@ -334,7 +334,7 @@
 		<Object class="DrivenRotation">
 			<String name="channel_name">FlightDynamics.VerticalVelocity</String>
 			<String name="model_id">VVITape</String>
-			<Vector name="axis">0 0 1</Vector>
+			<Vector3 name="axis">0 0 1</Vector3>
 			<Bool name="pre_multiply">true</Bool>
 			<Float name="gain">4.5</Float>
 			<Float name="limit_0">-143</Float>
@@ -344,28 +344,28 @@
 		<Object class="CounterWheel">
 			<String name="channel_name">FlightDynamics.PressureAltitude</String>
 			<String name="model_id">Altimeter</String>
-			<Vector name="axis">-1 0 0</Vector>
+			<Vector3 name="axis">-1 0 0</Vector3>
 			<Int name="lod_limit">10</Int>
 			<Float name="gain">0.0328084</Float>
 		</Object>
 		<Object class="CounterWheel">
 			<String name="channel_name">Engine.FuelFlow</String>
 			<String name="model_id">FuelFlow</String>
-			<Vector name="axis">1 0 0</Vector>
+			<Vector3 name="axis">1 0 0</Vector3>
 			<Int name="lod_limit">10</Int>
 			<Float name="gain">0.022</Float> <!-- 100 lb/hr from kg/hr  -->
 		</Object>
 		<Object class="CounterWheel">
 			<String name="channel_name">F16.Totalizer</String>
 			<String name="model_id">FuelTotalizer</String>
-			<Vector name="axis">1 0 0</Vector>
+			<Vector3 name="axis">1 0 0</Vector3>
 			<Int name="lod_limit">10</Int>
 			<Float name="gain">1.0</Float>
 		</Object>
 		<Object class="DrivenRotation">
 			<String name="channel_name">F16.AftLeftPointer</String>
 			<String name="model_id">FuelAftLeftPointer</String>
-			<Vector name="axis">0 0 -1</Vector>
+			<Vector3 name="axis">0 0 -1</Vector3>
 			<Bool name="pre_multiply">true</Bool>
 			<Float name="gain">0.0602</Float>
 			<Float name="limit_0">0</Float>
@@ -375,7 +375,7 @@
 		<Object class="DrivenRotation">
 			<String name="channel_name">F16.FwdRightPointer</String>
 			<String name="model_id">FuelFrontRightPointer</String>
-			<Vector name="axis">0 0 -1</Vector>
+			<Vector3 name="axis">0 0 -1</Vector3>
 			<Bool name="pre_multiply">true</Bool>
 			<Float name="gain">0.0602</Float>
 			<Float name="limit_0">0</Float>
@@ -385,7 +385,7 @@
 		<Object class="DrivenRotation">
 			<String name="channel_name">FlightDynamics.PressureAltitude</String>
 			<String name="model_id">Altimeter BlackPointer</String>
-			<Vector name="axis">0 0 -1</Vector>
+			<Vector3 name="axis">0 0 -1</Vector3>
 			<Bool name="pre_multiply">true</Bool>
 			<Float name="gain">1.18112</Float>
 			<Float name="limit_0">-3600</Float>
@@ -395,7 +395,7 @@
 		<!--Object class="RotarySwitch">
 			<String name="channel_name">HUD.FlightPathMarkerSwitch</String>
 			<String name="model_id">Cockpit.MasterArm</String>
-			<Vector name="axis">1 0 0</Vector>
+			<Vector3 name="axis">1 0 0</Vector3>
 			<Int name="lod_limit">10</Int>
 			<List name="angles"><Float>12</Float><Float>0</Float><Float>-12</Float></List>
 		</Object-->

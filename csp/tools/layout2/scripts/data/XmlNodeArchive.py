@@ -21,7 +21,8 @@ class XmlNodeArchiveFactory(XmlNodeFactory):
 				XmlNodeECEF,
 				XmlNodeLLA,
 				XmlNodeUTM,
-				XmlNodeVector,
+				XmlNodeVector2,
+				XmlNodeVector3,
 				XmlNodeMatrix,
 				XmlNodeQuat,
 				XmlNodeDate,
@@ -136,7 +137,8 @@ class XmlNodeContainer(XmlNodeArchive):
 				XmlNodeECEF,
 				XmlNodeLLA,
 				XmlNodeUTM,
-				XmlNodeVector,
+				XmlNodeVector2,
+				XmlNodeVector3,
 				XmlNodeMatrix,
 				XmlNodeQuat,
 				XmlNodeDate,
@@ -359,16 +361,42 @@ class XmlNodeUTM(layout_module.XmlNodeUTM, XmlNodeSimple):
 			error.clear()
 
 
-class XmlNodeVector(layout_module.XmlNodeVector, XmlNodeSimple):
-	tag = 'Vector'
+class XmlNodeVector2(layout_module.XmlNodeVector2, XmlNodeSimple):
+	tag = 'Vector2'
+	variableType = 'Vector2'
+
+	def __init__(self, parent, documentOwner, *args, **kwargs):
+		layout_module.XmlNodeVector2.__init__(self, *args, **kwargs)
+		XmlNodeSimple.__init__(self, parent, documentOwner, *args, **kwargs)
+
+	def CheckErrors(self):
+		super(XmlNodeVector2, self).CheckErrors()
+
+		vector = csplib.Vector2()
+		try:
+			vector.parseXML( self.GetText() )
+			self.SetError( "parseXML", None )
+		except csplib.ParseException, error:
+			self.SetError( "parseXML", error.getMessage() )
+			error.clear()
+
+	def GetStringValues(self):
+		values = self.GetText().split(None, 1)
+		for index in range(len(values), 2):
+			values.append('')
+		return values
+
+
+class XmlNodeVector3(layout_module.XmlNodeVector3, XmlNodeSimple):
+	tag = 'Vector3'
 	variableType = 'Vector3'
 	
 	def __init__(self, parent, documentOwner, *args, **kwargs):
-		layout_module.XmlNodeVector.__init__(self, *args, **kwargs)
+		layout_module.XmlNodeVector3.__init__(self, *args, **kwargs)
 		XmlNodeSimple.__init__(self, parent, documentOwner, *args, **kwargs)
 	
 	def CheckErrors(self):
-		super(XmlNodeVector, self).CheckErrors()
+		super(XmlNodeVector3, self).CheckErrors()
 		
 		vector = csplib.Vector3()
 		try:

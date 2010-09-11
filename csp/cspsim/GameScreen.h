@@ -104,7 +104,6 @@ public:
 		BIND_ACTION("SPIN_THE_WORLD_STOP", on_SpinTheWorldStop);
 		//BIND_ACTION("PRINT_SCREEN", on_PrintScreen);
 		BIND_ACTION("RESET_SPIN", on_ResetSpin);
-		BIND_ACTION("TOGGLE_CLOUDS", on_ToggleClouds);
 		BIND_ACTION("LABELS_OFF", on_LabelsOff);
 		BIND_ACTION("LABELS_ON", on_LabelsOn);
 		BIND_ACTION("LABELS_TOGGLE", on_LabelsToggle);
@@ -156,7 +155,6 @@ public:
 	void on_SpinTheWorld();
 	void on_SpinTheWorldStop();
 	void on_ResetSpin();
-	void on_ToggleClouds();
 	//void on_PrintScreen();
 	void on_LabelsOn();
 	void on_LabelsOff();

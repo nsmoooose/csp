@@ -64,6 +64,8 @@ build.SourceGroup(expenv,
 		'data/TypeAdapter.cpp',
 		'data/TypeAdapter.h',
 		'data/Types.h',
+		'data/Vector2.cpp',
+		'data/Vector2.h',
 		'data/Vector3.cpp',
 		'data/Vector3.h',
 

@@ -1,4 +1,5 @@
 from CloseCurrentDocumentCommand import CloseCurrentDocumentCommand
+from CloudBoxWizardCommand import CloudBoxWizardCommand
 from Command import Command
 from CreateInterfaceInformationDocumentCommand import CreateInterfaceInformationDocumentCommand
 from CreateModelXmlFileCommand import CreateModelXmlFileCommand

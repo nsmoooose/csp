@@ -3,8 +3,8 @@
 <Object class="ObjectModel">
     <External name="model_path">airbase/ladder01/ladder01.osg</External>
     <External name="ground_shadowpath">airbase/ladder01/ladder01_shadow.osg</External>
-    <Vector name="axis_0">1 0 0</Vector>
-    <Vector name="axis_1">0 1 0</Vector>
+    <Vector3 name="axis_0">1 0 0</Vector3>
+    <Vector3 name="axis_1">0 1 0</Vector3>
     <Bool name="smooth">false</Bool>
     <Bool name="filter">true</Bool>
 </Object>

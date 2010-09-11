@@ -69,7 +69,7 @@ class CSPLIB_EXPORT TypeAdapter
 	              TYPE_Object,  // first BaseType
 	              TYPE_ECEF, TYPE_EnumLink, TYPE_External, TYPE_Key, TYPE_LinkBase, TYPE_LinkCore,
 	              TYPE_LLA, TYPE_Matrix3, TYPE_Path, TYPE_Quat, TYPE_Real, TYPE_SimDate,
-	              TYPE_Table1, TYPE_Table2, TYPE_Table3, TYPE_UTM, TYPE_Vector3} TYPE;
+	              TYPE_Table1, TYPE_Table2, TYPE_Table3, TYPE_UTM, TYPE_Vector2, TYPE_Vector3} TYPE;
 	static const char * TypeNames[];
 public:
 
@@ -107,6 +107,7 @@ public:
 	BASETYPE_ADAPTER(Table2);
 	BASETYPE_ADAPTER(Table3);
 	BASETYPE_ADAPTER(UTM);
+	BASETYPE_ADAPTER(Vector2);
 	BASETYPE_ADAPTER(Vector3);
 
 #undef BASETYPE_ADAPTER
@@ -202,6 +203,7 @@ public:
 	void set(Table2 & x) const;
 	void set(Table3 & x) const;
 	void set(UTM & x) const;
+	void set(Vector2 & x) const;
 	void set(Vector3 & x) const;
 
 	// Implemented in Link.h

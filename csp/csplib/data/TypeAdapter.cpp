@@ -34,7 +34,7 @@ namespace csp {
 const char *TypeAdapter::TypeNames[] = {
 	"NONE", "Integer", "Double", "String", "Object", "ECEF", "EnumLink", "External",
 	"Key", "LinkBase", "LinkCore", "LLA", "Matrix3", "Path", "Quat", "Real",
-	"SimDate", "Table1", "Table2", "Table3", "UTM", "Vector3"};
+	"SimDate", "Table1", "Table2", "Table3", "UTM", "Vector2", "Vector3"};
 
 void TypeAdapter::failConvert(const char *typestr) const {
 	throw TypeMismatch(__repr__() + ": Cannot convert to " + typestr);
@@ -97,6 +97,7 @@ BASETYPE_SET(Table1)
 BASETYPE_SET(Table2)
 BASETYPE_SET(Table3)
 BASETYPE_SET(UTM)
+BASETYPE_SET(Vector2)
 BASETYPE_SET(Vector3)
 
 #undef BASETYPE_SET

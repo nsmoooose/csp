@@ -33,6 +33,7 @@ PACKAGES = [
 	'cspwf',
 	'modules',
 	'examples/clouds',
+	'examples/clouds-scene',
 	'examples/objectmodel',
 	'examples/osgviewer_sdlinput',
 	# 'examples/sdl-viewer',

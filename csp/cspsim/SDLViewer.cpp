@@ -90,8 +90,6 @@ void SDLViewer::updateTraversal()
 
 void SDLViewer::pollSdlEvents()
 {
-	CSPLOG(DEBUG, APP) << "Checking for SDL input events";
-
 	SDL_Event event;
 	short doPoll = 10;
 	while ( doPoll-- && SDL_PollEvent(&event) )

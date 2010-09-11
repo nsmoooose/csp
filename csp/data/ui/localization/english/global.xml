@@ -3,7 +3,8 @@
 	<Strings>
 		<String key="cancel">Cancel</String>
 		<String key="credits">Credits</String>
-		<String key="csp">Combat Simulator Project</String>	
+		<String key="clouds">Clouds (experimental)</String>
+		<String key="csp">Combat Simulator Project</String>
 		<String key="full_screen_mode">Fullscreen</String>
 		<String key="help">Help</String>
 		<String key="help_mouse">Mouse</String>

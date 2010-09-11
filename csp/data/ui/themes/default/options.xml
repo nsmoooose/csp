@@ -28,6 +28,10 @@
 											<CheckBox Id="fullscreen"
 												LocationX="185" LocationY="37" SizeWidth="150"
 												SizeHeight="30" Text="${full_screen_mode}" />
+
+											<CheckBox Id="clouds"
+												LocationX="185" LocationY="77" SizeWidth="150"
+												SizeHeight="30" Text="${clouds}" />
 										</Controls>
 									</MultiControlContainer>
 								</Control>

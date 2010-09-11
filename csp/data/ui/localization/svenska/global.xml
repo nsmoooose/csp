@@ -3,6 +3,7 @@
 	<Strings>
 		<String key="cancel">Avbryt</String>
 		<String key="credits">Beröm</String>
+		<String key="clouds">Moln (experimentellt)</String>
 		<String key="csp">Combat Simulator Project</String>
 		<String key="full_screen_mode">Helskärm</String>
 		<String key="help">Hjälp</String>
@@ -19,7 +20,7 @@
 		<String key="options">Inställningar</String>
 		<String key="options_controls">Kontroller</String>
 		<String key="options_display">Grafik</String>
-		<String key="options_sound">Ljud</String>	
+		<String key="options_sound">Ljud</String>
 		<String key="options_userinterface">Användargränssnitt</String>
 		<String key="pause">Paus</String>
 		<String key="quit">Avsluta</String>

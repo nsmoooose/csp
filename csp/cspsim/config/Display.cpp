@@ -29,7 +29,7 @@
 namespace csp {
 namespace config {
 
-Display::Display(int width, int height, bool fullscreen) : m_Width(width), m_Height(height), m_Fullscreen(fullscreen) {
+Display::Display(int width, int height, bool fullscreen, bool clouds) : m_Width(width), m_Height(height), m_Fullscreen(fullscreen), m_Clouds(clouds) {
 }
 
 Display::~Display() {
@@ -52,7 +52,7 @@ void Display::setHeight(int height) {
 }
 
 Display* Display::clone() {
-	return new Display(m_Width, m_Height, m_Fullscreen);
+	return new Display(m_Width, m_Height, m_Fullscreen, m_Clouds);
 }
 
 bool Display::getFullscreen() {
@@ -61,6 +61,14 @@ bool Display::getFullscreen() {
 
 void Display::setFullscreen(bool fullscreen) {
 	m_Fullscreen = fullscreen;
+}
+
+bool Display::getClouds() {
+	return m_Clouds;
+}
+
+void Display::setClouds(bool clouds) {
+	m_Clouds = clouds;
 }
 
 StringVector Display::enumerateDisplayModes() {

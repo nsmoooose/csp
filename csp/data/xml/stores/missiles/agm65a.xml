@@ -12,10 +12,10 @@
 	converted to metrics, but after conversion thy look somehow strange
 	-->
 	<Matrix name="unit_inertia">0.000644 0 0 0 0.01873 0 0 0 0.01873</Matrix>
-	<Vector name="cg_offset">0 0 0.12</Vector>
+	<Vector3 name="cg_offset">0 0 0.12</Vector3>
 	<Object name="model" class="ObjectModel">
 		<External name="model_path">stores/missiles/agm65a/agm65a.osg</External>
-		<Vector name="offset">0 0 -0.12</Vector>
+		<Vector3 name="offset">0 0 -0.12</Vector3>
 		<Bool name="smooth">false</Bool>
 <!--		<Enum name="effect">SpecularHighlights</Enum> -->
 	</Object>

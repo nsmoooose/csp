@@ -150,7 +150,7 @@ CSPSim::~CSPSim() {
 config::Configuration* CSPSim::getConfiguration() {
 	if(!m_Configuration.valid()) {
 		const ScreenSettings & screenSettings = getScreenSettings();
-		Ref<config::Display> display = new config::Display(screenSettings.width, screenSettings.height, screenSettings.fullScreen);
+		Ref<config::Display> display = new config::Display(screenSettings.width, screenSettings.height, screenSettings.fullScreen, screenSettings.clouds);
 		Ref<config::UserInterface> userInterface = new config::UserInterface(getUILanguage(), getUITheme());
 		m_Configuration = new config::Configuration(display.get(), userInterface.get());
 	}
@@ -158,10 +158,9 @@ config::Configuration* CSPSim::getConfiguration() {
 }
 
 void CSPSim::setConfiguration(config::Configuration* config) {
-	
 	// TODO Check if the new configuration can be set correctly. Things to check:
 	// * Can the new screen resolution be set according my graphics driver?
-	
+
 	// Apply the configuration. First we start with assigning the configuration object.
 	m_Configuration = config;
 
@@ -171,6 +170,7 @@ void CSPSim::setConfiguration(config::Configuration* config) {
 	screenSettings.width = display->getWidth();
 	screenSettings.height = display->getHeight();
 	screenSettings.fullScreen = display->getFullscreen();
+	screenSettings.clouds = display->getClouds();
 	setScreenSettings(screenSettings);
 
 	// Set all UI settings.
@@ -181,14 +181,14 @@ void CSPSim::setConfiguration(config::Configuration* config) {
 	// A change of theme will result in new paths. Lets replace the
 	// existing resource locator for window framework with a new one.
 	setWfResourceLocator();
-		
-	// Save the new configuration to persistent storage. 
+
+	// Save the new configuration to persistent storage.
 	// Configuration changes is stored on successfull quit of the application.
-	
+
 	// Trigger the configuration changed signal to inform any listener about the change.
 	Ref<wf::SignalData> data = new wf::SignalData;
 	m_ConfigurationChanged->emit(data.get());
-} 
+}
 
 void CSPSim::setWfResourceLocator() {
 	wf::StringVector includeFolders;
@@ -629,9 +629,7 @@ void CSPSim::run() {
 	CSPLOG(INFO, APP) << "Entering main simulation loop";
 	try {
 		while ( !m_Finished && !m_Viewer->done() ) {
-			CSPLOG(DEBUG, APP) << "Starting simulation loop iteration";
-			
-			// The current screen may change during the execution of the 
+			// The current screen may change during the execution of the
 			// main game loop. We must ensure that the current screen is
 			// not lost during processing of input (mouse, keyboard) or
 			// onUpdate. We store a local reference to the current screen to

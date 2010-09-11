@@ -1,0 +1,16 @@
+<?xml version="1.0" ?>
+<Object name="model" class="CloudCoverModel">
+  <List name="models">
+	<Path>.weather.cloud1</Path>
+  </List>
+  <List name="density" type="float">
+	0.00005
+  </List>
+  <Float name="zmin">400</Float>
+  <Float name="zmax">600</Float>
+  <Int name="seed">12</Int>
+  <Object name="isocontour" class="RectangularCurve">
+	<Float name="width">10000</Float>
+	<Float name="height">10000</Float>
+  </Object>
+</Object>

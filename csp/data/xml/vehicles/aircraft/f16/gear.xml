@@ -9,8 +9,8 @@
 		<!-- all of these values are complete guesses for testing only! -->
 		<Object class="LandingGear"> <!-- nosewheel -->
 			<String name="gear_name">FrontGear</String>
-			<Vector name="max_position">0.0 3.270 -1.600</Vector>
-			<Vector name="motion">0 -0.358 0.934</Vector>  <!-- about 69 degrees -->
+			<Vector3 name="max_position">0.0 3.270 -1.600</Vector3>
+			<Vector3 name="motion">0 -0.358 0.934</Vector3>  <!-- about 69 degrees -->
 			<Real name="damage_limit">80000.0:10000.0</Real>
 			<!--
 				 The 3d model has 0.089 m of displacement for a complete compression.
@@ -44,8 +44,8 @@
 		</Object>
 		<Object class="LandingGear"> <!-- left main -->
 			<String name="gear_name">LeftGear</String>
-			<Vector name="max_position">-1.100 -0.740 -1.66</Vector>
-			<Vector name="motion">-0.574 0 0.819</Vector>  <!-- about 44 degrees -->
+			<Vector3 name="max_position">-1.100 -0.740 -1.66</Vector3>
+			<Vector3 name="motion">-0.574 0 0.819</Vector3>  <!-- about 44 degrees -->
 			<Real name="damage_limit">80000.0</Real>
 			<!-- 0.191 -->
 			<Float name="compression_limit">0.223</Float>
@@ -76,8 +76,8 @@
 		</Object>
 		<Object class="LandingGear"> <!-- right main -->
 			<String name="gear_name">RightGear</String>
-			<Vector name="max_position">1.100 -0.740 -1.660</Vector>
-			<Vector name="motion">0.574 0 0.819</Vector>  <!-- about 44 degrees -->
+			<Vector3 name="max_position">1.100 -0.740 -1.660</Vector3>
+			<Vector3 name="motion">0.574 0 0.819</Vector3>  <!-- about 44 degrees -->
 			<Real name="damage_limit">80000.0:10000.0</Real>
 			<Float name="compression_limit">0.223</Float>
 			<Float name="K">350000.0</Float>

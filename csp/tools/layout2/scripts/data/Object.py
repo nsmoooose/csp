@@ -76,7 +76,13 @@ class Tag_Bool:
 		bool = node.text.strip().upper() == 'TRUE'
 		parent.set(name, bool)
 
-class Tag_Vector:
+class Tag_Vector2:
+	def __init__(self, node, parent):
+		name = node.attr('name')
+		vec = csplib.Vector2(*map(float, node.text.split()))
+		parent.set(name, vec)
+
+class Tag_Vector3:
 	def __init__(self, node, parent):
 		name = node.attr('name')
 		vec = csplib.Vector3(*map(float, node.text.split()))

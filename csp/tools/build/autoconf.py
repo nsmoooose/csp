@@ -49,6 +49,27 @@ def CheckPythonVersion(minimum):
 		       'version %s or newer.' % (version, minimum))
 		sys.exit(1)
 
+def CheckWXVersion(minimum):
+	try:
+		import wx
+	except ImportError:
+		print('Missing wx python module. Please install wxPython')
+		sys.exit(1)
+
+	version = wx.version()
+	if util.CompareVersions(version, minimum) < 0:
+		print('wxPython version (%s) is too old. Please install %s or newer.' % (version, minimum))
+		sys.exit(1)
+
+def CheckLXMLVersion():
+	try:
+		import lxml
+	except ImportError:
+		print('Missing lxml python module used by the layout2 tool. Please install.')
+		sys.exit(1)
+
+	# Don't know how to test which version that is installed.
+	# Just check that it is installed for now.
 
 def GetGCCVersion():
 	p = Popen('gcc -dumpversion', shell=True, stdout=PIPE)

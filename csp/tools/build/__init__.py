@@ -81,7 +81,8 @@ from csp.tools.build.rules import \
 	SourceGroup, Program, Generate, SharedLibrary, PythonSharedLibrary, Command, Test
 
 from csp.tools.build.autoconf import \
-	CheckSConsVersion, CheckPythonVersion, GetPythonInclude, GetPythonLibrary, GetGCCVersion
+	CheckSConsVersion, CheckPythonVersion, CheckWXVersion, CheckLXMLVersion, \
+	GetPythonInclude, GetPythonLibrary, GetGCCVersion
 
 from csp.tools.build.libconf import \
 	ExternalLibrary, PkgConfig, CommandConfig, UnixLibConfig, WindowsLibConfig, DevpackConfig

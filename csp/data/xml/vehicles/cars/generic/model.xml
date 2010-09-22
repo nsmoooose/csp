@@ -1,0 +1,27 @@
+<?xml version="1.0" standalone="no"?>
+<Object class="ObjectModel">
+	<String name="label">Generic car</String>
+	<External name="model_path">vehicles/cars/hummer.lwo</External>
+	<Vector3 name="axis_0">1 0 0</Vector3>
+	<Vector3 name="axis_1">0 1 0</Vector3>
+	<Vector3 name="view_point">0.0 4.3 1.12</Vector3>
+	<Bool name="smooth">false</Bool>
+	<Enum name="effect">SpecularHighlights</Enum>
+	<List name="contacts">
+		<Vector3>0.0 8.291 0.021</Vector3>
+		<Vector3>0.0 4.4 1.33</Vector3>
+		<Vector3>4.605 -3.674 -0.071</Vector3>
+		<Vector3>-4.605 -3.674 -0.071</Vector3>
+		<Vector3>0.0 -5.904 1.041</Vector3>
+		<Vector3>0.0 -5.904 -0.004</Vector3>
+		<Vector3>0.0 -5.1 3.604</Vector3>
+		<Vector3>0.0 6.46 -0.335</Vector3>
+		<Vector3>0.0 -0.49 -0.327</Vector3>
+	</List>
+	<List name="debug_points">
+		<Vector3>0.0 4.3 1.12</Vector3>
+		<Vector3>0.0 4.420 -1.600</Vector3>
+		<Vector3>-1.780 -0.500 -1.680</Vector3>
+		<Vector3>1.780 -0.500 -1.680</Vector3>
+	</List>
+</Object>

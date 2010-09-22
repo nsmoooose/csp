@@ -1,0 +1,16 @@
+<?xml version="1.0" standalone="no"?>
+<Object class="CarObject">
+    <Path name="model">generic.model</Path>
+    <Float name="mass">10000.0</Float>
+    <Matrix name="inertia">
+    171554.0      0.0       0.0
+         0.0  55427.0    1764.0
+         0.0   1764.0  252326.0
+    </Matrix>
+    <Vector3 name="reference_center_of_mass_offset">0.0 1.0 0</Vector3>
+    <Path name="human_systems">generic.systems</Path>
+	<!--
+    <Path name="remote_systems">generic.remote</Path>
+    <Path name="agent_systems">generic.agent</Path>
+	-->
+</Object>

@@ -32,6 +32,7 @@ from csp.data.ui.tutorials.timeofday.day import TimeOfDayDay
 from csp.data.ui.tutorials.timeofday.dusk import TimeOfDayDusk
 from csp.data.ui.tutorials.timeofday.night import TimeOfDayNight
 from csp.data.ui.tutorials.vehicles.vehicles import Vehicles
+from csp.data.ui.tutorials.cars.cars import Cars
 
 class Tutorials(csp.cspsim.Window, SlotManager):
     class FakeMission(Mission):
@@ -43,7 +44,7 @@ class Tutorials(csp.cspsim.Window, SlotManager):
     def __init__(self, cspsim):
         csp.cspsim.Window.__init__(self)
         SlotManager.__init__(self)
-        
+
         # Install the move window event handler.
         self.moveEventHandler = csp.cspsim.ControlMoveEventHandler(self)
         self.missionDict = {}
@@ -55,13 +56,14 @@ class Tutorials(csp.cspsim.Window, SlotManager):
             TimeOfDayDay(self.cspsim),
             TimeOfDayDusk(self.cspsim),
             TimeOfDayNight(self.cspsim),
-            Vehicles(self.cspsim)
+            Vehicles(self.cspsim),
+            Cars(self.cspsim)
             ]
-        
+
     def displayMission(self, mission):
         serializer = csp.cspsim.Serialization()
         serializer.load(self, os.path.join('tutorials', mission))
-        
+
         closeButton = self.getById('close')
         if closeButton != None:
             self.connectToClickSignal(closeButton, self.close_Click)
@@ -77,11 +79,11 @@ class Tutorials(csp.cspsim.Window, SlotManager):
                     self.missionListBox.setSelectedItem(item)
 
             self.connectToSelectedItemChangedSignal(self.missionListBox, self.missionListBox_Changed)
-            
+
         startButton = self.getById('start')
         if startButton != None:
             self.connectToClickSignal(startButton, self.start_Click)
-        
+
     def missionListBox_Changed(self):
         selectedItem = self.missionListBox.getSelectedItem().getText()
 
@@ -92,7 +94,7 @@ class Tutorials(csp.cspsim.Window, SlotManager):
 
     def close_Click(self):
         self.close()
-        
+
     def start_Click(self):
         if self.missionListBox:
             selectedItem = self.missionListBox.getSelectedItem()

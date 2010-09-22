@@ -8,6 +8,7 @@
 #include <csp/cspsim/Collision.h>
 #include <csp/cspsim/Controller.h>
 #include <csp/cspsim/DamageModifier.h>
+#include <csp/cspsim/CarObject.h>
 #include <csp/cspsim/ChannelMirror.h>
 #include <csp/cspsim/DynamicObject.h>
 #include <csp/cspsim/Engine.h>
@@ -75,6 +76,7 @@ void CSPSIM_EXPORT registerAllObjectInterfaces() {
 	{ static EngineDynamics::__csp_interface_proxy instance; }
 	registerF16Objects();
 	registerFlightControlSystemObjects();
+	{ static CarObject::__csp_interface_proxy instance; }
 	{ static FlightDynamics::__csp_interface_proxy instance; }
 	{ static FlightModel::__csp_interface_proxy instance; }
 	{ static FuelNode::__csp_interface_proxy instance; }

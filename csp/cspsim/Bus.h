@@ -73,15 +73,26 @@ class Bus;
 class CSPSIM_EXPORT ChannelBase: public Referenced {
 friend class Bus;
 
-	/// Identifier for this channel.
+	/** Identifier for this channel. */
 	std::string m_Name;
 
-	/// Bitmask for channel options.
+	/** Bitmask for channel options. */
 	mutable unsigned int m_Mask;
 
 protected:
 
-	/// Channel state flags.
+	/**
+	 * @enum ChannelBase
+	 * Channel state flags.
+	 * 
+	 * @var MASK_ENABLED = 0x00000001
+	 * 
+	 * @var MASK_BLOCKED = 0x00000002
+	 * 
+	 * @var MASK_SHARED  = 0x00000004
+	 * 
+	 * @var DERIVED_MASK = 0xffff0000
+	 */
 	enum {
 		MASK_ENABLED = 0x00000001,
 		MASK_BLOCKED = 0x00000002,
@@ -99,22 +110,22 @@ protected:
 		ACCESS_SHARED
 	} AccessType;
 
-	/// Test bit flags used by derived classes (>= 0x10000).
+	/** Test bit flags used by derived classes (>= 0x10000). */
 	inline bool isMask(unsigned int bits) const {
 		return (m_Mask & bits & DERIVED_MASK) != 0;
 	}
 
-	/// Set bit flags used by derived classes (>= 0x10000).
+	/** Set bit flags used by derived classes (>= 0x10000). */
 	inline void setMask(unsigned int bits) const {
 		m_Mask |= (bits & DERIVED_MASK);
 	}
 
-	/// Clear bit flags used by derived classes (>= 0x10000).
+	/** Clear bit flags used by derived classes (>= 0x10000). */
 	inline void clearMask(unsigned int bits) const {
 		m_Mask &= ~(bits & DERIVED_MASK);
 	}
 
-	/// Get the flag state for derived classes (>= 0x10000).
+	/** Get the flag state for derived classes (>= 0x10000). */
 	inline unsigned int getMask() const { return m_Mask & DERIVED_MASK; }
 
 	/** Mark a channel as enabled or disabled.
@@ -129,10 +140,10 @@ protected:
 	}
 
 public:
-	/// ChannelBase reference (convenience) type for shared channels.
+	/** ChannelBase reference (convenience) type for shared channels. */
 	typedef Ref<ChannelBase> RefT;
 
-	/// ChannelBase reference (convenience) type for non-shared channels.
+	/** ChannelBase reference (convenience) type for non-shared channels. */
 	typedef Ref<ChannelBase const> CRefT;
 
 	/** Get the (unique) identifier key for this channel.
@@ -210,7 +221,7 @@ public:
  */
 class DataChannelBase: public ChannelBase {
 private:
-	/// Callback signal for push/pull channels.
+	/** Callback signal for push/pull channels.*/
 	mutable sigc::signal<void> m_Signal;
 
 	enum {
@@ -264,10 +275,10 @@ protected:
 	 */
 	void signal() const { m_Signal.emit(); }
 
-	/// Test if this is a push channel.
+	/** Test if this is a push channel.*/
 	bool isPush() const { return isMask(MASK_PUSH); }
 	
-	/// Test if this is a pull channel.
+	/** Test if this is a pull channel.*/
 	bool isPull() const { return isMask(MASK_PULL); }
 
 public:
@@ -344,7 +355,7 @@ class DataChannel: public DataChannelBase {
 	mutable sigc::signal<bool, T const&> m_RequestSetSignal;
 	bool m_HasRequestSetHandler;
 
-	/// The data value provided by the channel.
+	/** The data value provided by the channel.*/
 	T m_Value;
 
 	void pull() const {
@@ -355,10 +366,10 @@ class DataChannel: public DataChannelBase {
 
 public:
 
-	/// Channel reference (convenience) type for shared channels.
+	/** Channel reference (convenience) type for shared channels.*/
 	typedef Ref<DataChannel<T> > RefT;
 
-	/// Channel reference (convenience) type for non-shared channels.
+	/** Channel reference (convenience) type for non-shared channels.*/
 	typedef Ref<DataChannel<T> const> CRefT;
 
 	/** Push data to listeners on this channel.
@@ -490,25 +501,25 @@ public:
  */
 class CSPSIM_EXPORT Bus: public Referenced {
 
-	/// name to channel map type
+	/** name to channel map type */
 	typedef std::map<std::string, ChannelBase::RefT> ChannelMap;
 
-	/// Map of all channels connected to the bus
+	/** Map of all channels connected to the bus */
 	ChannelMap m_Channels;
 
 	typedef std::map<std::string, std::vector<ChannelBase::RefT> > GroupMap;
 	GroupMap m_Groups;
 
-	/// Internal flag to help ensure proper bus construction.
+	/** Internal flag to help ensure proper bus construction. */
 	bool m_Bound;
 
-	/// Internal state of the bus.
+	/** Internal state of the bus.*/
 	bool m_Enabled;
 
-	/// The identifier string of this bus.
+	/** The identifier string of this bus.*/
 	std::string m_Name;
 
-	/// The status [0, 1] used for damage modelling.
+	/** The status [0, 1] used for damage modelling.*/
 	float m_Status;
 
 public:

@@ -80,7 +80,7 @@
 #ifndef __CSPSIM_SYSTEM_H__
 #define __CSPSIM_SYSTEM_H__
 
-#include <csp/cspsim/Bus.h>  // could be forward declared, but most Bus users will need it in the header anyway.
+#include <csp/cspsim/Bus.h>  /** @todo header file csp/cspsim/Bus.h could be forward declared, but most Bus users will need it in the header anyway. */
 #include <csp/cspsim/input/InputInterface.h>
 #include <csp/cspsim/sound/SoundEffect.h>  // for SoundEffect::Mode
 
@@ -107,15 +107,17 @@ class SystemsModel;
 class SystemVisitor: public Visitor<SystemVisitor> {
 public:
 	CSP_VISITOR(SystemVisitor);
-	// System trees contain only two types of nodes: System and SystemsModel.
-	// The default visitor implementation treats both of these as generic
-	// Nodes, but specialized visitor subclasses can act independently on the
-	// different types.
+	/**
+	 * System trees contain only two types of nodes: System and SystemsModel.
+	 * The default visitor implementation treats both of these as generic
+	 * Nodes, but specialized visitor subclasses can act independently on the
+	 * different types.
+	 */
 	virtual void apply(System &system) { apply((Node&)system); }
 	virtual void apply(SystemsModel &model) { apply((System&)model); }
 };
 
-// SystemNodes are Composite nodes that accept SystemVisitors.
+/** SystemNodes are Composite nodes that accept SystemVisitors. */
 typedef Composite<SystemVisitor> SystemNode;
 
 
@@ -142,7 +144,7 @@ public:
 
 	CSP_DECLARE_ABSTRACT_OBJECT(System)
 
-	// System nodes accept SystemVisitors
+	/** System nodes accept SystemVisitors */
 	CSP_VISITABLE(SystemVisitor);
 
 	System();
@@ -261,10 +263,12 @@ protected:
 	 */
 	void removeAndDeleteSoundEffect(Ref<SoundEffect> &sound);
 
-	// XXX use raw pointers here to prevent circular references
-	// that keep the model alive.  the model pointer is only
-	// for internal use by the system instance, which will be
-	// destroyed when the model goes out of scope.
+	/** 
+	 * @warning use raw pointers here to prevent circular references
+	 * that keep the model alive.  the model pointer is only
+	 * for internal use by the system instance, which will be
+	 * destroyed when the model goes out of scope.
+	 */
 	SystemsModel* getModel() const { return m_Model; }
 
 	/** Add and register all subsystems.

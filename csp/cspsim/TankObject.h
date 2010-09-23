@@ -43,12 +43,14 @@ public:
 	double getMaxViewingAngle() { return max_viewing_angle; }
 	double getMaxFiringRange() { return max_firing_range; }
 
-	// movement states for the tank object
-	// 0 - stopped
-	// 1 - forward
-	// 2 - backward
-	// 3 - turning right
-	// 4 - turning left
+	/**
+	 * movement states for the tank object
+	 * 0 - stopped
+	 * 1 - forward
+	 * 2 - backward
+	 * 3 - turning right
+	 * 4 - turning left
+	 */
 	void setMovementState(unsigned int state) { movement_state = state; }
 
 	virtual void onRender();

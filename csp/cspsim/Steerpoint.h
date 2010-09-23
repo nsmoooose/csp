@@ -79,7 +79,7 @@ private:
 	void updatePosition() { m_Position = m_Projection->convert(m_LLA); }
 	void updateLLA() { m_LLA = m_Projection->convert(m_Position); }
 
-	// TODO AI/mission planning cues: formation, action
+	/** @TODO AI/mission planning cues: formation, action */
 
 	Ref<const Projection> m_Projection;
 	int m_Index;

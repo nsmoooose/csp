@@ -104,13 +104,13 @@ public:
 	virtual ~DynamicObject();
 
 	// model and scene related functions
-	Ref<SceneModel> getSceneModel();
-	Ref<ObjectModel> getModel() const;
-	Ref<SystemsModel> getSystemsModel() const;
-	virtual void createSceneModel();
-	virtual void destroySceneModel();
-	osg::Node* getOrCreateModelNode();
-	osg::Node* getModelNode();
+	Ref<SceneModel> getSceneModel(); /** get the scene model */
+	Ref<ObjectModel> getModel() const; /** get the object model */
+	Ref<SystemsModel> getSystemsModel() const; /** get the systems model */
+	virtual void createSceneModel(); /** create the scene model */
+	virtual void destroySceneModel(); /** destroy the scene model */
+	osg::Node* getOrCreateModelNode(); /** get or create the model node */
+	osg::Node* getModelNode(); /** get the model node */
 
 	virtual void getInfo(std::vector<std::string> &info) const;
 
@@ -123,12 +123,14 @@ public:
 	double getSpeed() const { return b_LinearVelocity->value().length(); }
 	virtual double getAltitude() const { return (b_ModelPosition->value().z() - b_GroundZ->value()); }
 
-	// Get the current offset from the model origin to the center of mass (body origin).
+	/** Get the current offset from the model origin to the center of mass (body origin). */
 	Vector3 const & getCenterOfMassOffset() const { return b_CenterOfMassOffset->value(); }
 
-	// Get the nominal offset from the model origin to the center of mass (body origin).  This
-	// is the nominal value for the base configuration of the vehicle.  The actual center of
-	// mass offset may vary with conditions (e.g., fuel and loadout).  See getCenterOfMassOffset().
+	/** 
+	 * Get the nominal offset from the model origin to the center of mass (body origin).  This
+	 * is the nominal value for the base configuration of the vehicle.  The actual center of
+	 * mass offset may vary with conditions (e.g., fuel and loadout).  See getCenterOfMassOffset().
+	 */
 	Vector3 const & getReferenceCenterOfMassOffset() const { return m_ReferenceCenterOfMassOffset; }
 
 	virtual Vector3 getNominalViewPointBody() const;

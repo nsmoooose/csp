@@ -44,7 +44,9 @@ CSP_XML_END
 Ref<FeatureGroup>::list Theater::getAllFeatureGroups() {
 	Link<FeatureGroup>::vector const &groups = m_FeatureGroupList->getFeatureGroups();
 	Ref<FeatureGroup>::list result;
-	// translate from Link<> list to Ref<> list.  XXX should be a simdata function?
+	/** translate from Link<> list to Ref<> list.  
+	 * @TODO should be a simdata function?
+	 */
 	Link<FeatureGroup>::vector::const_iterator i = groups.begin();
 	for (; i != groups.end(); i++) {
 		result.push_back(*i);

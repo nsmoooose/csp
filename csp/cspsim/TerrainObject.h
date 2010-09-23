@@ -54,15 +54,16 @@ public:
 	CSP_EXPORT_OBJECT(CSPSIM_EXPORT)
 	CSP_DECLARE_ABSTRACT_OBJECT(TerrainObject)
 
-	/* currently the only two terrain engines are demeter and
-	 * chunk lod.  the former doesn't have hints, the latter
-	 * needs only a short integer.  to be really OO here we
+	/** 
+	 * Currently the only two terrain engines are demeter and
+	 * chunk lod.  The former doesn't have hints, the latter
+	 * needs only a short integer.  To be really OO here we
 	 * should have an abstract, reference counted hint class
 	 * that is allocated by the specific terrain objects and
-	 * dynamic_cast to the correct type before use.  at the
+	 * dynamic_cast to the correct type before use.  At the
 	 * moment this would entail fair amount of memory and
 	 * processing overhead, so we just sidestep the entire
-	 * issue and use integers.  if another engine is added
+	 * issue and use integers. If another engine is added
 	 * in the future that requires more elaborate hinting,
 	 * we can deal with it at that time.
 	 */

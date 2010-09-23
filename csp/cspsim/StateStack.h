@@ -40,13 +40,15 @@
 
 namespace csp {
 
-// This class duplicates some of the code in osg::State to track cumulative
-// state in a scene graph.  This is necessary because osg::State does not
-// expose enough of the cumulative state (e.g., captureCurrentState excludes
-// texture modes and attributes).  Although osg::State could be subclassed to
-// provide access to these values (the necessary internal data structures are
-// protected), the logic has been copied to avoid depending on internal aspects
-// of the OSG api.
+/**
+ * This class duplicates some of the code in osg::State to track cumulative
+ * state in a scene graph.  This is necessary because osg::State does not
+ * expose enough of the cumulative state (e.g., captureCurrentState excludes
+ * texture modes and attributes).  Although osg::State could be subclassed to
+ * provide access to these values (the necessary internal data structures are
+ * protected), the logic has been copied to avoid depending on internal aspects
+ * of the OSG api.
+ */
 
 class StateStack {
 public:

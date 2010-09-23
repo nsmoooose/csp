@@ -60,11 +60,13 @@ void System::setModel(SystemsModel *model) {
 }
 
 void System::postCreate() {
-	// This method is called automatically after the system is instantiated
-	// and deserialized from static data.  All the subsystems defined in XML
-	// have been instantiated in the m_Subsystems vector, so now we add them
-	// as child nodes and clear m_Subsystems to eliminate the extra set
-	// of references.
+	/** 
+	 * This method is called automatically after the system is instantiated
+	 * and deserialized from static data.  All the subsystems defined in XML
+	 * have been instantiated in the m_Subsystems vector, so now we add them
+	 * as child nodes and clear m_Subsystems to eliminate the extra set
+	 * of references.
+	 */
 	CSPLOG(DEBUG, OBJECT) << "System::postCreate() " << getClassName() << ", adding " << m_Subsystems.size() << " subsystems.";
 	Link<System>::vector::iterator iter = m_Subsystems.begin();
 	for (; iter != m_Subsystems.end(); ++iter) {

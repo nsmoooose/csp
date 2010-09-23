@@ -35,7 +35,8 @@ CSP_XML_BEGIN(Station)
 	CSP_DEF("name", m_Name, true)
 	CSP_DEF("detail_model", m_DetailModel, false)
 	CSP_DEF("mask_names", m_MaskNames, false)
-	//CSP_DEF("view_model", m_ViewModel, false)  // TODO
+	/** @TODO m_ViewModel variable to determine if the station model is visible or not */
+	//CSP_DEF("view_model", m_ViewModel, false) // TODO
 CSP_XML_END
 
 

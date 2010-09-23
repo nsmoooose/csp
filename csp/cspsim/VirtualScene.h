@@ -127,7 +127,7 @@ public:
 
 	void drawPlayerInterface();
 
-	// TODO: Cloud experiments. 
+	/** @TODO: Cloud experiments. */
 	osg::Group *getCloudGroup() { return m_CloudGroup.get(); }
 
 	osg::Group *getVeryFarGroup() { return m_VeryFarGroup.get(); }
@@ -179,8 +179,8 @@ protected:
 	
 	float m_ViewDistance;
 	float m_ViewAngle;
-	float m_NearPlane; // of the near view
-	float m_Aspect; // of the near view
+	float m_NearPlane; /** of the near view */
+	float m_Aspect; /** of the near view */
 	
 	float m_FogStart;
 	float m_FogEnd;
@@ -221,10 +221,11 @@ protected:
 	osg::ref_ptr<osg::PositionAttitudeTransform> m_FeatureGroup;
 	osg::ref_ptr<osg::PositionAttitudeTransform> m_TerrainGroup;
 
-	// root node for sound effects (the listener)
+
+	/** root node for sound effects (the listener) */
 	osg::ref_ptr<osg::PositionAttitudeTransform> m_SoundRoot;
 	
-	// TODO: Testing of clouds. This should be moved from here.
+	/** @TODO Testing of clouds. This should be moved from here. */
 	osg::ref_ptr<osg::Group> m_CloudGroup;
 };
 

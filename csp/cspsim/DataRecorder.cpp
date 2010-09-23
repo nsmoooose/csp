@@ -169,7 +169,7 @@ void DataRecorder::setEnabled(bool on) {
 void DataRecorder::close() {
 	if (m_File.valid()) {
 		m_Enabled = true;
-		_record(END, 0.0); // end of data
+		_record(END, 0.0); /** end of data */
 		_flush();
 		size_t source_start = ftell(m_File->fptr);
 		int n = m_Sources.size();

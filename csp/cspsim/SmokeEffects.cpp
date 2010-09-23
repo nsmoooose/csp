@@ -20,50 +20,46 @@
 /**
  * @file SmokeEffects.cpp
  *
- **/
-
-/*
- * TODO
- *
- *    * Find the clipping bug.  It shows up when the view is close
- *      to the emitter, and only at particular angles.  I've tried
- *      turning culling off on every node I could think off, to no
- *      avail.  I also shifted the global origin to be very close
- *      to the eye point, thinking that is was simply a floating
- *      point precision problem, but that didn't help.
- *
- */
-
-/*
- * FROM AN OLD TODO LIST (some of this may already be implementend, some
+ * @todo  Find the clipping bug.  It shows up when the view is close 
+ * to the emitter, and only at particular angles.  I've tried
+ * turning culling off on every node I could think off, to no
+ * avail.  I also shifted the global origin to be very close
+ * to the eye point, thinking that is was simply a floating
+ * point precision problem, but that didn't help.
+ * 
+ * @todo FROM AN OLD TODO LIST (some of this may already be implementend, some
  * may now be irrelevant).
  *
- * need to clean up the ParticleEffect interface, and allow multiple operators
+ * @todo need to clean up the ParticleEffect interface, and allow multiple operators
  *
- * need to provide access to the particle system after creation to allow
+ * @todo need to provide access to the particle system after creation to allow
  * continuous variations (color, thickness, rate, velocity, lifetime, etc).
  *
- * need classes to drive the basic particle systems through scripted routine
+ * @todo need classes to drive the basic particle systems through scripted routine
  * such as explosion -> fire -> smoke -> smolder.
  *
- * explosion class, flare class, chaff class, etc.
+ * @todo explosion class, flare class, chaff class, etc.
  * white smoke, fire, black smoke, dust, water plume, splash, wingtip votices,
  * strake vortices, exhaust (w/thickness curve tied to throttle), contrails
  *
- * can we use a global particle system for all FX?  probably not a good idea
+ * @todo can we use a global particle system for all FX?  probably not a good idea
  * since it would be best to disable particle systems that are far from the
  * camera.
  *
  *
- * flare class: ***** several overlapping, emitting particles + halo?
+ * @todo flare class: ***** several overlapping, emitting particles + halo?
  * can probably implement as a subclass of particle.
  *
+ * @todo consider just a general particle system setup, and allow a more generalized system for particles.
+ * 
+ * @TODO can't smoke effects be implemented without touching all these singletons in the header section?
+ * 
+ * @todo Should all of this be in the same source file?
  */
 
 
 #include <csp/cspsim/SmokeEffects.h>
 
-// TODO can't smoke effects be implemented without touching all these singletons?
 #include <csp/cspsim/CSPSim.h>
 #include <csp/cspsim/VirtualScene.h>
 #include <csp/cspsim/weather/Atmosphere.h>
@@ -172,9 +168,13 @@ public:
 
 	Vector3 const &getWind() { return m_Wind; }
 
-	// XXX this is a bit slow (6 random generations per frame),
-	// and still results in visible stepping of the smoke trail
-	// during gusts.  not sure of a better approach though.
+	/** 
+	 * @warning this is a bit slow (6 random generations per frame),
+	 * and still results in visible stepping of the smoke trail
+	 * during gusts.  not sure of a better approach though.
+	 * 
+	 * @bug results in visible stepping of the smoke trail during gusts.
+	 */
 	inline void shoot(osgParticle::Particle *P) const {
 	        float theta = getThetaRange().get_random();
 		float phi = getPhiRange().get_random();

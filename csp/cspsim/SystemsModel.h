@@ -108,18 +108,23 @@ private:
 	void importChannelsProxy(System &system);
 	void registerChannelsProxy(System &system);
 
-	// A few subsystems bind tightly to the parent DynamicObject instance, so it
-	// is convenient to declare the separately.  If defined these systems will be
-	// added to the System tree when the SystemsModel is first created, but are
-	// also directly available via accessor methods.
+	/**
+	 * A few subsystems bind tightly to the parent DynamicObject instance, so it
+	 * is convenient to declare the separately.  If defined these systems will be
+	 * added to the System tree when the SystemsModel is first created, but are
+	 * also directly available via accessor methods.
+	 */
 	Link<PhysicsModel> m_PhysicsModel;
 	Link<LocalController> m_LocalController;
 	Link<RemoteController> m_RemoteController;
 
-	// Other subsystems are owned by the parent object and shared by all systems
-	// models.  The parent object calls setFoo(...) to assign the shared resource,
-	// which other subsystems can access via the corresponding getFoo(...) methods.
-	// TODO move sms to DynamicObject.
+	/**
+	 * Other subsystems are owned by the parent object and shared by all systems
+	 * models.  The parent object calls setFoo(...) to assign the shared resource,
+	 * which other subsystems can access via the corresponding getFoo(...) methods.
+	 *
+	 * @TODO move StoresManagementSystem to DynamicObject.
+	 */
 	Link<StoresManagementSystem> m_StoresManagementSystem;
 
 	Ref<SoundModel> m_SoundModel;

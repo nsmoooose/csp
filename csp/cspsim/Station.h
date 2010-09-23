@@ -44,6 +44,7 @@ class SceneModelChild;
  *  movements) from that position in the vehicle.
  */
 class Station: public Object {
+	/** @todo m_ViewModel linked to ViewModel */
 	//Link<ViewModel> m_ViewModel;  // TODO
 	Link<ObjectModel> m_DetailModel;
 	std::string m_Name;

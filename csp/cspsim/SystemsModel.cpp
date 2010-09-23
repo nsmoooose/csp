@@ -182,10 +182,12 @@ void SystemsModel::bindSystems() {
 	m_Bound = true;
 }
 
-// Visitor for triggering internal event callbacks.  These callbacks should
-// not be confused with user event callbacks, which are handled by onMapEvent
-// and EventVisitor.  This visitor works with callbacks that take a signal
-// argument and return null.
+/**
+ * Visitor for triggering internal event callbacks.  These callbacks should
+ * not be confused with user event callbacks, which are handled by onMapEvent
+ * and EventVisitor.  This visitor works with callbacks that take a signal
+ * argument and return null.
+ */
 template <typename VALUE>
 class InternalEventVisitor: public SystemVisitor {
 	typedef void (System::*METHOD)(VALUE);

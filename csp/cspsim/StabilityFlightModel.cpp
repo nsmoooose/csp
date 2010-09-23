@@ -73,7 +73,7 @@ StabilityFlightModel::StabilityFlightModel(): m_stallAOA(0.0), m_CD_db(0.0), m_C
 
 void StabilityFlightModel::convertXML() {
 	FlightModel::convertXML();
-	m_stallAOA = toRadians(m_stallAOA); // stall angle is specified in degrees
+	m_stallAOA = toRadians(m_stallAOA); /** stall angle is specified in degrees */
 }
 
 Vector3 StabilityFlightModel::calculateLiftVector() {
@@ -98,11 +98,12 @@ Vector3 StabilityFlightModel::calculateLiftVector() {
 	return Vector3(0.0, CL * sin(m_Alpha), CL * cos(m_Alpha));
 }
 
-/*
-okay... you'll want to have tables for e and you'll also want to make CD0 into CDmin and have induced drag as
-(CL - CLmin,drag)^2/pi*e*AR.  So you'll have e for each CL you define and a two constant values (for constant Mach number)
-for CDmin and CLmin,drag.  You'd probably want to make AR variable too in case you decide to model swing wing aircraft.
-You could even model the effects of wintip missiles. :-) */
+/**
+ * okay... you'll want to have tables for e and you'll also want to make CD0 into CDmin and have induced drag as 
+ * (CL - CLmin,drag)^2/pi*e*AR.  So you'll have e for each CL you define and a two constant values (for constant Mach number) 
+ * for CDmin and CLmin,drag.  You'd probably want to make AR variable too in case you decide to model swing wing aircraft. 
+ * You could even model the effects of wingtip missiles. :-) 
+ */
 
 Vector3 StabilityFlightModel::calculateDragVector() {
 	double CL = m_CL - 0.04; //m_CL_md;

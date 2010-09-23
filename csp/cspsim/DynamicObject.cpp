@@ -93,7 +93,10 @@ DynamicObject::DynamicObject(TypeId type): SimObject(type) {
 	m_ActiveStation = NO_STATION;
 	m_PreviousStation = 0;
 
-	// XXX XXX hack for now.  these values should probably be externalized in the xml interface.
+	/** 
+	 * @warning hack for now.  
+	 * @todo these values should probably be externalized in the xml interface. 
+	 */
 	setAggregationBubbles(60000, 40000);
 }
 
@@ -225,16 +228,19 @@ void DynamicObject::onRemote() {
 	selectVehicleCore();
 }
 
-// update
+/** Update the dynamic object. */
 double DynamicObject::onUpdate(double dt) {
-	// Save the objects old cm position
+	/** Save the objects old cm position */
 	m_PrevPosition = b_Position->value();
-	// XXX don't move non-human aircraft for now (no ai yet)
+	/**
+	 * @warning don't move non-human aircraft for now (no ai yet)
+	 * @todo move for human aircraft when AI is added.
+	 */
 	if (isHuman()) {
 		doControl(dt);
 		//doPhysics(dt);
 	}
-	doPhysics(dt);  // XXX temporary hack to play with released stores (moved from the isHuman block above)
+	doPhysics(dt);  /** @warning XXX temporary hack to play with released stores (moved from the isHuman block above) */
 	if (m_SystemsModel.valid()) {
 		StoresManagementSystem *sms = m_SystemsModel->getStoresManagementSystem().get();
 		if (sms) {
@@ -268,7 +274,7 @@ void DynamicObject::doPhysics(double dt) {
 	}
 }
 
-// update variables that depend on position
+/** update variables that depend on position */
 void DynamicObject::postUpdate(double dt) {
 	const Vector3 center_of_mass_offset_world = b_Attitude->value().rotate(b_CenterOfMassOffset->value());
 	const Vector3 model_position = b_Position->value() - center_of_mass_offset_world;
@@ -336,14 +342,22 @@ void DynamicObject::internalView(bool internal) {
 	m_InternalView = internal;
 	if (m_SceneModel.valid()) {
 		m_SceneModel->onViewMode(internal);
-		// the following is mostly for testing; we may want to keep the detailed pit
-		// in the external view as well.  Calling [de]activateStation() also works;
-		// it is less efficient but doesn't create a noticible delay.
+		/**
+		 * The following is mostly for testing; we may want to keep the detailed pit
+		 * in the external view as well.  Calling [de]activateStation() also works;
+		 * it is less efficient but doesn't create a noticible delay.
+		 * 
+		 * @todo Research the possibility of rendering the detailed pit at a certain
+		 * camera distance from the vehicle.
+		 * 
+		 * @todo Research the possibilty of using a LOD based pit that has a LOD for
+		 * external views, that does not have as much detail, but still looks good.
+		 */
 		if (m_StationSceneModel.valid()) {
 			m_SceneModel->setStation(internal ? m_ActiveStation : NO_STATION);
 			m_StationSceneModel->getRoot()->setNodeMask(internal ? ~0 : 0);
 		}
-		// notify interested subsystems that the view has changed.
+		/** notify interested subsystems that the view has changed. */
 		if (m_SystemsModel.valid()) m_SystemsModel->setInternalView(internal);
 	}
 }
@@ -468,7 +482,7 @@ void DynamicObject::bindAnimations(Bus* bus) {
 	}
 }
 
-// called whenever the bus (ie systemsmodel) changes
+/** called whenever the bus (ie systemsmodel) changes */
 void DynamicObject::bindChannels(Bus* bus) {
 	if (bus != NULL) {
 		b_Hud = bus->getChannel("HUD", false);

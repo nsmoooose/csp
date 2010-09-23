@@ -183,7 +183,7 @@ public:
 	ParticleEffectUpdater();
 	virtual ~ParticleEffectUpdater();
 
-	// XXX note that this is NOT a virtual method!
+	/** @warning note that this is NOT a virtual method! */
 	void addParticleSystem(ParticleEffect *effect);
 
 	void setEnabled(bool);

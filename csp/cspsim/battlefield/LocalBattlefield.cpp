@@ -86,8 +86,7 @@ public:
 
 /** Wrapper for inserting dynamic objects into a quadtree index.
  *
- *  TODO
- *  Keep track of the aggregation bubble count for an object, which
+ *  @TODO Keep track of the aggregation bubble count for an object, which
  *  is the number aggregation bubbles projected by human-controlled vehicles
  *  that overlap the object's position.  If this count is greater than zero,
  *  the object should be deaggregated.  This functionality was temporarily
@@ -133,18 +132,22 @@ class LocalBattlefield::UnitUpdateProxy: public UpdateTarget {
 	static const int DETAIL_LEVELS = 10;
 	PeerUpdateCache m_DetailCache[DETAIL_LEVELS];
 
-	// the unit (wrapper) sending updates to remote peers
+	/** the unit (wrapper) sending updates to remote peers */
 	LocalUnitWrapper *m_Wrapper;
 
-	// connection used for sending updates
+	/** connection used for sending updates */
 	Ref<UpdateProxyConnection> m_Connection;
 
-	// a counter used for scheduling update messages to remote hosts.  the count is
-	// milliseconds of elapsed time.  it is currently assumed that this will not
-	// rollover during the simulation time (limit ~50 days)
+	/**
+	 * a counter used for scheduling update messages to remote hosts.  the count is
+	 * milliseconds of elapsed time.  it is currently assumed that this will not
+	 * rollover during the simulation time (limit ~50 days)
+	 */
 	uint32 m_UpdateTime;
 
-	// a heap, ordered by next update time (first element is the earliest update)
+	/**
+	 * a heap, ordered by next update time (first element is the earliest update)
+	 */
 	std::vector<PeerUpdateRecord> m_PeerUpdates;
 
 public:
@@ -155,20 +158,24 @@ public:
 	 */
 	UnitUpdateProxy(LocalUnitWrapper *wrapper, Ref<UpdateProxyConnection> connection);
 
-	/** Add a peer to the update list.
+	/**
+	 * Add a peer to the update list.
 	 */
 	void addPeerUpdate(PeerId id);
 
-	/** Remove a peer from the update list.
+	/** 
+	 * Remove a peer from the update list.
 	 */
 	void removePeerUpdate(PeerId id);
 
-	/** UpdateMaster callback, which sends updates about the unit to remote hosts.
+	/** 
+	 * UpdateMaster callback, which sends updates about the unit to remote hosts.
 	 */
 	double onUpdate(double dt);
 
-	/** Adjust the update interval for the specified peer.  The change will
-	 *  take effect after the next update.
+	/** 
+	 * Adjust the update interval for the specified peer.  The change will
+	 * take effect after the next update.
 	 *
 	 *  @param id The id of the peer.
 	 *  @param interval The interval between updates, in seconds.
@@ -200,12 +207,14 @@ LocalBattlefield::LocalBattlefield(Ref<DataManager> const &data_manager):
 	m_PlayerJoinSignal(new sigc::signal<void, int, const std::string&>()),
 	m_PlayerQuitSignal(new sigc::signal<void, int, const std::string&>())
 {
-	// if no network connection, ids will be assigned sequentially
-	// starting at 1024.  otherwise, the id pool is initialized when
-	// we connect to the server.
+	/**
+	 * if no network connection, ids will be assigned sequentially
+	 * starting at 1024.  otherwise, the id pool is initialized when
+	 * we connect to the server.
+	 */
 	m_LocalIdPool->next = 1024;
 	m_LocalIdPool->limit = 1000000000;
-	//assert(data_manager.valid());
+	// assert(data_manager.valid());
 	if (!m_DataManager) {
 		CSPLOG(ERROR, BATTLEFIELD) << "No data manager, cannot create objects.";
 	}
@@ -295,9 +304,11 @@ void LocalBattlefield::continueUnitScan(double dt) {
 void LocalBattlefield::update(double dt) {
 	double offset = m_NetworkClient.valid() ? m_NetworkClient->getServerTimeOffset() : 0.0;
 	double filter = std::min(1.0, dt);
-	// server time offset changes discontinuously when pings are received (with especially
-	// large jumps right after the connection is established), so we filter the offset
-	// to spread the jumps out over a few seconds.
+	/**
+	 * server time offset changes discontinuously when pings are received (with especially
+	 * large jumps right after the connection is established), so we filter the offset
+	 * to spread the jumps out over a few seconds.
+	 */
 	m_ServerTimeOffset = m_ServerTimeOffset * (1.0 - filter) + filter * offset;
 	if (m_NetworkClient.valid()) {
 		static int XXX = 0;
@@ -348,11 +359,13 @@ void LocalBattlefield::setNetworkClient(Ref<Client> const &client) {
 	m_UnitRemoteUpdateMaster.reset(new UpdateMaster());
 }
 
-/* TODO add to .h and uncomment
-void LocalBattlefield::resetConnectionState() {
+/** @TODO add to .h and uncomment
+ * 
+@code void LocalBattlefield::resetConnectionState() {
 	assert(m_NetworkClient.valid());
 	assert(!isConnectionActive());
 	m_ConnectionState = CONNECTION_DETACHED;
+	@endcode
 }
 */
 
@@ -391,8 +404,10 @@ void LocalBattlefield::onPlayerQuit(Ref<PlayerQuit> const &msg, Ref<MessageQueue
 	}
 	if (m_NetworkClient->getPeer(id)) {
 		m_NetworkClient->disconnectPeer(id);
-		// the global battlefield should send separate messages to remove
-		// all objects owned by this peer
+		/**
+		 * the global battlefield should send separate messages to remove
+		 * all objects owned by this peer
+		 */
 	} else {
 		CSPLOG(WARNING, BATTLEFIELD) << "received quit message for unknown peer " << id;
 	}
@@ -443,7 +458,7 @@ void LocalBattlefield::onCommandAddUnit(Ref<CommandAddUnit> const &msg, Ref<Mess
 	CSPLOG(INFO, MESSAGE) << *msg;
 	LocalUnitWrapper *wrapper = findLocalUnitWrapper(msg->unit_id());
 	if (wrapper) {
-		// already added.  for testing, double check that the message is consistent (FIXME)
+		/** @todo already added.  for testing, double check that the message is consistent (FIXME) */
 		CSP_VERIFY_EQ(msg->owner_id(), wrapper->owner());
 		CSPLOG(INFO, BATTLEFIELD) << "unit already exists, disregarding duplicate message";
 		return;
@@ -478,7 +493,7 @@ void LocalBattlefield::onJoinResponse(Ref<JoinResponse> const &msg, Ref<MessageQ
 	assert(msg->id_count() > 63);
 	m_LocalIdPool->next = msg->first_id();
 	m_LocalIdPool->limit = msg->first_id() + msg->id_count();
-	// allocate reserve ids
+	/** allocate reserve ids */
 	sendServerCommand(new IdAllocationRequest());
 	m_ConnectionState = CONNECTION_ACTIVE;
 }
@@ -492,8 +507,10 @@ void LocalBattlefield::onIdAllocationResponse(Ref<IdAllocationResponse> const &m
 }
 
 void LocalBattlefield::onUnitMessage(Ref<NetworkMessage> const &msg) {
-	// FIXME no need to lookup the object if we have a cache hit (see DispatchManager::dispatch),
-	// so we should be trying the cache first!
+	/**
+	 * @todo no need to lookup the object if we have a cache hit (see DispatchManager::dispatch),
+	 * so we should be trying the cache first!
+	 */
 	int unit_id = msg->getRoutingData();
 	LocalUnitWrapper *wrapper = findLocalUnitWrapper(unit_id);
 	if (wrapper) {
@@ -527,13 +544,17 @@ void LocalBattlefield::onUnitUpdate(Ref<NetworkMessage> const &msg) {
 				CSPLOG(ERROR, BATTLEFIELD) << "unable to create object " << wrapper->path();
 				return;
 			}
-			// TODO other setup?
+			/** 
+			 * @TODO other setup?
+			 */
 			unit->setId(unit_id);
 			unit->setRemote();
 			unit->registerUpdate(m_UnitUpdateMaster.get());
 			GridPoint old_point = wrapper->point();
-			// hack: move the unit to 0,0 so we will reevaluate bubble overlaps on
-			// the next move
+			/**
+			 * hack: move the unit to 0,0 so we will reevaluate bubble overlaps on
+			 * the next move
+			 */
 			moveUnit(wrapper, old_point, GridPoint(0, 0));
 			wrapper->setUnit(unit);
 			moveUnit(wrapper, GridPoint(0, 0), old_point);
@@ -564,7 +585,9 @@ void LocalBattlefield::__test__addLocalHumanUnit(Unit const &unit, bool human) {
 	assert(!unit->isHuman());
 	assert(unit->id() == 0);
 
-	// the order of the following operations is important!
+	/**
+	 * @warning the order of the following operations is important!
+	 */
 	initializeLocalUnit(unit, true);
 	assignNewId(unit);
 	LocalUnitWrapper *wrapper = new LocalUnitWrapper(unit, 0);
@@ -632,18 +655,22 @@ void LocalBattlefield::updateVisibility(GridPoint old_camera_position, GridPoint
 	const bool new_position_is_null = isNullPoint(new_camera_position);
 
 	if (old_region.overlaps(new_region)) {
-		// usual case, overlapping old and new visibility regions.  do one query
-		// and filter out the objects that enter and leave the visibility bubble.
+		/**
+		 * usual case, overlapping old and new visibility regions.  do one query
+		 * and filter out the objects that enter and leave the visibility bubble.
+		 */
 		CSPLOG(DEBUG, BATTLEFIELD) << "updateVisibility(): small camera move";
 
-		// construct a query region that includes both the old and new bubbles
-		// and find all objects in that region.
+		/**
+		 * construct a query region that includes both the old and new bubbles
+		 * and find all objects in that region.
+		 */
 		old_region.expand(new_region);
 		std::vector<QuadTreeChild*> mixed;
 		dynamicIndex()->query(old_region, mixed);
 		staticIndex()->query(old_region, mixed);
 
-		// now filter the mixed list into the show and hide lists
+		/** now filter the mixed list into the show and hide lists */
 		for (unsigned i = 0; i < mixed.size(); ++i) {
 			bool in_old_bubble = (globalDistance2(old_camera_position, mixed[i]->point()) <= vis_r2) && !old_position_is_null;
 			bool in_new_bubble = (globalDistance2(new_camera_position, mixed[i]->point()) <= vis_r2) && !new_position_is_null;
@@ -654,9 +681,11 @@ void LocalBattlefield::updateVisibility(GridPoint old_camera_position, GridPoint
 			}
 		}
 	} else {
-		// less common case, the camera has jumped so far that the old and new
-		// visibility regions don't overlap.  this is easier, since no sorting
-		// is required.
+		/**
+		 * less common case, the camera has jumped so far that the old and new
+		 * visibility regions don't overlap.  this is easier, since no sorting
+		 * is required.
+		 */
 		CSPLOG(DEBUG, BATTLEFIELD) << "updateVisibility(): large camera move";
 		if (!old_position_is_null) {
 			dynamicIndex()->query(old_region, hide);
@@ -671,11 +700,13 @@ void LocalBattlefield::updateVisibility(GridPoint old_camera_position, GridPoint
 	CSPLOG(DEBUG, BATTLEFIELD) << "updateVisibility(): hiding " << hide.size() << " objects";
 	for (unsigned i = 0; i < hide.size(); ++i) {
 		Object object = static_cast<ObjectWrapper*>(hide[i])->object();
-		// object will be null if we have not received any peer updates yet.  in this case
-		// the object isn't really visible, and there is nothing to do. this situation can
-		// arise transiently when new objects are added to the global battlefield, but in
-		// general we should have received peer updates before an object enters or leaves
-		// visible range.
+		/**
+		 * object will be null if we have not received any peer updates yet.  in this case
+		 * the object isn't really visible, and there is nothing to do. this situation can
+		 * arise transiently when new objects are added to the global battlefield, but in
+		 * general we should have received peer updates before an object enters or leaves
+		 * visible range.
+		 */
 		if (object.valid()) {
 			m_SceneManager->scheduleHide(object);
 		}
@@ -684,11 +715,13 @@ void LocalBattlefield::updateVisibility(GridPoint old_camera_position, GridPoint
 	CSPLOG(DEBUG, BATTLEFIELD) << "updateVisibility(): showing " << show.size() << " objects";
 	for (unsigned i = 0; i < show.size(); ++i) {
 		Object object = static_cast<ObjectWrapper*>(show[i])->object();
-		// object will be null if we have not received any peer updates yet.  in this case
-		// we can't show the object, but the visibility will be reevaluated when the first
-		// update arives and the object is created.  this situation can arise transiently
-		// when new objects are added to the global battlefield, but in general we should
-		// receive peer updates before an object enters visible range.
+		/**
+		 * object will be null if we have not received any peer updates yet.  in this case
+		 * we can't show the object, but the visibility will be reevaluated when the first
+		 * update arives and the object is created.  this situation can arise transiently
+		 * when new objects are added to the global battlefield, but in general we should
+		 * receive peer updates before an object enters visible range.
+		 */
 		if (object.valid()) {
 			m_SceneManager->scheduleShow(object);
 		}
@@ -696,23 +729,30 @@ void LocalBattlefield::updateVisibility(GridPoint old_camera_position, GridPoint
 }
 
 void LocalBattlefield::setCamera(Vector3 const &eye_point, const Vector3& look_pos, const Vector3& up_vec) {
-	// if there is no scene manager, then we ignore camera updates (which probably
-	// shouldn't be occur anyway).
+	/**
+	 * if there is no scene manager, then we ignore camera updates (which probably
+	 * shouldn't be occur anyway).
+	 */
 	if (!m_SceneManager) return;
 
-	// first update the camera, which will force the local terrain to be loaded
-	// before features are added to the scene (the terrain elevation must be
-	// available for features to be position correctly). this works with demeter
-	// since it blocks during the terrain load, but cspchunklod uses a threaded
-	// loader.
-	// TODO ElevationCorrection needs to be able to query the terrain object
-	// to deterimine if elevation data is available, and block (in the feature
-	// construction thread) if it isn't.
+	/**
+	 * first update the camera, which will force the local terrain to be loaded
+	 * before features are added to the scene (the terrain elevation must be
+	 * available for features to be position correctly). this works with demeter
+	 * since it blocks during the terrain load, but cspchunklod uses a threaded
+	 * loader.
+	 * 
+	 * @TODO ElevationCorrection needs to be able to query the terrain object
+	 * to deterimine if elevation data is available, and block (in the feature
+	 * construction thread) if it isn't.
+	 */
 	CSPLOG(DEBUG, BATTLEFIELD) << "setCamera(): update scene camera";
 	m_SceneManager->setCamera(eye_point, look_pos, up_vec);
 
-	// if the camera has move sufficiently far, add and remove features and dynamic
-	// objects from the scene based on the current camera position.
+	/**
+	 * if the camera has move sufficiently far, add and remove features and dynamic
+	 * objects from the scene based on the current camera position.
+	 */
 	GridPoint new_grid_position = globalToGrid(eye_point);
 	if (hasMoved(m_CameraGridPosition, new_grid_position)) {
 		CSPLOG(DEBUG, BATTLEFIELD) << "setCamera(): updating visibility " << new_grid_position.x() << ", " << new_grid_position.y();
@@ -748,12 +788,12 @@ double LocalBattlefield::UnitUpdateProxy::onUpdate(double dt) {
 	const unsigned n_updates = m_PeerUpdates.size();
 	if (n_updates == 0) {
 		CSPLOG(WARNING, BATTLEFIELD) << "no peers to update";
-		return 1.0;  // wait 1 sec before checking again
+		return 1.0;  /** wait 1 sec before checking again */
 	}
 
 	uint32 dt_ms = static_cast<uint32>(dt * 1000.0);
 	m_UpdateTime += dt_ms;
-	// FIXME this can get choppy when the frame rate and update rates are comparable
+	/** @bug this can get choppy when the frame rate and update rates are comparable */
 	if (m_UpdateTime < m_PeerUpdates[0].next_update) {
 		CSPLOG(DEBUG, BATTLEFIELD) << "too soon, " << (m_UpdateTime - m_PeerUpdates[0].next_update) << " ms";
 		return (m_UpdateTime - m_PeerUpdates[0].next_update) * 1e-3;
@@ -761,13 +801,16 @@ double LocalBattlefield::UnitUpdateProxy::onUpdate(double dt) {
 
 	TimeStamp timestamp = m_Connection->getTimeStamp();
 
-	// targets stores (detail, peer id) in an int to facilite sorting
+	/** targets stores (detail, peer id) in an int to facilite sorting
+	 */
 	int targets[128];
 	int target_count = 0;
 
-	// find all peers that need updates now, and generate/cache the update messages
-	// for each detail level.  the updates are kept in a heap, with the next update
-	// at the top.
+	/**
+	 * find all peers that need updates now, and generate/cache the update messages
+	 * for each detail level.  the updates are kept in a heap, with the next update
+	 * at the top.
+	 */
 	while ((m_PeerUpdates[0].next_update <= m_UpdateTime) && (target_count < 128)) {
 		std::pop_heap(m_PeerUpdates.begin(), m_PeerUpdates.end());
 		const uint32 interval = m_PeerUpdates[n_updates - 1].interval;
@@ -776,19 +819,20 @@ double LocalBattlefield::UnitUpdateProxy::onUpdate(double dt) {
 		const int detail = m_PeerUpdates[n_updates - 1].detail;
 		assert(detail >=0 && detail < DETAIL_LEVELS);
 
-		// the object may choose to skip an update due to low estimated error
+		/** the object may choose to skip an update due to low estimated error */
 		bool skipped = false;
 
-		// ok to use slightly stale messages.  note that if we refresh the cache for any
-		// peer, all other peers at that detail level will get the new message.
+		/** 
+		 * ok to use slightly stale messages.  note that if we refresh the cache for any
+		 * peer, all other peers at that detail level will get the new message.
+		 */
 		if (m_UpdateTime - m_DetailCache[detail].last_refresh > interval / 10) {
-			// FIXME the state message will be used for multiple peers that are updated at different
-			// intervals, so the content should not depend on interval.
+			/** @bug the state message will be used for multiple peers that are updated at different intervals, so the content should not depend on interval. */
 			Ref<NetworkMessage> msg = m_Wrapper->unit()->getState(timestamp, 0 /*interval*/, detail);
 			if (msg.valid()) {
 				msg->setRoutingType(ROUTE_UNIT_UPDATE);
 				msg->setRoutingData(m_Wrapper->id());
-				msg->setPriority(2);  // XXX msg/detail dependent?
+				msg->setPriority(2);  /** XXX msg/detail dependent? */
 				m_DetailCache[detail].msg = msg;
 				m_DetailCache[detail].last_refresh = m_UpdateTime;
 			} else {
@@ -797,17 +841,17 @@ double LocalBattlefield::UnitUpdateProxy::onUpdate(double dt) {
 		}
 
 		if (!skipped) {
-			// hack for sorting by detail level, see below
+			/** hack for sorting by detail level, see below */
 			targets[target_count++] = (detail << 24) | m_PeerUpdates[n_updates - 1].id;
 		}
 
 		std::push_heap(m_PeerUpdates.begin(), m_PeerUpdates.end());
 	}
 
-	// order by detail level to take advantage of outbound message caching
+	/** order by detail level to take advantage of outbound message caching */
 	std::sort(targets, targets + target_count);
 
-	// finally, send all pending updates
+	/** finally, send all pending updates */
 	for (int i = 0; i < target_count; ++i) {
 		const int detail = targets[i] >> 24;
 		const PeerId id = static_cast<PeerId>(targets[i] & 0xffffff);
@@ -819,7 +863,9 @@ double LocalBattlefield::UnitUpdateProxy::onUpdate(double dt) {
 		}
 	}
 
-	// we don't need to be called again until the next update time is reached
+	/**
+	 * we don't need to be called again until the next update time is reached
+	 */
 	return (m_PeerUpdates[0].next_update - m_UpdateTime) * 1e-3;
 }
 
@@ -865,17 +911,19 @@ void LocalBattlefield::LocalUnitWrapper::removePeerUpdate(PeerId id) {
 void LocalBattlefield::LocalUnitWrapper::setUpdateDistance(PeerId id, double distance) {
 	assert(m_UpdateProxy.valid());
 	double interval = clampTo(distance / 10000.0, 0.05, 5.0);
-	// detail levels:
-	// 9 = 0-50 m
-	// 8 = 50-100 m
-	// 7 = 100-200 m
-	// 6 = 200-400 m
-	// 5 = 400-800 m
-	// 4 = 800-1600 m
-	// 3 = 1.6-3.2 km
-	// 2 = 3.2-6.4 km
-	// 1 = 6.4-12.8 km
-	// 0 = >12.8 km
+	/**
+	 * detail levels:
+	 * 9 = 0-50 m
+	 * 8 = 50-100 m
+	 * 7 = 100-200 m
+	 * 6 = 200-400 m
+	 * 5 = 400-800 m
+	 * 4 = 800-1600 m
+	 * 3 = 1.6-3.2 km
+	 * 2 = 3.2-6.4 km
+	 * 1 = 6.4-12.8 km
+	 * 0 = >12.8 km
+	 */
 	uint16 detail = static_cast<uint16>(std::max(0, 9 - static_cast<int>(1.4427 * ::log(std::max(1.0, distance / 25.0)))));
 	m_UpdateProxy->setUpdateParameters(id, interval, detail);
 }

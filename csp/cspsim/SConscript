@@ -101,6 +101,8 @@ build.SourceGroup(expenv,
 		'ai/Task.cpp',
 		'ai/Task.h',
 
+		'AircraftEngine.cpp',
+		'AircraftEngine.h',
 		'AircraftObject.cpp',
 		'AircraftObject.h',
 		'Animation.cpp',

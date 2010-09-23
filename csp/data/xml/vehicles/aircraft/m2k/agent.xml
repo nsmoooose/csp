@@ -12,9 +12,9 @@
 			<Object class="FlightDynamics">
 				<Path name="flight_model">fm</Path>
 			</Object>
-			<Object class="EngineDynamics">
+			<Object class="AircraftEngineDynamics">
 				<List name="engine_set">
-					<Object class="Engine">
+					<Object class="AircraftEngine">
 						<Path name="thrust_data">thrust</Path>
 						<Vector3 name="thrust_direction">0.0 1.0 0.0</Vector3>
 						<Vector3 name="engine_offset">0.0 0.0 0.0</Vector3>

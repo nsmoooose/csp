@@ -34,7 +34,7 @@
 				<Path name="flight_model">fm</Path>
 				<Path name="store_drag">.objects.stores_drag</Path>
 			</Object>
-			<Object class="EngineDynamics">
+			<Object class="AircraftEngineDynamics">
 				<Path name="resources">resources</Path>
 				<List name="engine_set">
 					<Object class="F16Engine">

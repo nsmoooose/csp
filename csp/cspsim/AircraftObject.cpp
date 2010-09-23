@@ -22,12 +22,12 @@
  *
  **/
 
+#include <csp/cspsim/AircraftEngine.h>
 #include <csp/cspsim/AircraftObject.h>
 #include <csp/cspsim/AnimationSequence.h>
 #include <csp/cspsim/DataRecorder.h>
 #include <csp/cspsim/KineticsChannels.h>
 #include <csp/cspsim/Collision.h>
-#include <csp/cspsim/Engine.h>
 #include <csp/cspsim/FlightModel.h>
 #include <csp/cspsim/ObjectModel.h>
 #include <csp/cspsim/SceneModel.h>
@@ -97,7 +97,7 @@ void AircraftObject::onRender() {
 		 * @todo Remove need for hack.
 		 * /
 		if (getSystemsModel().valid()) {
-			Ref<EngineDynamics> ed = getSystemsModel()->getSystem("EngineDynamics",false);
+			Ref<AircraftEngineDynamics> ed = getSystemsModel()->getSystem("EngineDynamics",false);
 			if (ed.valid())
 				m_SceneModel->setSmokeEmitterLocation(ed->getSmokeEmitterLocation());
 		}

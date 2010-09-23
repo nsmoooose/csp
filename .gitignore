@@ -1,15 +1,16 @@
 .bin
+.dox*
+*.dar
 *.pyc
 csp/.buildlog
 csp/.config
 csp/.config.log
 csp/.scon*
 csp/bin/atmosphere.*
-csp/bin/sim.dar
 csp/bin/sim.log
 csp/bin/Demeter.log
 csp/data/input/*.hid
-csp/data/terrain/*
+csp/data/terrain
 csp/parser.out
 csp/parsetab.py
 csp/csplib/net/ClientServerMessages.cpp
@@ -19,6 +20,8 @@ csp/cspsim/ObjectUpdate.cpp
 csp/cspsim/ObjectUpdate.h
 csp/cspsim/battlefield/BattlefieldMessages.cpp
 csp/cspsim/battlefield/BattlefieldMessages.h
+csp/tools/layout2/.csplayout
+csp/tools/layout2/Demeter.log
 /CMakeCache.txt
 /*.vcxproj
 /*.vcxproj.filters

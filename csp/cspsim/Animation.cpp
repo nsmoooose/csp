@@ -250,7 +250,7 @@ public:
 AnimationCallback::AnimationCallback() {
 }
 
-// Defining the destructor outside of the header allows some osg classes to be forward declared.
+/** Defining the destructor outside of the header allows some osg classes to be forward declared. */
 AnimationCallback::~AnimationCallback() {
 }
 

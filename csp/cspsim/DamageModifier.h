@@ -31,8 +31,8 @@
 namespace csp {
 
 /**
- * clss DamageModifier (STATIC)
- *
+ * @class DamageModifier DamageModifier.h "csp/cspsim/DamageModifier.h"
+ * DamageModifier (STATIC)
  * Damage modifiers reflect the resistance of an object to
  * various types of weapons.
  *

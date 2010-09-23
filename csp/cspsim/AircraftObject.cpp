@@ -92,7 +92,10 @@ double AircraftObject::onUpdate(double dt) {
 void AircraftObject::onRender() {
 	DynamicObject::onRender();
 	if (m_SceneModel.valid()) {
-		// XXX TEMPORARY HACK
+		/** 
+		 * @warning XXX TEMPORARY HACK 
+		 * @todo Remove need for hack.
+		 * /
 		if (getSystemsModel().valid()) {
 			Ref<EngineDynamics> ed = getSystemsModel()->getSystem("EngineDynamics",false);
 			if (ed.valid())
@@ -127,9 +130,9 @@ void AircraftObject::setAttitude(double pitch, double roll, double heading) {
 	b_Heading->value() = heading;
 	
 	Quat attitude;
-	// use standard Euler convension (X axis is roll, Y is pitch, Z is yaw).
+	/** use standard Euler convension (X axis is roll, Y is pitch, Z is yaw). */
 	attitude.makeRotate(roll, pitch, heading);
-	// convert to CSP coordinate system (X axis is pitch, Y axis is roll, -Z is yaw)
+	/** convert to CSP coordinate system (X axis is pitch, Y axis is roll, -Z is yaw) */
 	Quat modified(attitude.y(), attitude.x(), -attitude.z(), attitude.w());
 	DynamicObject::setAttitude(modified);
 }
@@ -137,7 +140,7 @@ void AircraftObject::setAttitude(double pitch, double roll, double heading) {
 void AircraftObject::postUpdate(double dt) {
 	DynamicObject::postUpdate(dt);
 
-	// convert from CSP frame to standard Euler (X is roll, Y is pitch, Z is yaw)
+	/** convert from CSP frame to standard Euler (X is roll, Y is pitch, Z is yaw) */
 	Quat modified = b_Attitude->value();
 	modified = Quat(modified.y(), modified.x(), -modified.z(), modified.w());
 	modified.getEulerAngles(b_Roll->value(), b_Pitch->value(), b_Heading->value());

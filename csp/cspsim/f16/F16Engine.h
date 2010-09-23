@@ -73,11 +73,11 @@ private:
 
 	// state variables
 	double m_Drive;
-	DataChannel<double>::RefT b_RPM;   /** @todo export @code DataChannel<double>::RefT b_RPM; @endcode */
+	DataChannel<double>::RefT b_RPM;   /** @todo export code DataChannel<double>::RefT b_RPM; */
 	double m_StartRPM;
 	double m_CoreTemperature;
-	double m_ExhaustTemperature;   /** @todo export @code double m_ExhaustTemperature; @endcode */
-	DataChannel<double>::RefT b_FanTurbineInletTemperature;   // TODO export
+	double m_ExhaustTemperature;   /** @todo export code double m_ExhaustTemperature; */
+	DataChannel<double>::RefT b_FanTurbineInletTemperature;   /** @TODO export */
 	double m_CoreTemperatureTarget;
 	double m_ExhaustTemperatureTarget;
 	double m_FanTurbineInletTemperatureTarget;
@@ -88,9 +88,9 @@ private:
 	bool m_Afterburner;
 	bool m_AfterburnerFailure;
 	double m_ThrustSpecificFuelConsumption;
-	double m_FuelConsumption;   /** @todo export @code double m_FuelConsumption; @endcode */
+	double m_FuelConsumption;   /** @todo export code double m_FuelConsumption; */
 	double m_HotStartTemperature;
-	DataChannel<double>::RefT b_Nozzle;   /** @todo export @code DataChannel<double>::RefT b_Nozzle; @endcode */
+	DataChannel<double>::RefT b_Nozzle;   /** @todo export code DataChannel<double>::RefT b_Nozzle;  */
 	double m_FuelPressure;
 	double m_StartElapsedTime;
 	double m_HangTime;

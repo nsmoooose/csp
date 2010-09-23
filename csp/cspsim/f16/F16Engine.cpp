@@ -405,7 +405,7 @@ void F16Engine::updateFuel(double dt) {
 	/** 
 	 * @todo FIXME fuel consumption should be measured (internally) in kg/s, with appropriate conversions in other places.
 	 */
-	static const double kg_per_hr_to_liters_per_sec = 3.47e-4;  // assumes 0.8 kg/l
+	static const double kg_per_hr_to_liters_per_sec = 3.47e-4;  /** assumes 0.8 kg/l */
 	double need = m_FuelConsumption * kg_per_hr_to_liters_per_sec * dt;
 	double fuel = !b_FuelManagementSystem ? 0.0 : b_FuelManagementSystem->value()->drawFuel(dt, need);
 	if (getThrottle() < 0.0) {

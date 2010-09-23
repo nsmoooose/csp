@@ -67,7 +67,8 @@ AircraftEngine::AircraftEngine(Vector3 const &/*thrustDirection*/):
 	m_Alpha(0.0),
 	m_Density(0.01)
 {
-	// XMLize: A, B & C should be functions of mach
+	/** XMLize: A, B & C should be functions of mach
+	 */
 	m_A = toRadians(10.0);
 	m_B = toRadians(15.0);
 	m_C = toRadians(40.0);
@@ -100,10 +101,10 @@ void AircraftEngine::bindSounds(SoundModel* model, ResourceBundle* bundle) {
 			CSPLOG(DEBUG, AUDIO) << "engine sound position " << m_EngineOffset;
 			CSPLOG(DEBUG, AUDIO) << "engine sound direction " << m_ThrustDirection;
 			m_EngineSound->state()->apply();
-			m_EngineSound->play();	// ToDo: check if engine's really running
+			m_EngineSound->play();	/** @todo check if engine's really running */
 		}
 
-		// set afterburner sound
+		/** set afterburner sound */
 		Ref<const SoundSample> afterburner_sample(bundle->getSoundSample("afterburner"));
 		m_AfterburnerSound = SoundEffect::ExternalSound(afterburner_sample, model);
 		if (m_AfterburnerSound.valid()) {
@@ -140,14 +141,16 @@ void AircraftEngine::updateThrust() {
 }
 
 double AircraftEngine::getBlend() const {
-	// rescale throttle [0, 0.95, 1.0] to [1, 2, 3]
+	/** rescale throttle [0, 0.95, 1.0] to [1, 2, 3] */
 	return 1.0 + m_Throttle + std::max(0.0, m_Throttle - 0.95) * 20.0;
 }
 
 double AircraftEngine::getThrustScale() const {
 	const double alpha = m_Alpha;
-	// f is a totally ad-hoc means of preventing a slight tailwind from killing
-	// the engine when we aren't moving.
+	/**
+	 * f is a totally ad-hoc means of preventing a slight tailwind from killing
+	 * the engine when we aren't moving.
+	 */
 	const double f = clampTo(4.0 * (m_Mach - 0.25), 0.0, 1.0);
 	if ((std::abs(alpha) > PI_2) || (alpha < -m_A)) {
 		return (1.0 - f);
@@ -162,10 +165,12 @@ double AircraftEngine::getThrustScale() const {
 }
 
 double AircraftEngine::flatten(double x) const {
-	// an increasing picewise linear continuous function f on R such that:
-	//        / -pi/2 if x = -a
-	// f(x) = | 0     if x in [-a/2,b/2] (0 < a, b)
-	//        \ b     if x = b
+	/**
+	 * an increasing picewise linear continuous function f on R such that:
+	 *        / -pi/2 if x = -a
+	 * f(x) = | 0     if x in [-a/2,b/2] (0 < a, b)
+	 *        \ b     if x = b
+	 */
 	double ret = std::abs(x-m_B/2) + x-m_B/2 + PI_2*(m_A/2+x - std::abs(m_A/2+x))/m_A;
 	return ret;
 }
@@ -230,9 +235,11 @@ void AircraftEngineDynamics::preSimulationStep(double dt) {
 			m_Moment += (*i)->m_EngineOffset ^ force;
 			fBlend = (*i)->getBlend();
 			fPitch = fBlend;
-			// Using fBlend as a modulator for pitch and gain is a simple ad-hoc
-			// solution, but yields to nice results. fPitch must be clamped to 1.999,
-			// because OpenAL crashes when using a value >= 2.0
+			/**
+			 * Using fBlend as a modulator for pitch and gain is a simple ad-hoc
+			 * solution, but yields to nice results. fPitch must be clamped to 1.999,
+			 * because OpenAL crashes when using a value >= 2.0
+			 */
 			if((*i)->m_EngineSound.valid()) {
 				if (fBlend >= 2.0) {
 					fPitch = 1.999;
@@ -242,8 +249,10 @@ void AircraftEngineDynamics::preSimulationStep(double dt) {
 //				(*i)->m_EngineSound->state()->apply();
 			}
 
-			// the afterburner sound is played when fBlend is between 2 and 3
-			// ToDo: check whether this is the right parameter to determine if burner is running
+			/**
+			 * the afterburner sound is played when fBlend is between 2 and 3
+			 * @todo check whether this is the right parameter to determine if burner is running
+			 */
 			if((*i)->m_AfterburnerSound.valid()) {
 				(*i)->m_AfterburnerSound->state()->setGain(fBlend / 3);
 				isPlaying = (*i)->m_AfterburnerSound->state()->getPlay();
@@ -259,7 +268,7 @@ void AircraftEngineDynamics::preSimulationStep(double dt) {
 }
 
 void AircraftEngineDynamics::computeForceAndMoment(double) {
-	// all the work is done by preSimulationStep
+	/** all the work is done by preSimulationStep */
 }
 
 void AircraftEngineDynamics::getInfo(InfoList &info) const {

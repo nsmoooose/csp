@@ -95,7 +95,7 @@ void AircraftObject::onRender() {
 		/** 
 		 * @warning XXX TEMPORARY HACK 
 		 * @todo Remove need for hack.
-		 * /
+		 */
 		if (getSystemsModel().valid()) {
 			Ref<AircraftEngineDynamics> ed = getSystemsModel()->getSystem("EngineDynamics",false);
 			if (ed.valid())

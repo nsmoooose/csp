@@ -54,8 +54,9 @@ class AircraftEngine: public Engine {
 	Vector3 m_SmokeEmitterLocation;
 	friend class AircraftEngineDynamics;
 
-	// Depending on the AOA (and mach) the engine misses air flow lowering the thrust.  The
-	// following parameters approximate this in an ad-hoc way.
+	/** Depending on the AOA (and mach) the engine misses air flow lowering the thrust.  The
+	 * following parameters approximate this in an ad-hoc way.
+	 */
 	double m_A, m_B, m_C;
 	double flatten(double x) const;
 
@@ -98,11 +99,12 @@ public:
 protected:
 	void updateThrust();
 
-	// Returns a value in the range 0-1 to scale linearly from zero to idle thrust,
-	// 1-2 scale linearly from idle to military thrust, and 2-3 to scale linearly from
-	// military to afterburner thrust.
+	/** Returns a value in the range 0-1 to scale linearly from zero to idle thrust,
+	 * 1-2 scale linearly from idle to military thrust, and 2-3 to scale linearly from
+	 * military to afterburner thrust.
+	 */
 	virtual double getBlend() const;
-	// An arbitary scale factor for the blended thrust.
+	/** An arbitary scale factor for the blended thrust. */
 	virtual double getThrustScale() const;
 
 	/** Add engine sounds to the specified sound model.  The bundle argument, if not
@@ -147,5 +149,5 @@ public:
 
 } // namespace csp
 
-#endif // __CSPSIM_ENGINE_H__
+#endif // __CSPSIM_AIRCRAFTENGINE_H__
 

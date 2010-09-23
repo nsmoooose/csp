@@ -183,7 +183,7 @@ private:
 
 	/** 
 	 * The virtual battlefield
-	 * /
+	 */
 	Ref<LocalBattlefield> m_Battlefield;
 	Ref<VirtualScene> m_Scene;
 	Ref<Client> m_NetworkClient;

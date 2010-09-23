@@ -26,14 +26,14 @@
 #ifndef __CSPSIM_F16_F16ENGINE_H__
 #define __CSPSIM_F16_F16ENGINE_H__
 
-#include <csp/cspsim/Engine.h>
+#include <csp/cspsim/AircraftEngine.h>
 #include <csp/cspsim/FuelManagementSystem.h>  /** @todo only need FuelManagementInterface */
 
 #include <csp/csplib/data/Real.h>
 
 namespace csp {
 
-class F16Engine: public Engine {
+class F16Engine: public AircraftEngine {
 public:
 	CSP_DECLARE_OBJECT(F16Engine)
 

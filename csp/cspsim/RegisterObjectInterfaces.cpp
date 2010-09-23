@@ -2,6 +2,7 @@
 
 // Objects to register.
 #include <csp/cspsim/ai/AircraftAgent.h>
+#include <csp/cspsim/AircraftEngine.h>
 #include <csp/cspsim/AircraftObject.h>
 #include <csp/cspsim/Animation.h>
 #include <csp/cspsim/AnimationSequence.h>
@@ -60,6 +61,7 @@ namespace csp {
 
 void CSPSIM_EXPORT registerAllObjectInterfaces() {
 	{ static ai::AircraftAgent::__csp_interface_proxy instance; }
+	{ static AircraftEngine::__csp_interface_proxy instance; }
 	{ static AircraftObject::__csp_interface_proxy instance; }
 	registerAnimationObjects();
 	{ static SharedSequence::__csp_interface_proxy instance; }
@@ -73,7 +75,7 @@ void CSPSIM_EXPORT registerAllObjectInterfaces() {
 	registerChannelMirrorObjects();
 	{ static DynamicObject::__csp_interface_proxy instance; }
 	{ static Engine::__csp_interface_proxy instance; }
-	{ static EngineDynamics::__csp_interface_proxy instance; }
+	{ static AircraftEngineDynamics::__csp_interface_proxy instance; }
 	registerF16Objects();
 	registerFlightControlSystemObjects();
 	{ static CarObject::__csp_interface_proxy instance; }

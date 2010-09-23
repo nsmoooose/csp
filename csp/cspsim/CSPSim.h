@@ -95,9 +95,9 @@ public:
 	CSPSim();
 	virtual ~CSPSim();
 	virtual void init();
-	// Initializes all objects needed to run the simulator.	
+	/** Initializes all objects needed to run the simulator. */
 	virtual void loadSimulation();
-	// Unloads all objects used during a simulation.
+	/** Unloads all objects used during a simulation. */
 	virtual void unloadSimulation();
 	virtual void unloadSimulationNow();
 	virtual void displayLogoScreen();
@@ -159,27 +159,38 @@ private:
 	bool m_Clean;
 	bool m_UnloadSimulationRequested;
 
-	// The current simulation time/date
+	/** The current simulation time/date */
 	SimDate m_CurrentTime;
+	/** The time of the current frame */
 	SimTime m_FrameTime;
+	/** The Frames Per Second rate */
 	SimTime m_FrameRate;
+	/** The average frame time */
 	SimTime m_AverageFrameTime;
+	/** The elapsed time */
 	SimTime m_ElapsedTime;
+	/** The time lag */
 	SimTime m_TimeLag;
 
 	void updateTime();
 
-	// The current input device interface
+	/** The current input device interface */
 	Ref<input::VirtualHID> m_Interface;
+	/** The input interface maps */
 	Ref<input::EventMapIndex> m_InterfaceMaps;
+	/** The active object */
 	Ref<DynamicObject> m_ActiveObject;
 
-	// The virtual battlefield
+	/** 
+	 * The virtual battlefield
+	 * /
 	Ref<LocalBattlefield> m_Battlefield;
 	Ref<VirtualScene> m_Scene;
 	Ref<Client> m_NetworkClient;
 
-	// TODO the terrain will eventually be encapsulated in a Theater class
+	/**
+	 * @TODO the terrain will eventually be encapsulated in a Theater class
+	 */
 	Ref<Theater> m_Theater;
 	Ref<TerrainObject> m_Terrain;
 	Ref<DataManager> m_DataManager;

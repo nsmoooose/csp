@@ -19,13 +19,10 @@
 /**
  * @file F16FlightModel.cpp
  *
- **/
-
-/*
-   The internal sign conventions match the NASA 1979 paper except for the
-   coordinate axes: NASA-X = y, NASA-Y = x, NASA-Z = -z.  Note the sign
-   difference for the yaw axis!
-*/
+ * The internal sign conventions match the NASA 1979 paper except for the
+ * coordinate axes: NASA-X = y, NASA-Y = x, NASA-Z = -z.  Note the sign
+ * difference for the yaw axis!
+ */
 
 #include <csp/cspsim/f16/F16FlightModel.h>
 
@@ -133,18 +130,24 @@ double F16FlightModel::calculatePitchMoment() const {
 	double offset_y = m_CenterOfMassBody.y() - m_CL_x_m[m_Mach];
 	moment += offset_y * m_CZ / m_WingChord;
 
-	// TODO reduce elevator authority in ground effect
+	/**
+	 * @TODO reduce elevator authority in ground effect
+	 */
 	return moment * m_qBarS * m_WingChord;
 }
 
 double F16FlightModel::calculateRollMoment() const {
-	// negative since yaw axis (and hence yaw rate) is opposite nasa 1979.
+	/**
+	 * negative since yaw axis (and hence yaw rate) is opposite nasa 1979.
+	 */
 	const double r = -m_AngularVelocityBody.z();
 	const double p = m_AngularVelocityBody.y();
 
-	// note that these offsets are in internal body coordinates, not fm coordinates.
+	/**
+	 * note that these offsets are in internal body coordinates, not fm coordinates.
+	 */
 	const double offset_x = m_CenterOfMassBody.x();
-	const double offset_z = m_CenterOfMassBody.z();  // need additional offset?
+	const double offset_z = m_CenterOfMassBody.z();  /** @todo need additional offset? */
 
 	double moment =
 		m_CI_de_a_b[m_Elevator][m_Alpha][m_Beta]
@@ -158,10 +161,14 @@ double F16FlightModel::calculateRollMoment() const {
 
 double F16FlightModel::calculateYawMoment() const {
 	const double p = -m_AngularVelocityBody.y();
-	// negative since yaw axis (and hence yaw rate) is opposite nasa 1979.
+	/**
+	 * negative since yaw axis (and hence yaw rate) is opposite nasa 1979.
+	 */
 	const double r = -m_AngularVelocityBody.z();
 
-	// cn_da = dcn,da + dcn,da,lef * (1 - dlef/25)
+	/**
+	 * cn_da = dcn,da + dcn,da,lef * (1 - dlef/25)
+	 */
 	double cn_da = m_Cn_da_a_b[m_Alpha][(m_Aileron > 0) ? m_Beta : -m_Beta];
 	cn_da += m_ScaleLEF * (m_Cn_da_lef_a_b[m_Alpha][(m_Aileron > 0) ? m_Beta : -m_Beta] - cn_da);
 
@@ -169,17 +176,21 @@ double F16FlightModel::calculateYawMoment() const {
 	double cn_r = (m_Cn_r_a[m_Alpha] + m_Cn_r_lef_a[m_Alpha] * m_ScaleLEF) * r;
 	double cn_dr = m_Cn_dr_a_b[m_Alpha][(m_Rudder > 0) ? m_Beta : -m_Beta];
 
-	// XXX hack (testing spin control in deep stall trim)  without this "boost" the yaw rate in
-	// a deep stall is about 45 deg/sec, compared with about 20 deg/sec cited in the nasa paper.
-	// this could be due to differences between the nasa data and the data used in the fm.  For
-	// convenience, the fm data was taken from the "non-linear f-16 simulation using simulink
-	// and matlab" package in predigitized form.  This data should be identical to the nasa data,
-	// but in practice there are small variations.
+	/**
+	 * XXX hack (testing spin control in deep stall trim)  without this "boost" the yaw rate in
+	 * a deep stall is about 45 deg/sec, compared with about 20 deg/sec cited in the nasa paper.
+	 * this could be due to differences between the nasa data and the data used in the fm.  For
+	 * convenience, the fm data was taken from the "non-linear f-16 simulation using simulink
+	 * and matlab" package in predigitized form.  This data should be identical to the nasa data,
+	 * but in practice there are small variations.
+	 */
 	cn_dr *= clampTo((toDegrees(m_Alpha) - 40) * 0.8, 1.0, 20.0);
 	cn_dr = -fabs(cn_dr);
 
-	// note that these offsets are in internal body coordinates, not fm coordinates.
-	double offset_y = m_CenterOfMassBody.y() - m_CL_x_m[0.0];  // should this vary with mach?
+	/**
+	 * note that these offsets are in internal body coordinates, not fm coordinates.
+	 */
+	double offset_y = m_CenterOfMassBody.y() - m_CL_x_m[0.0];  /** @todo should this vary with mach? */
 	double offset_x = m_CenterOfMassBody.x();
 
 	double moment =
@@ -190,7 +201,9 @@ double F16FlightModel::calculateYawMoment() const {
 		cn_dr * m_Rudder +
 		(offset_x * m_CX - offset_y * m_CY) / m_WingSpan;
 
-	// negative since yaw axis (and hence yaw moment) is opposite nasa 1979.
+	/**
+	 * negative since yaw axis (and hence yaw moment) is opposite nasa 1979.
+	 */
 	return -moment * m_qBarS * m_WingSpan;
 }
 
@@ -200,17 +213,23 @@ void F16FlightModel::calculateForceAndMoment(Vector3 &force, Vector3 &moment) {
 	Vector3 drag_direction(sin(m_Beta), -cos(m_Beta)*cos(m_Alpha), cos(m_Beta)*sin(m_Alpha));
 	Vector3 lift_direction = (drag_direction ^ Vector3::ZAXIS) ^ drag_direction;
 
-	// rotate from nasa to internal coordinate system
+	/**
+	 * rotate from nasa to internal coordinate system
+	 */
 	Vector3 force_c(calculateForceCoefficientY(), calculateForceCoefficientX(), -calculateForceCoefficientZ());
 
-	// scale nasa low-speed drag by hffm drag normalized to 1.0 at low speed.
+	/**
+	 * scale nasa low-speed drag by hffm drag normalized to 1.0 at low speed.
+	 */
 	double CD = force_c * drag_direction;
 	double mach_drag_factor = m_CD_m_a[m_Mach][m_Alpha] - 1.0;
 	force_c += drag_direction * (CD * mach_drag_factor);
 
-	// blend from nasa lift to hffm lift at high speed (M > 0.5), neglecting beta and de
-	// at high speed.  use a cubic function to create a smooth 0-1 transition from M 0.2
-	// to M 0.5.
+	/**
+	 * blend from nasa lift to hffm lift at high speed (M > 0.5), neglecting beta and de
+	 * at high speed.  use a cubic function to create a smooth 0-1 transition from M 0.2
+	 * to M 0.5.
+	 */
 	double CL = force_c * lift_direction;
 	double mach_lift_value = m_CL_m_a[m_Mach][m_Alpha];
 	double blend = 0.0;
@@ -222,8 +241,10 @@ void F16FlightModel::calculateForceAndMoment(Vector3 &force, Vector3 &moment) {
 	}
 	force_c += lift_direction * ((mach_lift_value - CL) * blend);
 
-	// add in ground effect if necessary.  we operate only on the low speed lift, but
-	// the difference should not matter under normal flight conditions!
+	/**
+	 * add in ground effect if necessary.  we operate only on the low speed lift, but
+	 * the difference should not matter under normal flight conditions!
+	 */
 	if (m_GE > 1.0) {
 		force_c += lift_direction * (CL * (m_GE - 1.0));
 	}

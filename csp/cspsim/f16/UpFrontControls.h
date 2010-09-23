@@ -20,6 +20,7 @@
 /**
  * @file UpFrontControls.h
  *
+ * @todo Should stuff such as the ICP be generalized and turned in to a configurable option in XML or Python?
  **/
 
 
@@ -32,18 +33,17 @@
 
 namespace csp {
 
-// At the one extreme, each system defines its own DataEntryPage and exports registers
-// it with the UFC.  The UFC simply forwards ICP events on the active page, which holds
-// a pointer to the relevant system and modifies it directly.  The custom pages are
-// tightly bound (linked) to the corresponding system classes, and the bus is only
-// used to register pages.
-//
-// At the other extreme, each system exports channels for every externally visible
-// parameter.  DED pages are defined centrally as System subclasses, and bind to the
-// appropriate channels.  The interfaces are not well defined, so DED pages may only
-// partially work depending on the system implementations.
-
-
+/** At the one extreme, each system defines its own DataEntryPage and exports registers
+ * it with the UFC.  The UFC simply forwards ICP events on the active page, which holds
+ * a pointer to the relevant system and modifies it directly.  The custom pages are
+ * tightly bound (linked) to the corresponding system classes, and the bus is only
+ * used to register pages.
+ * 
+ * At the other extreme, each system exports channels for every externally visible
+ * parameter.  DED pages are defined centrally as System subclasses, and bind to the
+ * appropriate channels.  The interfaces are not well defined, so DED pages may only
+ * partially work depending on the system implementations.
+ */
 class UpFrontControls: public System, public sigc::trackable {
 public:
 	CSP_DECLARE_OBJECT(UpFrontControls)

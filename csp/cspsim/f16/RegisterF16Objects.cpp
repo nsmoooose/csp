@@ -20,6 +20,12 @@
 #include <csp/cspsim/f16/UpFrontControls.h>
 #include <csp/cspsim/f16/VoiceMessageUnit.h>
 
+/**
+ * @file f16/RegisterF16Objects.cpp
+ * @todo Shouldn't these objects be configured in by vehicle rather than hard coded? How about doing this in XML or Python instead?
+ */
+
+
 namespace csp {
 
 void registerF16Objects() {

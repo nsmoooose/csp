@@ -20,6 +20,9 @@
 /**
  * @file VoiceMessageUnit.h
  *
+ * @brief Implements the F-16 Voice Message Unit (aka Bitchin' Betty).
+ * 
+ * @TODO generalize this implementation to work with arbitrary triggers and sounds.
  **/
 
 
@@ -29,12 +32,6 @@
 #include <csp/cspsim/System.h>
 
 namespace csp {
-
-/** Implements the F-16 Voice Message Unit (aka Bitchin' Betty).
- *
- *  TODO generalize this implementation to work with arbitrary triggers
- *  and sounds.
- */
 
 class VoiceMessageUnit: public System, public sigc::trackable {
 public:

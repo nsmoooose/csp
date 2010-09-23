@@ -38,7 +38,9 @@ CSP_XML_END
 
 
 bool F16GearDynamics::allowGearUp() const {
-	// TODO: DN LOCK REL button can override
+	/**
+	 * @todo DN LOCK REL button can override
+	 */
 	return !m_LeftMainLandingGear->getWOW();
 }
 

@@ -76,9 +76,9 @@ protected:
 	Table1 m_CZ_sb_a;
 	Table1 m_CZ_tef_a;
 
-	Table2 m_CD_m_a; // drag scaling at high speed
-	Table2 m_CL_m_a; // lift scaling at high speed
-	Table1 m_CL_x_m; // center of lift offset vs mach
+	Table2 m_CD_m_a; /** drag scaling at high speed */
+	Table2 m_CL_m_a; /** lift scaling at high speed */
+	Table1 m_CL_x_m; /** center of lift offset vs mach */
 
 	Table1 m_CM_q_a;
 	Table1 m_CM_sb_a;

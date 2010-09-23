@@ -20,6 +20,17 @@
 /**
  * @file VoiceMessageUnit.cpp
  *
+ * 
+ * @TODO notes for generalizing the VMU interface:
+ * @todo Sounds triggered by channel events: boolean push channels only for now.
+ * @todo loop while active, complete current loop when deactivated playback mode.
+ * @todo loop while active, stop when deactivated playback mode.
+ * @todo loop while active, pause when deactivated playback mode.
+ * @todo play once when activated, optionally abort when deactivated playback mode.
+ * @todo play once when deactivated, optionally abort when activated playback mode.
+ * @todo other playback modes?
+ * @todo Could be extended arbitrarily using channel adaptors from arbitrary input channels to a single output boolean push channel.
+ * @todo Messages would be a list of {channel, sample, playback_mode}.
  **/
 
 
@@ -59,7 +70,7 @@ void VoiceMessageUnit::registerChannels(Bus*) {
 }
 
 void VoiceMessageUnit::importChannels(Bus* bus) {
-	// TODO generalize to a list of messages, channels, and playback modes
+	/** @TODO generalize to a list of messages, channels, and playback modes */
 	b_AltitudeAdvisory = bindChannel(bus, "F16.GroundAvoidance.AltitudeAdvisory", &VoiceMessageUnit::onAltitudeAdvisory);
 	b_DescentWarningAfterTakeoff = bindChannel(bus, "F16.GroundAvoidance.DescentWarningAfterTakeoff", &VoiceMessageUnit::onDescentWarningAfterTakeoff);
 	m_AltitudeSoundEffect = addSoundEffect("altitude_warning_sample", SoundEffect::HEADSET);

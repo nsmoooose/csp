@@ -49,8 +49,9 @@ void F16INS::importChannels(Bus* bus) {
 	b_Velocity = bus->getChannel(bus::Kinetics::Velocity);
 }
 
-// TODO implement an INS error model (for background, see NAWCWPNS TM 8128, "Basic
-// Inertial Navigation," http://www.fas.org/spp/military/program/nav/basicnav.pdf).
+/** 
+ * @todo Implement an INS error model (for background, see NAWCWPNS TM 8128, "Basic Inertial Navigation," http://www.fas.org/spp/military/program/nav/basicnav.pdf).
+ */
 double F16INS::onUpdate(double dt) {
 	double f = 1.0 - m_ResponseTime / (dt + m_ResponseTime);
 	Quat &a0 = b_INSAttitude->value();

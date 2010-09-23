@@ -198,10 +198,9 @@ void UpFrontControls::updateActivePage() {
 	DataEntryPage::RefT page = getActivePage();
 	if (page.valid()) {
 		m_UpdateTime = page->update();
-		// TODO display needs to keep a double buffer to allow
-		// dirty checks.
+		/** TODO display needs to keep a double buffer to allow dirty checks. */
 		m_Display->value()->clear();
-		page->render(*(m_Display->value()));  // XXX fixme
+		page->render(*(m_Display->value()));  /** @todo XXX fixme */
 	}
 }
 

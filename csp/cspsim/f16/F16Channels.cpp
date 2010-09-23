@@ -20,6 +20,8 @@
 /**
  * @file F16Channels.cpp
  *
+ * @todo Wouldn't it make more sense to generalize channels out in to XML or script files?
+ * @todo Wouldn't it make even more sense to define channels based on the system, and not have it vehicle specific?
  **/
 
 

@@ -20,10 +20,8 @@
 /**
  * @file F16InputSystem.h
  *
+ * @todo F16InputSystem is not currently included in the build. Is it still needed?
  **/
-
-// TODO F16InputSystem is not currently included in the build.  Is it still
-// needed?
 
 #ifndef __CSPSIM_F16_F16INPUTSYSTEM_H__
 #define __CSPSIM_F16_F16INPUTSYSTEM_H__

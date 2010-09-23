@@ -20,7 +20,51 @@
 /**
  * @file StoresManagementPages.cpp
  *
- **/
+ * @TODO RDY/SIM flag then master arm is added to the bus.
+ * 
+ * From the MCM v5:
+ * 
+ * The FCC assumes the weapon(s) will fall in a certain trajectory until the AD or BA
+ * conditions are met and the fuze functions to change the ballistics.  The values of
+ * AD or BA in the SMS must be the same as the values set on the weapon fuze to ensure
+ * accuracy.
+ * 
+ * We need to decide how the SMS settings affect the weapon behavior, if at all.
+ * Allowing the SMS to modify the fuze before takeoff might be a reasonable compromise
+ * between realism and convenience.
+ * 
+ * Another important point from the MCM:
+ * 
+ * If you are using a weapon such as CBU or Rockeye for instance, the SMS is
+ * smart enough to know that the AD value you load is really what's on the
+ * weapon. If you want the munition to function at a particular burst altitude
+ * (BA) to optimize coverage, you need only load that altitude in the SMS and
+ * the pull-up anticipation cue will function to let you know when you reach
+ * that (minimum) altitude. In this sense, the pull-up anticipation cue is not
+ * trying to satisfy a minimum fuze arm constraint, but is trying to indicate
+ * the optimum release point to ensure the correct function altitude.
+ * 
+ * The various CAT parameters and functions are detailed in Tables 5.1 and 5.2 on page 122.
+ * 
+ * Some additional miscellaneous information from www.f-16.net:
+ * 
+ * "Gus did a good job explaining the arming options. You have three
+ * solenoids, nose, center and tail. Nose and center work together always and
+ * tail is by itself. So you only have three real options, NOSE, NSTL, TAIL."
+ * 
+ * "Tankrat is right, when the tanks are punched off the carts blow the attach bolt
+ * which goes the whole way through the wing. The aft is held with a pivot fitting
+ * which holds on to the tank long enough for the front to be moving down and away
+ * then it comes free so they won't hit the stabs or ailerons. The two cannon plugs
+ * have quick disconnects and pop right off.  The centerline is a different story
+ * you can just jett the tank."
+ * 
+ * "B: 600-Gallon Wing Tanks
+ * The Advanced Block 50/52 variant is certified to carry the 600-gallon wing
+ * fuel tanks. These tanks increase range or persistence up to thirty percent
+ * over the standard 370-gallon wing tanks. The tanks are mounted on
+ * non-jettisonable pylons that can also carry the more common 370-gallon tanks."
+ */
 
 #include <csp/cspsim/f16/StoresManagementPages.h>
 #include <csp/cspsim/f16/Constants.h>
@@ -38,50 +82,8 @@
 
 #include <iostream>  // XXX
 
-// TODO RDY/SIM flag then master arm is added to the bus.
 
-// From the MCM v5:
-//
-//   The FCC assumes the weapon(s) will fall in a certain trajectory until the AD or BA
-//   conditions are met and the fuze functions to change the ballistics.  The values of
-//   AD or BA in the SMS must be the same as the values set on the weapon fuze to ensure
-//   accuracy.
-//
-// We need to decide how the SMS settings affect the weapon behavior, if at all.
-// Allowing the SMS to modify the fuze before takeoff might be a reasonable compromise
-// between realism and convenience.
-//
-// Another important point from the MCM:
-//
-//   If you are using a weapon such as CBU or Rockeye for instance, the SMS is
-//   smart enough to know that the AD value you load is really what's on the
-//   weapon. If you want the munition to function at a particular burst altitude
-//   (BA) to optimize coverage, you need only load that altitude in the SMS and
-//   the pull-up anticipation cue will function to let you know when you reach
-//   that (minimum) altitude. In this sense, the pull-up anticipation cue is not
-//   trying to satisfy a minimum fuze arm constraint, but is trying to indicate
-//   the optimum release point to ensure the correct function altitude.
-//
-// The various CAT parameters and functions are detailed in Tables 5.1 and 5.2 on page 122.
-//
-// Some additional miscellaneous information from www.f-16.net:
-//
-//   "Gus did a good job explaining the arming options. You have three
-//    solenoids, nose, center and tail. Nose and center work together always and
-//    tail is by itself. So you only have three real options, NOSE, NSTL, TAIL."
-//
-//  "Tankrat is right, when the tanks are punched off the carts blow the attach bolt
-//   which goes the whole way through the wing. The aft is held with a pivot fitting
-//   which holds on to the tank long enough for the front to be moving down and away
-//   then it comes free so they won't hit the stabs or ailerons. The two cannon plugs
-//   have quick disconnects and pop right off.  The centerline is a different story,
-//   you can just jett the tank."
-//
-//  "B: 600-Gallon Wing Tanks
-//   The Advanced Block 50/52 variant is certified to carry the 600-gallon wing
-//   fuel tanks. These tanks increase range or persistence up to thirty percent
-//   over the standard 370-gallon wing tanks. The tanks are mounted on
-//   non-jettisonable pylons that can also carry the more common 370-gallon tanks."
+
 
 namespace csp {
 
@@ -91,7 +93,7 @@ using hud::display::SymbolMaker;
 
 namespace f16 {
 
-// TODO can this be made more generic?  what about making the map static?
+/** @TODO can this be made more generic?  what about making the map static? */
 class AirToGroundSubmodeLabels {
 public:
 	AirToGroundSubmodeLabels() {
@@ -507,9 +509,12 @@ public:
 	}
 
 	virtual double update(double) {
-		m_InventoryDisplay->update();  // XXX should autoupdate on change
-		// need to update CHNG here in addition to onOSB since m_InventoryDisplay
-		// selections can be modified in other master modes.
+		m_InventoryDisplay->update();  /** @todo should autoupdate on change. */
+		
+		/**
+		 * Need to update CHNG here in addition to onOSB since m_InventoryDisplay
+		 * selections can be modified in other master modes.
+		 */
 		updateChange();
 		return 0.0;
 	}
@@ -956,7 +961,7 @@ public:
 			case BombProfile::TAIL: osb(17)->setText("TAIL"); break;
 			default: osb(17)->setText("?");
 		}
-		// TODO customize for different fuse modes and ad/ba settings
+		/** @TODO customize for different fuse modes and ad/ba settings */
 		m_Parameters->setText(stringprintf("AD %5.2fSEC\n \nREL ANG %3d", profile().cat1_ad1, profile().release_angle));
 	}
 
@@ -999,8 +1004,10 @@ StoresManagementPage::StoresManagementPage(DisplayLayout *layout): DisplayFormat
 	m_ActivePage->activate();
 	display()->addChild(m_ActivePage->display());
 
-	// m_ModePages get reassigned, so we need a secondary store of all immediate
-	// subpages to ensure that they are not deleted prematurely.
+	/**
+	 * m_ModePages get reassigned, so we need a secondary store of all immediate
+	 * subpages to ensure that they are not deleted prematurely.
+	 */
 	for (ModePages::iterator iter = m_ModePages.begin(); iter != m_ModePages.end(); ++iter) {
 		m_ChildPages.push_back(iter->second);
 	}

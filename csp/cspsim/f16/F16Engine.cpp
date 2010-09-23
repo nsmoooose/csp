@@ -92,7 +92,7 @@ F16Engine::F16Engine():
 	m_Power(0.0),
 	m_NormalStart(true)
 {
-	// TODO set defaults
+	/** @TODO set defaults */
 	m_WindSpin.set(0.45e-5f, 0.01e-5f);
 	m_DragRate.set(0.03f, 0.001f);
 	m_FanTurbineInletHeatRate.set(0.30f, 0.001f);
@@ -174,7 +174,7 @@ void F16Engine::regen() {
 	m_FuelDepressurizationRate.regen();
 }
 
-// Initialize to running.
+/** Initialize to running. */
 void F16Engine::jumpStart() {
 	m_Status = STATUS_RUNNING;
 	b_RPM->value() = m_IdleRPM;
@@ -250,7 +250,7 @@ void F16Engine::updateTemperature(double dt) {
 
 void F16Engine::checkOverheat(double) {
 	//double dT = b_FanTurbineInletTemperature->value() - m_Overheat;
-	// TODO check fail/fire
+	/** @TODO check fail/fire */
 }
 
 void F16Engine::updateTemperatureTargets() {
@@ -259,7 +259,9 @@ void F16Engine::updateTemperatureTargets() {
 	m_CoreTemperatureTarget = m_FanTurbineInletTemperatureTarget * m_CoreFanTurbineInletTemperatureRatio;
 }
 
-// TODO fix csplib random interface to provide obvious functions like this!
+/** 
+ * @TODO fix csplib random interface to provide obvious functions like this!
+ */
 double gauss(double mean, double sigma) {
 	return static_cast<double>(rd::BoxMueller(g_Random, mean, sigma));
 }
@@ -296,7 +298,7 @@ void F16Engine::updatePrestart(double dt) {
 	const double rpm_factor = pow(rpm, 2.1);
 	const double drive = m_Drive * rpm_factor * getAltitudeFactor();
 	driveEngine(drive, dt);
-	// TODO jfs
+	/** @TODO JFS */
 	if (m_StartElapsedTime > m_HangTime && m_NormalStart) {
 		m_NormalStart = false;
 		m_Drive /= (1.0 + 0.40 * std::max(0.1, rpm));  // ad-hoc drive reduction to prevent rpm increase
@@ -336,13 +338,15 @@ void F16Engine::updateRunning(double dt) {
 	updateTemperatureTargets();
 }
 
-// Engine spooling simulation based on fig. 66 of NASA 1979.
+/**
+ * Engine spooling simulation based on fig. 66 of NASA 1979. 
+ */
 void F16Engine::spoolEngine(double dt) {
 	const double throttle = getEffectiveThrottle();
 	// Fig. 66(b) commanded power versus throttle position, taking the military
 	// setting at 80 percent rather than roughly 76 percent.
 	double power = throttle * (0.625) + std::max(0.0, (throttle - 0.8) * 1.875);
-	// TODO externalize the rate constants
+	/** @TODO externalize the rate constants */
 	double r = 0.0;
 	if (power < 0.5) {
 		if (m_Power < 0.5) {
@@ -369,7 +373,7 @@ void F16Engine::spoolEngine(double dt) {
 
 void F16Engine::driveEngine(double drive, double dt) {
 	drive += getCAS() * m_WindSpin;
-	// TODO jfs drive
+	/** @TODO JFS drive */
 	const double rpm = b_RPM->value();
 	const double spin_drag = (getAltitudeFactor() / m_SpinDownTau) * rpm * rpm + m_Friction;
 	drive -= spin_drag;
@@ -392,14 +396,15 @@ void F16Engine::shutdown() {
 
 void F16Engine::setAfterburner(bool on) {
 	m_Afterburner = on;
-	// thrust is in newtons; scale so that fuel consumption is kg/hr.
-	// TODO document units explicitly.
+	/** Thrust is in newtons; scale so that fuel consumption is kg/hr. */
+	/** @TODO document units explicitly. */
 	m_ThrustSpecificFuelConsumption = (on ? 2.05 : 0.74) / 9.8;
 }
 
 void F16Engine::updateFuel(double dt) {
-	// FIXME fuel consumption should be measured (internally) in kg/s, with appropriate conversions in other
-	// places.
+	/** 
+	 * @todo FIXME fuel consumption should be measured (internally) in kg/s, with appropriate conversions in other places.
+	 */
 	static const double kg_per_hr_to_liters_per_sec = 3.47e-4;  // assumes 0.8 kg/l
 	double need = m_FuelConsumption * kg_per_hr_to_liters_per_sec * dt;
 	double fuel = !b_FuelManagementSystem ? 0.0 : b_FuelManagementSystem->value()->drawFuel(dt, need);
@@ -449,7 +454,7 @@ bool F16Engine::isFuelDepressurized() {
 }
 
 double F16Engine::getAltitudeFactor() {
-	return getDensity() * 0.78125;  // approx 1.0 at sea level
+	return getDensity() * 0.78125;  /** approx 1.0 at sea level */
 }
 
 } // namespace csp

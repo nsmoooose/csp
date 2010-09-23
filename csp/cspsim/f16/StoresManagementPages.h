@@ -69,7 +69,7 @@ protected:
 	std::vector<Ref<NestedPage> > m_ChildPages;
 	Ref<NestedPage> m_ActivePage;
 	MasterMode m_LastMode;
-	Ref<BombProfile> m_BombProfile;  // TODO temporary; should be pulled from the bus
+	Ref<BombProfile> m_BombProfile;  /** @TODO temporary; should be pulled from the bus */
 };
 
 } // namespace f16

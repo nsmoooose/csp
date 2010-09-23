@@ -19,14 +19,14 @@
 
 /**
  * @file F16HUD.cpp
- *
+ * @brief F-16 specific HUD related code.
+ * 
+ * @todo True airspeed and ground speed.
+ * @todo ILS symbology.
+ * @todo 10,000 other things!
+ * @todo More efficient calculations, push channel callbacks.
+ * @todo Should all of this be in the F-16? Shouldn't at least some more of this be generalized?
  **/
-
-// TODO
-// true airspeed and ground speed
-// ils symbology
-// 10,000 other things!
-// more efficient calculations, push channel callbacks
 
 #include <csp/cspsim/f16/F16HUD.h>
 #include <csp/cspsim/f16/F16Channels.h>
@@ -73,7 +73,9 @@ static const Vector3 DefaultHUDColor(0.45, 0.94, 0.68);
 }
 
 
-// TODO generalize and move out of f16/
+/**
+ * @todo Generalize and move out of f16
+ */
 class HUDFont: public DisplayFont {
 	float m_Height;
 	osg::Vec4 m_Color;
@@ -87,8 +89,9 @@ public:
 	virtual void apply(osgText::Text *text) {
 		text->setFont(m_Font);
 		text->setFontResolution(30, 30);
-		// TODO unfortunately it seems that the text color cannot be overridden by the hud stateset, so
-		// to dim the hud we will have to modify all the text elements individually.
+		/**
+		 * @todo Unfortunately it seems that the text color cannot be overridden by the hud stateset, so to dim the hud we will have to modify all the text elements individually.
+		 */
 		text->setColor(m_Color);
 		text->setCharacterSize(m_Height);
 		text->setKerningType(osgText::KERNING_NONE);
@@ -184,7 +187,8 @@ private:
 };
 
 
-/** A vertical scale bar that serves as an aid for maintaining the optimal
+/** 
+ * A vertical scale bar that serves as an aid for maintaining the optimal
  *  angle of attack during landing approach.  This is a direction element
  *  aligned with the pitch ladder, positioned 13 degrees below the nose.
  *  The bar extends +/- 2 degrees.  When the flight path marker is within
@@ -418,8 +422,10 @@ public:
 
 	void update(osg::Vec3 horizon_body, osg::Vec3 horizon_right_body, double dt) {
 		m_Delay += dt;
-		// No need to do frequent updates when the horizon is in view.  Once the
-		// ghost horizon is enabled we update every frame.
+		/**
+		 * No need to do frequent updates when the horizon is in view.  Once the
+		 * ghost horizon is enabled we update every frame.
+		 */
 		if ((m_Delay > 0.25) || !isHidden()) {
 			horizon_body.normalize();
 			horizon_right_body.normalize();
@@ -427,14 +433,22 @@ public:
 			float dot_hrb = (horizon_right_body * m_CenterDir);
 			osg::Vec3 offset = (horizon_body*dot_hb + horizon_right_body*dot_hrb - m_Center);
 			if (offset.length() < m_Threshold) {
-				// If the real horizon is visible hide the ghost.
+				/**
+				 * if the real horizon is visible hide the ghost.
+				 */
 				show(false);
 			} else {
-				// Otherwise show and animate the ghost horizon.
+				/**
+				 * Otherwise show and animate the ghost horizon.
+				 */
 				show(true);
-				// Align with the horizon (same formula that the pitch ladder uses).
+				/**
+				 * Align with the horizon (same formula that the pitch ladder uses).
+				 */
 				float angle = -atan2(horizon_right_body.z(), horizon_right_body.x());
-				// Alignment isn't enought; need to know if the horizon is above or below the hud.
+				/**
+				 * Alignment isn't enough, we need to know if the horizon is above or below the hud.
+				 */
 				if (dot_hb * (m_CenterDir * (horizon_body ^ horizon_right_body)) < 0) angle += PI;
 				setOrientation(angle);
 				setDirection(m_Center + osg::Vec3(m_R * sin(angle), 0.0f, m_R * cos(angle)));
@@ -487,8 +501,9 @@ F16HUD::~F16HUD() { }
 
 void F16HUD::registerChannels(Bus *bus) {
 	m_HUD.setColor(osg::Vec4(m_Color.x(), m_Color.y(), m_Color.z(), 1.0));
-	// XXX slightly dangerous... need to be sure to set the channel to NULL in
-	// our dtor, and users need to check for a null hud pointer.
+	/**
+	 * @warning slightly dangerous... need to be sure to set the channel to NULL in our dtor, and users need to check for a null hud pointer.
+	 */
 	bus->registerLocalDataChannel<hud::HUD*>("HUD", &m_HUD);
 	m_HudPanel.registerChannels(bus);
 }
@@ -535,10 +550,13 @@ double F16HUD::onUpdate(double dt) {
 	Quat const &attitude = b_Attitude->value();
 	m_CueVelocity = b_Velocity->value();
 
-	// if velocity is too small, the hud symbols that are cued by V will jitter wildly.
-	// we fix V at the forward horizon in that case.  this appears to be what the real
-	// jet does.  we only do this on the ground; otherwise useful information would be
-	// lost in a severe stall.
+	/**
+	 * If velocity is too small, the hud symbols that are cued by V will jitter wildly.
+	 * We fix V at the forward horizon in that case.  this appears to be what the real
+	 * jet does.  We only do this on the ground; otherwise useful information would be
+	 * lost in a severe stall.
+	 */
+	// 
 	if (m_CueVelocity.length2() < 2500.0 && b_LeftMainLandingGearWOW->value()) {
 		m_CueVelocity = attitude.rotate(Vector3::YAXIS);  // forward vector in world coordinates
 		m_CueVelocity.z() = 0.0;
@@ -589,12 +607,15 @@ double F16HUD::onUpdate(double dt) {
 	}
 
 	if (gear_down) {
-		// on the ground at low aoa the aoa bracket is pegged to the fpm
+		/**
+		 * on the ground at low aoa the aoa bracket is pegged to the fpm
+		 */
 		if (b_LeftMainLandingGearWOW->value() && (aoa_degrees < 10.0)) {
 			m_AlphaFilter.update(0.0, dt);
 		} else {
-			// FIXME getCenterAngle should be an instance method, and m_LandingAngleOfAttackRange should
-			// be of type LandingAngleOfAttackRange.
+		  /**
+		   * @todo getCenterAngle should be an instance method, and m_LandingAngleOfAttackRange should be of type LandingAngleOfAttackRange.
+		   */
 			double da = b_Alpha->value() - LandingAngleOfAttackRange::getCenterAngle();
 			da = clampTo(da, toRadians(-9.0), toRadians(9.0));
 			m_AlphaFilter.update(da, dt);
@@ -609,7 +630,9 @@ double F16HUD::onUpdate(double dt) {
 		m_GlideSlopeBar->show(false);
 	}
 
-	// move the hud symbology vertically in response to motion of the fpm
+	/**
+	 * move the hud symbology vertically in response to motion of the fpm
+	 */
 	placeVerticalFrames();
 
 	m_AirspeedTape->show(m_ShowScales);
@@ -666,8 +689,9 @@ double F16HUD::onUpdate(double dt) {
 		m_AltitudeTape->setCaret(convert::m_ft(steerpoint.z()));
 
 		double distance = steerpoint_offset.length();
-		// TODO move these calculations to a navigation system; update sp cas less often but low pass
-		// filter it.
+		/**
+		 * @todo move these calculations to a navigation system; update sp cas less often but low pass filter it. 
+		 */
 		double time = active_steerpoint->time().getRelativeTime(CSPSim::theSim->getCurrentTime());
 		m_AirspeedTape->enableCaret(time > 0);
 		if (time > 0) {
@@ -683,7 +707,9 @@ double F16HUD::onUpdate(double dt) {
 	}
 
 	if (ILS_mode) {
-		// FIXME need ils model to generate this angle
+		/**
+		 * @todo need ils model to generate this angle
+		 */
 		double ils_steering_angle = -10;  /* radians, off scale */
 		m_HeadingTape->setCaret(osg::RadiansToDegrees(ils_steering_angle));
 		m_HeadingTape->enableCaret(true);
@@ -691,13 +717,15 @@ double F16HUD::onUpdate(double dt) {
 		m_HeadingTape->enableCaret(false);
 	}
 
-	// Flash at 3 Hz when enabled.
+	/** 
+	 * Flash at 3 Hz when enabled. 
+	 */
 	m_BreakX->show(b_AltitudeAdvisory.valid() && b_AltitudeAdvisory->value() && (static_cast<int>(m_ElapsedTime * 6.0) & 1));
 	if (b_PullupAnticipation.valid() && b_MasterMode->mode() == f16::AG) {
 		m_PullupAnticipationCue->update(b_PullupAnticipation->value(), velocity_body);
 	}
 
-	/* TODO
+	/** @todo
 	 * Davor "Bowman" Perkovac:
 	 * You can engage it when you press T-ILS, DCS down to move cursor to CMD STRG field on DED and press 0-Misc
 	 * to toggle it on/off. ILS signal must be present for it to work.
@@ -710,7 +738,9 @@ double F16HUD::onUpdate(double dt) {
 	 * where you need to fly to smootly follow (both horizontally and vertically) ILS glidepath.
 	 */
 
-	// update the numeric readouts at most 10 times per second to prevent thrashing
+	/**
+	 * update the numeric readouts at most 10 times per second to prevent thrashing
+	 */
 	m_ElapsedTime += dt;
 	if (m_ElapsedTime >= m_UpdateTime) {
 		m_UpdateTime = m_ElapsedTime + 0.1;
@@ -723,42 +753,55 @@ double F16HUD::onUpdate(double dt) {
 }
 
 void F16HUD::placeVerticalFrames() {
-	const float vertical_frame_fpm_offset = 0.051;  // offset from fpm when locked together
-	const float vertical_frame_top_position = 0.0;  // highest possible vertical frame position
-	const float vertical_frame_bottom_position = -0.04;  // lowest possible vertical frame position
-	const float heading_tape_top_position = 0.05;  // when at the top of the hud
-	const float heading_tape_vertical_offset = 0.030;  // when moving together
-	const float heading_tape_fpm_offset = 0.052f; // when moving below the fpm
+	const float vertical_frame_fpm_offset = 0.051;  /** offset from fpm when locked together */
+	const float vertical_frame_top_position = 0.0;  /** highest possible vertical frame position */
+	const float vertical_frame_bottom_position = -0.04;  /** lowest possible vertical frame position */
+	const float heading_tape_top_position = 0.05;  /** when at the top of the hud */
+	const float heading_tape_vertical_offset = 0.030;  /** when moving together */
+	const float heading_tape_fpm_offset = 0.052f;  /** when moving below the fpm */
 
-	// get fpm y coordinate in the gun cross frame.  the origin of the gun cross frame is near
-	// the top of the hud, while free elements like the fpm move with respect to the center of
-	// the hud.
+	// 
+	/** 
+	 * get fpm y coordinate in the gun cross frame.  the origin of the gun cross frame is near
+	 * the top of the hud, while free elements like the fpm move with respect to the center of
+	 * the hud. 
+	 */
+	// 
 	const float gun_cross_y = m_HUD.getForwardFrameOrigin().z();
 	const float fpm_y = m_FlightPathMarker->position().z() - gun_cross_y;
 	const bool gear_down = !b_GearHandleUp->value();
 
 	if (gear_down) {
-		// when the landing gear is down the heading tape, vertical tapes, and other symbology
-		// move vertically with the fpm.  the heading tape moves independently from the top of the
-		// hud down to the midpoint of the vertical tapes.  from there it moves with the vertical
-		// tapes and other symbology down to the base of the hud.  further downward motion of the
-		// fpm does not affect the symbology (i.e. the heading tape and altitude/airspeed readouts
-		// will not move off the bottom of the hud).  when the heading top is moving it is fixed
-		// just above the fpm.
-
-		// lock the position of the vertical tapes and other symbology to the fpm through part of
-		// it's range.
+		/**
+		 * When the landing gear is down the heading tape, vertical tapes, and other symbology
+		 * move vertically with the fpm.  the heading tape moves independently from the top of the
+		 * hud down to the midpoint of the vertical tapes.  from there it moves with the vertical
+		 * tapes and other symbology down to the base of the hud.  further downward motion of the
+		 * fpm does not affect the symbology (i.e. the heading tape and altitude/airspeed readouts
+		 * will not move off the bottom of the hud).  when the heading top is moving it is fixed
+		 * just above the fpm.
+		 */
+		
+		/**
+		 * lock the position of the vertical tapes and other symbology to the fpm through part of
+		 * it's range.
+		 */
 		float vertical_frame_y = std::max(vertical_frame_bottom_position, std::min(vertical_frame_top_position, fpm_y + vertical_frame_fpm_offset));
 		m_VerticalFrame->setPosition(0.0, vertical_frame_y);
 
-		// the fpm begins to pull the heading tape down when it is below the heading tape by the
-		// same distance as when the heading tape and vertical scale bars are moving together.
+		/**
+		 * the fpm begins to pull the heading tape down when it is below the heading tape by the
+		 * same distance as when the heading tape and vertical scale bars are moving together.
+		 */
 		float heading_tape_frame_y = std::max(vertical_frame_y + heading_tape_vertical_offset, std::min(heading_tape_top_position, fpm_y + heading_tape_vertical_offset + vertical_frame_fpm_offset));
 		m_HeadingTapeFrame->setPosition(0.0, heading_tape_frame_y);
 	} else {
-		// when the landing gear is up the vertical tapes and text are fixed, but the heading
-		// tape can move downward at high aoa to stay just below the fpm.
-		// TODO readjust the vertical frame elements to eliminate the -1 cm displacement
+		/**
+		 * When the landing gear is up the vertical tapes and text are fixed, but the heading
+		 * tape can move downward at high aoa to stay just below the fpm.
+		 * 
+		 * @todo readjust the vertical frame elements to eliminate the -1 cm displacement
+		 */
 		m_VerticalFrame->setPosition(0.0, vertical_frame_top_position - 0.01);
 		float heading_tape_frame_y = std::min(0.0f, fpm_y + heading_tape_fpm_offset);
 		m_HeadingTapeFrame->setPosition(0.0, heading_tape_frame_y);
@@ -766,7 +809,7 @@ void F16HUD::placeVerticalFrames() {
 }
 
 void F16HUD::updateSwitches() {
-	bool gear_down = !b_GearHandleUp->value();  // CAS forced when gear is down
+	bool gear_down = !b_GearHandleUp->value();  /** CAS forced when gear is down */
 	m_ShowVerticalVelocity = !b_ScalesSwitch || (b_ScalesSwitch->value() == "VV_VAH");
 	m_ShowScales = !b_ScalesSwitch || (b_ScalesSwitch->value() != "OFF") || gear_down;
 	m_ShowData = !b_DataSwitch || (b_DataSwitch->value() == "DATA");
@@ -834,7 +877,9 @@ void F16HUD::updateReadouts() {
 		m_Alow->setText(stringprintf("AL%5d", static_cast<int>(b_CaraAlow->value() + 0.5)));
 	}
 
-	// TODO use projection to compute geodesic distances and headings
+	/**
+	 * @todo use projection to compute geodesic distances and headings
+	 */
 	Ref<Steerpoint> active_steerpoint = b_NavigationSystem.valid() ? b_NavigationSystem->value()->activeSteerpoint() : 0;
 	if (active_steerpoint.valid()) {
 		Vector3 steerpoint = active_steerpoint->position();
@@ -980,7 +1025,9 @@ void F16HUD::addAirspeedTape() {
 	const float offset_y = -0.03;
 	m_AirspeedTape = new HUDTape(HUDTape::VERTICAL, 17, 0.002, -0.0025, offset_x, offset_y);
 	m_AirspeedTape->setValueScale(10.0 /*kts per tick*/);
-	// FIXME formatter should show "000" for speed < 50
+	/**
+	 * @bug formatter should show "000" for speed < 50
+	 */
 	m_AirspeedTape->addNumericLabels(5.0, 0.0, -0.0005, 4, new StandardFormatter("%02.0f"), m_StandardFont.get());
 	m_AirspeedTape->showNegativeLabels(false);
 	m_AirspeedTape->setLabelHidingWindow(offset_y - 0.0010, offset_y + 0.0010);
@@ -1013,8 +1060,10 @@ void F16HUD::addAltitudeTape() {
 	m_AltitudeTape->setValueScale(100.0 /*ft per tick*/);
 	m_AltitudeTape->addNumericLabels(5.0, 0.0, 0.0005, 4, new F16AltitudeFormatter(), m_StandardFont.get());
 	m_AltitudeTape->showNegativeLabels(false);
-	// the comma in the labels apparently enlarges the bbox significantly, so we have to
-	// use a much smaller (almost non-existent) hiding window than for the airspeed tape.
+	/**
+	 * the comma in the labels apparently enlarges the bbox significantly, so we have to
+	 * use a much smaller (almost non-existent) hiding window than for the airspeed tape.
+	 */
 	m_AltitudeTape->setLabelHidingWindow(offset_y - 0.0001, offset_y + 0.0001);
 	m_AltitudeTape->addCenterLine(0.005, 0.0005);
 	m_AltitudeTape->setCaretSymbol(m_CaretSymbol);
@@ -1105,7 +1154,7 @@ void F16HUD::addDEDReadout() {
 }
 
 void F16HUD::addPitchLadder() {
-	m_PitchLadder = new PitchLadder;  // TODO should take m_HUD in ctor to add bars
+	m_PitchLadder = new PitchLadder;  /** @todo should take m_HUD in ctor to add bars */
 
 	for (int i = -85/5; i < 90/5; ++i) {
 		char buffer[8];
@@ -1133,7 +1182,7 @@ void F16HUD::addPitchLadder() {
 			bar.drawLine(-0.56 * 0.015 - 0.005, 0.56 * 0.015 * slope, -0.72 * 0.015 - 0.005, 0.72 * 0.015 * slope);
 			bar.drawLine(-0.84 * 0.015 - 0.005, 0.84 * 0.015 * slope, -1.00 * 0.015 - 0.005, 1.00 * 0.015 * slope);
 		} else {
-			// horizon line
+			/** horizon line */
 			bar.drawLine(1.0, 0.000, 0.005, 0.000);
 			bar.drawLine(-1.0, 0.000, -0.005, 0.000);
 		}
@@ -1156,7 +1205,7 @@ void F16HUD::addPitchLadder() {
 		m_HUD.addFloatingElement(element);
 	}
 
-	{ // -2.5 degree glideslope bar
+	{ /** -2.5 degree glideslope bar */
 		DirectionElement *element = new DirectionElement;
 		SymbolMaker bar;
 		bar.beginDrawLines();
@@ -1175,8 +1224,7 @@ void F16HUD::addPitchLadder() {
 
 }
 
-// TODO move these calculations to a navigation system; update sp cas less often but low pass
-// filter it.
+/** @todo move these calculations to a navigation system; update sp cas less often but low pass filter it. */
 double F16HUD::getSpeedCaret(double ground_speed) const {
 	if (m_VelocityUnits == CAS) {
 		double altitude = b_Position->value().z();
@@ -1204,9 +1252,11 @@ void F16HUD::updateMasterMode() {
 	const bool newmode = (m_LastMasterMode != mode);
 	m_LastMasterMode = mode;
 
-	// initial mastermode hacking
-	// FIXME m_MasterMode should really be the HUD operating mode label, which
-	// is not the same as the master mode.
+	/**
+	 * initial mastermode hacking
+	 * 
+	 * @todo m_MasterMode should really be the HUD operating mode label, which is not the same as the master mode. 
+	 */
 	if (mode == f16::AA) {
 		if (newmode) {
 			m_MasterMode->setText("AA");

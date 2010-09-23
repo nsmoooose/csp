@@ -27,7 +27,7 @@
 #define __CSPSIM_F16_F16ENGINE_H__
 
 #include <csp/cspsim/Engine.h>
-#include <csp/cspsim/FuelManagementSystem.h>  // FIXME only need FuelManagementInterface
+#include <csp/cspsim/FuelManagementSystem.h>  /** @todo only need FuelManagementInterface */
 
 #include <csp/csplib/data/Real.h>
 
@@ -73,10 +73,10 @@ private:
 
 	// state variables
 	double m_Drive;
-	DataChannel<double>::RefT b_RPM;   // TODO export
+	DataChannel<double>::RefT b_RPM;   /** @todo export @code DataChannel<double>::RefT b_RPM; @endcode */
 	double m_StartRPM;
 	double m_CoreTemperature;
-	double m_ExhaustTemperature;   // TODO export
+	double m_ExhaustTemperature;   /** @todo export @code double m_ExhaustTemperature; @endcode */
 	DataChannel<double>::RefT b_FanTurbineInletTemperature;   // TODO export
 	double m_CoreTemperatureTarget;
 	double m_ExhaustTemperatureTarget;
@@ -88,9 +88,9 @@ private:
 	bool m_Afterburner;
 	bool m_AfterburnerFailure;
 	double m_ThrustSpecificFuelConsumption;
-	double m_FuelConsumption;   // TODO export
+	double m_FuelConsumption;   /** @todo export @code double m_FuelConsumption; @endcode */
 	double m_HotStartTemperature;
-	DataChannel<double>::RefT b_Nozzle;   // TODO export
+	DataChannel<double>::RefT b_Nozzle;   /** @todo export @code DataChannel<double>::RefT b_Nozzle; @endcode */
 	double m_FuelPressure;
 	double m_StartElapsedTime;
 	double m_HangTime;

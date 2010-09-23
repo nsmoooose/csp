@@ -20,6 +20,7 @@
 /**
  * @file f16/Constants.cpp
  *
+ * @todo Should modes like this be generalized in to XML files that configure the vehicle?
  **/
 
 #include <csp/cspsim/f16/Constants.h>

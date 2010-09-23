@@ -36,6 +36,8 @@ namespace csp {
  * Damage modifiers reflect the resistance of an object to
  * various types of weapons.
  *
+ * @todo add more modifiers if needed
+ * @todo depreciate m_SmallArms in favor of more specific small arms options.
  */
 class DamageModifier: public Object {
 public:
@@ -44,6 +46,32 @@ public:
 	char m_Penetrating;
 	char m_ArmorPiercing;
 	char m_SmallArms;
+	char m_HighExplosiveAntiTank;
+	char m_Sabot;
+	char m_SmallArmsSoftPoint;
+	char m_SmallArmsFullMetalJacket;
+	char m_SmallArmsArmorPiercing;
+	char m_SmallArmsExplosive;;
+	char m_SmallArmsHydroshock;
+	char m_GenericSmallArms;
+	char m_LessThanLethalBluntForce;
+	char m_LessThanLethalElectricity;
+	char m_LessThanLethalChemical;
+	char m_LessThanLethalSonic;
+	char m_GenericLethalChemical;
+	char m_Radiological;
+	char m_BluntImpact;
+	char m_PiercingImpact;
+	char m_Shockwave;
+	char m_Shrapnel;
+	char m_Biological;
+	char m_Electromagnetic;
+	char m_MechanicalFlooding;
+	char m_MaterialOverstress;
+	char m_Asphyxiation;
+	char m_Bleeding;
+	char m_Drowning;
+	char m_ElectricShock;
 	// etc
 	
 	CSP_DECLARE_STATIC_OBJECT(DamageModifier)

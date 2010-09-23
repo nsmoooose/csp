@@ -57,7 +57,7 @@ CSP_XML_END
 
 
 void SoundSample::postCreate() {
-	// TODO is m_Name really useful at all?
+	/** @TODO is m_Name really useful at all? */
 	if (m_Name.empty()) m_Name = ospath::basename(m_Filename.getSource());
 	m_State = new osgAL::SoundState(m_Name);
 	m_State->setLooping(m_Looping);
@@ -70,7 +70,7 @@ void SoundSample::postCreate() {
 	m_State->setMaxDistance(m_MaxDistance);
 	m_State->setRolloffFactor(m_RolloffFactor);
 	m_State->setPitch(m_Pitch);
-	// TODO soundcone seems to be broken --- at least i can't make sense of it.
+	/** @TODO soundcone seems to be broken --- at least i can't make sense of it. */
 	if (m_OuterGain < 1.0) { // && m_OuterAngle < 180.0 && m_OuterAngle >= m_InnerAngle) {
 		m_State->setSoundCone(m_InnerAngle, m_OuterAngle, m_OuterGain);
 	}
@@ -80,8 +80,8 @@ osgAL::SoundState *SoundSample::getSoundState() const {
 	if (!m_Sample) loadSample();
 	osgAL::SoundState *state = new osgAL::SoundState(m_Name);
 	*state = *m_State;
-	// for some reason, the ancient version (~2004) of osgal I have doesn't
-	// copy maxdistance correctly.
+	/** @bug for some reason, the ancient version (~2004) of osgal I have doesn't copy maxdistance correctly.
+	 */
 	state->setMaxDistance(m_State->getMaxDistance());
 	return state;
 }
@@ -96,7 +96,7 @@ void SoundSample::loadSample() const {
 	try
 	{
 		m_Sample = SoundFileLoader::load(m_Filename.getSource());
-		// TODO on failure, load a dummy sound
+		/** @TODO on failure, load a dummy sound */
 		m_State->setSample(m_Sample.get());	
 	}
 	catch (std::exception & e)

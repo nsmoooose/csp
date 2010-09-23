@@ -141,16 +141,18 @@ bool VirtualHID::onEvent(RawEvent::MouseButton const &event) {
 void VirtualHID::onUpdate(double dt) {
 	int iterations = 0;
 	if (!m_Object || !m_ActiveScript) return;
-	// wait out the delay until the next action should start
-	// strings of actions with delay = 0 will be executed in
-	// a single call of onUpdate().  a break after 100 actions
-	// occurs to prevent infinite loops from completely hanging
-	// the sim.
+	/**
+	 * wait out the delay until the next action should start
+	 * strings of actions with delay = 0 will be executed in
+	 * a single call of onUpdate().  a break after 100 actions
+	 * occurs to prevent infinite loops from completely hanging
+	 * the sim.
+	 */
 	m_ScriptTime += dt;
 	EventMapping::Action const *action = m_ActiveScript->getAction();
 	while (action->time <= m_ScriptTime && iterations < 100) {
 		const char *id = action->id.c_str();
-		// action time represents a relative delay instead of absolute
+		/** action time represents a relative delay instead of absolute */
 		m_ScriptTime = 0.0;
 		if (action->mode >= 0) {
 			setVirtualMode(action->mode);
@@ -163,7 +165,7 @@ void VirtualHID::onUpdate(double dt) {
 				std::cout << "VirtualHID::onUpdate: Missing HID interface for command '" << id << "'\n";
 			}
 		}
-		// advance, end, or loop the script
+		/** advance, end, or loop the script */
 		int loop = action->loop;
 		int stop = action->stop;
 		if (loop >= 0) {

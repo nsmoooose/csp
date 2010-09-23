@@ -42,23 +42,27 @@ namespace input {
 
 class InputInterface;
 
-/// An adapter class for binding InputInterface action events to window
-/// framework signals.
+/** An adapter class for binding InputInterface action events to window
+ * framework signals.
+ */
 class CSPSIM_EXPORT InputInterfaceWfAdapter: public Referenced {
 public:
-	/// The input interface to which to bind signals.  The input interface
-	/// instance must outlive the InputInterfaceWfAdapter.
+	/** The input interface to which to bind signals.  The input interface
+	 * instance must outlive the InputInterfaceWfAdapter.
+	 */
 	explicit InputInterfaceWfAdapter(InputInterface* inputInterface);
 	virtual ~InputInterfaceWfAdapter();
 
-	/// Get the signal associated with the specified action id, or NULL if no
-	/// signal has been registered via registerActionSignal.
+	/** Get the signal associated with the specified action id, or NULL if no
+	 * signal has been registered via registerActionSignal.
+	 */
 	virtual wf::Signal* getActionSignal(const std::string& id);
 
-	/// Get or create a signal associated with the specified action id.  The
-	/// signal will fire whenever the action event occurs.  The signal instance
-	/// lifetime is the same as the InputInterfaceWfAdapter instance that created
-	/// it.
+	/** Get or create a signal associated with the specified action id.  The
+	 * signal will fire whenever the action event occurs.  The signal instance
+	 * lifetime is the same as the InputInterfaceWfAdapter instance that created
+	 * it.
+	 */
 	virtual wf::Signal* registerActionSignal(const std::string& id);
 
 private:
@@ -66,7 +70,7 @@ private:
 	typedef std::map<std::string, Ref<ActionToSignalSlot> > ActionSignalMap;
 
 	ActionSignalMap* m_ActionSignals;
-	InputInterface* m_InputInterface;  // not owned
+	InputInterface* m_InputInterface;  /** not owned */
 };
 
 } // namespace input

@@ -22,19 +22,18 @@
  *
  **/
 
-/**************************************************************
- * TODO  jan 2003
- *
- * add joystick hat support
- * map loading / parsing
- * map caching
- * automatic map swapping based on player object type
- * rotary banding
- * axis calibration, detents, and non-linear corrections
- * finish the definition of the map scripting language
- * complete the python tool to convert map scripts to binary
- * add xml support to the python script tool
- *
+/**
+ * @TODO add joystick hat support
+ * @todo map loading / parsing
+ * @todo map caching
+ * @todo automatic map swapping based on player object type
+ * @todo rotary banding
+ * @todo axis calibration, detents, and non-linear corrections
+ * @todo finish the definition of the map scripting language
+ * @todo complete the python tool to convert map scripts to binary
+ * @todo add xml support to the python script tool
+ * @todo add TrackIR support
+ * @todo Force Feedback support.
  */
 
 #ifndef __CSPSIM_HID_H__

@@ -53,6 +53,8 @@ class SoundEffect;
  *
  *    .  Headset sounds, which are position-independent sounds that are only
  *       heard in internal views.
+ * 
+ * @todo consider converting OsgAL to osgAudio, which is a more recent, more supported, and more fully featured fork of osgAL.
  */
 class SoundModel: public Referenced {
 	typedef osg::ref_ptr<osgAL::SoundNode> SoundNode;

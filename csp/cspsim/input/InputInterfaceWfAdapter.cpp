@@ -29,9 +29,11 @@
 namespace csp {
 namespace input {
 
-// An adapter class for binding a wf::Signal to an InputInterface action.
-// This signal is owned by the adapter class, and fires whenever the action
-// is triggered by an external event.
+/**
+ * An adapter class for binding a wf::Signal to an InputInterface action.
+ * This signal is owned by the adapter class, and fires whenever the action 
+ * is triggered by an external event.
+ */
 class InputInterfaceWfAdapter::ActionToSignalSlot : public Referenced {
 public:
 	ActionToSignalSlot(const std::string& id, InputInterface* inputInterface) {
@@ -70,13 +72,13 @@ wf::Signal* InputInterfaceWfAdapter::getActionSignal(const std::string& id) {
 }
 
 wf::Signal* InputInterfaceWfAdapter::registerActionSignal(const std::string& id) {
-	// If there already is a action signal we return it.
+	/** If there already is a action signal we return it. */
 	wf::Signal* signal = getActionSignal(id);
 	if (signal != NULL) {
 		return signal;
 	}
 
-	// Otherwise we must insert a new one into our action map.
+/** Otherwise we must insert a new one into our action map. */
 	Ref<ActionToSignalSlot> actionToSignalSlot = new ActionToSignalSlot(id, m_InputInterface);
 	(*m_ActionSignals)[id] = actionToSignalSlot;
 	return actionToSignalSlot->getSignal();

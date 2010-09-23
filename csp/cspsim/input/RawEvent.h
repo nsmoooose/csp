@@ -69,7 +69,7 @@ namespace RawEvent {
 			DOUBLECLICK
 		};
 
-		// See csp/tools/hid/maps/mouse.map
+		/** See csp/tools/hid/maps/mouse.map */
 		enum WheelButtons {
 			WHEELUP   = 1<<3,
 			WHEELDOWN = 1<<4

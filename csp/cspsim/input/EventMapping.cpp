@@ -155,7 +155,7 @@ void EventMapping::parseMap(const char *line, EventMapping::Script &script) {
 		} else
 		if (type == 'A') {
 			if (script.size() != 1) return;
-			addJoystickAxisMap(device, id, Axis(script[0].id));  // TODO: add mode ?
+			addJoystickAxisMap(device, id, Axis(script[0].id));  /** @TODO: add mode ? */
 		}
 	} else
 	if (device_type == 'K') {

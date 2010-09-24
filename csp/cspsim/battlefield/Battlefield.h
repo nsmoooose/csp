@@ -106,7 +106,7 @@ public:
 	 *  criteria.  Repeated calls, passing the unit returned by the previous
 	 *  result, will cycle through all units of the specified type.
 	 *
-	 *  TODO implement a more robust query mechanism for both units and features.
+	 *  @TODO implement a more robust query mechanism for both units and features.
 	 *
 	 *  @param unit The current unit.
 	 *  @param human If >0, only return human-controlled objects; if zero
@@ -204,7 +204,7 @@ protected:
 
 	/** Wrapper for inserting dynamic objects into a quadtree index.
 	 *
-	 *  TODO
+	 *  @TODO
 	 *  Keep track of the aggregation bubble count for an object, which
 	 *  is the number aggregation bubbles projected by human-controlled vehicles
 	 *  that overlap the object's position.  If this count is greater than zero,

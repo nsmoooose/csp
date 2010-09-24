@@ -215,7 +215,7 @@ public:
 			assert(m_Channel->isShared());
 			if (m_Channel->isShared()) {
 				EnumLink &e = const_cast<EnumLink&>(m_Channel->value());
-				e.cycle(); // TODO push
+				e.cycle(); /** @TODO push */
 			}
 		} else {
 			if (m_BoolChannel.valid()) {
@@ -448,8 +448,7 @@ AnimationCallback *RotarySwitch::newCallback(osg::Node *node) const {
  *  an osg::Switch node to show/hide model parts.  Children of the specified
  *  node must have labels that match the tokens of the enumerated channel.
  *
- *  TODO Add a mapping from model node label to enumeration token to the xml
- *  interface.
+ *  @TODO Add a mapping from model node label to enumeration token to the XML interface.
  */
 class StateSwitch: public Animation {
 	class Callback;
@@ -1480,7 +1479,7 @@ public:
 		traverse(node, nv);
 	}
 
-	// TODO implement pick geodes
+	/** @TODO implement pick geodes */
 	virtual bool pick(int /*flags*/) {
 		if (m_EventChannels.size() == 1 && m_EventChannels[0].valid()) {
 			m_EventChannels[0]->signal();
@@ -1534,8 +1533,6 @@ AnimationCallback *AnimatedMomentarySwitch::newCallback(osg::Node *node) const {
 }
 
 
-/**
- */
 class DisplayScreen: public Animation {
 public:
 	CSP_DECLARE_OBJECT(DisplayScreen)

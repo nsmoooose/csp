@@ -20,7 +20,7 @@
 /**
  * @file ConditionsChannels.h
  *
- **/
+ */
 
 
 #ifndef __CSPSIM_CONDITIONS_CHANNELS_H__

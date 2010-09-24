@@ -25,7 +25,7 @@
  * declared in headers in other directories should be defined
  * elsewhere.
  *
- **/
+ */
 
 #include <csp/cspsim/ConditionsChannels.h>
 #include <csp/cspsim/ControlInputsChannels.h>

@@ -40,8 +40,7 @@
 namespace csp {
 
 /**
- * TODO
- *  signal handler for screen size and fov changes
+ * @TODO signal handler for screen size and fov changes
  */
 
 

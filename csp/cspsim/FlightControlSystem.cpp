@@ -43,9 +43,7 @@
 
 namespace csp {
 
-// FIXME circuits can create circular references.  need to add an "unlink"
-// function to zero all references, and call that for each node when the
-// fcs system is destroyed (otherwise we leak memory).
+/** @bug circuits can create circular references.  need to add an "unlink" function to zero all references, and call that for each node when the fcs system is destroyed (otherwise we leak memory). */
 
 //namespace fcsnode {
 
@@ -72,7 +70,7 @@ protected:
 		m_Input = map[m_InputID];
 		if (!m_Input) {
 			CSPLOG(ERROR, APP) << "Cannot find input channel for FCS junction node " << getID();
-			assert(0); // TODO make fatal
+			assert(0); /** @TODO make fatal */
 		}
 		assert(m_Input.valid()); }
 	double getInput(Timer const &dt) { return m_Input->step(dt) * m_Gain + m_Offset; }
@@ -102,11 +100,11 @@ protected:
 		m_InputB = map[m_InputIDB];
 		if (!m_InputA) {
 			CSPLOG(ERROR, APP) << "Cannot find input channel A for FCS Junction2 node " << getID();
-			assert(0); // TODO make fatal
+			assert(0); /** @TODO make fatal */
 		}
 		if (!m_InputB) {
 			CSPLOG(ERROR, APP) << "Cannot find input channel B for FCS Junction2 node " << getID();
-			assert(0); // TODO make fatal
+			assert(0); /** @TODO make fatal */
 		}
 	}
 	double getInputA(Timer const &dt) { return m_InputA->step(dt) * m_GainA + m_OffsetA; }
@@ -143,15 +141,15 @@ protected:
 		m_InputC = map[m_InputIDC];
 		if (!m_InputA) {
 			CSPLOG(ERROR, APP) << "Cannot find input channel A for FCS Junction3 node " << getID();
-			assert(0); // TODO make fatal
+			assert(0); /** TODO make fatal */
 		}
 		if (!m_InputB) {
 			CSPLOG(ERROR, APP) << "Cannot find input channel B for FCS Junction3 node " << getID();
-			assert(0); // TODO make fatal
+			assert(0); /** TODO make fatal */
 		}
 		if (!m_InputC) {
 			CSPLOG(ERROR, APP) << "Cannot find input channel C for FCS Junction3 node " << getID();
-			assert(0); // TODO make fatal
+			assert(0); /** TODO make fatal */
 		}
 	}
 	double getInputA(Timer const &dt) { return m_InputA->step(dt) * m_GainA + m_OffsetA; }
@@ -264,7 +262,8 @@ CSP_XML_BEGIN(LeadFilter)
 CSP_XML_END
 
 
-/* A node for integrating an input channel with respect to time.  Equivalent
+/**
+ * A node for integrating an input channel with respect to time.  Equivalent
  * to a laplace transform H(s) = 1 / s.
  */
 class Integrator: public Junction1 {

@@ -147,7 +147,7 @@ void FlightDynamics::updateAirflow(double h) {
 	m_QBar = 0.5 * m_Airspeed * m_Airspeed * b_Density->value();
 }
 
-// TODO use drag index values?
+/** @TODO use drag index values? */
 void FlightDynamics::addExternalDrag() {
 	if (b_StoresDynamics.valid()) {
 		double Cd = !m_DragProfile ? 1.0 : m_DragProfile->drag(b_Mach->value(), m_Alpha);

@@ -141,8 +141,10 @@ public:
 
 	bool isNearGround();
 
-	// The object name holds an identifier string for in-game display.  It is not
-	// intended for unique object identification. (e.g. "Callsign", Cowboy11, T-62)
+	/**
+	 * The object name holds an identifier string for in-game display.  It is not
+	 * intended for unique object identification. (e.g. "Callsign", Cowboy11, T-62)
+	 */
 	void setObjectName(const std::string name) { m_ObjectName = name; }
 	std::string getObjectName() const { return m_ObjectName; }
 
@@ -165,8 +167,10 @@ public:
 
 	virtual void setDataRecorder(DataRecorder *recorder);
 
-	// Allow the reference mass and inertia to be overridden.  This is used by StoresManagementSystem when
-	// creating a objects for detached stores (for example, a half empty fuel tank).
+	/**
+	 * Allow the reference mass and inertia to be overridden.  This is used by StoresManagementSystem when
+	 * creating a objects for detached stores (for example, a half empty fuel tank).
+	 */
 	void setReferenceMass(double mass);
 	void setReferenceInertia(Matrix3 const &inertia);
 	void setReferenceCgOffset(Vector3 const &offset);
@@ -195,11 +199,11 @@ protected:
 
 	// dynamic properties
 
-	// previous cm position in global coordinates
+	/** previous cm position in global coordinates */
 	Vector3 m_PrevPosition;
 
 	DataChannel<Vector3>::RefT b_ModelPosition;
-	DataChannel<Vector3>::RefT b_Position;  // cm position
+	DataChannel<Vector3>::RefT b_Position;  /** cm position */
 	DataChannel<double>::RefT b_Mass;
 	DataChannel<double>::RefT b_GroundZ;
 	DataChannel<Vector3>::RefT b_GroundN;

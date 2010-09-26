@@ -88,16 +88,16 @@ protected:
 	DataChannel<StoresDynamics>::CRefT b_StoresDynamics;
 
 	// export channels
-	DataChannel<double>::RefT b_Alpha;    // current angle of attack
-	DataChannel<double>::RefT b_Beta;     // side slip angle
+	DataChannel<double>::RefT b_Alpha;    /** current angle of attack */
+	DataChannel<double>::RefT b_Beta;     /** side slip angle */
 	DataChannel<double>::RefT b_Airspeed;
-	DataChannel<double>::RefT b_QBar;     // dynamic pressure
-	DataChannel<double>::RefT b_G;  // normal acceleration in G (includes gravity and rotation)
-	DataChannel<double>::RefT b_LateralG; // lateral acceleration in G (includes gravity and rotation)
+	DataChannel<double>::RefT b_QBar;     /** dynamic pressure */
+	DataChannel<double>::RefT b_G;  /** normal acceleration in G (includes gravity and rotation) */
+	DataChannel<double>::RefT b_LateralG; /** lateral acceleration in G (includes gravity and rotation) */
 
 	double m_Beta;
 	double m_Alpha;
-	double m_Alpha0;     // discrete AOA
+	double m_Alpha0;     /** discrete AOA */
 	double m_AlphaDot;
 	double m_Airspeed;
 	double m_QBar;

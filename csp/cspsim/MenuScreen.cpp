@@ -38,7 +38,7 @@ MenuScreen::~MenuScreen() {
 void MenuScreen::onInit() {
 	m_Serializer = new wf::Serialization();
 
-	// We need some kindo of keyboard binding for this screen.
+	// We need some kind of keyboard binding for this screen.
 	m_Interface = new input::VirtualHID();
 	m_Interface->bindObject(this);
 }

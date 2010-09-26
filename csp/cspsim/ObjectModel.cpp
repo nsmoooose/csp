@@ -164,7 +164,7 @@ class ModelProcessor: public osg::NodeVisitor {
 	}
 
 	AnimationBinding* installAnimation(osg::Node& node, const Ref<Animation>& anim) const {
-		// Flag node as dynamic to enable the callback.
+		/** Flag node as dynamic to enable the callback. */
 		node.setDataVariance(osg::Object::DYNAMIC);
 		AnimationBinding* animation_binding = new AnimationBinding(anim.get());
 		node.setUserData(animation_binding);
@@ -206,10 +206,12 @@ public:
 			const std::string name = TrimString(label.substr(5));
 			AnimationBinding* animation_binding = 0;
 
-			// Extract the animation and node names from the node label, which is of
-			// one of the following two forms:
-			//   ANIM: animation_name : node_name
-			//   ANIM: node_name
+			/**
+			 * Extract the animation and node names from the node label, which is of
+			 * one of the following two forms:
+			 *   ANIM: animation_name : node_name
+			 *   ANIM: node_name
+			 */
 			std::string animation_name;
 			std::string node_name;
 			breakNameInComponents(name, animation_name, node_name);
@@ -225,12 +227,14 @@ public:
 				animation_binding = installAnimation(node, i->second);
 			}
 
-			// Second pass: if this node has an animation_name, check to see if it has a binding.
-			// Otherwise, check to see if there may be two different bindings for node_name.  Note
-			// that we do not allow two node_name bindings if animation_name is set.
+			/** 
+			 * Second pass: if this node has an animation_name, check to see if it has a binding.
+			 * Otherwise, check to see if there may be two different bindings for node_name.  Note
+			 * that we do not allow two node_name bindings if animation_name is set.
+			 */
 			bool found_second_animation = false;
 			if (!animation_name.empty()) {
-				// animation_name is set; check for an explicit binding.
+				/** animation_name is set; check for an explicit binding. */
 				const Key animation_id = animation_name;
 				i = m_AnimationsMap.find(animation_id);
 				if (i != i_end) {
@@ -242,7 +246,7 @@ public:
 					}
 				}
 			} else {
-				// only node_name is set, check if it has a second binding.
+				/** only node_name is set, check if it has a second binding. */
 				if (found_first_animation) {
 					i = std::find_if(++i, m_AnimationsMap.end(), KeyToCompare(node_id));
 					found_second_animation = (i != i_end);
@@ -311,7 +315,7 @@ public:
 		osg::StateSet::TextureAttributeList& attr = set->getTextureAttributeList();
 		osg::StateSet::TextureAttributeList::iterator i;
 		for (i = attr.begin(); i != attr.end(); i++) {
-			// TODO don't we need to consider other members within the TEXTURE group?
+			/** @TODO don't we need to consider other members within the TEXTURE group? */
 			osg::StateSet::AttributeList::iterator tex = i->find(osg::StateAttribute::TypeMemberPair(osg::StateAttribute::TEXTURE, 0));
 			if (tex != i->end()) {
 				osg::Texture* texture = dynamic_cast<osg::Texture*>(tex->second.first.get());
@@ -427,11 +431,13 @@ void ObjectModel::loadModel() {
 
 	if (m_PolygonOffset != 0.0) {
 		osg::StateSet *ss = m_Model->getOrCreateStateSet();
-		// polygon offset is used for co-planar overlays, like the runway.  there should
-		// be no need to write to the depth buffer since it will already be set by the
-		// base layer (the terrain is drawn in bin -3) and setting a nearer value (due to
-		// polygon offset) can mask 3d objects on top of this object when the distance to
-		// the camera is large.
+		/**
+		 * polygon offset is used for co-planar overlays, like the runway.  there should
+		 * be no need to write to the depth buffer since it will already be set by the
+		 * base layer (the terrain is drawn in bin -3) and setting a nearer value (due to
+		 * polygon offset) can mask 3d objects on top of this object when the distance to
+		 * the camera is large.
+		 */
 		ss->setAttributeAndModes(new osg::PolygonOffset(-5, m_PolygonOffset), osg::StateAttribute::ON);
 		ss->setAttributeAndModes(new osg::Depth(osg::Depth::LEQUAL, 0.0, 1.0, false), osg::StateAttribute::ON);
 		ss->setRenderBinDetails(-2, "RenderBin");
@@ -450,20 +456,20 @@ void ObjectModel::loadModel() {
 		ss->setAttributeAndModes(cf, osg::StateAttribute::ON);
 	}
 
-	// apply various operations to the model scene graph.
+	/** apply various operations to the model scene graph. */
 	processModel();
 
-	// normalize and orthogonalize the model axes.
+	/** normalize and orthogonalize the model axes. */
 	assert(m_Axis0.length() > 0.0);
 	m_Axis0.normalize();
 	m_Axis1 = m_Axis1 - m_Axis0 * dot(m_Axis0, m_Axis1);
 	assert(m_Axis1.length() > 0.0);
 	m_Axis1.normalize();
 
-	// insert an adjustment matrix at the head of the model only if necessary.
+	/** insert an adjustment matrix at the head of the model only if necessary. */
 	if (m_Axis0 != Vector3::XAXIS || m_Axis1 != Vector3::YAXIS || m_Scale != 1.0 || m_Offset != Vector3::ZERO) {
 		CSPLOG(WARNING, OBJECT) << "Adding model adjustment matrix";
-		// find third axis and make the transform matrix
+		/** find third axis and make the transform matrix */
 		Vector3 axis2 = m_Axis0 ^ m_Axis1;
 		Matrix3 o(m_Axis0.x(), m_Axis0.y(), m_Axis0.z(),
 		                   m_Axis1.x(), m_Axis1.y(), m_Axis1.z(),
@@ -499,8 +505,10 @@ void ObjectModel::loadModel() {
 	osg::BoundingSphere s = m_Model->getBound();
 	m_BoundingSphereRadius = s.radius();
 
-	// Set the default shader to visibly mark nodes that don't have a
-	// shader specified.
+	/** 
+	 * Set the default shader to visibly mark nodes that don't have a
+	 * shader specified.
+	 */
 	Shader::instance()->applyShader("red", m_Model->getOrCreateStateSet());
 #if 0
 	// set the default shader
@@ -523,9 +531,8 @@ void ObjectModel::loadModel() {
 	CSPLOG(DEBUG, OBJECT) << "Adding debug markers";
 	addDebugMarkers();
 
-	/*
-	// FIXME Segfaults when creating objects using the CSP theater layout tool.
-	// Need to figure out why, but for now just disable.
+	/**
+	 * @bug Segfaults when creating objects using the CSP theater layout tool. Need to figure out why, but for now just disable.
 	
 	osg::ref_ptr<osg::State> state = new osg::State;
 
@@ -538,30 +545,34 @@ void ObjectModel::loadModel() {
 	m_DebugMarkers->accept(ov);
 	*/
 
-	// XXX: there is a really weird bug on vs with the optimizer:
-	// 1) it rarely appears in the release built (never when called from this exact line)
-	// 2) it appears in the debug built systematically on the second times the
-	//    program is run but only if a few seconds separate the 2 runs. Wait
-	//    for 5 minutes or so (or run another process) and the bug will not occur
-	//    (thread related?).
-	// 3) I haven't noticed the bug in the debug built when the optimizer is run in this
-	//    line (like for the release built) but called it 10 lines above and it segfaults.
-	// 4) The bug only occurs when CSP is run from command line or clicking CSPSim.py;
-	//    it never occurs when running csp in debug mode from the ide.
-	// 5) I'm unable to trace it :)
-
-	//CSPLOG(DEBUG, OBJECT) << "LoadModel: Optimizer run";
-	//osgUtil::Optimizer opt;
-	//opt.optimize(m_Model.get());
-	//CSPLOG(DEBUG, OBJECT) << "LoadModel: Optimizer done";
-
+	/** @bug XXX: there is a really weird bug on vs with the optimizer:
+	 * 1) it rarely appears in the release built (never when called from this exact line)
+	 * 2) it appears in the debug built systematically on the second times the
+	 *    program is run but only if a few seconds separate the 2 runs. Wait
+	 *    for 5 minutes or so (or run another process) and the bug will not occur
+	 *    (thread related?).
+	 * 3) I haven't noticed the bug in the debug built when the optimizer is run in this
+	 *    line (like for the release built) but called it 10 lines above and it segfaults.
+	 * 4) The bug only occurs when CSP is run from command line or clicking CSPSim.py;
+	 *    it never occurs when running csp in debug mode from the ide.
+	 * 5) I'm unable to trace it :)
+	 * 
+	 *	@code
+	 *	CSPLOG(DEBUG, OBJECT) << "LoadModel: Optimizer run";
+	 *	osgUtil::Optimizer opt;
+	 *	opt.optimize(m_Model.get());
+	 *	CSPLOG(DEBUG, OBJECT) << "LoadModel: Optimizer done";
+	 *	@endcode
+	 */
 	if (!m_GroundShadowPath.asString().empty()) {
 		CSPLOG(DEBUG, OBJECT) << "Loading ground shadow " << m_GroundShadowPath.asString();
 		m_GroundShadow = osgDB::readNodeFile(m_GroundShadowPath.asString());
 		if (m_GroundShadow.valid()) {
-			// ground shadows are drawn after the terrain and flat objects, but before
-			// normal objects.  they do not modify the depth buffer, and are offset away
-			// from the ground to prevent z fighting.
+			/**
+			 * ground shadows are drawn after the terrain and flat objects, but before
+			 * normal objects.  they do not modify the depth buffer, and are offset away
+			 * from the ground to prevent z fighting.
+			 */
 			osg::StateSet *ss = m_GroundShadow->getOrCreateStateSet();
 			ss->setRenderBinDetails(-1, "RenderBin");
 			ss->setAttributeAndModes(new osg::Depth(osg::Depth::LEQUAL, 0.0, 1.0, false), osg::StateAttribute::ON);
@@ -578,7 +589,7 @@ void ObjectModel::loadModel() {
 void ObjectModel::processModel() {
 	CSPLOG(INFO, OBJECT) << "Processing model";
 
-	static const double us = 1e+6;  // report microseconds
+	static const double us = 1e+6;  /** report microseconds */
 	double smooth_time = 0.0;
 	double filter_time = 0.0;
 	double animation_time = 0.0;
@@ -587,28 +598,28 @@ void ObjectModel::processModel() {
 	Timer timer;
 	timer.start();
 
-	// if requested, apply a smoothing visitor to the model.
+	/** if requested, apply a smoothing visitor to the model. */
 	if (m_Smooth) {
 		osgUtil::SmoothingVisitor sv;
 		m_Model->accept(sv);
 		smooth_time = timer.incremental() * us;
 	}
 
-	// if requested, apply a trilinear filter to all model textures.
+	/** if requested, apply a trilinear filter to all model textures. */
 	if (m_Filter) {
 		TrilinearFilterVisitor tfv(m_FilterValue);
 		m_Model->accept(tfv);
 		filter_time = timer.incremental() * us;
 	}
 
-	// add animation hooks to user data field of animation transform nodes.
+	/** add animation hooks to user data field of animation transform nodes.*/
 	ModelProcessor processor;
 	processor.setAnimations(&m_Animations);
 	m_Model->accept(processor);
 	generateStationMasks(processor.getInteriorMap());
 	animation_time = timer.incremental() * us;
 
-	// add vertex and fragment shaders to statesets named "FX:{shader}"
+	/** add vertex and fragment shaders to statesets named "FX:{shader}" */
 	Shader::Visitor sv;
 	m_Model->accept(sv);
 	shader_time = timer.incremental() * us;
@@ -635,7 +646,7 @@ void ObjectModel::addDebugMarkers() {
 		diamond->addDrawable(makeDiamond(m_DebugPoints[i], 0.05, osg::Vec4(1, 1, 0, 0.5)));
 		m_DebugMarkers->addChild(diamond);
 	}
-	// set debug markers not visible by default
+	/** set debug markers not visible by default */
 	showDebugMarkers(false);
 	m_DebugMarkers->addChild(m_ContactMarkers.get());
 }
@@ -700,17 +711,19 @@ public:
 	virtual osg::Node* operator() (const osg::Node* node) const {
 		assert(node);
 		osg::Referenced const *data = node->getUserData();
-		// user data bound to nodes is used to modify the copy operations
+		/** user data bound to nodes is used to modify the copy operations */
 		if (data) {
 			AnimationBinding const *binding = dynamic_cast<AnimationBinding const *>(data);
-			// nodes with animation bindings need a callback
+			/** nodes with animation bindings need a callback */
 			if (binding) {
-				assert(node->asGroup());  // can't attach ANIM label to leaf nodes!
+				assert(node->asGroup());  /** can't attach ANIM label to leaf nodes! */
 				osg::Node *new_node = 0;
-				// The switch insert logic (see cloneSwitch) requires a somewhat ugly hack to
-				// bind the animation callback to the right node.  Note that needsSwitch()
-				// only refers to the primary callback; nested switch callbacks aren't currently
-				// supported.
+				/**
+				 * The switch insert logic (see cloneSwitch) requires a somewhat ugly hack to
+				 * bind the animation callback to the right node.  Note that needsSwitch()
+				 *  only refers to the primary callback; nested switch callbacks aren't currently
+				 * supported.
+				 */
 				osg::Node *bind_node = 0;
 				if (binding->needsSwitch()) {
 					osg::Switch *select_node = 0;;
@@ -746,17 +759,17 @@ public:
 			if (node->getName() == "__PITS__") {
 				CSPLOG(INFO, OBJECT) << "Copying __PITS__ node";
 				assert(!m_PitSwitch.valid());
-				// clone the __PITS__ node as a switch and save a reference.
+				/** clone the __PITS__ node as a switch and save a reference.*/
 				osg::Switch *select_node = 0;
 				osg::Node *new_node = cloneSwitch(node, select_node);
 				m_PitSwitch = select_node;
 				return new_node;
 			} else {
-				// clone groups
+				/** clone groups */
 				return dynamic_cast<osg::Node*>(node->clone(*this));
 			}
 		} else {
-			// copy other leaf nodes by reference
+			/** copy other leaf nodes by reference */
 			return const_cast<osg::Node*>(node);
 		}
 	}
@@ -770,11 +783,13 @@ private:
 	mutable osg::ref_ptr<osg::Switch> m_PitSwitch;
 	osg::CopyOp m_ShallowCopy;
 
-	// Dance for cloning switch nodes that may be masquerading as transforms.
-	// Most modelling software does not export osg::Switch; the standard grouping
-	// node is a MatrixTransform.  To create a switch in that case we need to
-	// move the groups children to a new Switch node and add the Switch to the
-	// transform.
+	/**
+	 * Dance for cloning switch nodes that may be masquerading as transforms.
+	 * Most modelling software does not export osg::Switch; the standard grouping
+	 * node is a MatrixTransform.  To create a switch in that case we need to
+	 * move the groups children to a new Switch node and add the Switch to the
+	 * transform.
+	 */
 	osg::Node *cloneSwitch(const osg::Node *node, osg::Switch* &select_node) const {
 		osg::Group *clone = 0;
 		const osg::Group *group = node->asGroup();

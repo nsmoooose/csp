@@ -91,14 +91,18 @@
 
 namespace csp {
 
-// For network testing on a single box it's convenient to disable rendering on
-// one of the sims.  Using a global here just because we're lazy.
+/**
+ * For network testing on a single box it's convenient to disable rendering on
+ * one of the sims.  Using a global here just because we're lazy.
+ */
 bool g_DisableRender = false;
 
-// Minimum frame rate required for stability.  Whenever the actual frame rate
-// drops below this value, the game time will run slower than wall time.  If
-// this happens, the game time will catch up whenever the frame rate exceeds
-// this value.
+/**
+ * Minimum frame rate required for stability.  Whenever the actual frame rate
+ * drops below this value, the game time will run slower than wall time.  If
+ * this happens, the game time will catch up whenever the frame rate exceeds
+ * this value.
+ */
 #define CSP_FRAME_RATE_LIMIT 20.0
 
 // Uncomment this line to teststability (physics models, ai, fcs, etc) at
@@ -158,13 +162,15 @@ config::Configuration* CSPSim::getConfiguration() {
 }
 
 void CSPSim::setConfiguration(config::Configuration* config) {
-	// TODO Check if the new configuration can be set correctly. Things to check:
-	// * Can the new screen resolution be set according my graphics driver?
+	/** 
+	 * @TODO Check if the new configuration can be set correctly.
+	 * @todo Check if the new screen resolution be set according my graphics driver?
+	 */
 
-	// Apply the configuration. First we start with assigning the configuration object.
+	/** Apply the configuration. First we start with assigning the configuration object. */
 	m_Configuration = config;
 
-	// Set all display settings.
+	/** Set all display settings. */
 	Ref<config::Display> display = config->getDisplay();
 	ScreenSettings screenSettings = getScreenSettings();
 	screenSettings.width = display->getWidth();
@@ -591,7 +597,7 @@ void CSPSim::unloadSimulation() {
 }
 
 void CSPSim::unloadSimulationNow() {
-	// TODO Do we need to unload in a specific order?
+	/** @TODO Do we need to unload in a specific order? */
 	setActiveObject(NULL);
 	m_Battlefield = NULL;
 	m_Scene = NULL;

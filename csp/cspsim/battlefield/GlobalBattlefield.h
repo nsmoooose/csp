@@ -43,8 +43,7 @@ namespace csp {
 
 class Server;
 
-// TODO when a peer is dropped, remove its objects from the battlefield.
-// (eventually they should be reassigned to an agent server.)
+/** @TODO when a peer is dropped, remove its objects from the battlefield. (eventually they should be reassigned to an agent server.) */
 
 
 class UnitContact: public SimObject {
@@ -228,7 +227,7 @@ private:
 	}
 
 
-	// FIXME sends one message for each existing player (should be batched into one, or a few, messages).
+	/** @bug sends one message for each existing player (should be batched into one, or a few, messages). */
 	void announceExistingPlayers(const PeerId new_id) {
 		ClientData &new_client_data = m_ClientData[new_id];
 		for (ClientDataMap::const_iterator iter = m_ClientData.begin(); iter != m_ClientData.end(); ++iter) {
@@ -274,7 +273,7 @@ private:
 		CSPLOG(INFO, BATTLEFIELD) << "join request from " << peer_info->getNode();
 		CSPLOG(INFO, BATTLEFIELD) << "      internal ip " << NetworkNode::ipToString(internal_ip_addr);
 
-		// basic sanity checking on ip addresses
+		/** basic sanity checking on ip addresses */
 		if (NetworkNode::isRoutable(internal_ip_addr) && (internal_ip_addr != inbound_ip_addr)) {
 			CSPLOG(ERROR, BATTLEFIELD) << "join rejected: internal ip routable, but does not match external ip";
 			response->set_details("internal ip routable, but does not match external ip");
@@ -294,10 +293,12 @@ private:
 			return;
 		}
 
-		// the correct "external" ip for remote clients is the ip the packets come from.  for clients
-		// on the same lan, use the server's "external" ip address.  this simplifies the configuration,
-		// since only the server needs to specify an external ip address; the clients can just bind to
-		// their local interfaces and the server will decide which ip to use when introducing two peers.
+		/**
+		 * the correct "external" ip for remote clients is the ip the packets come from.  for clients
+		 * on the same lan, use the server's "external" ip address.  this simplifies the configuration,
+		 * since only the server needs to specify an external ip address; the clients can just bind to
+		 * their local interfaces and the server will decide which ip to use when introducing two peers.
+		 */
 		uint32 external_ip_addr = NetworkNode::isRoutable(inbound_ip_addr) ? inbound_ip_addr : m_NetworkServer->getExternalNode().getIp();
 
 		ClientData &data = m_ClientData[id];
@@ -349,8 +350,10 @@ private:
 		UnitWrapper *wrapper = findUnitWrapper(unit_id);
 		if (wrapper) {
 			CSPLOG(ERROR, BATTLEFIELD) << "request to register existing unit " << unit_id << " for " << owner << " (already owned by " << wrapper->owner() << ")";
-			// wrapper != null could be a client side bug or a duplicate message that wasn't filtered.
-			// either is bad enough that we want to fail (in debug mode).
+			/**
+			 * wrapper != null could be a client side bug or a duplicate message that wasn't filtered.
+			 * either is bad enough that we want to fail (in debug mode).
+			 */
 			assert(0);
 			return;
 		}
@@ -399,9 +402,11 @@ private:
 	void recomputeUpdates(UnitWrapper *wrapper, GridPoint const old_position, GridPoint const new_position) {
 		CSPLOG(INFO, BATTLEFIELD) << "recomputing updates for " << *(wrapper->unit());
 
-		// find all nearby objects.  the query range will be chosen to be somewhat larger than the most common
-		// radar range (say 60 nm for A-A).
-		// TODO longer range radars will be handled in a separate step.
+		/**
+		 * find all nearby objects.  the query range will be chosen to be somewhat larger than the most common
+		 * radar range (say 60 nm for A-A).
+		 * @TODO longer range radars will be handled in a separate step.
+		 */
 		int search_radius = 60000; // XXX temporary hack
 		std::vector<QuadTreeChild*> units;
 		bool unit_exit = isNullPoint(new_position);
@@ -416,8 +421,8 @@ private:
 
 		CSPLOG(INFO, BATTLEFIELD) << "found " << units.size() << " nearby units";
 
-		std::set<int> position_hints;  // set of peers that need hints about A's motion
-		int radius = 40000;  // XXX temporary hack
+		std::set<int> position_hints;  /** set of peers that need hints about A's motion */
+		int radius = 40000;  /** @warning temporary hack */
 
 		for (unsigned i = 0; i < units.size(); ++i) {
 			UnitWrapper *other_wrapper = static_cast<UnitWrapper*>(units[i]);
@@ -427,7 +432,7 @@ private:
 			int new_separation = static_cast<int>(sqrt(globalDistance2(other_wrapper->point(), new_position)));
 			CSPLOG(INFO, BATTLEFIELD) << "separations (old, new): " << old_separation << ", " << new_separation;
 
-			// consider updates from other_wrapper to wrapper
+			/** consider updates from other_wrapper to wrapper */
 			if (new_separation > radius) {
 				if (old_separation <= radius) {
 					decrementUpdateCount(other_wrapper, wrapper);
@@ -442,7 +447,7 @@ private:
 				}
 			}
 
-			// consider updates from wrapper to other_wrapper
+			/** consider updates from wrapper to other_wrapper */
 			if (new_separation > other_radius) {
 				if (old_separation <= other_radius) {
 					decrementUpdateCount(wrapper, other_wrapper);
@@ -455,7 +460,7 @@ private:
 		}
 
 		for (std::set<int>::const_iterator iter = position_hints.begin(); iter != position_hints.end(); ++iter) {
-			// TODO send position update for wrapper to client *iter.
+			/** @TODO send position update for wrapper to client *iter. */
 		}
 
 	}
@@ -464,9 +469,11 @@ private:
 		ContactWrapper *cfrom = static_cast<ContactWrapper*>(from);
 		CSPLOG(DEBUG, BATTLEFIELD) << "INCREMENT: " << *(from->unit()) << " -> " << *(to->unit());
 		if (cfrom->incrementCount(to->owner())) {
-			// if the units are owned by the same client we still reference count
-			// but we don't send an update.  both units will already be present in
-			// the client's local battlefield.
+			/**
+			 * if the units are owned by the same client we still reference count
+			 * but we don't send an update.  both units will already be present in
+			 * the client's local battlefield.
+			 */
 			if (from->owner() != to->owner()) {
 				CSPLOG(INFO, BATTLEFIELD) << "sending add unit " << from->unit()->id() << " to client " << to->owner();
 				{  // tell OWNER[to] to expect updates from OWNER[from]
@@ -493,9 +500,11 @@ private:
 		ContactWrapper *cfrom = static_cast<ContactWrapper*>(from);
 		CSPLOG(DEBUG, BATTLEFIELD) << "DECREMENT: " << *(from->unit()) << " -> " << *(to->unit());
 		if (cfrom->decrementCount(to->owner())) {
-			// if the units are owned by the same client we still reference count
-			// but we don't send an update.  removal and notification of local units
-			// has already been done in the client's battlefield.
+			/**
+			 * if the units are owned by the same client we still reference count
+			 * but we don't send an update.  removal and notification of local units
+			 * has already been done in the client's battlefield.
+			 */
 			if (from->owner() != to->owner()) {
 				CSPLOG(INFO, BATTLEFIELD) << "sending remove unit " << from->unit()->id() << " to client " << to->owner();
 				{

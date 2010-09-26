@@ -69,7 +69,7 @@ void Battlefield::_removeUnit(UnitWrapper *wrapper) {
 	const ObjectId id = wrapper->id();
 	CSPLOG(DEBUG, BATTLEFIELD) << "removing unit " << id;
 
-	// TODO send messages?
+	/** @TODO send messages? */
 
 	// first find the unit
 	assert(!(wrapper->unit().valid() && wrapper->unit()->isStatic()));
@@ -161,19 +161,19 @@ void Battlefield::initializeGridCoordinates(int size, int hysteresis) {
 	m_Hysteresis = static_cast<GridCoordinate>(hysteresis * m_GlobalToGridScale);
 }
 
-// TODO make the quadtree parameters configurable, or at least tailored to the
-// theater.
+/** @TODO make the quadtree parameters configurable, or at least tailored to the theater. */
 Battlefield::Battlefield():
 	m_LocalUnitsSignature(0),
 	m_DynamicIndex(new QuadTree(16, 20)),
 	m_StaticIndex(new QuadTree(16, 20)),
 	m_MotionIndex(new QuadTree(10, 4))
 {
-	// TODO will want to tune the grid size to roughly match the terrain
-	// size.  otherwise we end up with useless branches at the top of the
-	// quadtrees, although these incur very little overhead.  Battlefield
-	// should not have to know about either Theater or TerrainObject.
-	// for now, just set the grid size to 4000 km with 2 km hysteris
+	/** @TODO will want to tune the grid size to roughly match the terrain size.  
+	 * otherwise we end up with useless branches at the top of the
+	 * quadtrees, although these incur very little overhead.  Battlefield
+	 * should not have to know about either Theater or TerrainObject.
+	 * for now, just set the grid size to 4000 km with 2 km hysteris
+	 */
 	initializeGridCoordinates(4000000, 2000);
 }
 
@@ -265,17 +265,16 @@ Battlefield::GridRegion Battlefield::makeGridRegionEnclosingCircle(GridCoordinat
 
 void Battlefield::setHumanUnit(UnitWrapper *wrapper, bool human) {
 	assert(wrapper->unit().valid());
-	// TODO update the index server and/or clients (will be done by subclasses
-	// overriding this method)
+	/** @TODO update the index server and/or clients (will be done by subclasses overriding this method) */
 	if (human) {
 		m_HumanUnits.push_back(wrapper);
 		wrapper->unit()->setHuman();
-		// update the aggregation by pretending a human unit was added from the battlefield.
+		/** update the aggregation by pretending a human unit was added from the battlefield. */
 		CSPLOG(DEBUG, BATTLEFIELD) << "setting " << *(wrapper->unit()) << " to human";
 		// XXX XXX updateAggregationHuman(wrapper, GridPoint(0,0), wrapper->point());
 	} else {
 		removeFromHumanUnits(wrapper);
-		// update the aggregation by pretending a human unit was removed from the battlefield.
+		/** update the aggregation by pretending a human unit was removed from the battlefield. */
 		CSPLOG(DEBUG, BATTLEFIELD) << "setting " << *(wrapper->unit()) << " to agent";
 		// XXX XXX updateAggregationHuman(wrapper, wrapper->point(), GridPoint(0,0));
 		wrapper->unit()->setAgent();

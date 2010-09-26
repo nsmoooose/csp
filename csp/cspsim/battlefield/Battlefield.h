@@ -19,7 +19,9 @@
 
 /**
  * @file Battlefield.h
- *
+ * 
+ * @todo move unitupdateproxy and associated code to localbattlefield.  this may require subclassing unitwrapper in localbattlefield.
+ * @todo slow unit refresh for nearby objects; adjust update rates
  **/
 
 #ifndef __CSPSIM_BATTLEFIELD_BATTLEFIELD_H__
@@ -39,12 +41,6 @@
 
 namespace csp {
 
-// TODO
-//  move unitupdateproxy and associated code to localbattlefield.  this may require
-//  subclassing unitwrapper in localbattlefield.
-//
-//  slow unit refresh for nearby objects; adjust update rates
-//
 
 class Vector3;
 
@@ -204,7 +200,7 @@ protected:
 
 	/** Wrapper for inserting dynamic objects into a quadtree index.
 	 *
-	 *  @TODO
+	 *  @TODO Keep track of the aggregation bubble count for an object,
 	 *  Keep track of the aggregation bubble count for an object, which
 	 *  is the number aggregation bubbles projected by human-controlled vehicles
 	 *  that overlap the object's position.  If this count is greater than zero,
@@ -504,22 +500,26 @@ private:
 	 */
 	void initializeGridCoordinates(int size, int hysteresis);
 
-	// Hysteresis is the number of grid units that an object must move
-	// before its grid coordinates are updated.  Grid coordinate changes
-	// affect object aggregation/deaggregation, scene management, and
-	// index server updates, all of which are spatially coarse grained
-	// operations and tend to incur significant overhead.  Thus the
-	// hysteresis should be set to be relatively high (e.g. 2000 m would
-	// be reasonable for an aircraft).
-	//
-	// TODO Currently all objects use a single hysteresis value, but it
-	// may be worth tailoring the value to the maximum speed of each
-	// vehicle type (e.g. F-16 vs AH-64) or category (air/mud).  Another
-	// option is to use a small value (say 100 m) for all objects but
-	// limit the rate at which updates based on grid coordinates can
-	// occur.  This would have the advantage of providing finer
-	// granularity for potentially fast-moving objects that happen to be
-	// moving slowly or not at all.
+	/**
+	 * Hysteresis is the number of grid units that an object must move
+	 * before its grid coordinates are updated.  Grid coordinate changes
+	 * affect object aggregation/deaggregation, scene management, and
+	 * index server updates, all of which are spatially coarse grained
+	 * operations and tend to incur significant overhead.  Thus the
+	 * hysteresis should be set to be relatively high (e.g. 2000 m would
+	 * be reasonable for an aircraft).
+	 * 
+	 * TODO Currently all objects use a single hysteresis value, but it
+	 * may be worth tailoring the value to the maximum speed of each
+	 * vehicle type (e.g. F-16 vs AH-64) or category (air/mud).  Another
+	 * option is to use a small value (say 100 m) for all objects but
+	 * limit the rate at which updates based on grid coordinates can
+	 * occur.  This would have the advantage of providing finer
+	 * granularity for potentially fast-moving objects that happen to be
+	 * moving slowly or not at all.
+	 * 
+	 * @todo find an effective hysteresis method for both slow and fast moving objects.
+	 */
 	double m_Hysteresis;
 
 	/// An index of all static features by object id.

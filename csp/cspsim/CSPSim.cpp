@@ -244,11 +244,13 @@ void CSPSim::setActiveObject(Ref<DynamicObject> object) {
 
 	if (object == m_ActiveObject) return;
 	if (m_ActiveObject.valid()) {
-		// The new battlefield code no longer supports this interface.  It could be
-		// reimplemented for local objects, although we probably need a better long
-		// term solution for vehicle allocation.  It's also a bit tricky since the
-		// aggregation bubbles are determined by human-controlled vehicles.
-		// XXX XXX m_Battlefield->setHuman(m_ActiveObject->id(), false);
+		/**
+		 * The new battlefield code no longer supports this interface.  It could be
+		 * reimplemented for local objects, although we probably need a better long
+		 * term solution for vehicle allocation.  It's also a bit tricky since the
+		 * aggregation bubbles are determined by human-controlled vehicles.
+		 * XXX XXX @code m_Battlefield->setHuman(m_ActiveObject->id(), false); @endcode
+		 */
 	}
 	m_ActiveObject = object;
 	if (m_CurrentScreen.valid()) {
@@ -258,11 +260,12 @@ void CSPSim::setActiveObject(Ref<DynamicObject> object) {
 		}
 	}
 	if (m_ActiveObject.valid()) {
-		// The new battlefield code no longer supports this interface.  It could be
-		// reimplemented for local objects, although we probably need a better long
-		// term solution for vehicle allocation.  It's also a bit tricky since the
-		// aggregation bubbles are determined by human-controlled vehicles.
-		// XXX XXX m_Battlefield->setHuman(m_ActiveObject->id(), true);
+		/** The new battlefield code no longer supports this interface.  It could be
+		 * reimplemented for local objects, although we probably need a better long
+		 * term solution for vehicle allocation.  It's also a bit tricky since the
+		 * aggregation bubbles are determined by human-controlled vehicles.
+		 * XXX XXX @code m_Battlefield->setHuman(m_ActiveObject->id(), true); @endcode
+		 */
 		hasht classhash = m_ActiveObject->getPath();
 		CSPLOG(DEBUG, APP) << "Getting input interface map for " << classhash.str();
 		Ref<input::EventMapping> map = m_InterfaceMaps->getMap(classhash);
@@ -319,15 +322,18 @@ void CSPSim::init() {
 		std::string shader_path = ospath::join(getDataPath(), "shaders");
 		Shader::instance()->setShaderPath(shader_path);
 
-		// setup paths for window framework. This is needed for it to
-		// find xml files describing the user interface and other graphical
-		// elements.
+		/** setup paths for window framework. This is needed for it to
+		 * find xml files describing the user interface and other graphical
+		 * elements.
+		 */
 		setWfResourceLocator();
 
 		const ScreenSettings & screenSettings = getScreenSettings();
 
-		// This is the unified SDLViewer that shall render all the
-		// the scenes.
+		/**
+		 * This is the unified SDLViewer that shall render all the
+		 * the scenes.
+		 */
 		m_Viewer = new SDLViewer();
 		if ( !m_Viewer->setUpWindow("CSPSim", screenSettings) ) {
 			::exit(1);  // Should be an exception
@@ -335,7 +341,7 @@ void CSPSim::init() {
 
 		m_Clean = false;
 
-		// load all interface maps and create a virtual hid for the active object
+		/** load all interface maps and create a virtual hid for the active object */
 		CSPLOG(DEBUG, APP) << "Initializing input event maps";
 		m_InterfaceMaps = new input::EventMapIndex();
 		m_InterfaceMaps->loadAllMaps();
@@ -348,19 +354,23 @@ void CSPSim::init() {
 		CSPLOG(DEBUG, APP) << "Initializing sound file loader";
 		SoundFileLoader::init();
 
-		// This is the root node that holds the entire scene.
+		/** This is the root node that holds the entire scene. */
 		osg::ref_ptr<osg::Group> rootNode = new osg::Group();
 		m_Viewer->setSceneData(rootNode.get());
 
-		// Add a Virtual Scene node. The purpose of this node is to hold
-		// all the cameras managed by VirtualScene. This node must be the
-		// first child of rootNode because it clear the buffer.
+		/**
+		 * Add a Virtual Scene node. The purpose of this node is to hold
+		 * all the cameras managed by VirtualScene. This node must be the
+		 * first child of rootNode because it clear the buffer.
+		 */
 		m_VirtualSceneGroup = new osg::Group;
 		rootNode->addChild(m_VirtualSceneGroup.get());
 		
-		// Add a window manager node. The purpose of this node is to hold
-		// all windows. By removing this node you simply removes all user
-		// interfaces.
+		/**
+		 * Add a window manager node. The purpose of this node is to hold
+		 * all windows. By removing this node you simply removes all user
+		 * interfaces.
+		 */
 		osg::ref_ptr<csp::wf::WindowManagerViewerNode> windowManagerNode = new csp::wf::WindowManagerViewerNode(screenSettings.width, screenSettings.height);
 		m_WindowManager = windowManagerNode->getWindowManager();
 		rootNode->addChild(windowManagerNode.get());
@@ -389,13 +399,13 @@ void CSPSim::cleanup() {
 
 	StoresDatabase::getInstance().reset();
 
-	// release cached objects.  this must be done before the sound engine is shut
-	// down to prevent errors when deleting cached sound samples.
+	/**
+	 * release cached objects.  this must be done before the sound engine is shut
+	 * down to prevent errors when deleting cached sound samples.
+	 */
 	m_DataManager = 0;
 	
-	// note: shutdown hangs under some conditions when using openal 0.0.7 (due to
-	// a race condition in _alLockMixerPause when calling alcMakeContextCurrent(NULL)).
-	// if you experience problems here, try upgrading openal.
+	/** @warning shutdown hangs under some conditions when using openal 0.0.7 (due to a race condition in _alLockMixerPause when calling alcMakeContextCurrent(NULL)). if you experience problems here, try upgrading openal. */
 	SoundEngine::getInstance().shutdown();
 
 	// Release OSG Viewer
@@ -455,8 +465,7 @@ void CSPSim::loadSimulation() {
 		::exit(1);
 	}
 
-	// XXX the first call of these routines typically takes a few seconds.
-	// calling them here avoids a time jump at the start of the simloop.
+	/** @warning XXX the first call of these routines typically takes a few seconds. calling them here avoids a time jump at the start of the simloop. */
 	if (m_CurrentScreen.valid()) {
 		m_CurrentScreen->onUpdate(0.01);
 		m_Viewer->frame();
@@ -476,9 +485,11 @@ void CSPSim::loadSimulation() {
 	m_Terrain->setScreenSizeHint(screenSettings.width, screenSettings.height);
 	m_Terrain->activate();
 
-	// configure the atmosphere for the theater location
-	// this affects mean temperatures, and should not need
-	// to be updated for motion within a given theater.
+	/**
+	 * configure the atmosphere for the theater location
+	 * this affects mean temperatures, and should not need
+	 * to be updated for motion within a given theater.
+	 */
 	double lat = m_Terrain->getCenter().latitude();
 	double lon = m_Terrain->getCenter().longitude();
 	m_Atmosphere->setPosition(lat, lon);
@@ -500,8 +511,10 @@ void CSPSim::loadSimulation() {
 		m_Viewer->frame();
 	}
 
-	// get view parameters from configuration file.  ultimately there should
-	// be an in-game ui for this and probably a separate config file.
+	/**
+	 * get view parameters from configuration file.  ultimately there should
+	 * be an in-game ui for this and probably a separate config file.
+	 */
 	bool wireframe = g_Config.getBool("View", "Wireframe", false, true);
 	m_Scene->setWireframeMode(wireframe);
 	int view_distance = g_Config.getInt("View", "ViewDistance", 35000, true);
@@ -530,7 +543,7 @@ void CSPSim::loadSimulation() {
 		m_Viewer->frame();
 	}
 
-	// create the networking layer
+	/** create the networking layer */
 	if (g_Config.getBool("Networking", "UseNetworking", false, true)) {
 		CSPLOG(DEBUG, APP) << "Initializing network layer";
 		std::string default_ip = NetworkNode().getIpString();
@@ -562,7 +575,7 @@ void CSPSim::loadSimulation() {
 				m_NetworkClient->processAndWait(0.01, 0.01, 0.1);
 			}
 			if (!m_Battlefield->isConnectionActive()) {
-				// connection failed, go back to local mode
+				/** connection failed, go back to local mode */
 				m_Battlefield->setNetworkClient(0);
 			}
 		}
@@ -578,12 +591,14 @@ void CSPSim::loadSimulation() {
 
 	CSPLOG(DEBUG, APP) << "Initializing gamescreen";
 
-	// Following variables should be set before calling GameScreen.init()
-	// because they are used in GameScreen initialization process
+	/**
+	 * Following variables should be set before calling GameScreen.init()
+	 * because they are used in GameScreen initialization process
+	 */
 
-	m_Paused = false;  // enable/disable pause at startup
+	m_Paused = false;  /** enable/disable pause at startup */
 
-	// create and initialize screens
+	/** create and initialize screens */
 	Ref<GameScreen> gameScreen = new GameScreen(screenSettings.width, screenSettings.height);
 	gameScreen->onInit();
 
@@ -630,16 +645,18 @@ void CSPSim::displayMenuScreen() {
 	changeScreen(menuScreen.get());
 }
 
-// Main Game loop
+/** Main Game loop */
 void CSPSim::run() {
 	CSPLOG(INFO, APP) << "Entering main simulation loop";
 	try {
 		while ( !m_Finished && !m_Viewer->done() ) {
-			// The current screen may change during the execution of the
-			// main game loop. We must ensure that the current screen is
-			// not lost during processing of input (mouse, keyboard) or
-			// onUpdate. We store a local reference to the current screen to
-			// use...
+			/**
+			 * The current screen may change during the execution of the
+			 * main game loop. We must ensure that the current screen is
+			 * not lost during processing of input (mouse, keyboard) or
+			 * onUpdate. We store a local reference to the current screen to
+			 * use...
+			 */
 			Ref<BaseScreen> currentScreen = m_CurrentScreen;
 
 			if (m_NetworkClient.valid()) {
@@ -658,9 +675,11 @@ void CSPSim::run() {
 
 			PROF1(_simloop, 30);
 
-			// Check if someone has requested that the simulation should be
-			// unloaded. This usually means that the user wants to go back to
-			// the main menu.
+			/**
+			 * Check if someone has requested that the simulation should be
+			 * unloaded. This usually means that the user wants to go back to
+			 * the main menu.
+			 */
 			if(m_UnloadSimulationRequested) {
 				unloadSimulationNow();
 				m_UnloadSimulationRequested = false;
@@ -697,11 +716,13 @@ void CSPSim::setCurrentTime(SimDate const &date) {
 	m_Atmosphere->reset();	
 }
 
-// update time from the current frame update and the previous one.
-// the timestep for updates is restricted to 1 second max.  greater
-// delays will accumulate in _timeLag to be made up in subsequent
-// frames.  this prevents long delays from destabilizing the update
-// computations.
+/**
+ * update time from the current frame update and the previous one.
+ * the timestep for updates is restricted to 1 second max.  greater
+ * delays will accumulate in _timeLag to be made up in subsequent
+ * frames.  this prevents long delays from destabilizing the update
+ * computations.
+ */
 void CSPSim::updateTime() {
 	m_FrameTime = m_CurrentTime.update();
 	m_ElapsedTime += m_FrameTime;

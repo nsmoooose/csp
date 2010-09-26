@@ -14,7 +14,7 @@ namespace csp
 namespace layout
 {
 
-osgDB::ReaderWriter::ReadResult ReaderWriterTiledMapServiceOverview::readNode(const std::string& file, const osgDB::ReaderWriter::Options* opt) const
+osgDB::ReaderWriter::ReadResult ReaderWriterTiledMapServiceOverview::readNode(const std::string& file, const osgDB::ReaderWriter::Options* /*opt*/) const
 {
 	std::string ext = osgDB::getLowerCaseFileExtension( file );
 	if ( !acceptsExtension(ext) ) return ReadResult::FILE_NOT_HANDLED;

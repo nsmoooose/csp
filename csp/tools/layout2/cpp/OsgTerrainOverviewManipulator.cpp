@@ -19,7 +19,7 @@ OsgTerrainOverviewManipulator::~OsgTerrainOverviewManipulator()
 {
 }
 
-void OsgTerrainOverviewManipulator::setByMatrix(const osg::Matrixd& matrix)
+void OsgTerrainOverviewManipulator::setByMatrix(const osg::Matrixd& /* matrix */)
 {
 }
 
@@ -27,16 +27,16 @@ void OsgTerrainOverviewManipulator::computeHomePosition()
 {
 }
 
-void OsgTerrainOverviewManipulator::home(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& us)
+void OsgTerrainOverviewManipulator::home(const osgGA::GUIEventAdapter& /*ea*/, osgGA::GUIActionAdapter& /*us*/)
 {
 }
 
-void OsgTerrainOverviewManipulator::init(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& us)
+void OsgTerrainOverviewManipulator::init(const osgGA::GUIEventAdapter& /*ea*/, osgGA::GUIActionAdapter& /*us*/)
 {
 	computeMatrix();
 }
 
-bool OsgTerrainOverviewManipulator::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& us)
+bool OsgTerrainOverviewManipulator::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& /*us*/)
 {
 	switch ( ea.getEventType() )
 	{
@@ -55,6 +55,8 @@ bool OsgTerrainOverviewManipulator::handle(const osgGA::GUIEventAdapter& ea, osg
 					zoomIn( ea );
 					return true;
 				}
+				default:
+					return false;
 			}
 
 			break;
@@ -126,8 +128,9 @@ bool OsgTerrainOverviewManipulator::handle(const osgGA::GUIEventAdapter& ea, osg
 
 			break;
 		}
+		default:
+			return false;
 	}
-
 	return false;
 }
 

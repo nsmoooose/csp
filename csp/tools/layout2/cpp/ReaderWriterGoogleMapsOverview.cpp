@@ -35,7 +35,8 @@ class ReaderWriterGoogleMapsOverview : public ReaderWriterTiledMapServiceOvervie
 			fileName = ossfileName.str();
 
 			static unsigned int serverId = 0;
-			serverId = ++serverId % 4;
+			serverId++;
+			serverId %= 4;
 
 			const unsigned int version = 41;
 

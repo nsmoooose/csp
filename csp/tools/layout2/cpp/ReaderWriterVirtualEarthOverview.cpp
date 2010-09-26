@@ -71,9 +71,10 @@ class ReaderWriterVirtualEarthOverview : public ReaderWriterTiledMapServiceOverv
 			fileName = ossfileName.str();
 
 			static unsigned int serverId = 0;
-			serverId = ++serverId % 4;
+			serverId++;
+			serverId %= 4;
 
-			const unsigned int version = 41;
+			/* const unsigned int version = 41; */
 
 			std::ostringstream ossurl;
 			ossurl	<< "http://ecn.t" << serverId << ".tiles.virtualearth.net/tiles/"

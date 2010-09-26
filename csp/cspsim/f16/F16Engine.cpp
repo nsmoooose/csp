@@ -307,7 +307,7 @@ void F16Engine::updatePrestart(double dt) {
 		} // else hung start
 	}
 	m_StartElapsedTime += dt;
-	if (rpm >= m_IdleRPM || rpm >= m_StartRPM && getThrottle() > 0.0) {
+	if (rpm >= m_IdleRPM || (rpm >= m_StartRPM && getThrottle() > 0.0)) {
 		if (b_FanTurbineInletTemperature->value() >= m_MinFTITIgnition) {
 			m_Status = STATUS_RUNNING;
 		}

@@ -51,7 +51,7 @@ public:
 	char m_SmallArmsSoftPoint;
 	char m_SmallArmsFullMetalJacket;
 	char m_SmallArmsArmorPiercing;
-	char m_SmallArmsExplosive;;
+	char m_SmallArmsExplosive;
 	char m_SmallArmsHydroshock;
 	char m_GenericSmallArms;
 	char m_LessThanLethalBluntForce;

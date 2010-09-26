@@ -35,7 +35,7 @@ Battlefield::Unit Battlefield::getNextUnit(Unit const &unit, int human, int loca
 			if (++scan == m_UnitMap.end()) scan = m_UnitMap.begin();
 			if (scan == iter) break;
 			Unit u = scan->second->unit();
-			if ((human < 0) || ((u->isHuman() == (human > 0))) && ((local < 0) || (u->isLocal() == (local > 0))) /* && category... */) return u;
+			if ((human < 0) || ((u->isHuman() == (human > 0)) && ((local < 0) || (u->isLocal() == (local > 0)))) /* && category... */) return u;
 		}
 	}
 	return 0;

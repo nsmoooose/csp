@@ -83,6 +83,8 @@ bool SDLEventHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionA
 					input::RawEvent::MouseButton mouseButtonEvent(input::RawEvent::MouseButton::PRESSED, input::RawEvent::MouseButton::WHEELDOWN, ea.getButtonMask(), ea.getModKeyMask(), ea.getX(), y, m_drag);
 					return onEvent(mouseButtonEvent);
 				}
+				default:
+					return false;
 			}
 		}
 
@@ -99,9 +101,10 @@ bool SDLEventHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionA
 			input::HID::translate(keyboardEvent);
 			return onEvent(keyboardEvent);
 		}
-	}
 
-	return false;
+		default:
+			return false;
+	}
 }
 
 bool SDLEventHandler::handleMouseMotion(const osgGA::GUIEventAdapter& ea)

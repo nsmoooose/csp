@@ -27,7 +27,7 @@ void CarEngineDynamics::registerChannels(Bus*) {
 void CarEngineDynamics::importChannels(Bus*) {
 }
 
-void computeForceAndMoment(double) {
+void CarEngineDynamics::computeForceAndMoment(double) {
 }
 
 }

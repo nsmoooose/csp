@@ -7,6 +7,7 @@ CSP_XML_BEGIN(CarEngine)
 CSP_XML_END
 
 CSP_XML_BEGIN(CarEngineDynamics)
+CSP_DEF("engine", m_Engine, true)
 CSP_XML_END
 
 CarEngine::CarEngine() {

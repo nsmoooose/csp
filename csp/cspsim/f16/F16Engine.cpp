@@ -47,12 +47,10 @@ CSP_XML_BEGIN(F16Engine)
 	CSP_DEF("abnormal_start_chance", m_AbnormalStartChance, false)
 	CSP_DEF("hot_delta", m_HotDelta, false)
 	CSP_DEF("overheat", m_Overheat, false)
-	CSP_DEF("idle_rpm", m_IdleRPM, false)
 	CSP_DEF("afterburner_rpm", m_AfterburnerRPM, false)
 	CSP_DEF("afterburner_delay", m_AfterburnerDelay, false)
 	CSP_DEF("afterburner_min_rpm", m_AfterburnerMinRPM, false)
 	CSP_DEF("afterburner_cutoff_rpm", m_AfterburnerCutoffRPM, false)
-	CSP_DEF("idle_fuel_consumption", m_IdleFuelConsumption, false)
 	CSP_DEF("min_ftit_ignition", m_MinFTITIgnition, false)
 	CSP_DEF("nozzle_idle_factor", m_NozzleIdleFactor, false)
 	CSP_DEF("nozzle_base", m_NozzleBase, false)
@@ -70,7 +68,6 @@ CSP_XML_END
 F16Engine::F16Engine():
 	m_Status(STATUS_OFF),
 	m_Drive(0.0),
-	m_StartRPM(0.0),
 	m_CoreTemperature(20.0),
 	m_ExhaustTemperature(20.0),
 	m_CoreTemperatureTarget(20.0),
@@ -188,15 +185,14 @@ void F16Engine::jumpStart() {
 }
 
 void F16Engine::registerChannels(Bus* bus) {
-	Engine::registerChannels(bus);
+	AircraftEngine::registerChannels(bus);
 	b_FuelFlow = bus->registerLocalDataChannel<double>("Engine.FuelFlow", 0.0);
-	b_RPM = bus->registerLocalDataChannel<double>("Engine.RPM", 0.0);
 	b_FanTurbineInletTemperature = bus->registerLocalDataChannel<double>("Engine.FTIT", 20.0);
 	b_Nozzle = bus->registerLocalDataChannel<double>("Engine.Nozzle", 1.0);
 }
 
 void F16Engine::importChannels(Bus* bus) {
-	Engine::importChannels(bus);
+	AircraftEngine::importChannels(bus);
 	b_FuelManagementSystem = bus->getChannel("FuelManagementSystem");
 	jumpStart();
 }

@@ -28,7 +28,8 @@ public:
 
 	virtual void computeForceAndMoment(double x);
 
-private:
+protected:
+	Link<CarEngine> m_Engine;
 };
 
 }

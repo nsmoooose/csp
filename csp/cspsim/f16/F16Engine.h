@@ -73,8 +73,6 @@ private:
 
 	// state variables
 	double m_Drive;
-	DataChannel<double>::RefT b_RPM;   /** @todo export code DataChannel<double>::RefT b_RPM; */
-	double m_StartRPM;
 	double m_CoreTemperature;
 	double m_ExhaustTemperature;   /** @todo export code double m_ExhaustTemperature; */
 	DataChannel<double>::RefT b_FanTurbineInletTemperature;   /** @TODO export */
@@ -119,12 +117,10 @@ private:
 	Real m_AbnormalStartChance;
 	Real m_HotDelta;
 	Real m_Overheat;
-	Real m_IdleRPM;
 	Real m_AfterburnerRPM;
 	Real m_AfterburnerDelay;
 	Real m_AfterburnerMinRPM;
 	Real m_AfterburnerCutoffRPM;
-	Real m_IdleFuelConsumption;
 	Real m_MinFTITIgnition;
 	Real m_NozzleIdleFactor;
 	Real m_NozzleBase;

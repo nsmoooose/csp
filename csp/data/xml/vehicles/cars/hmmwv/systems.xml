@@ -1,0 +1,11 @@
+<?xml version="1.0" standalone="no"?>
+<Object class="SystemsModel">
+  <Object class="PhysicsModel" name="physics_model">
+	<List name="subsystems">
+	  <Object class="CarEngineDynamics">
+		<Object class="CarEngine" name="engine">
+		</Object>
+	  </Object>
+	</List>
+  </Object>
+</Object>

@@ -1,0 +1,164 @@
+Length 	4,84 m
+Width 	2,18 m
+Height 	1,87 m
+Weight 	2340 kg
+engine  6.5 litre turbocharged diesel
+        142 kW
+road speed 113 km/h
+fuel capacity 95l
+
+
+
+http://www.fas.org/man/dod-101/sys/land/m998.htm
+
+High Mobility Multipurpose Wheeled Vehicle (HMMWV) (M998 Truck)
+
+    The High Mobility Multi-purpose Wheeled Vehicle (HMMWV) is the replacement vehicle for the M151 series jeeps. The HMMWV's mission is to provide a light tactical vehicle for command and control, special purpose shelter carriers, and special purpose weapons platforms throughout all areas of the modern battlefield. It is supported using the current logistics and maintenance structure established for Army wheeled vehicles. The HMMWV is equipped with a high performance diesel engine, automatic transmission and four wheel drive that is air transportable and droppable from a variety of aircraft. The HMMWV can be equipped with a self-recovery winch capable of up to 6000 pound 1:1 ratio line pull capacity and can support payloads from 2,500 - 4,400 pounds depending on the model. The HMMWV is produced in several configurations to support weapons systems; command and control systems; field ambulances; and ammunition, troop and general cargo transport.
+
+    LTV HMMWV M998-series multipurpose wheeled vehicle variants include:
+
+        * M998 cargo/troop carrier without winch
+        * M1038 cargo/troop carrier with winch
+        * M966 TOW missile carrier, basic armor, without winch
+        * M1036 TOW missile carrier, basic armor, with winch
+        * M1045 TOW missile carrier, supplemental armor, without winch
+        * M1046 TOW missile carrier, supplemental armor, with winch
+        * M1025 armament carrier, basic armor, without winch
+        * M1026 armament carrier, basic armor, with winch
+        * M1043 armament carrier, supplemental armor, without winch
+        * M1044 armament carrier, supplemental armor, with winch
+        * M996 mini-ambulance, 2-litter, basic armor
+        * M997 maxi-ambulance, 4-litter, basic armor
+        * M1035 soft-top ambulance, 2-litter
+        * M1037 S-250 shelter carrier, without winch
+        * M1042 S-250 shelter carrier, with winch
+        * M1069 tractor for M119 105-mm light gun
+
+    ARMY BODY STYLE 	LATEST MODEL-NO 	LINE ITEM NUMBER 	NSN
+    CARGO/UTILITY 	M99A1 	T61494 	2320-01-371-9577
+    ARMAMENT CARRIER 	M1025A2 	T92242 	2320-01-380-8233
+    4 LITTER AMBULANCE 	M997A2 	T38844 	2310-01-380-8225
+    HEAVY VARIANT UTIL 	M1097A2 	T07679 	2320-01-380-8604
+    UP-ARMOR HMMWV 	XM1114 	Z62630 	2320-01-413-3739
+    EXPANDED CAPACITY 	XM1113 	Z62562 	2320-01-412-0143
+
+    The HMMWV is the world standard in light military trucks. It is lightweight, high performance, four wheel drive, air transportable & droppable, land mobility system. The family includes utility/cargo, shelter carrier, armament carrier, ambulance, TOW missile carrier and scout-reconnaissance configuration. Payload varies by body style ranging from 1920 lbs on the 4 litter ambulance to 5300 lbs on limited availability Expanded Capacity variant, but is generally in the 5/4T range. A basic armor package is standard on the Armament and TOW missile carrier models. A more heavily armored, or Up-Armor HMMWV, is now being produced in limited quantities, primarily for the Scout Platoon application. Special supplemental armor versions have been developed for USMC requirements; unique model numbers designate these configurations.
+
+    Primary function: The HMMWV provides a variety of wheeled vehicle platforms. These are cargo/troop carrier, armament carrier, TOW missile system carrier, shelter carrier and two ambulance variants (2- and 4-litter). The HMMWV will also be the prime mover for the AN/TRC-170 Radio Digital Terminal and the Pedestal Mounted Stinger System.
+    Length: 15 feet (4.57 meters)
+    Width: 7.08 feet (2.16 meters)
+    Weight: 5,200 pounds (2359 kilograms)
+    Height: 6.00 feet (1.83 meters) reducible to 4.5 feet (1.37 meters)
+    Engine: V8, 6.2 litre displacement, fuel injected diesel, liquid cooled, compression ignition
+    Horsepower: 150 at 3,600 RPM
+    Transmission: 3 speed, automatic
+    Transfer case: 2 speed, locking, chain driven
+    Electrical system: 24 volt, negative ground, 60 amps
+    Brakes: Hydraulic, 4-wheeled disc
+    Fording depth:
+    without preparation: 2.5 feet (76.2 centimeters)
+    with deep water fording kit: 5 feet (1.5 meters)
+    Fuel type: Diesel
+    Fuel capacity: 25 gallons (94.63 liters)
+    Range: 350 miles (563.15 kilometers) highway
+    Unit Replacement Cost: $50,000
+
+    Mission: The M998 is the baseline vehicle for the M998 series of 1 1/4-ton trucks, which are known as the HMMWV vehicles. The HMMWV vehicles include 11 variants. They are: M998 Cargo/Troop Carrier; M1038 Cargo/Troop Carrier, with winch; M1043 Armament Carrier; M1044 Armament Carrier, with winch; M1045 TOW Carrier; M1046 TOW Carrier, with winch; M997 Ambulance, basic armor 4-Litter; M1035 Ambulance, 2-Litter; M1037 Shelter Carrier; M1042 Shelter Carrier, with winch; M1097 Heavy HMMWV (payload of 4,400 pounds). All HMMWVS are designed for use over all types of roads, in all weather conditions and are extremely effective in the most difficult terrain. The HMMWVS high power-to-weight ratio, four wheeled drive and high ground clearance combine to give it outstanding cross-country mobility.
+
+    Marine Corps Inventory: 19,598
+
+    M998
+
+    The M998, M998A1, M1038 and M1038A1 HMMWVs are cargo/troop carrier configurations of the HMMWV family. The vehicles are equipped with basic armor and used to transport equipment, materials, and/or personnel. The cargo carrier configuration is capable of transporting a payload (including crew) of 2,500 pounds and the troop carrier is capable of transporting a two man crew and eight passengers. Both use a troop seat kit for troop transport operations. The cargo/troop carrier can also be configured in a four man crew configuration. The vehicles can climb 60% slopes and traverse a side slope of up to 40% fully loaded. The vehicles can ford hard bottom water crossing up to 30 inches without a deep water fording kit and up to 60 inches with the kit. The M1038, M1038A1 are equipped with the self-recovery winch which can also be used to recover like systems. The M998A1 and M1038A1 models have the latest modifications applied to the vehicles.
+
+    M1097
+
+    The M1097 and M1097A1 HMMWVs are higher payload capacity cargo/troop carrier configurations of the HMMWV family. The vehicles are equipped with basic armor and used to transport equipment, materials, and/or personnel, like the M998/M1038 series, except with a higher payload capacity. The cargo carrier is capable of transporting a payload (including crew) of 4,575 poundsand the troop carrier is capable of transporting a two man crew and eight passengers. Both use a troop seat kit for troop transport operations, a 200 ampere umbilical power cable to power shelter equipment, and stowage racks for ammunition and equipment. To accommodate the higher payload capacity, the vehicles are equipped with a re-inforced frame, crossmembers, lifting shackles, heavy duty rear springs, shock absorbers, reinforced control arms, heavy duty tires and rims, and a transfer case and differential with modified gear ratio. The vehicles can climb 60% slopes and traverse a side slope of up to 40% fully loaded. The vehicles can ford hard bottom water crossing up to 30 inches without a deep water fording kit and up to 60 inches with the kit. The M1097A1 is equipped with the self-recovery winch which can also be used to recover like systems and has the latest modifications applied to the vehicle.
+
+    M1025
+
+    The M1025, M1025A1, M1026 and M1026A1 HMMWVs are Armament Carrier configurations of the HMMWV family. The vehicles are equipped with basic armor and the weapon mount, located on the roof of the vehicle, is adaptable to mount either the M60, 7.62mm machine gun; M2 .50 caliber machine gun; or the MK 19 Grenade Launcher. The weapons platform can be traversed 360 degrees. The vehicles can climb 60% slopes and traverse a side slope of up to 40% fully loaded. The vehicles can ford hard bottom water crossing up to 30 inches without a deep water fording kit and up to 60 inches with the kit. The M1026/M1026A1 are equipped with the self-recovery winch which can also be used to recover like systems. The M1025A1 and M1026A1 models have the latest modifications applied to the vehicles.
+
+    M1043
+
+    The M1043, M1043A1, M1044, and M1044A1 HMMWVs are Armament Carrier configurations of the HMMWV family. The vehicles are equipped with supplemental armor and the weapon mount, located on the roof of the vehicle, is adaptable to mount either the M60, 7.62mm machine gun; M2 .50 caliber machine gun; or the MK 19 Grenade Launcher. The weapons platform can be traversed 360 degrees. The vehicles can climb 60% slopes and traverse a side slope of up to 40% fully loaded. The vehicles can ford hard bottom water crossing up to 30 inches without a deep water fording kit and up to 60 inches with the kit. The M1044/M1044A1 are equipped with the self-recovery winch which can also be used to recover like systems. The M1043A1 and M1044A1 models have the latest modifications applied to the vehicles.
+
+    M1037
+
+    The M1037 and M1042 HMMWVs are Shelter Carrier configurations of the HMMWV family. The vehicle are equipped with basic armor and used to secure and transport the S250 electrical equipment shelter with a total payload (including crew) of 3,600 pounds. The vehicles can climb 60% slopes and traverse a side slope of up to 40% fully loaded. The vehicles can ford hard bottom water crossing up to 30 inches without a deep water fording kit and up to 60 inches with the kit. The M1042 is equipped with the self-recovery winch which can also be used to recover like systems.
+
+
+    M997M1035
+
+    The M996, M996A1, M997, M997A1, M1035 and M1035A1 HMMWVs are the Ambulance configuration of the HMMWV family. The vehicles are equipped with basic armor and used to transport casualties from the battlefield to the medical aid stations. The M996/M996A1 are designated as Mini-Ambulances and can transport up to 2 litter patients, 6 ambulatory patients or a combination of litter and ambulatory patients. The M997/M997A1 are designated as Maxi-Ambulances and can transport up to 4 litter patients, 8 ambulatory patients, or a combination of litter and ambulatory patients. The M1035/M1035A1 are soft-top Ambulances and can transport up to 2 litter patients. The vehicles can climb 60% slopes and traverse a side slope of up to 40% fully loaded. The vehicles can ford hard bottom water crossing up to 30 inches without a deep water fording kit and up to 60 inches with the kit. These configurations of the HMMWV are not equipped with the self-recovery winch. The M996A1, M997A1 and M1035A1 models have the latest modifications applied to the vehicles.
+
+    M1109/M1114
+
+    The M1109 and M1114 HMMWVs are an Up-Armored Armament Carrier configuration of the HMMWV family. The vehicles are equipped with additional armor both on the sides and underneath to protect the crew from small arms ammunition and mines. The weapon mount, located on the roof of the vehicle, is adaptable to mount either the M60, 7.62mm machine gun; M2 .50 caliber machine gun; or the MK 19 Grenade Launcher. The weapons platform can be traversed 360 degrees. This confirguration of the HMMWV is equipped with the self-recovery winch.
+
+    The Up-Armored HMMWV is designed to conduct reconnaissance and security operations as its primary function. Up-Armored HMMWVs are organic to the scout platoons of the armored, infantry, and mechanized infantry battalions. Up-Armored HMMWV-mounted scouts enhance the capability of scout platoons to provide accurate and timely information about the enemy and the area of operations.
+
+    During reconnaissance operations, the scouts provide the commander with a mobile reconnaissance platform to perform detailed route, zone, and area reconnaissance; prevent surprise by enemy forces; and help retain the freedom to maneuver. The speed, mobility, and stealth of the Up-Armored HMMWV also allows the scout to extend the depth of his reconnaissance, providing increased security and additional time and maneuver space for the commander. Due to its small signature relative to the Cavalry Fighting Vehicle (M3), the Up-Armored HMMWV provides the stealth necessary to conduct detailed reconnaissance in areas where contact with the enemy is possible. This information is rapidly reported to higher headquarters through secure radio means or by physical delivery (particularly during periods of reduced electronic communications).
+
+    Security operations are also significantly enhanced by Up-Armored HMMWV-mounted scouts. In screen missions, scouts operating independently, or in conjunction with other reconnaissance elements, will be used to establish observation posts to the front or flank of the maneuver force, patrol between observation posts, and cover gaps between forces. In rear areas, Up-Armored HMMWV-mounted scouts enhance security by patrolling primary lines of communication, providing threat early warning to rear area units, and reconnoitering potential threat landing and drop zones.
+
+    Manufacturer: AM General
+
+    Dimensions:
+
+    Length:
+    M966 / M998 / M1025 / M1035 / M1043 / M1045 / M1097 - 180"
+    M1026 / M1036 / M1038 / M1042 / M1044 / M1046 - 185"
+    M996 / M997 - 202"
+    Height:
+    M998 / M1035 / M1037 / M1038 / M1042 - 69"
+    M966 / M1025 / M1026 / M1036 / M1043 / M1044 / M1045 / M1046 - 73"
+    M996 - 86"
+    M997 - 102"
+    Width: 85"
+    Vehicle Curb Weight:
+    M998 / M1035 / M1038 - 7,700 lbs.
+    M966 / M1025 / M1026 / M1036 - 8,200 lbs.
+    M1043 / M1044 / M1045 / M1046 - 8,400 lbs.
+    M966 / M1037 / M1042 - 8,660 lbs.
+    M997 - 9,100 lbs.
+    M1097 / M1097A1 - 10,000 lbs.
+    M998A1 / M1035A1 / M1038A1 - 7,880 lbs.
+    M966A1 / M1025A1 / M1026A1 - 8,380 lbs.
+    M1043A1 / M1044A1 / M1045A1 / M1046A1 - 8,580 lbs.
+    M996A1 - 8,580 lbs.
+    M997A1 - 9,280 lbs.
+    Ground Clearance: 16" Loaded
+
+    Performance:
+
+    Maximum Speed: 55 mph Governed @ Gross Weight
+    Range: 275 - 337 mi.
+    Maximum Grade: 60%
+    Side Slope: 40 deg.
+    Fording: Without Kit: 30", With Kit: 60"
+
+    Equipment Specifications:
+
+    Cab: Crew Seating: 2-4 Man
+    Seat Design: Fore/Aft Adjustable
+    Steering Type: Power Assist
+
+    Engine: Manufacturer: General Motors, Diesel, 8-cyl, 6.5 L, Naturally Aspirated
+    Rating: 150 hp @ 3600 rpm, EPA-Certified
+    Fuel: Diesel, DF-2, JP-4, JP-8, VV-F-800
+    Cooling: Water, Radiator
+    Fan: Engine-Driven, Clutch Type
+
+    Transmission: Manufacturer: Allison, Fully Automatic
+    Speeds: 3 Speeds Forward/ 1 Reverse
+
+    Transfer: Full Time All Wheel Drive, Integral Transfer Case
+
+    Self-Recovery Winch (Optional):
+    Operation: Electric
+    Load Capacity: Fifth Layer - 3,360 lbs.
+    Fourth Layer - 3,780 lbs.
+    Third Layer - 4,310 lbs.
+    Second Layer - 5,020 lbs.
+    First Layer - 6,000 lbs.

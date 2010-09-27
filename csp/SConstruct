@@ -20,109 +20,86 @@ print 'COMBAT SIMULATOR PROJECT - Build System'
 
 EnsureSConsVersion(2, 0)
 
-import os
-import sys
-from tools import build
+# import os
+# import sys
 
-build.CheckSConsVersion('0.96.93')
-build.CheckPythonVersion('2.5.0')
-build.CheckWXVersion('2.6')
-build.CheckLXMLVersion()
-build.DevpackConfig.SetMinimumVersion('0.6')
+# build.CheckSConsVersion('0.96.93')
+# build.CheckPythonVersion('2.5.0')
+# build.CheckWXVersion('2.6')
+# build.CheckLXMLVersion()
+# build.DevpackConfig.SetMinimumVersion('0.6')
 
-PACKAGES = [
-	'csplib',
-	'cspsim',
-	'cspwf',
-	'modules',
-	'examples/clouds',
-	'examples/clouds-scene',
-	'examples/objectmodel',
-	'examples/osgviewer_sdlinput',
-	# 'examples/sdl-viewer',
-	'examples/sky',
-	'examples/terrain-demeter',
-	'examples/wf-listbox',
-	'examples/wf-scrollbars',
-	'examples/wf-signals',
-	'examples/wf-window',
-	'tools/canopy',
-	'tools/layout',
-	'tools/layout2',
-	'tools/googlemaps',
-]
 
-build.ExternalLibrary(
-	name = 'jpeg',
-	config = [
-		build.UnixLibConfig(lib='libjpeg', symbol='jpeg_resync_to_restart'),
-		build.DevpackConfig(libs='libjpeg'),
-		build.WindowsLibConfig('user32'),
-	])
+# build.ExternalLibrary(
+# 	name = 'jpeg',
+# 	config = [
+# 		build.UnixLibConfig(lib='libjpeg', symbol='jpeg_resync_to_restart'),
+# 		build.DevpackConfig(libs='libjpeg'),
+# 		build.WindowsLibConfig('user32'),
+# 	])
 
-build.ExternalLibrary(
-	name = 'opengl',
-	config = [
-		build.WindowsLibConfig('glu32'),
-		build.WindowsLibConfig('opengl32'),
-	])
+# build.ExternalLibrary(
+# 	name = 'opengl',
+# 	config = [
+# 		build.WindowsLibConfig('glu32'),
+# 		build.WindowsLibConfig('opengl32'),
+# 	])
 
-build.ExternalLibrary(
-	name = 'windows',
-	config = [
-		build.WindowsLibConfig('advapi32'),
-		build.WindowsLibConfig('ws2_32'),
-	])
+# build.ExternalLibrary(
+# 	name = 'windows',
+# 	config = [
+# 		build.WindowsLibConfig('advapi32'),
+# 		build.WindowsLibConfig('ws2_32'),
+# 	])
 
-build.ExternalLibrary(
-	name = 'sound',
-	config = [
-#		build.PkgConfig(package='openalpp', version='0.2'),
-		build.PkgConfig(package='vorbisfile', version='1.1.0'),
-		build.DevpackConfig(dlls='oalpp', headers=[('openalpp', 'sounddata')]),
-		build.DevpackConfig(dlls=['vorbis', 'vorbisfile'], headers=[('vorbis', 'vorbisfile.h')]),
-		build.DevpackConfig(dlls='ogg', headers=[('ogg', 'ogg.h')]),
-	])
+# build.ExternalLibrary(
+# 	name = 'sound',
+# 	config = [
+# #		build.PkgConfig(package='openalpp', version='0.2'),
+# 		build.PkgConfig(package='vorbisfile', version='1.1.0'),
+# 		build.DevpackConfig(dlls='oalpp', headers=[('openalpp', 'sounddata')]),
+# 		build.DevpackConfig(dlls=['vorbis', 'vorbisfile'], headers=[('vorbis', 'vorbisfile.h')]),
+# 		build.DevpackConfig(dlls='ogg', headers=[('ogg', 'ogg.h')]),
+# 	])
 
-build.ExternalLibrary(
-	name = 'gnucc2',
-	config = [
-		build.PkgConfig(package='libccgnu2', version='1.3.19', label='commoncpp'),
-		build.DevpackConfig(dlls='ccgnu2', headers=[('cc++', 'thread.h')]),
-	])
+# build.ExternalLibrary(
+# 	name = 'gnucc2',
+# 	config = [
+# 		build.PkgConfig(package='libccgnu2', version='1.3.19', label='commoncpp'),
+# 		build.DevpackConfig(dlls='ccgnu2', headers=[('cc++', 'thread.h')]),
+# 	])
 
-build.ExternalLibrary(
-	name = 'sigc',
-	config = [
-		build.PkgConfig(package='sigc++-2.0', version='2.0.6', label='sigc'),
-		build.DevpackConfig(dlls='sigc-2.0', headers=['sigc++config.h', ('sigc++', 'trackable.h')]),
-	])
+# build.ExternalLibrary(
+# 	name = 'sigc',
+# 	config = [
+# 		build.PkgConfig(package='sigc++-2.0', version='2.0.6', label='sigc'),
+# 		build.DevpackConfig(dlls='sigc-2.0', headers=['sigc++config.h', ('sigc++', 'trackable.h')]),
+# 	])
 
-build.ExternalLibrary(
-	name = 'osg',
-	config = [
-		build.PkgConfig(package='openscenegraph', version='2.6.0'),
-		build.PkgConfig(package='openthreads', version='2.3'),
-		build.PkgConfig(package='osgal', version='0.6.1'),
-		build.DevpackConfig(dlls='osgal', headers=[('osgAL', 'SoundNode')]),
-		build.DevpackConfig(libs=['osg', 'osgDB', 'osgFX', 'osgGA', 'osgParticle', 'osgViewer', 'osgText', 'osgUtil', 'OpenThreads'], dlls=[], headers=[('osg', 'Depth'), ('osgText', 'Font')]),
-	])
+# build.ExternalLibrary(
+# 	name = 'osg',
+# 	config = [
+# 		build.PkgConfig(package='openscenegraph', version='2.6.0'),
+# 		build.PkgConfig(package='openthreads', version='2.3'),
+# 		build.PkgConfig(package='osgal', version='0.6.1'),
+# 		build.DevpackConfig(dlls='osgal', headers=[('osgAL', 'SoundNode')]),
+# 		build.DevpackConfig(libs=['osg', 'osgDB', 'osgFX', 'osgGA', 'osgParticle', 'osgViewer', 'osgText', 'osgUtil', 'OpenThreads'], dlls=[], headers=[('osg', 'Depth'), ('osgText', 'Font')]),
+# 	])
 
-build.ExternalLibrary(
-	name = 'sdl',
-	config = [
-		build.CommandConfig(package='sdl', version_command='sdl-config --version', flags_command='sdl-config --cflags --libs', version='1.2.5', label='sdl'),
-		build.DevpackConfig(dlls=['SDL'], headers=[('SDL', 'SDL_mouse.h')]),
-	])
+# build.ExternalLibrary(
+# 	name = 'sdl',
+# 	config = [
+# 		build.CommandConfig(package='sdl', version_command='sdl-config --version', flags_command='sdl-config --cflags --libs', version='1.2.5', label='sdl'),
+# 		build.DevpackConfig(dlls=['SDL'], headers=[('SDL', 'SDL_mouse.h')]),
+# 	])
 
-build.ExternalLibrary(
-	name = 'python',
-	config = [
-		build.UnixLibConfig(lib='python%d.%d' % tuple(sys.version_info[:2]), symbol='PyEval_SaveThread', label='python library'),
-	])
+# build.ExternalLibrary(
+# 	name = 'python',
+# 	config = [
+# 		build.UnixLibConfig(lib='python%d.%d' % tuple(sys.version_info[:2]), symbol='PyEval_SaveThread', label='python library'),
+# 	])
 
-Help(
-	"""
+Help("""
 	COMMON TARGETS:
 
 	  scons config           check for necessary headers and libraries
@@ -145,68 +122,93 @@ Help(
 
 	  scons examples         build all examples
 	"""
-)
+     )
 
-class Environment(build.Environment):
+# class Environment(build.Environment):
 
-	INCLUDE = ['#/..', build.GetPythonInclude(),  os.environ.get('CSPDEVPACK', '') + "\\include\\AL"]
+# 	INCLUDE = ['#/..', build.GetPythonInclude(),  os.environ.get('CSPDEVPACK', '') + "\\include\\AL"]
 
-	def customize_all(self, env):
-		env.Replace(CXXFILESUFFIX='.cpp')
-		env.Replace(CPPPATH=self.INCLUDE)
-		env.Replace(SWIGFLAGS=Split('-python -c++'))
-		env.Replace(SWIGPATH=self.INCLUDE)
+# 	def customize_all(self, env):
+# 		env.Replace(CXXFILESUFFIX='.cpp')
+# 		env.Replace(CPPPATH=self.INCLUDE)
+# 		env.Replace(SWIGFLAGS=Split('-python -c++'))
+# 		env.Replace(SWIGPATH=self.INCLUDE)
 
-	def customize_win(self, env):
-		# The following compiler warnings has been disabled:
-		# warning C4251: 'X' : struct 'Y' needs to have dll-interface to be used by clients of class 'Z'
-		# warning C4275: non dll-interface class 'X' used as base for dll-interface class 'Y'
-		# warning C4290: C++ exception specification ignored except to indicate a function is not __declspec(nothrow)
+# 	def customize_win(self, env):
+# 		# The following compiler warnings has been disabled:
+# 		# warning C4251: 'X' : struct 'Y' needs to have dll-interface to be used by clients of class 'Z'
+# 		# warning C4275: non dll-interface class 'X' used as base for dll-interface class 'Y'
+# 		# warning C4290: C++ exception specification ignored except to indicate a function is not __declspec(nothrow)
 
-		debug = ARGUMENTS.get('debug', 0)
-		if int(debug) == 0:
-			print('Building release configuration')
-			env.Replace(CXXFLAGS=Split('/GR /MD /O2 /EHsc /W3 /nologo /wd4251 /wd4275 /wd4290'))
-			env.AppendUnique(CPPDEFINES=Split('WIN32 __WIN32__ _USRDLL _DLL NDEBUG _CRT_SECURE_NO_DEPRECATE _USE_MATH_DEFINES'))
-			env.AppendUnique(LINKFLAGS=Split('/INCREMENTAL:NO /RELEASE /nologo'))
-			env.AppendUnique(SHLINKFLAGS=Split('/INCREMENTAL:NO /RELEASE /nologo'))
-			env.AppendUnique(LIBPATH=[build.GetPythonLibrary()])
-			env.CopyEnvironment(Split('PATH INCLUDE LIB'))
-		elif int(debug) == 1:
-			print('Building debug configuration')
-			env.Replace(CXXFLAGS=Split('/GR /MD /Zi /EHsc /W3 /nologo /wd4251 /wd4275 /wd4290'))
-			env.AppendUnique(CPPDEFINES=Split('WIN32 __WIN32__ _USRDLL _DLL NDEBUG _CRT_SECURE_NO_DEPRECATE _USE_MATH_DEFINES'))
-			env.AppendUnique(LINKFLAGS=Split('/INCREMENTAL:NO /DEBUG /nologo'))
-			env.AppendUnique(SHLINKFLAGS=Split('/INCREMENTAL:NO /DEBUG /nologo'))
-			env.AppendUnique(LIBPATH=[build.GetPythonLibrary()])
-			env.CopyEnvironment(Split('PATH INCLUDE LIB'))
-		else:
-			print('Building full debug configuration')
-			env.Replace(CONFIG_DEBUG=debug)
-			env.Replace(CXXFLAGS=Split('/GR /MDd /Zi /EHsc /W3 /nologo /wd4251 /wd4275 /wd4290'))
-			env.AppendUnique(CPPDEFINES=Split('WIN32 __WIN32__ _USRDLL _DLL _CRT_SECURE_NO_DEPRECATE _USE_MATH_DEFINES'))
-			env.AppendUnique(LINKFLAGS=Split('/INCREMENTAL:NO /DEBUG /nologo'))
-			env.AppendUnique(SHLINKFLAGS=Split('/INCREMENTAL:NO /DEBUG /nologo'))
-			env.AppendUnique(LIBPATH=[build.GetPythonLibrary()])
-			env.CopyEnvironment(Split('PATH INCLUDE LIB'))
+# 		debug = ARGUMENTS.get('debug', 0)
+# 		if int(debug) == 0:
+# 			print('Building release configuration')
+# 			env.Replace(CXXFLAGS=Split('/GR /MD /O2 /EHsc /W3 /nologo /wd4251 /wd4275 /wd4290'))
+# 			env.AppendUnique(CPPDEFINES=Split('WIN32 __WIN32__ _USRDLL _DLL NDEBUG _CRT_SECURE_NO_DEPRECATE _USE_MATH_DEFINES'))
+# 			env.AppendUnique(LINKFLAGS=Split('/INCREMENTAL:NO /RELEASE /nologo'))
+# 			env.AppendUnique(SHLINKFLAGS=Split('/INCREMENTAL:NO /RELEASE /nologo'))
+# 			env.AppendUnique(LIBPATH=[build.GetPythonLibrary()])
+# 			env.CopyEnvironment(Split('PATH INCLUDE LIB'))
+# 		elif int(debug) == 1:
+# 			print('Building debug configuration')
+# 			env.Replace(CXXFLAGS=Split('/GR /MD /Zi /EHsc /W3 /nologo /wd4251 /wd4275 /wd4290'))
+# 			env.AppendUnique(CPPDEFINES=Split('WIN32 __WIN32__ _USRDLL _DLL NDEBUG _CRT_SECURE_NO_DEPRECATE _USE_MATH_DEFINES'))
+# 			env.AppendUnique(LINKFLAGS=Split('/INCREMENTAL:NO /DEBUG /nologo'))
+# 			env.AppendUnique(SHLINKFLAGS=Split('/INCREMENTAL:NO /DEBUG /nologo'))
+# 			env.AppendUnique(LIBPATH=[build.GetPythonLibrary()])
+# 			env.CopyEnvironment(Split('PATH INCLUDE LIB'))
+# 		else:
+# 			print('Building full debug configuration')
+# 			env.Replace(CONFIG_DEBUG=debug)
+# 			env.Replace(CXXFLAGS=Split('/GR /MDd /Zi /EHsc /W3 /nologo /wd4251 /wd4275 /wd4290'))
+# 			env.AppendUnique(CPPDEFINES=Split('WIN32 __WIN32__ _USRDLL _DLL _CRT_SECURE_NO_DEPRECATE _USE_MATH_DEFINES'))
+# 			env.AppendUnique(LINKFLAGS=Split('/INCREMENTAL:NO /DEBUG /nologo'))
+# 			env.AppendUnique(SHLINKFLAGS=Split('/INCREMENTAL:NO /DEBUG /nologo'))
+# 			env.AppendUnique(LIBPATH=[build.GetPythonLibrary()])
+# 			env.CopyEnvironment(Split('PATH INCLUDE LIB'))
 
-	def customize_linux(self, env):
-		gcc = build.GetGCCVersion()
-		env.Replace(CXXFLAGS=Split('-O2 -g -W -Wall -pedantic -Wno-long-long -Wno-deprecated'))
-		env.Replace(SWIGCXXFLAGS=Split('-O2 -g'))
-		env.Replace(ARFLAGS=Split('cr'))
-		if gcc and gcc[0] >= (4, 2, 0):
-			env.AppendUnique(CXXFLAGS=Split('-fvisibility=hidden'))
+# 	def customize_linux(self, env):
+# 		gcc = build.GetGCCVersion()
+# 		env.Replace(CXXFLAGS=Split('-O2 -g -W -Wall -pedantic -Wno-long-long -Wno-deprecated'))
+# 		env.Replace(SWIGCXXFLAGS=Split('-O2 -g'))
+# 		env.Replace(ARFLAGS=Split('cr'))
+# 		if gcc and gcc[0] >= (4, 2, 0):
+# 			env.AppendUnique(CXXFLAGS=Split('-fvisibility=hidden'))
 
-	def customize_darwin(self, env):
-		print 'WARNING: Darwin is not yet a fully supported platform.'
-		self.customize_linux(env)
-		env.Replace(SHLINKFLAGS=Split('-Wl -bundle'))
+# 	def customize_darwin(self, env):
+# 		print 'WARNING: Darwin is not yet a fully supported platform.'
+# 		self.customize_linux(env)
+# 		env.Replace(SHLINKFLAGS=Split('-Wl -bundle'))
 
 
-env = Environment.Initialize()
+TOOLS = ["default", "doxygen", "swig", "visualstudio", "dar", "net"]
+env = Environment(tools=TOOLS)
+Export("env")
+# env.ReadPackages(PACKAGES)
+# env.FinalizePackages()
 
-env.ReadPackages(PACKAGES)
-env.FinalizePackages()
+SCONSCRIPTS = [
+	'csplib/SConscript',
+	# 'cspsim',
+	# 'cspwf',
+	# 'modules',
+	# 'examples/clouds',
+	# 'examples/clouds-scene',
+	# 'examples/objectmodel',
+	# 'examples/osgviewer_sdlinput',
+	# # 'examples/sdl-viewer',
+	# 'examples/sky',
+	# 'examples/terrain-demeter',
+	# 'examples/wf-listbox',
+	# 'examples/wf-scrollbars',
+	# 'examples/wf-signals',
+	# 'examples/wf-window',
+	# 'tools/canopy',
+	# 'tools/layout',
+	# 'tools/layout2',
+	# 'tools/googlemaps',
+]
+
+SConscript(SCONSCRIPTS)
 
 Default("all")

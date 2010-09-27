@@ -61,11 +61,11 @@ class Environment:
 		env = MyEnvironment.Initialize()
 	'''
 
-	def Initialize(klass, opts=None):
+	def Initialize(klass, opts=None, tools=None):
 		settings = klass()
 		help = settings.__doc__
 
-		env = SCons.Environment.Environment()
+		env = SCons.Environment.Environment(tools=tools)
 		GlobalSetup(env)
 
 		if opts is None:
@@ -184,23 +184,14 @@ def FinalizePackages(env):
 	registry.BuildRegistry.Build(env)
 
 
-def GlobalSetup(env, distributed=1, config=None, timer=1):
+def GlobalSetup(env, config=None, timer=1):
 	options = scons.GetOptions()
-	# TODO remove ssoptions altogether; options.num_jobs should work in 0.97 and newer
-	# versions of scons.
-	try:
-		ssoptions = scons.GetSettableOptions()
-		num_jobs = ssoptions.get('num_jobs')
-	except AttributeError:
-		num_jobs = options.num_jobs
 
 	import SCons.Tool.swig
 	if not SCons.Tool.swig.exists(env):
 		SCons.Tool.swig.generate(env)
 
 	builders.AddBuilders(env)
-	if distributed and num_jobs > 1:
-		scons.SetDistributed(env)
 	util.AddPhonyTarget(env, 'config')
 	SConsEnvironment.CopyEnvironment = util.CopyEnvironment
 	SConsEnvironment.SetConfig = autoconf.SetConfig

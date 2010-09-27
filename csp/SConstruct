@@ -18,6 +18,8 @@
 
 print 'COMBAT SIMULATOR PROJECT - Build System'
 
+EnsureSConsVersion(2, 0)
+
 import os
 import sys
 from tools import build
@@ -27,7 +29,6 @@ build.CheckPythonVersion('2.5.0')
 build.CheckWXVersion('2.6')
 build.CheckLXMLVersion()
 build.DevpackConfig.SetMinimumVersion('0.6')
-
 
 PACKAGES = [
 	'csplib',
@@ -120,8 +121,7 @@ build.ExternalLibrary(
 		build.UnixLibConfig(lib='python%d.%d' % tuple(sys.version_info[:2]), symbol='PyEval_SaveThread', label='python library'),
 	])
 
-
-class Environment(build.Environment):
+Help(
 	"""
 	COMMON TARGETS:
 
@@ -145,6 +145,9 @@ class Environment(build.Environment):
 
 	  scons examples         build all examples
 	"""
+)
+
+class Environment(build.Environment):
 
 	INCLUDE = ['#/..', build.GetPythonInclude(),  os.environ.get('CSPDEVPACK', '') + "\\include\\AL"]
 
@@ -156,10 +159,10 @@ class Environment(build.Environment):
 
 	def customize_win(self, env):
 		# The following compiler warnings has been disabled:
-		# warning C4251: 'X' : struct 'Y' needs to have dll-interface to be used by clients of class 'Z' 
+		# warning C4251: 'X' : struct 'Y' needs to have dll-interface to be used by clients of class 'Z'
 		# warning C4275: non dll-interface class 'X' used as base for dll-interface class 'Y'
 		# warning C4290: C++ exception specification ignored except to indicate a function is not __declspec(nothrow)
-	
+
 		debug = ARGUMENTS.get('debug', 0)
 		if int(debug) == 0:
 			print('Building release configuration')

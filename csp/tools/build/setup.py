@@ -55,8 +55,7 @@ class Environment:
 			'platform' is any lowercase prefix of sys.platform (e.g.,
 			'customize_win' or 'customize_linux'.
 
-	The docstring of the subclass defines the default help message displayed
-	when 'scons -h' is run.  To initialize the build system, call Initialize
+	To initialize the build system, call Initialize
 	directly on the subclass (do not instantiate the subclass):
 
 		env = MyEnvironment.Initialize()
@@ -75,7 +74,6 @@ class Environment:
 		if hasattr(settings, 'options'):
 			settings.options(opts)
 
-		env.Help(help + opts.GenerateHelpText(env))
 		opts.Update(env)
 
 		if settings is not None:

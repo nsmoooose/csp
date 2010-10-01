@@ -1,0 +1,83 @@
+import os.path
+
+Import('env build demeter')
+
+da = env.DataArchive(
+    target = 'sim.dar',
+    source = Glob("data/xml/*.xml") + \
+        Glob("xml/weather/*.xml") + \
+        Glob("xml/theater/*.xml") + \
+        Glob("xml/theater/balkan/*.xml") + \
+        Glob("xml/theater/balkan/runway/*.xml") + \
+        Glob("xml/theater/balkan/refinery_column01/*.xml") + \
+        Glob("xml/theater/balkan/house05/*.xml") + \
+        Glob("xml/theater/balkan/flag01/*.xml") + \
+        Glob("xml/theater/balkan/hangar07/*.xml") + \
+        Glob("xml/theater/balkan/building02/*.xml") + \
+        Glob("xml/theater/balkan/Taxi_Light_Blue/*.xml") + \
+        Glob("xml/theater/balkan/cistern01/*.xml") + \
+        Glob("xml/theater/balkan/aircraft_tractor01/*.xml") + \
+        Glob("xml/theater/balkan/house04/*.xml") + \
+        Glob("xml/theater/balkan/ladder01/*.xml") + \
+        Glob("xml/theater/balkan/extinguisher01/*.xml") + \
+        Glob("xml/theater/balkan/bombs_trailer/*.xml") + \
+        Glob("xml/theater/balkan/Hemtt_tanker01/*.xml") + \
+        Glob("xml/theater/balkan/barracks01/*.xml") + \
+        Glob("xml/theater/balkan/house06/*.xml") + \
+        Glob("xml/theater/balkan/tower1/*.xml") + \
+        Glob("xml/theater/balkan/hangar/*.xml") + \
+        Glob("xml/theater/balkan/hangar2/*.xml") + \
+        Glob("xml/theater/balkan/bureau01/*.xml") + \
+        Glob("xml/theater/balkan/house03/*.xml") + \
+        Glob("xml/theater/balkan/O2_unit/*.xml") + \
+        Glob("xml/theater/balkan/building03/*.xml") + \
+        Glob("xml/theater/balkan/hangar3/*.xml") + \
+        Glob("xml/theater/balkan/barracks02/*.xml") + \
+        Glob("xml/theater/balkan/lightpylon/*.xml") + \
+        Glob("xml/theater/balkan/house02/*.xml") + \
+        Glob("xml/theater/balkan/house01/*.xml") + \
+        Glob("xml/theater/balkan/vasi/*.xml") + \
+        Glob("xml/theater/balkan/caissons/*.xml") + \
+        Glob("xml/theater/balkan/caissons/caisson01/*.xml") + \
+        Glob("xml/theater/balkan/caissons/caisson08/*.xml") + \
+        Glob("xml/theater/balkan/caissons/caisson09/*.xml") + \
+        Glob("xml/theater/balkan/caissons/caisson14/*.xml") + \
+        Glob("xml/theater/balkan/caissons/caisson02/*.xml") + \
+        Glob("xml/theater/balkan/caissons/caisson16/*.xml") + \
+        Glob("xml/theater/balkan/caissons/caisson07/*.xml") + \
+        Glob("xml/theater/balkan/caissons/caisson15/*.xml") + \
+        Glob("xml/theater/balkan/caissons/caisson10/*.xml") + \
+        Glob("xml/theater/balkan/caissons/caisson04/*.xml") + \
+        Glob("xml/theater/balkan/caissons/caisson06/*.xml") + \
+        Glob("xml/theater/balkan/caissons/caisson05/*.xml") + \
+        Glob("xml/theater/balkan/caissons/caisson13/*.xml") + \
+        Glob("xml/theater/balkan/caissons/caisson12/*.xml") + \
+        Glob("xml/theater/balkan/caissons/caisson17/*.xml") + \
+        Glob("xml/theater/balkan/caissons/caisson03/*.xml") + \
+        Glob("xml/theater/balkan/caissons/caisson11/*.xml") + \
+        Glob("xml/theater/balkan/building01/*.xml") + \
+        Glob("xml/theater/balkan/hmmwv01/*.xml") + \
+        Glob("xml/vehicles/*.xml") + \
+        Glob("xml/vehicles/tanks/*.xml") + \
+        Glob("xml/vehicles/tanks/t62/*.xml") + \
+        Glob("xml/vehicles/cars/*.xml") + \
+        Glob("xml/vehicles/cars/hmmwv/*.xml") + \
+        Glob("xml/vehicles/aircraft/*.xml") + \
+        Glob("xml/vehicles/aircraft/m2k/*.xml") + \
+        Glob("xml/vehicles/aircraft/f16dj/*.xml") + \
+        Glob("xml/vehicles/aircraft/f16/*.xml") + \
+        Glob("xml/stores/*.xml") + \
+        Glob("xml/stores/racks/*.xml") + \
+        Glob("xml/stores/racks/f16/*.xml") + \
+        Glob("xml/stores/tanks/*.xml") + \
+        Glob("xml/stores/tanks/f16/*.xml") + \
+        Glob("xml/stores/tanks/f16/wing_370gal/*.xml") + \
+        Glob("xml/stores/tanks/f16/centerline_300gal/*.xml") + \
+        Glob("xml/stores/missiles/*.xml") + \
+        Glob("xml/terrain/*.xml") + \
+        Glob("xml/objects/*.xml"),
+    DARXMLDIR = os.path.join("data", "xml"),
+    DARMODULE = os.path.join("modules", "demeter", ".bin", "libdemeter.so")
+    )
+Alias("all", da)
+Depends(da, demeter)

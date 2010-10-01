@@ -19,6 +19,9 @@
 print 'COMBAT SIMULATOR PROJECT - Build System'
 
 EnsureSConsVersion(2, 0)
+EnsurePythonVersion(2, 5)
+
+from distutils import sysconfig
 
 # import os
 # import sys
@@ -181,16 +184,39 @@ Help("""
 # 		env.Replace(SHLINKFLAGS=Split('-Wl -bundle'))
 
 
-TOOLS = ["default", "doxygen", "swig", "visualstudio", "dar", "net"]
-env = Environment(tools=TOOLS)
-Export("env")
-# env.ReadPackages(PACKAGES)
-# env.FinalizePackages()
+TOOLS = ['default', 'doxygen', 'swig', 'visualstudio', 'dar', 'net']
+env = Environment(
+    tools=TOOLS,
+    CPPPATH = ['#/..', sysconfig.get_python_inc()],
+    CXXCOMSTR = 'Compiling $TARGET',
+    SHCXXCOMSTR = 'Compiling $TARGET',
+    SHLINKCOMSTR = 'Linking $TARGET',
+    TRCCOMSTR = 'Generating net file $TARGET',
+    SWIGCOMSTR = 'Swig compiling $TARGET',
+    SWIGFLAGS = '-python -c++',
+    SWIGPATH = '#/..',
+    CXXFILESUFFIX = '.cpp')
+
+if env['PLATFORM'] == 'posix':
+    env.Replace(CXXFLAGS=Split('-O2 -g -W -Wall -pedantic -Wno-long-long -Wno-deprecated'))
+    env.Replace(SWIGCXXFLAGS=Split('-O2 -g'))
+    env.Replace(ARFLAGS=Split('cr'))
+    env.ParseConfig('pkg-config sigc++-2.0 --cflags --libs')
+    # print env["CXXVERSION"]
+    # if gcc and gcc[0] >= (4, 2, 0):
+    env.AppendUnique(CXXFLAGS=Split('-fvisibility=hidden'))
+
+Export('env')
+
+env.VariantDir('bin', 'csplib', duplicate=0)
+SConscript('bin/SConscript')
+
+
 
 SCONSCRIPTS = [
-	'csplib/SConscript',
-	# 'cspsim',
-	# 'cspwf',
+	'csplib',
+	'cspwf',
+	'cspsim',
 	# 'modules',
 	# 'examples/clouds',
 	# 'examples/clouds-scene',
@@ -209,6 +235,6 @@ SCONSCRIPTS = [
 	# 'tools/googlemaps',
 ]
 
-SConscript(SCONSCRIPTS)
+# SConscript(dirs = SCONSCRIPTS)
 
-Default("all")
+Default('all')

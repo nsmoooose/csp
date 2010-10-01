@@ -22,7 +22,7 @@
  *
  **/
 
-
+#if 0
 #include <csp/cspsim/f16/F16InputSystem.h>
 
 namespace csp {
@@ -54,3 +54,4 @@ void AircraftInputSystem::IncAirbrake() {
 
 } // namespace csp
 
+#endif

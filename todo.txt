@@ -1,0 +1,28 @@
+
+csp-game             game start script.
+csp-layout           layout tool. A python script.
+csp-data-compiler    dar compiler.
+csp-hid-compiler     hid compiler
+
+Directory structure:
+
+csp-data-compiler
+csp-hid-compiler
+SConstruct
+csp/
+    SConscript
+    bin/
+        csp-game
+        csp-layout
+        libcspwf.so
+        libcsplib.so
+        libcspsim.so
+
+models/
+    SConscript          Building a dar file, hids, etc
+    xml
+    models
+    hid
+balkan/
+    SConscript          Building a dar file, hids, etc
+    xml

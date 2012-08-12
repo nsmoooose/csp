@@ -4,6 +4,7 @@
 #include <osgDB/ReadFile>
 #include <osgDB/WriteFile>
 #include <osgDB/FileUtils>
+#include <osg/PagedLOD>
 #include <osg/Texture2D>
 #include <osg/PositionAttitudeTransform>
 #include <csp/tools/layout2/cpp/OsgTerrainOverviewManipulator.h>

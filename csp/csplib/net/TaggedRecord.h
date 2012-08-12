@@ -229,7 +229,7 @@ class DumpLine;
 class CSPLIB_EXPORT DumpWriter {
 	friend class DumpLine;
 	std::string m_indent;
-	mutable std::ostream &m_os;
+	std::ostream &m_os;
 	inline std::ostream &os() const { return m_os; }
 	bool m_prefixed;
 public:
@@ -245,7 +245,7 @@ public:
  *  @ingroup net
  */
 class CSPLIB_EXPORT DumpLine {
-	mutable DumpWriter &m_writer;
+	DumpWriter &m_writer;
 public:
 	inline std::ostream &os() const { return m_writer.os(); }
 	inline DumpWriter &writer() const { return m_writer; }

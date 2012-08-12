@@ -1,14 +1,14 @@
 #ifndef __CSP_LAYOUT_OSGTERRAINOVERVIEWMANIPULATOR_H__
 #define __CSP_LAYOUT_OSGTERRAINOVERVIEWMANIPULATOR_H__
 
-#include <osgGA/MatrixManipulator>
+#include <osgGA/CameraManipulator>
 
 namespace csp
 {
 namespace layout
 {
 
-class OsgTerrainOverviewManipulator : public osgGA::MatrixManipulator
+class OsgTerrainOverviewManipulator : public osgGA::CameraManipulator
 {
 	public:
 		static const double MinLevel;

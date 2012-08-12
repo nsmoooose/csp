@@ -100,7 +100,7 @@ build.ExternalLibrary(
 build.ExternalLibrary(
 	name = 'osg',
 	config = [
-		build.PkgConfig(package='openscenegraph', version='2.6.0'),
+		build.PkgConfig(package='openscenegraph', version='3.0.1'),
 		build.PkgConfig(package='openthreads', version='2.3'),
 		build.PkgConfig(package='osgal', version='0.6.1'),
 		build.DevpackConfig(dlls='osgal', headers=[('osgAL', 'SoundNode')]),

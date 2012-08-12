@@ -51,7 +51,7 @@ public:
 	osg::ref_ptr<osgViewer::GraphicsWindow> m_GraphicsWindow;
 	ProjectionKind m_projectionKind;
 
-	void init(OsgGraphicsWindow* window, ProjectionKind projectionKind, osg::ref_ptr<osgGA::MatrixManipulator> manipulator) {
+	void init(OsgGraphicsWindow* window, ProjectionKind projectionKind, osg::ref_ptr<osgGA::CameraManipulator> manipulator) {
 		m_Viewer = new osgViewer::Viewer;
 		m_projectionKind = projectionKind;
 		setUpViewerAsEmbeddedInWxWindow(window, 50, 70, 300, 200);
@@ -93,7 +93,7 @@ public:
 	}
 };
 
-OsgGraphicsWindow::OsgGraphicsWindow(ProjectionKind projectionKind, osg::ref_ptr<osgGA::MatrixManipulator> manipulator) : m_Implementation(new Implementation()) {
+OsgGraphicsWindow::OsgGraphicsWindow(ProjectionKind projectionKind, osg::ref_ptr<osgGA::CameraManipulator> manipulator) : m_Implementation(new Implementation()) {
 	m_Implementation->init(this, projectionKind, manipulator);
 }
 
@@ -157,7 +157,7 @@ void OsgGraphicsWindow::handleMouseWheelRotation(int wheelRotation) {
 	m_Implementation->m_GraphicsWindow->getEventQueue()->mouseScroll( wheelRotation < 0 ? osgGA::GUIEventAdapter::SCROLL_DOWN : osgGA::GUIEventAdapter::SCROLL_UP );
 }
 
-osg::ref_ptr<osgGA::MatrixManipulator> OsgGraphicsWindow::getManipulator() {
+osg::ref_ptr<osgGA::CameraManipulator> OsgGraphicsWindow::getManipulator() {
 	return m_Implementation->m_Viewer->getCameraManipulator();
 }
 

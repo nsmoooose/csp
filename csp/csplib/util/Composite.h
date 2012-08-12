@@ -498,7 +498,7 @@ public:
 			_node = &node;
 			this->setTraversalMode(VisitorBase::TRAVERSE_NONE);
 		} else {
-			traverse(node);
+			this->traverse(node);
 		}
 	}
 

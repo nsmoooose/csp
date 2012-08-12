@@ -411,7 +411,7 @@ X LUT<N,X>::getValue(Vec const &v) const {
 	X x = v[0];
 	int i;
 	X f;
-	find(x, i, f);
+	this->find(x, i, f);
 	X value = table(i).getValue(v.rest()) * (static_cast<X>(1.0)-f) + table(i+1).getValue(v.rest()) * f;
 	return value;
 }
@@ -664,7 +664,7 @@ X LUT<1,X>::getValue(Vec const &v) const {
 	X x = v[0];
 	int i;
 	X f;
-	find(x, i, f);
+	this->find(x, i, f);
 	X value = table(i) * (static_cast<X>(1.0)-f) + table(i+1) * f;
 	return value;
 }

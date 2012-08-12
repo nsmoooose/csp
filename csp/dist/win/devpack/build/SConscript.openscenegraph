@@ -166,7 +166,7 @@ make('osgGA', [
 	'src/osgGA/GUIEventHandler.cpp',
 	'src/osgGA/GUIEventHandlerVisitor.cpp',
 	'src/osgGA/KeySwitchMatrixManipulator.cpp',
-	'src/osgGA/MatrixManipulator.cpp',
+	'src/osgGA/CameraManipulator.cpp',
 	'src/osgGA/NodeTrackerManipulator.cpp',
 	'src/osgGA/SetSceneViewVisitor.cpp',
 	'src/osgGA/StateSetManipulator.cpp',

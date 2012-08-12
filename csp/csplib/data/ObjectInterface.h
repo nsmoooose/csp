@@ -186,7 +186,7 @@ public:
 		this->required = required_;
 		{
 			T prototype;
-			setType(prototype);
+			this->setType(prototype);
 		}
 	}
 	virtual TypeAdapter const get(OBJECT *object) const {
@@ -243,7 +243,7 @@ public:
 		this->required = required_;
 		{
 			T prototype;
-			setType(prototype);
+			this->setType(prototype);
 		}
 	}
 	virtual TypeAdapter const get(OBJECT *object) const {
@@ -289,7 +289,7 @@ public:
 		this->required = required_;
 		{
 			T prototype;
-			setType(prototype);
+			this->setType(prototype);
 			this->type = "vector::" + this->type;
 		}
 	}

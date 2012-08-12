@@ -31,7 +31,7 @@ namespace osg {
 }
 
 namespace osgGA {
-	class MatrixManipulator;
+	class CameraManipulator;
 }
 
 namespace csp {
@@ -56,7 +56,7 @@ public:
 	buffers to display the last rendered frame.*/
 	VoidSignal SwapBuffers;
 
-	OsgGraphicsWindow(ProjectionKind projectionKind, osg::ref_ptr<osgGA::MatrixManipulator> manipulator);
+	OsgGraphicsWindow(ProjectionKind projectionKind, osg::ref_ptr<osgGA::CameraManipulator> manipulator);
 	virtual ~OsgGraphicsWindow();
 
 	// Clear the signals.
@@ -81,7 +81,7 @@ public:
 	void handleMouseWheelRotation(int wheelRotation);
 
 protected:
-	osg::ref_ptr<osgGA::MatrixManipulator> getManipulator();
+	osg::ref_ptr<osgGA::CameraManipulator> getManipulator();
 
 	osg::ref_ptr<osg::Node> getSceneData();
 	void setSceneData(osg::Node* node);	

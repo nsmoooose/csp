@@ -22,13 +22,6 @@
  *
  **/
 
-/* OSG has defined a lot of these nice type of tests of version. But
-   that was introduced in a rather late version of OSG (2.9.5) so I made
-   a copy of that define here to support older versions. */
-#ifndef OSG_MIN_VERSION_REQUIRED
-#define OSG_MIN_VERSION_REQUIRED(MAJOR, MINOR, PATCH) ((OPENSCENEGRAPH_MAJOR_VERSION>MAJOR) || (OPENSCENEGRAPH_MAJOR_VERSION==MAJOR && (OPENSCENEGRAPH_MINOR_VERSION>MINOR || (OPENSCENEGRAPH_MINOR_VERSION==MINOR && OPENSCENEGRAPH_PATCH_VERSION>=PATCH))))
-#endif
-
 #include <csp/cspsim/f16/SpecialFonts.h>
 #include <csp/cspsim/Config.h>
 #include <csp/csplib/util/FileUtility.h>
@@ -44,13 +37,7 @@
 #include <cassert>
 #include <map>
 
-// first defined in osg 0.9.9
-#ifndef OSG_VERSION_MAJOR
-#define OSG_OLD_FONT_INTERFACE
-#endif
-
 namespace csp {
-
 
 namespace {
 
@@ -147,7 +134,7 @@ ReverseAltFont::~ReverseAltFont() {
 	CSPLOG(INFO, DATA) << "~ReverseAltFont " << this << ", imp=" << getImplementation();
 }
 
-osgText::Font::Glyph* ReverseAltFont::getGlyph(const osgText::FontResolution& fontRes, unsigned int charcode) {
+osgText::Glyph* ReverseAltFont::getGlyph(const osgText::FontResolution& fontRes, unsigned int charcode) {
 	{
 		OpenThreads::ScopedLock<OpenThreads::Mutex> lock(_glyphMapMutex);
 		FontSizeGlyphMap::iterator itr = _sizeGlyphMap.find(fontRes);
@@ -161,13 +148,9 @@ osgText::Font::Glyph* ReverseAltFont::getGlyph(const osgText::FontResolution& fo
 		if (charcode >= 128) {
 			// use '0' as the reference glyph for sizing and centering the new glyph.  'M' would
 			// probably be a better choice, but i haven't made that glyph yet in my test font ;-)
-			Glyph *reference = getGlyph(fontRes, '0');
-			Glyph *normal = getGlyph(fontRes, charcode % 128);
-#if OSG_MIN_VERSION_REQUIRED(2,9,7)
-			Glyph *reverse = new osgText::Font::Glyph(0);
-#else
-			Glyph *reverse = new osgText::Font::Glyph;
-#endif
+			osgText::Glyph *reference = getGlyph(fontRes, '0');
+			osgText::Glyph *normal = getGlyph(fontRes, charcode % 128);
+			osgText::Glyph *reverse = new osgText::Glyph(this, 0);
 			int reference_width = reference->s();
 			int reference_height = reference->t();
 			int source_width = normal->s();
@@ -242,7 +225,7 @@ osgText::Font::Glyph* ReverseAltFont::getGlyph(const osgText::FontResolution& fo
 	return 0;
 }
 
-osgText::Font::Glyph* ScaledAltFont::getGlyph(const osgText::FontResolution& fontRes, unsigned int charcode) {
+osgText::Glyph* ScaledAltFont::getGlyph(const osgText::FontResolution& fontRes, unsigned int charcode) {
 	{
 		OpenThreads::ScopedLock<OpenThreads::Mutex> lock(_glyphMapMutex);
 		FontSizeGlyphMap::iterator itr = _sizeGlyphMap.find(fontRes);
@@ -256,10 +239,10 @@ osgText::Font::Glyph* ScaledAltFont::getGlyph(const osgText::FontResolution& fon
 		if (charcode >= 128) {
 			unsigned int normal_code = charcode % 128;
 			// Reload a scaled version of the glyph
-			Glyph *normal_glyph = getGlyph(fontRes, normal_code);
-			
+			osgText::Glyph *normal_glyph = getGlyph(fontRes, normal_code);
+
 			const osgText::FontResolution new_fontRes(fontRes.first * m_Scale, fontRes.second * m_Scale);
-			Glyph *scaled_glyph = _implementation->getGlyph(new_fontRes, normal_code);
+			osgText::Glyph *scaled_glyph = _implementation->getGlyph(new_fontRes, normal_code);
 			if (m_VCenter) {
 				osg::Vec2 hbearing = scaled_glyph->getHorizontalBearing();
 				hbearing.y() += 0.5f * (normal_glyph->t() - scaled_glyph->t());

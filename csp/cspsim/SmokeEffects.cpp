@@ -120,7 +120,7 @@ public:
 		m_Min = min;
 		m_Max = max;
 	}
-	void emit(double dt) {
+	void emitParticles(double dt) {
 		Vector3 wind, d_wind;
 		Vector3 place, d_place;
 		float distance = (m_VertexB - m_VertexA).length();

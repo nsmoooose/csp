@@ -510,7 +510,7 @@ inline hasht classhash_helper(std::string const &class_name, const fprint32 sign
 		: _M_classname::__csp_object_baseclass::__csp_interface_proxy(false) { \
 		typedef _M_classname _class; \
 		if (!_interface) { \
-			_interface = new CSP(ObjectInterface)<_M_classname>; \
+			_interface = new CSP(ObjectInterface)<_class>; \
 			(*_interface)
 
 #define CSP_DEF(id, var, req)  .def(id, &_class::var, req)

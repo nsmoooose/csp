@@ -49,16 +49,16 @@ public:
 	// Called by LandingGear to update the animation.
 	// @param compression The normalized motion of the wheel along the shock absorber compression axis
 	//   relative to its unweighted position.
-	virtual void setCompression(double compression) { compression = 0; /*avoid warning*/ }
+	virtual void setCompression(double /* compression */) { }
 
 	// Called by LandingGear to update the animation.
 	// @param tire rotation The tire rotation angle in radians.
-	virtual void setTireRotation(double tire_rotation) { tire_rotation = 0; /*avoid warning*/ }
+	virtual void setTireRotation(double /* tire_rotation */) { }
 
 	// Called by LandingGear to update the animation.
 	// @param steering_angle The rotation of the wheel around the compression axis (positive
 	//   for turning to the right).
-	virtual void setSteeringAngle(double steering_angle) { steering_angle = 0; /*avoid warning*/ }
+	virtual void setSteeringAngle(double /* steering_angle */) { }
 
 	// Called by LandingGear to update the animation.
 	// @param dt The elapsed time since the last update in seconds.

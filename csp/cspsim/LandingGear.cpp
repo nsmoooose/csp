@@ -478,8 +478,6 @@ void LandingGear::updateWheel(double dt,
 	// transform to wheel coordinates
 	Vector3 tireForceWheel = m_SteerTransform.rotate(tireForceBody);
 
-	Vector3 XXX_tfb = tireForceBody;
-
 	// note we are assuming here that the steering axis is very close to the
 	// normal axis.  under normal circumstances this should be approximately
 	// true for any wheel that can be steered.

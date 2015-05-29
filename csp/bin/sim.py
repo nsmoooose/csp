@@ -320,7 +320,7 @@ def main(args):
 	if options.pause:
 		pauseForDebugger()
 
-	csp.cspsim.openConfig(config, 1)
+	csp.cspsim.openConfig(config, True)
 	cachepath = csp.cspsim.getCachePath()
 	dar = os.path.join(cachepath, "sim.dar")
 

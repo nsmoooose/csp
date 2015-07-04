@@ -1,0 +1,261 @@
+# -*- python -*-
+#
+# Copyright 2004-2005 Mark Rose <mkrose@users.sourceforge.net>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+Import('env build')
+
+expenv = env.Clone()
+expenv.Append(CPPDEFINES=Split('CSPLIB_EXPORTS'))
+
+
+build.SourceGroup(expenv,
+	name = 'csplib',
+	sources = [
+		'data/Archive.h',
+                'data/Archive.cpp',
+		'data/BaseType.h',
+		'data/DataArchive.cpp',
+		'data/DataArchive.h',
+		'data/DataManager.cpp',
+		'data/DataManager.h',
+		'data/Date.cpp',
+		'data/Date.h',
+		'data/Enum.cpp',
+		'data/Enum.h',
+		'data/External.cpp',
+		'data/External.h',
+		'data/GeoPos.cpp',
+		'data/GeoPos.h',
+		'data/InterfaceProxy.cpp',
+		'data/InterfaceProxy.h',
+		'data/InterfaceRegistry.cpp',
+		'data/InterfaceRegistry.h',
+		'data/Key.cpp',
+		'data/Key.h',
+		'data/LUT.cpp',
+		'data/LUT.h',
+		'data/Link.cpp',
+		'data/Link.h',
+		'data/Matrix3.cpp',
+		'data/Matrix3.h',
+		'data/Object.cpp',
+		'data/Object.h',
+		'data/ObjectInterface.h',
+		'data/Path.cpp',
+		'data/Path.h',
+		'data/Quat.cpp',
+		'data/Quat.h',
+		'data/Real.cpp',
+		'data/Real.h',
+		'data/TypeAdapter.cpp',
+		'data/TypeAdapter.h',
+		'data/Types.h',
+		'data/Vector2.cpp',
+		'data/Vector2.h',
+		'data/Vector3.cpp',
+		'data/Vector3.h',
+
+		'net/Callbacks.h',
+		'net/ClientServer.cpp',
+		'net/ClientServer.h',
+		'net/ClientServerMessages.net',
+		'net/DispatchCache.h',
+		'net/DispatchHandler.cpp',
+		'net/DispatchHandler.h',
+		'net/DispatchManager.cpp',
+		'net/DispatchManager.h',
+		'net/DispatchTarget.cpp',
+		'net/DispatchTarget.h',
+		'net/HandlerSet.h',
+		'net/Median.h',
+		'net/MessageHandler.h',
+		'net/MessageQueue.h',
+		'net/NetBase.h',
+		'net/NetRandom.cpp',
+		'net/NetRandom.h',
+		'net/NetworkInterface.cpp',
+		'net/NetworkInterface.h',
+		'net/NetworkMessage.h',
+		'net/NetworkNode.cpp',
+		'net/NetworkNode.h',
+		'net/PacketDecoder.h',
+		'net/PacketHandler.h',
+		'net/PacketQueue.h',
+		'net/PacketSource.h',
+		'net/PeerInfo.cpp',
+		'net/PeerInfo.h',
+		'net/RecordCodec.cpp',
+		'net/RecordCodec.h',
+		'net/ReliablePacket.h',
+		'net/RoutingHandler.cpp',
+		'net/RoutingHandler.h',
+		'net/Sockets.h',
+		'net/StopWatch.h',
+		'net/TaggedRecord.h',
+		'net/TaggedRecordRegistry.cpp',
+		'net/TaggedRecordRegistry.h',
+
+		'numeric/NumericalMethod.cpp',
+		'numeric/NumericalMethod.h',
+		'numeric/Vector.h',
+		'numeric/VectorField.h',
+
+		'spatial/QuadTree.cpp',
+		'spatial/QuadTree.h',
+
+		'thread/AtomicCounter.h',
+		'thread/Synchronization.h',
+		'thread/Thread.h',
+		'thread/ThreadQueue.h',
+		'thread/ThreadUtil.h',
+
+		'util/Cache.h',
+		'util/Callback.h',
+		'util/CallbackDecl.h',
+		'util/CircularBuffer.h',
+		'util/Composite.h',
+		'util/Config.h',
+		'util/Conversions.h',
+		'util/Dispatch.h',
+		'util/Endian.h',
+		'util/Exception.cpp',
+		'util/Exception.h',
+		'util/Export.h',
+		'util/FileUtility.cpp',
+		'util/FileUtility.h',
+		'util/HashUtility.cpp',
+		'util/HashUtility.h',
+		'util/LocalUpdate.cpp',
+		'util/LocalUpdate.h',
+		'util/Log.h',
+		'util/LogConstants.h',
+		'util/LogStream.cpp',
+		'util/LogStream.h',
+		'util/Math.h',
+		'util/MessageTypes.h',
+		'util/Modules.cpp',
+		'util/Modules.h',
+		'util/Namespace.h',
+		'util/Noise.cpp',
+		'util/Noise.h',
+		'util/Properties.h',
+		'util/Random.cpp',
+		'util/Random.h',
+		'util/Ref.h',
+		'util/Referenced.h',
+		'util/ScopedPointer.h',
+		'util/Signal.h',
+		'util/SignalFwd.h',
+		'util/SimpleConfig.cpp',
+		'util/SimpleConfig.h',
+		'util/Singleton.h',
+		'util/StringTools.cpp',
+		'util/StringTools.h',
+		'util/SynchronousUpdate.cpp',
+		'util/SynchronousUpdate.h',
+		'util/Testing.cpp',
+		'util/Testing.h',
+		'util/TimeStamp.h',
+		'util/Timing.cpp',
+		'util/Timing.h',
+		'util/Trace.cpp',
+		'util/Trace.h',
+		'util/Uniform.h',
+		'util/Verify.h',
+		'util/Version.cpp',
+		'util/Version.h',
+		'util/WeakReferenced.cpp',
+		'util/WeakReferenced.h',
+		'util/hash_map.h',
+		'util/osg.h',
+
+		'xml/XmlParser.cpp',
+		'xml/XmlParser.h',
+	],
+	deps = ['gnucc2', 'sigc', 'windows'])
+
+
+build.Program(env,
+	name = 'csplib_config',
+	sources = ['util/Config.cpp'])
+
+
+build.Generate(env,
+	command = '{csplib_config} > $TARGET',
+	targets = ['#/csplib/util/Config.h'])
+
+env.Depends('#/csplib/util/Uniform.h', '#/csplib/util/Config.h')
+
+
+build.SharedLibrary(expenv,
+	name = 'csplib',
+	sources = ['@csplib'],
+	aliases = ['all', 'csplib'],
+	doxygen = 'csplib.dox',
+	softlink = 1)
+
+
+build.PythonSharedLibrary(env,
+	name = 'csplib_module',
+	sources = [
+		'csplib.i',
+		'util/PythonCasts.h',
+		'util/PythonSignals.h',
+		'util/PythonSwig.h'
+	],
+	deps = ['csplib'],
+	aliases = ['all', 'csplib'])
+
+
+build.Test(env,
+	name = 'test_data',
+	sources = [
+        	'data/test/test_GeoPos.cpp',
+		'data/test/test_Object.cpp',
+                'data/test/test_Real.cpp',
+		'data/test/test_Quat.cpp',
+		'data/test/test_Vector3.cpp',
+	],
+	deps = ['csplib'],
+	aliases = ['all'])
+
+build.Test(env,
+	name = 'test_util',
+	sources = [
+		'util/test/test_Boolean.cpp',
+		'util/test/test_FileUtility.cpp',
+		'util/test/test_Ref.cpp',
+		'util/test/test_StringTools.cpp',
+		'util/test/test_Testing.cpp'
+	],
+	deps = ['csplib'],
+	aliases = ['all'])
+
+#build.Test(env,
+#	name = 'test_numeric',
+#	sources = [
+#		# 'numeric/test/test_Vector.cpp',
+#		# 'numeric/test/test_NumericalMethod.cpp',
+#	],
+#	deps = ['csplib'],
+#        aliases = ['all'])
+
+#build.Program(env,
+#	name = 'numeric_timing',
+#	sources = ['numeric/test/NumericalMethodTiming.cpp'],
+#	deps = ['csplib'],
+#        aliases = ['all'])

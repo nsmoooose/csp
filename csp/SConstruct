@@ -118,7 +118,7 @@ build.ExternalLibrary(
 build.ExternalLibrary(
 	name = 'python',
 	config = [
-		build.UnixLibConfig(lib='python%d.%d' % tuple(sys.version_info[:2]), symbol='PyEval_SaveThread', label='python library'),
+		build.UnixLibConfig(lib='python%d.%d' % tuple(sys.version_info[:2]), label='python library'),
 	])
 
 

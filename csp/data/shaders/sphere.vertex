@@ -25,9 +25,9 @@ void main() {
 	halfvector = normalize(gl_LightSource[0].halfVector.xyz);
 
 	// gl_sphere_map texgen
-	const vec4 vertex = normalize(gl_ModelViewMatrix * gl_Vertex);
-	const vec4 f = reflect(vertex, vec4(normal, 0.0));
-	const float m = 2.0 * sqrt(dot(f, f) + 2.0 * f.z + 1.0);
+	vec4 vertex = normalize(gl_ModelViewMatrix * gl_Vertex);
+	vec4 f = reflect(vertex, vec4(normal, 0.0));
+	float m = 2.0 * sqrt(dot(f, f) + 2.0 * f.z + 1.0);
 	gl_TexCoord[0].st = f.xy / m + 0.5;
 
 	gl_Position = ftransform();

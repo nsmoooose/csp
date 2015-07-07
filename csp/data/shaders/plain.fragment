@@ -24,21 +24,21 @@ uniform float fade;
 uniform vec4 fog;
 
 void main() {
-	const vec3 N = normalize(normal);
-	const vec3 HV = normalize(halfvector);
-	const float NdotL0 = max(dot(N, normalize(vec3(gl_LightSource[0].position))), 0.0);
-	const float NdotL1 = max(dot(N, normalize(vec3(gl_LightSource[1].position))), 0.0);
-	const float NdotHV = max(dot(N, HV), 0.0);
+	vec3 N = normalize(normal);
+	vec3 HV = normalize(halfvector);
+	float NdotL0 = max(dot(N, normalize(vec3(gl_LightSource[0].position))), 0.0);
+	float NdotL1 = max(dot(N, normalize(vec3(gl_LightSource[1].position))), 0.0);
+	float NdotHV = max(dot(N, HV), 0.0);
 
-	const vec4 ambient = gl_FrontMaterial.ambient * gl_LightSource[0].ambient;
-	const vec4 diffuse0 = gl_FrontMaterial.diffuse * gl_LightSource[0].diffuse;
-	const vec4 diffuse1 = gl_FrontMaterial.diffuse * gl_LightSource[1].diffuse;
-	const vec4 specular = gl_FrontMaterial.specular * gl_LightSource[0].specular;
-	const vec4 emission = gl_FrontMaterial.emission;
+	vec4 ambient = gl_FrontMaterial.ambient * gl_LightSource[0].ambient;
+	vec4 diffuse0 = gl_FrontMaterial.diffuse * gl_LightSource[0].diffuse;
+	vec4 diffuse1 = gl_FrontMaterial.diffuse * gl_LightSource[1].diffuse;
+	vec4 specular = gl_FrontMaterial.specular * gl_LightSource[0].specular;
+	vec4 emission = gl_FrontMaterial.emission;
 
 	vec4 mesh_color = (ambient + diffuse0 * NdotL0 + diffuse1 * NdotL1 + emission);
 	// pow(x, 0.0) is buggy on nvidia, so add a small offset.
-	const float shininess = gl_FrontMaterial.shininess + 0.1;
+	float shininess = gl_FrontMaterial.shininess + 0.1;
 	mesh_color.rgb += 8.0 * specular.rgb * pow(NdotHV, shininess);
 	mesh_color.a = gl_FrontMaterial.diffuse.a;
 

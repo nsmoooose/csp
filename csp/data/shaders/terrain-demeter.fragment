@@ -34,15 +34,15 @@ void main() {
 	vec4 tc1 = texture2D(tex1, gl_TexCoord[1].st);  // detail texture
 	vec4 tc2 = texture2D(tex2, gl_TexCoord[2].st);   // horizon texture
 
-	const float diffuse0 = max(dot(N, L0), 0.0) * gl_LightSource[0].diffuse;
-	const float diffuse1 = max(dot(N, L1), 0.0) * gl_LightSource[1].diffuse;
+	vec4 diffuse0 = max(dot(N, L0), 0.0) * gl_LightSource[0].diffuse;
+	vec4 diffuse1 = max(dot(N, L1), 0.0) * gl_LightSource[1].diffuse;
 	vec4 light = gl_LightSource[0].ambient + diffuse0 + diffuse1;
 
-	const vec4 fog_color = tc2;
+	vec4 fog_color = tc2;
 	// We don't have a detail texture file any longer. Remove it from the 
 	// calculation. Keeping this comment if we reenable this again.
 	// const vec4 mesh_color = tc0 * tc1 * light;
-	const vec4 mesh_color = tc0 * light;
+	vec4 mesh_color = tc0 * light;
 
 	gl_FragColor = vec4(mix(mesh_color.rgb, fog_color.rgb, gl_FogFragCoord), 1.0);
 }

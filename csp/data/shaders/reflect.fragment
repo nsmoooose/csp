@@ -25,15 +25,15 @@ uniform samplerCube tex0;
 uniform float fade;
 
 void main() {
-	const vec3 N = normalize(normal);
-	const vec3 HV = normalize(halfvector);
-	const float NdotL0 = max(dot(N, normalize(vec3(gl_LightSource[0].position))), 0.0);
-	const float NdotL1 = max(dot(N, normalize(vec3(gl_LightSource[1].position))), 0.0);
-	const float NdotHV = max(dot(N, HV), 0.0);
+	vec3 N = normalize(normal);
+	vec3 HV = normalize(halfvector);
+	float NdotL0 = max(dot(N, normalize(vec3(gl_LightSource[0].position))), 0.0);
+	float NdotL1 = max(dot(N, normalize(vec3(gl_LightSource[1].position))), 0.0);
+	float NdotHV = max(dot(N, HV), 0.0);
 
-	const vec4 diffuse0 = gl_FrontMaterial.diffuse * gl_LightSource[0].diffuse;
-	const vec4 diffuse1 = gl_FrontMaterial.diffuse * gl_LightSource[1].diffuse;
-	const vec4 ambient = gl_FrontMaterial.ambient * gl_LightSource[0].ambient;
+	vec4 diffuse0 = gl_FrontMaterial.diffuse * gl_LightSource[0].diffuse;
+	vec4 diffuse1 = gl_FrontMaterial.diffuse * gl_LightSource[1].diffuse;
+	vec4 ambient = gl_FrontMaterial.ambient * gl_LightSource[0].ambient;
 
 	vec4 tc0 = textureCube(tex0, reflection);
 

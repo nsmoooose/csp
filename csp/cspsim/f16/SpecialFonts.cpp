@@ -219,7 +219,9 @@ osgText::Glyph* ReverseAltFont::getGlyph(const osgText::FontResolution& fontRes,
 			addGlyph(fontRes, charcode, reverse);
 			return reverse;
 		} else {
-			return _implementation->getGlyph(fontRes,charcode);
+			osgText::Glyph *g = _implementation->getGlyph(fontRes,charcode);
+			addGlyph (fontRes, charcode, g);
+			return g;
 		}
 	}
 	return 0;
@@ -248,10 +250,12 @@ osgText::Glyph* ScaledAltFont::getGlyph(const osgText::FontResolution& fontRes, 
 				hbearing.y() += 0.5f * (normal_glyph->t() - scaled_glyph->t());
 				scaled_glyph->setHorizontalBearing(hbearing);
 			}
-			_sizeGlyphMap[fontRes][charcode] = scaled_glyph;
+			addGlyph (fontRes, charcode, scaled_glyph);
 			return scaled_glyph;
 		} else {
-			return _implementation->getGlyph(fontRes, charcode);
+			osgText::Glyph* g = _implementation->getGlyph(fontRes, charcode);
+			addGlyph (fontRes, charcode, g);
+			return g;
 		}
 	}
 	return 0;

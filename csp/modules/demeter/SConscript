@@ -32,6 +32,7 @@ build.SharedLibrary(env,
 		'TerrainTextureFactory.cpp',
         'TerrainFileTextureFactory.cpp',
 	],
+	LIBS=['GLU'],
 	deps = ['cspsim'],
 	aliases = 'all',
 	softlink = 1)

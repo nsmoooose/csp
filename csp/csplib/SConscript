@@ -1,15 +1,18 @@
+# -*- python -*-
 Import("env")
 
-# conf = Configure(env)
-# if not conf.CheckLib('sigc-2.0'):
-#     print "KAKA"
-#     Exit(1)
-# env = conf.Finish()
-env.Program("csplib_config", "util/Config.cpp")
-env.Command("util/Config.h", "csplib_config", "csplib/csplib_config > $TARGET")
+e = env.Clone()
+e.ParseConfig('pkg-config --cflags --libs libccgnu2')
+e.ParseConfig('pkg-config --cflags --libs sigc++-2.0')
+e.AppendUnique(CPPDEFINES=Split('CSPSIM_EXPORTS __CSPSIM_EXE__'))
 
-env.Append(CPPDEFINES=Split('CSPLIB_EXPORTS'))
-env.SharedLibrary('csplib', [
+e.Program("csplib_config", "util/Config.cpp")
+e.Command("util/Config.h", "csplib_config", "csplib/csplib_config > $TARGET")
+
+e.CspTrc(['net/ClientServerMessages.cpp', 'net/ClientServerMessages.h'], 'net/ClientServerMessages.net')
+
+e.Append(CPPDEFINES=Split('CSPLIB_EXPORTS'))
+csplib = e.SharedLibrary('csplib', [
     'data/Archive.cpp',
     'data/DataArchive.cpp',
     'data/DataManager.cpp',
@@ -32,7 +35,7 @@ env.SharedLibrary('csplib', [
     'data/Vector3.cpp',
 
     'net/ClientServer.cpp',
-    # 'net/ClientServerMessages.net',
+    'net/ClientServerMessages.cpp',  # Generated from net/ClientServerMessages.net
     'net/DispatchHandler.cpp',
     'net/DispatchManager.cpp',
     'net/DispatchTarget.cpp',
@@ -48,7 +51,6 @@ env.SharedLibrary('csplib', [
 
     'spatial/QuadTree.cpp',
 
-    # 'util/Config.h',
     'util/Exception.cpp',
     'util/FileUtility.cpp',
     'util/HashUtility.cpp',
@@ -68,3 +70,11 @@ env.SharedLibrary('csplib', [
 
     'xml/XmlParser.cpp',
 ])
+e.Alias('csplib', csplib)
+
+lib_env = env.Clone()
+lib_env.ParseConfig('pkg-config --cflags --libs python')
+lib_env.Append(LIBS = 'csplib', LIBPATH=['#/csplib'])
+csplib_module = lib_env.SharedLibrary('_csplib_module', ['csplib.i'], SHLIBPREFIX='')
+lib_env.Alias('csplib_module', csplib_module)
+Export('csplib_module')

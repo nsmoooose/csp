@@ -78,14 +78,12 @@ def configureEnvironment():
 
 def checkModuleSpace():
 	"""
-	Check that the bootstrap module works correctly and that the top-level csp
-	package can be imported.
+	Check that the top-level csp package can be imported.
 	"""
 	try:
 		import csp as _csp
 	except ImportError:
-		fail('Unable to import the csp bootstrap module.  Check that you have run\n'
-		     'setup.py successfully to initialize the workspace.')
+		fail('Unable to import the csp module.')
 
 	global csp
 	global IS_FROZEN
@@ -96,7 +94,7 @@ def checkModuleSpace():
 
 def checkData():
 	"""Spot check some of the data to detect common problems."""
-	DATA = os.path.join('..', 'data')
+	DATA = 'data'
 	checks = (
 		('xml', 'theater', 'balkan.xml'),
 		('terrain', 'balkanMapElev.11-9.bmp'),
@@ -372,7 +370,7 @@ if __name__ == '__main__':
 
 	import csp.base.app
 	csp.base.app.addOption('--ini', metavar='INIFILE', default=None, help='specify the .ini file path')
-	csp.base.app.addOption('--xml', metavar='XMLPATH', default='../data/xml', help='specify the xml data path')
+	csp.base.app.addOption('--xml', metavar='XMLPATH', default='data/xml', help='specify the xml data path')
 	csp.base.app.addOption('-c', '--compile', action='store_true', default=False, help='compile the data archive')
 	csp.base.app.addOption('-r', '--rebuild', action='store_true', default=False, help='rebuilde the data archive')
 	csp.base.app.addOption('--logpri', metavar='LEVEL', default=None, help='set log priority level (e.g, "info")')

@@ -1,0 +1,3 @@
+#!/bin/bash
+export LD_LIBRARY_PATH=$(pwd)/csplib/:$(pwd)/cspsim/:$(pwd)/cspwf/:$(pwd)/../../csp-osgal/lib/:$(pwd)/modules/chunklod/:$(pwd)/modules/demeter/
+bin/sim.py

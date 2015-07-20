@@ -108,7 +108,7 @@ class Compiler:
 		# Now it is time to create the archive file and write every object
 		# into it.
 		self.compilerSignal.Emit(CompilerEvent(Compiler.Information, "Compiling all objects to archive file"))
-		compiled = csplib.DataArchive(archiveFile, 0)
+		compiled = csplib.DataArchive(archiveFile, False)
 		hash_string = csplib.hash_string
 		for id in allObjects.keys():
 			object = allObjects[id]

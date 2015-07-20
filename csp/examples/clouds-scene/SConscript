@@ -16,12 +16,16 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-Import('env build')
+Import('env csplib_module')
 
-build.Program(env,
-	name = 'clouds-scene',
-	sources = [
-		'Program.cpp',
-	],
-	deps = ['osg', 'csplib', 'cspsim'],
-	aliases = ['examples', 'clouds-scene'])
+e = env.Clone()
+e.ParseConfig('pkg-config --cflags --libs openscenegraph')
+e.ParseConfig('pkg-config --cflags --libs openthreads')
+e.Append(LIBS = ['csplib', 'cspsim', 'cspwf'], LIBPATH=['#/csplib', '#/cspsim', '#/cspwf'])
+clouds = e.Program('clouds-scene', ['Program.cpp'])
+# TODO
+# clouds_data = e.CspDataCompiler('cloud_scene.dar', Glob('xml/*/*.xml'), CSPXMLDIR='xml')
+# e.Depends(clouds_data, csplib_module)
+# e.Alias('examples', [clouds, clouds_data])
+e.Alias('examples', [clouds])
+

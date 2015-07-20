@@ -16,12 +16,12 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-Import('env build')
+Import('env')
 
-build.Program(env,
-	name = 'wf-listbox',
-	sources = [
-		'Program.cpp',
-	],
-	deps = ['osg', 'csplib', 'cspsim', 'cspwf'],
-	aliases = ['examples', 'wf-listbox'])
+e = env.Clone()
+e.ParseConfig('pkg-config --cflags --libs openscenegraph')
+e.ParseConfig('pkg-config --cflags --libs openthreads')
+e.Append(LIBS = ['csplib', 'cspsim', 'cspwf'], LIBPATH=['#/csplib', '#/cspsim', '#/cspwf'])
+wf_listbox = e.Program('wf-listbox', ['Program.cpp'])
+e.Alias(['examples', 'wf-listbox'], wf_listbox)
+

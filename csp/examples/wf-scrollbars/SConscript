@@ -16,12 +16,12 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-Import('env build')
+Import('env')
 
-build.Program(env,
-	name = 'wf-scrollbars',
-	sources = [
-		'Program.cpp',
-	],
-	deps = ['osg', 'csplib', 'cspsim', 'cspwf'],
-	aliases = ['examples', 'wf-scrollbars'])
+e = env.Clone()
+e.ParseConfig('pkg-config --cflags --libs openscenegraph')
+e.ParseConfig('pkg-config --cflags --libs openthreads')
+e.ParseConfig('pkg-config --cflags --libs sigc++-2.0')
+e.Append(LIBS = ['csplib', 'cspsim', 'cspwf'], LIBPATH=['#/csplib', '#/cspsim', '#/cspwf'])
+wf_scrollbars = e.Program('wf-scrollbars', ['Program.cpp'])
+e.Alias(['examples', 'wf-scrollbars'], wf_scrollbars)

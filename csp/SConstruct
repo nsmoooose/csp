@@ -1,9 +1,32 @@
-env = Environment(CPPPATH='#/../', tools = ['mingw'], CXX = '/usr/bin/x86_64-w64-mingw32-g++')
-# env = Environment(CPPPATH='#/../')
+# -*- python -*-
+trc = Builder(action = 'tools/trc/trc.py --header ${TARGET.base}.h --source ${TARGET.base}.cpp $SOURCE', suffix = '.cpp', src_suffix = '.net')
+data_compiler = Builder(action = 'tools/data-compiler -s ${CSPXMLDIR} -d {TARGET} ')
+env = Environment(BUILDERS = {'CspTrc' : trc, 'CspDataCompiler': data_compiler})
+
+# env = Environment(CPPPATH='#/../', tools = ['mingw'], CXX = '/usr/bin/x86_64-w64-mingw32-g++')
+# env = Environment(CPPPATH='#/../', BUILDERS = {'CspTrc': trc})
+env.Append(SWIGFLAGS = '-python -c++')
+env.Append(SWIGPATH = '$CPPPATH')
+env.Append(CPPPATH = '#/../')
 env.MergeFlags("!pkg-config sigc++-2.0 --cflags")
-env.MergeFlags("-O2 -g -W -Wall -pedantic -Wno-long-long -Wno-deprecated -fno-strict-aliasing -Wno-unused-local-typedefs")
+env.MergeFlags("-O2 -g -W -Wall -pedantic -Wno-long-long -Wno-deprecated -fno-strict-aliasing -Wno-unused-local-typedefs   -Wl,--no-undefined")
 
 Export("env")
 
-env.SConscript(['csplib/SConscript'])
-
+env.SConscript([
+    'csplib/SConscript',
+    'cspsim/SConscript',
+    'cspwf/SConscript',
+    'modules/demeter/SConscript',
+    'modules/chunklod/SConscript',
+    'examples/clouds/SConscript',
+    'examples/clouds-scene/SConscript',
+    'examples/objectmodel/SConscript',
+    'examples/osgviewer_sdlinput/SConscript',
+    # 'examples/sdl-viewer/SConscript'   TODO doesn't build.
+    'examples/sky/SConscript',
+    'examples/wf-listbox/SConscript',
+    'examples/wf-scrollbars/SConscript',
+    'examples/wf-signals/SConscript',
+    'examples/wf-window/SConscript',
+])

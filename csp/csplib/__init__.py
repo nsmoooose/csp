@@ -23,8 +23,7 @@ import types
 # this path hack allows the csplib extension module to be loaded
 # transparently from the .bin directory.  extending rather than
 # replacing __path__ is necessary for py2exe imports to work.
-bin = os.path.join(os.path.dirname(__file__), '.bin')
-__path__.append(bin)
+__path__.append(os.path.dirname(__file__))
 
 try:
 	import csplib_module as _csplib
@@ -32,7 +31,7 @@ except ImportError, e:
 	sys.stderr.write(str(e))
 	sys.stderr.write(
 """
-Unable to import csplib.py from csp/csplib/.bin.  This file and
+Unable to import csplib_module.py from csp/csplib/.  This file and
 and others needed by cspsim are generated during the build.
 Check that all targets have been built successfully.  See the
 README file for build instructions.

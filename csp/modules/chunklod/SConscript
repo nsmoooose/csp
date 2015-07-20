@@ -16,27 +16,30 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-Import('env build')
+Import('env')
 
-env = env.Clone()
-env.AppendUnique(CPPDEFINES=Split('OSGCHUNKLOD_LIBRARY'))
+# env = env.Clone()
+# env.AppendUnique(CPPDEFINES=Split('OSGCHUNKLOD_LIBRARY'))
 
 # to remove conflicts with MSVCRT
-if env['PLATFORM'].startswith('win'):
-	env.AppendUnique(SHLINKFLAGS=Split('/NODEFAULTLIB:LIBCMT'))
+# if env['PLATFORM'].startswith('win'):
+#	env.AppendUnique(SHLINKFLAGS=Split('/NODEFAULTLIB:LIBCMT'))
 
-build.SharedLibrary(env,
-	name = 'chunklod',
-	sources = [
-		'ChunkLod.cpp',
-		'ChunkLodDrawable.cpp',
-		'ChunkLodLoader.cpp',
-		'Module.cpp',
-		'RayStrip.cpp',
-		'TextureQuadTree.cpp',
-		'Version.cpp',
-	],
-	deps = ['cspsim', 'jpeg'],
-	aliases = ['all', 'clod'],
-	softlink = 1)
+
+e = env.Clone()
+e.ParseConfig('pkg-config --cflags --libs openscenegraph')
+e.Append(LIBS = ['GL', 'jpeg', 'pthread'])
+e.SharedLibrary('chunklod', [
+    'ChunkLod.cpp',
+    'ChunkLodDrawable.cpp',
+    'ChunkLodLoader.cpp',
+    'Module.cpp',
+    'RayStrip.cpp',
+    'TextureQuadTree.cpp',
+    'Version.cpp',
+])
+
+#	deps = ['cspsim', 'jpeg'],
+#	aliases = ['all', 'clod'],
+#	softlink = 1)
 

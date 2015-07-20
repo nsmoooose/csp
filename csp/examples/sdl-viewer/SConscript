@@ -16,16 +16,23 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-Import('env build')
+Import('env')
 
-build.Program(env,
-	name = 'sdl-viewer',
-	sources = [
-		'Program.cpp',
-		'SDLViewer.cpp',
-		'SDLViewer.h',
-		'SkyGroup.cpp',
-		'SkyGroup.h',
-	],
-	deps = ['osg', 'csplib', 'cspsim', 'demeter'],
-	aliases = ['examples', 'sdl-viewer'])
+e = env.Clone()
+e.ParseConfig('pkg-config --cflags --libs openscenegraph')
+e.Append(LIBS = ['csplib', 'cspsim', 'cspwf'], LIBPATH=['#/csplib', '#/cspsim', '#/cspwf'])
+sdl_viewer = e.Program('sdl-viewer', ['Program.cpp', 'SDLViewer.cpp', 'SkyGroup.cpp'])
+e.Alias('examples', sdl_viewer)
+
+
+# build.Program(env,
+# 	name = 'sdl-viewer',
+# 	sources = [
+# 		'Program.cpp',
+# 		'SDLViewer.cpp',
+# 		'SDLViewer.h',
+# 		'SkyGroup.cpp',
+# 		'SkyGroup.h',
+# 	],
+# 	deps = ['osg', 'csplib', 'cspsim', 'demeter'],
+# 	aliases = ['examples', 'sdl-viewer'])

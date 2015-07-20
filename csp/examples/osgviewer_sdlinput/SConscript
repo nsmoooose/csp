@@ -18,14 +18,11 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-Import('env build')
+Import('env')
 
-build.PythonSharedLibrary(env,
-	name = 'osgviewer_sdlinput_module',
-	sources = [
-		'osgviewer_sdlinput.i',
-		'main.cpp',
-		'main.h',
-	],
-	deps = ['osg', 'sdl'],
-	aliases = ['examples', 'osgviewer_sdlinput'])
+e = env.Clone()
+e.ParseConfig('pkg-config --cflags --libs python')
+e.ParseConfig('pkg-config --cflags --libs sdl')
+e.ParseConfig('pkg-config --cflags --libs openscenegraph')
+osgviewer_sdlinput = e.SharedLibrary('_osgviewer_sdlinput_module', ['main.cpp', 'osgviewer_sdlinput.i'], SHLIBPREFIX='')
+e.Alias('examples', osgviewer_sdlinput)

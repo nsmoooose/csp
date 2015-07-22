@@ -7,7 +7,8 @@ e.ParseConfig('pkg-config --cflags --libs sigc++-2.0')
 e.AppendUnique(CPPDEFINES=Split('CSPSIM_EXPORTS __CSPSIM_EXE__'))
 
 e.Program("csplib_config", "util/Config.cpp")
-e.Command("util/Config.h", "csplib_config", "csplib/csplib_config > $TARGET")
+config = e.Command("util/Config.h", "csplib_config", "csplib/csplib_config > $TARGET")
+e.Alias('config', config)
 
 e.CspTrc(['net/ClientServerMessages.cpp', 'net/ClientServerMessages.h'], 'net/ClientServerMessages.net')
 

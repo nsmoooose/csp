@@ -299,7 +299,7 @@ def pauseForDebugger():
 
 
 def dumpDataArchive(dar):
-	archive = csp.csplib.DataArchive(dar, 1)
+	archive = csp.csplib.DataArchive(dar, True)
 	archive.dump()
 
 

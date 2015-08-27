@@ -29,6 +29,18 @@ Execute::
   cd csp/csp/data
   ln -s ../../../csp_data/terrain/
 
+**osgal**
+
+Execute::
+
+  cd csp-osgal
+  ccmake .
+  make
+  sudo make install
+
+This will install osgAL in /usr/local/lib/. Make sure that this path
+is in your /etc/ld.so.conf.d/ somewhere.
+
 **Compiling**
 
 Execute the following commands::

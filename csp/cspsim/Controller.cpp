@@ -120,7 +120,7 @@ void LocalAnimationUpdate::update(double dt) {
 }
 
 
-Ref<NetworkMessage> RemoteController::getUpdate(TimeStamp current_timestamp, SimTime interval, int detail) {
+Ref<NetworkMessage> RemoteController::getUpdate(TimeStamp current_timestamp, SimTime /*interval*/, int detail) {
 	// TODO (in subclass) compare interval to current_timestamp - last_timestamp to decide if
 	// we need to generate a new message.  better, need to find a simple way to cache the
 	// encoded packet data if no update is needed!
@@ -144,8 +144,6 @@ Ref<NetworkMessage> RemoteController::getUpdate(TimeStamp current_timestamp, Sim
 	// error and throttle updates accordingly.  This is significantly simpler and less
 	// CPU intensive than maintaining per-host error budgets, and potentially just as
 	// effective.
-
-	interval = 0; // silence warnings for now
 
 	// occasionally force updates even when nothing has changed, in case packets were
 	// dropped and we are in an inconsistent state.

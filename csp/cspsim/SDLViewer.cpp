@@ -52,7 +52,7 @@ bool SDLViewer::setUpViewerAsSDLGraphicsWindow(const char *caption, const Screen
 	return gw->valid();
 }
 
-bool SDLViewer::setUpViewerAsOSGGraphicsWindow(const char *caption, const ScreenSettings & screenSettings)
+bool SDLViewer::setUpViewerAsOSGGraphicsWindow(const char */*caption*/, const ScreenSettings & screenSettings)
 {
 	if ( screenSettings.fullScreen )
 	{

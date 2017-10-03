@@ -80,18 +80,18 @@ inline uint32 newhash(register uint8 const *k, uint32 length, uint32 initval)
 	// handle the last 11 bytes
 	c = c+length;
 	switch(len)  { // all the case statements fall through
-	case 11: c=c+((uint32)k[10]<<24);
-	case 10: c=c+((uint32)k[9]<<16);
-	case 9 : c=c+((uint32)k[8]<<8);
+	case 11: c=c+((uint32)k[10]<<24);  /* fall through */
+	case 10: c=c+((uint32)k[9]<<16);   /* fall through */
+	case 9 : c=c+((uint32)k[8]<<8);    /* fall through */
 	// the first byte of c is reserved for the length
-	case 8 : b=b+((uint32)k[7]<<24);
-	case 7 : b=b+((uint32)k[6]<<16);
-	case 6 : b=b+((uint32)k[5]<<8);
-	case 5 : b=b+k[4];
-	case 4 : a=a+((uint32)k[3]<<24);
-	case 3 : a=a+((uint32)k[2]<<16);
-	case 2 : a=a+((uint32)k[1]<<8);
-	case 1 : a=a+k[0];
+	case 8 : b=b+((uint32)k[7]<<24);   /* fall through */
+	case 7 : b=b+((uint32)k[6]<<16);   /* fall through */
+	case 6 : b=b+((uint32)k[5]<<8);    /* fall through */
+	case 5 : b=b+k[4]; /* fall through */
+	case 4 : a=a+((uint32)k[3]<<24);   /* fall through */
+	case 3 : a=a+((uint32)k[2]<<16);   /* fall through */
+	case 2 : a=a+((uint32)k[1]<<8);    /* fall through */
+	case 1 : a=a+k[0];                 /* fall through */
 	 // case 0: nothing left to add
 	}
 	mix(a,b,c);

@@ -522,24 +522,24 @@ std::string stringprintf(const char *fmt, FormatArg const &a0, FormatArg const &
 
 bool FormatArg::format(formatspec &spec, stringbuf &out) const {
 	switch (spec.format) {
-		case 'd':
-		case 'i':
+		case 'd':                     /* fall through */
+		case 'i':                     /* fall through */
 		case 'u':
 			return formatInt(out, spec, 10);
 		case 'o':
 			spec.space = spec.plus = false;
 			return formatInt(out, spec, 8);
 		case 'p':
-			spec.prefix = true;
-		case 'x':
+			spec.prefix = true;       /* fall through */
+		case 'x':                     /* fall through */
 		case 'X':
 			spec.space = spec.plus = false;
 			return formatInt(out, spec, 16, spec.format != 'X');
-		case 'e':
-		case 'E':
-		case 'f':
-		case 'F':
-		case 'g':
+		case 'e':                     /* fall through */
+		case 'E':                     /* fall through */
+		case 'f':                     /* fall through */
+		case 'F':                     /* fall through */
+		case 'g':                     /* fall through */
 		case 'G':
 			if (x_type != TYPE_DOUBLE) return false;
 			return formatFloat(out, spec, x_val.d, spec.format);
@@ -550,7 +550,7 @@ bool FormatArg::format(formatspec &spec, stringbuf &out) const {
 			if (x_type != TYPE_STRING) return false;
 			return formatString(out, spec, x_val.s, x_len);
 		case '%':
-			out.append('%');
+			out.append('%');          /* fall through */
 		default:
 			return false;
 	}

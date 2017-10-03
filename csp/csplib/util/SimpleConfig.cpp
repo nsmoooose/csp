@@ -220,7 +220,6 @@ void SimpleConfig::_parse(std::istream &is) {
 	std::vector<std::string> lines;
 	std::vector<std::string>::iterator L;
 	std::string line;
-	int state = 0;
 	line.reserve(256);
 	while (is.good() && !is.eof()) {
 		char buffer[1024];
@@ -229,7 +228,6 @@ void SimpleConfig::_parse(std::istream &is) {
 		lines.push_back(buffer);
 	}
 	line = "";
-	state = 0;
 	std::string section;
 	std::string comment;
 	int line_no = 0;

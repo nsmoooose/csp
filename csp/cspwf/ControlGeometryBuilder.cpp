@@ -638,7 +638,7 @@ Size ControlGeometryBuilder::getSizeOfText(const std::string& text, const std::s
 	osg::Vec4 color(0.0f, 0.0f, 0.0f, 1.0f);
 	osg::ref_ptr<osgText::Text> textObject = buildText(text, fontFamily, fontSize, color);
 	if(textObject.valid()) {
-		osg::BoundingBox boundingBox = textObject->getBound();
+		osg::BoundingBox boundingBox = textObject->getBoundingBox();
 		return Size(boundingBox.xMax() - boundingBox.xMin(), boundingBox.yMax() - boundingBox.yMin());
 	}
 	else {

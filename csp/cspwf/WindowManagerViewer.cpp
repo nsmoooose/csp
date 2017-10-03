@@ -153,7 +153,7 @@ Control* WindowManagerViewer::getControlAtPosition(int x, int y) {
 			const osgUtil::LineSegmentIntersector::Intersection& intersection = *itr;
 			for (osg::NodePath::const_reverse_iterator iter = intersection.nodePath.rbegin(); iter != intersection.nodePath.rend(); ++iter) {
 				osg::Node *node = *iter;
-				osg::NodeCallback *callback = node->getUpdateCallback();
+				osg::Callback *callback = node->getUpdateCallback();
 				if (callback) {
 					ControlCallback *controlCallback = dynamic_cast<ControlCallback*>(callback);
 					if (controlCallback) {

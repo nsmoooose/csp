@@ -114,8 +114,8 @@ inline typename ToFloat<T>::Type inRadians(T angle) { return static_cast<typenam
 	inline bool isNaN(float v) { return __isnanf(v); }
 	inline bool isNaN(double v) { return __isnand(v); }
 #	else
-	inline bool isNaN(float v) { return isnan(v); }
-	inline bool isNaN(double v) { return isnan(v); }
+	inline bool isNaN(float v) { return std::isnan(v); }
+	inline bool isNaN(double v) { return std::isnan(v); }
 #	endif
 #endif
 

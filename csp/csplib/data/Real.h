@@ -67,7 +67,7 @@ public: // BaseType
 	/** Parse the character data from an XML \<Real\> tag.
 	 *  The format is "mean:sigma"
 	 */
-	void parseXML(const char*) throw(ParseException);
+	void parseXML(const char*);
 
 	/// XML post processing.
 	void convertXML() {}

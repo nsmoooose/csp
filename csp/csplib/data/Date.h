@@ -755,7 +755,7 @@ public: // BaseType
 	 *  @endcode
 	 *  in which case the time is set to zero.
 	 */
-	void parseXML(const char* cdata) throw(ParseException);
+	void parseXML(const char* cdata);
 
 	/// XML post processing.
 	void convertXML() {}

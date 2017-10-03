@@ -50,7 +50,7 @@ void Quat::serialize(Writer &writer) const {
 	writer << _w << _x << _y << _z;
 }
 
-void Quat::parseXML(const char* cdata) throw(ParseException) {
+void Quat::parseXML(const char* cdata) {
 	std::stringstream ss(cdata);
 	ss.imbue(std::locale::classic());
 	double v[9];

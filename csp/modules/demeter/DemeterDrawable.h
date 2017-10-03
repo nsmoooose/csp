@@ -61,12 +61,8 @@ namespace Demeter
             virtual void                drawImplementation(osg::RenderInfo&) const;
             
         protected:
-        
-#ifdef OSG_OLD_COMPUTE_BOUND
-				virtual bool computeBound() const;
-#else
-				virtual osg::BoundingBox computeBound() const;
-#endif
+				virtual osg::BoundingBox computeBoundingBox() const;
+
 				mutable osg::ref_ptr<Terrain>       m_RefTerrain;
      };
 
@@ -108,12 +104,8 @@ namespace Demeter
 			virtual void     SetCameraPosition(float, float, float);
             
         protected:
-        
-#ifdef OSG_OLD_COMPUTE_BOUND
-			virtual bool computeBound() const;
-#else
-			virtual osg::BoundingBox computeBound() const;
-#endif
+			virtual osg::BoundingBox computeBoundingBox() const;
+
 			mutable osg::ref_ptr<TerrainLattice>    m_RefTerrainLattice;
 			DemeterLatticeDrawableLoadListener * m_pLatticeLoadListener;
 

@@ -140,7 +140,7 @@ public:
 	 *  implementation throws an exception if any non-whitespace cdata
 	 *  is present.
 	 */
-	virtual void parseXML(const char *cdata) throw(ParseException);
+	virtual void parseXML(const char *cdata);
 
 	/** Serialize additional state to a data target.
 	 *

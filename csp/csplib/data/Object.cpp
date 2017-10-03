@@ -98,7 +98,7 @@ bool Object::isClassStatic() const {
 void Object::convertXML() {
 }
 
-void Object::parseXML(const char *cdata) throw(ParseException) { 
+void Object::parseXML(const char *cdata) { 
 	checkEmptyTag(cdata); 
 }
 

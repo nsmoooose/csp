@@ -19,7 +19,7 @@ public:
 	std::string typeString() const { return "type::Vector2"; }
 	void serialize(Reader&);
 	void serialize(Writer&) const;
-	void parseXML(const char*) throw(ParseException);
+	void parseXML(const char*);
 	void convertXML() {}
 
 	double x() const { return _x; }

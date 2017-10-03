@@ -50,7 +50,7 @@ SerializationException::SerializationException(const char* message) :
 	m_Message(message) {
 }
 
-SerializationException::~SerializationException() throw() {}
+SerializationException::~SerializationException() {}
 
 const char* SerializationException::what() {
 	return m_Message.c_str();
@@ -193,7 +193,7 @@ Serialization::Serialization() {
 Serialization::~Serialization() {
 }
 
-void Serialization::load(Window* window, const std::string& file) throw (SerializationException) {
+void Serialization::load(Window* window, const std::string& file) {
 	std::string absoluteFilePath = file;
 	Ref<ResourceLocator> resourceLocator = getDefaultResourceLocator();
 	if(!resourceLocator) {

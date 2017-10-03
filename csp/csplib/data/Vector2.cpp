@@ -22,7 +22,7 @@ void Vector2::serialize(Writer& writer) const {
 	writer << _x << _y;
 }
 
-void Vector2::parseXML(const char* cdata) throw(ParseException) {
+void Vector2::parseXML(const char* cdata) {
 	std::vector<std::string> values = SplitString(cdata);
 
 	// Make sure that there is enough values to parse.

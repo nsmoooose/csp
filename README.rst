@@ -39,7 +39,12 @@ Execute::
   sudo make install
 
 This will install osgAL in /usr/local/lib/. Make sure that this path
-is in your /etc/ld.so.conf.d/ somewhere.
+is in your /etc/ld.so.conf.d/ with the following steps::
+
+  sudo -i
+  echo "/usr/local/lib" > /etc/ld.so.conf.d/local.conf
+  ldconfig
+  exit
 
 **Compiling**
 

@@ -112,7 +112,7 @@ void ChunkLodDrawable::drawImplementation(osg::RenderInfo& info) const {
 
 	if (_tree != NULL) {
 		if (_lastBoundIndex != _tree->getBoundIndex()) {
-			computeBound();
+			computeBoundingBox();
 			_lastBoundIndex = _tree->getBoundIndex();
 		}
 		ChunkLodTree *tree = const_cast<ChunkLodTree*>(_tree);
@@ -163,7 +163,7 @@ void ChunkLodDrawable::drawImplementation(osg::RenderInfo& info) const {
 	}
 }
 
-osg::BoundingBox ChunkLodDrawable::computeBound() const {
+osg::BoundingBox ChunkLodDrawable::computeBoundingBox() const {
 	osg::BoundingBox bbox;
 	if (_tree != NULL) {
 		osg::Vec3 center, extent;

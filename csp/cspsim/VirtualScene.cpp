@@ -949,7 +949,7 @@ bool VirtualScene::pick(int x, int y) {
 			++nodePathIt)
 		{
 			osg::Node *node = *nodePathIt;
-			osg::NodeCallback *callback = node->getUpdateCallback();
+			osg::Callback *callback = node->getUpdateCallback();
 			if ( callback )
 			{
 				AnimationCallback *anim = dynamic_cast<AnimationCallback*>( callback );

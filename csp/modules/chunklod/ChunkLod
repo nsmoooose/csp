@@ -52,9 +52,11 @@
 #include <csp/modules/chunklod/MultiTextureDetails>
 
 
-namespace osg { class Program; }
-namespace osg { class Uniform; }
-
+namespace osg {
+	class Program;
+	class State;
+	class Uniform;
+}
 
 namespace osgChunkLod {
 
@@ -293,7 +295,7 @@ public:
 	inline float *getVertexBuffer() const { return vertexBuffer; }
 	inline unsigned long getVertexBufferSize() const { return vertexBufferSize; }
 	inline bool useVertexProgram() const { return _useVertexProgram; }
-	void setScaleAndOffset(const osg::Vec3 &scale, const osg::Vec3 &offset);
+	void setScaleAndOffset(osg::State& s, const osg::Vec3 &scale, const osg::Vec3 &offset);
 
 #ifdef USE_CG
 	inline osgNVCg::Context * getCgContext() const { return _cgContext; }

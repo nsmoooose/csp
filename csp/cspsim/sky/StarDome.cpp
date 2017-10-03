@@ -190,7 +190,7 @@ void StarDome::drawImplementation(osg::RenderInfo&) const {
 	glPopAttrib();
 }
 
-osg::BoundingBox StarDome::computeBound() const {
+osg::BoundingBox StarDome::computeBoundingBox() const {
 	osg::BoundingBox bbox;
 	bbox._min = osg::Vec3(-m_Radius, -m_Radius, -m_Radius);
 	bbox._max = osg::Vec3(m_Radius, m_Radius, m_Radius);

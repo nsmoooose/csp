@@ -70,7 +70,7 @@ void Vector3::serialize(Writer &writer) const {
 	writer << _x << _y << _z;
 }
 
-void Vector3::parseXML(const char* cdata) throw(ParseException) {
+void Vector3::parseXML(const char* cdata) {
 	std::vector<std::string> values = SplitString(cdata);
 
 	// Make sure that there is enough values to parse.

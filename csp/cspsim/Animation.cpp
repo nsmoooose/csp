@@ -255,7 +255,7 @@ AnimationCallback::~AnimationCallback() {
 }
 
 void AnimationCallback::bind(osg::Node &node) {
-	osg::NodeCallback *old = node.getUpdateCallback();
+	osg::Callback *old = node.getUpdateCallback();
 	if (old) {
 		if (dynamic_cast<AnimationCallback*>(old)) {
 			CSPLOG(INFO, OBJECT) << "Adding nested animation callback (node " << node.getName() << ")";

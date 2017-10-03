@@ -90,7 +90,7 @@ protected:
 /** Raw callback class for handling signals with no arguments.  Use callback<> instead.
  */
 template <class ret>
-struct callback0: public callbackbase, private sigc::slot<ret> {
+struct callback0: public callbackbase, public sigc::slot<ret> {
 	callback0() { }
 	template <class F> callback0(F const &functor): sigc::slot<ret>(functor) { }
 	template <class Obj> void init(Obj *o, ret (Obj::*m)()) { sigc::slot<ret>::operator=( sigc::mem_fun(*o, m) ); }
@@ -100,7 +100,7 @@ struct callback0: public callbackbase, private sigc::slot<ret> {
 /** Raw callback class for handling signals with one argument.  Use callback<> instead.
  */
 template <class ret, class arg1>
-struct callback1: public callbackbase, private sigc::slot<ret, arg1> {
+struct callback1: public callbackbase, public sigc::slot<ret, arg1> {
 	callback1() { }
 	template <class F> callback1(F const &functor): sigc::slot<ret, arg1>(functor) { }
 	template <class Obj> void init(Obj *o, ret (Obj::*m)(arg1)) { sigc::slot<ret, arg1>::operator=( sigc::mem_fun(*o, m) ); }
@@ -110,7 +110,7 @@ struct callback1: public callbackbase, private sigc::slot<ret, arg1> {
 /** Raw callback class for handling signals with two arguments.  Use callback<> instead.
  */
 template <class ret, class arg1, class arg2>
-struct callback2: public callbackbase, private sigc::slot<ret, arg1, arg2> {
+struct callback2: public callbackbase, public sigc::slot<ret, arg1, arg2> {
 	callback2() { }
 	template <class F> callback2(F const &functor): sigc::slot<ret, arg1, arg2>(functor) { }
 	template <class Obj> void init(Obj *o, ret (Obj::*m)(arg1, arg2)) { sigc::slot<ret, arg1, arg2>::operator=( sigc::mem_fun(*o, m) ); }
@@ -120,7 +120,7 @@ struct callback2: public callbackbase, private sigc::slot<ret, arg1, arg2> {
 /** Raw callback class for handling signals with three arguments.  Use callback<> instead.
  */
 template <class ret, class arg1, class arg2, class arg3>
-struct callback3: public callbackbase, private sigc::slot<ret, arg1, arg2, arg3> {
+struct callback3: public callbackbase, public sigc::slot<ret, arg1, arg2, arg3> {
 	callback3() { }
 	template <class F> callback3(F const &functor): sigc::slot<ret, arg1, arg2, arg3>(functor) { }
 	template <class Obj> void init(Obj *o, ret (Obj::*m)(arg1, arg2, arg3)) { sigc::slot<ret, arg1, arg2, arg3>::operator=( sigc::mem_fun(*o, m) ); }
@@ -130,7 +130,7 @@ struct callback3: public callbackbase, private sigc::slot<ret, arg1, arg2, arg3>
 /** Raw callback class for handling signals with four arguments.  Use callback<> instead.
  */
 template <class ret, class arg1, class arg2, class arg3, class arg4>
-struct callback4: public callbackbase, private sigc::slot<ret, arg1, arg2, arg3, arg4> {
+struct callback4: public callbackbase, public sigc::slot<ret, arg1, arg2, arg3, arg4> {
 	callback4() { }
 	template <class F> callback4(F const &functor): sigc::slot<ret, arg1, arg2, arg3, arg4>(functor) { }
 	template <class Obj> void init(Obj *o, ret (Obj::*m)(arg1, arg2, arg3, arg4)) { sigc::slot<ret, arg1, arg2, arg3, arg4>::operator=( sigc::mem_fun(*o, m) ); }

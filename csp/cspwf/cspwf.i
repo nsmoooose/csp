@@ -289,7 +289,7 @@ void setDefaultResourceLocator(ResourceLocator* locator);
 class SerializationException : public std::exception {
 public:
 	SerializationException(const char* message);
-	virtual ~SerializationException() throw();
+	virtual ~SerializationException();
 
 	const char* what();
 };

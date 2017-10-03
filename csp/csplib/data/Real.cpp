@@ -50,7 +50,7 @@ void Real::serialize(Writer &writer) const {
 	writer << _sigma;
 }
 
-void Real::parseXML(const char* cdata) throw(ParseException) {
+void Real::parseXML(const char* cdata) {
 	std::string s(cdata);
 	float mean, sigma = 0.0;
 	char separator;

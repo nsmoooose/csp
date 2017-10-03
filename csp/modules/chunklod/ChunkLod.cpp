@@ -241,14 +241,14 @@ ChunkLodTree::ChunkLodTree(const char *chunksrc,
 	}
 }
 
-void ChunkLodTree::setScaleAndOffset(const osg::Vec3 &scale, const osg::Vec3 &offset) {
+void ChunkLodTree::setScaleAndOffset(osg::State &s, const osg::Vec3 &scale, const osg::Vec3 &offset) {
 	if (_useVertexProgram) {
 		_vertexScale->set(scale);
 		_vertexOffset->set(offset);
 		// todo: this should be done automatically when the tree is split into separate
 		// drawables.  as a single drawable we need to drive the internal state changes
 		// manually.
-		osg::Program::PerContextProgram *pcp = _vertexProgram->getPCP(0);
+		osg::Program::PerContextProgram *pcp = _vertexProgram->getPCP(s);
 		assert(pcp);
 		pcp->apply(*_vertexScale);
 		pcp->apply(*_vertexOffset);
@@ -1137,7 +1137,7 @@ int ChunkLodData::render(ChunkLodTree& c, const ChunkLod& chunk, osg::State& s, 
 		glDrawElements(GL_TRIANGLE_STRIP, vertexInfo.indexCount, GL_UNSIGNED_SHORT, vertexInfo.indices);
 	} else {
 		if (c.useVertexProgram()) {
-			c.setScaleAndOffset(osg::Vec3(sx, c.getVerticalScale(), sz), osg::Vec3(offsetx, one_minus_f, offsetz));
+			c.setScaleAndOffset(s, osg::Vec3(sx, c.getVerticalScale(), sz), osg::Vec3(offsetx, one_minus_f, offsetz));
 			s.setVertexPointer(4, GL_FLOAT, 0, vertexInfo.floatVertices);
 			glDrawElements(GL_TRIANGLE_STRIP, vertexInfo.indexCount, GL_UNSIGNED_SHORT, vertexInfo.indices);
 		}

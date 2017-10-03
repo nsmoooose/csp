@@ -96,25 +96,7 @@ void DemeterDrawable::drawImplementation(RenderInfo& /*state*/) const
 	}
 }
 
-#ifdef OSG_OLD_COMPUTE_BOUND
-bool DemeterDrawable::computeBound() const {
-	if (m_RefTerrain.valid()) {
-		float width = m_RefTerrain->GetWidth();
-		float height = m_RefTerrain->GetHeight();
-		int latticeX, latticeY;
-		m_RefTerrain->GetLatticePosition( latticeX, latticeY );
-		_bbox._min.x() = width*latticeX;
-		_bbox._min.y() = height*latticeY;
-		_bbox._min.z() = 0.0f;
-		_bbox._max.x() = width*(latticeX+1);
-		_bbox._max.y() = height*(latticeY+1);
-		_bbox._max.z() = m_RefTerrain->GetMaxElevation();
-		_bbox_computed = true;
-	}
-	return true;
-}
-#else
-osg::BoundingBox DemeterDrawable::computeBound() const {
+osg::BoundingBox DemeterDrawable::computeBoundingBox() const {
 	osg::BoundingBox bbox;
 	if (m_RefTerrain.valid()) {
 		float width = m_RefTerrain->GetWidth();
@@ -130,8 +112,6 @@ osg::BoundingBox DemeterDrawable::computeBound() const {
 	}
 	return bbox;
 }
-#endif
-
 
 // DemeterLatticeDrawable
 
@@ -239,28 +219,7 @@ void DemeterLatticeDrawable::SetCameraPosition(float x, float y, float z)
 	m_RefTerrainLattice->SetCameraPosition(x, y, z);
 }
 
-
-#ifdef OSG_OLD_COMPUTE_BOUND
-bool DemeterLatticeDrawable::computeBound() const
-{
-	if (m_RefTerrainLattice.valid())
-	{
-
-//		_bsphere.radius() = 1000000;
-//		_bsphere.center().x() = 0;
-//		_bsphere.center().y() = 0;
-//		_bsphere.center().z() = 0;
-//		_bsphere_computed = true;
-		_bbox._min.x() = _bbox._min.y() = _bbox._min.z() = 0.0f;
-		_bbox._max.x() = 1000000;
-		_bbox._max.y() = 1000000;
-		_bbox._max.z() = 10000;
-		_bbox_computed = true;
-	}
-	return true;
-}
-#else
-osg::BoundingBox DemeterLatticeDrawable::computeBound() const {
+osg::BoundingBox DemeterLatticeDrawable::computeBoundingBox() const {
 	osg::BoundingBox bbox(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
 	if (m_RefTerrainLattice.valid()) {
 		bbox._min.x() = bbox._min.y() = bbox._min.z() = 0.0f;
@@ -270,7 +229,6 @@ osg::BoundingBox DemeterLatticeDrawable::computeBound() const {
 	}
 	return bbox;
 }
-#endif
 
 DemeterLatticeDrawableLoadListener::DemeterLatticeDrawableLoadListener() : m_pLatticeDrawable(NULL){
 }

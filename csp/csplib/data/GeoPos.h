@@ -251,7 +251,7 @@ public: // BaseType
 	 *  LLA coordinate format 2 (lat, lon, alt): @n
 	 *   <tt> x'x"x.x x'x"x.x x.x </tt>
 	 */
-	void parseXML(const char*) throw (ParseException);
+	void parseXML(const char*);
 
 	/// XML post processing.
 	void convertXML() {}
@@ -375,7 +375,7 @@ public: // BaseType
 	 *  where @c zone is an integer followed by a UTM latitude designator,
 	 *  such as @c 10T
 	 */
-	void parseXML(const char*) throw (ParseException);
+	void parseXML(const char*);
 
 	/// XML post processing.
 	void convertXML() {}

@@ -433,7 +433,7 @@ std::string UTM::asString() const
 	return ss.str();
 }
 
-void UTM::parseXML(const char *cdata) throw (ParseException)
+void UTM::parseXML(const char *cdata)
 {
 	if (cdata) {
 		const char *c = cdata;
@@ -494,7 +494,7 @@ std::string LLA::asString() const
 	return ss.str();
 }
 
-void LLA::parseXML(const char* cdata) throw (ParseException) {
+void LLA::parseXML(const char* cdata) {
 	// 37.91283 -120.12398 234.033
 	// 37'59"20 -120'4"43 234.033
 	if (cdata) {

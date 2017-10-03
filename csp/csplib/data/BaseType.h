@@ -87,7 +87,7 @@ CSP_EXCEPTION(ParseException)
 
 /** Convenience method for implementing parseXML methods that expect no cdata.
  */
-inline void checkEmptyTag(const char* cdata) throw(ParseException) {
+inline void checkEmptyTag(const char* cdata) {
 	std::string s(cdata);
 	if (s.find_first_not_of("\t \r\n") == std::string::npos) return;
 	throw ParseException("WARNING: #cdata ignored");

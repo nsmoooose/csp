@@ -60,7 +60,7 @@ public:
 	virtual void drawImplementation(osg::RenderInfo &) const;
 
 protected:
-	virtual osg::BoundingBox computeBound() const;
+	virtual osg::BoundingBox computeBoundingBox() const;
 
 	ChunkLodTree* _tree;
 	mutable osg::Timer_t _last_tick;

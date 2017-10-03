@@ -174,7 +174,7 @@ public:
 		M->setText("MMMMMMMMMM");
 		apply(M.get());
 		M->update();
-		osg::BoundingBox bbox = M->getBound();
+		osg::BoundingBox bbox = M->getBoundingBox();
 		m_Width = (bbox.xMax() - bbox.xMin()) * 0.1;
 		CSPLOG(INFO, ALL) << "font width: " << m_Width << " " << m_Height << " " << (bbox.zMax() - bbox.zMin());
 	}
@@ -286,7 +286,7 @@ void DisplayText::reformat() {
 	if (m_Invert && lines > 0) {
 		double top = m_PosY + (offset + 0.8) * stride;
 		double bottom = top - lines * stride;
-		osg::BoundingBox bbox = m_Lines[0]->getBound();
+		osg::BoundingBox bbox = m_Lines[0]->getBoundingBox();
 		double left = 0.5 * (bbox.xMin() + bbox.xMax()) - 0.5 * m_BoxWidth;
 		double right = 0.5 * (bbox.xMin() + bbox.xMax()) + 0.5 * m_BoxWidth;
 		m_Box.addRectangle(left, bottom, right, top, true, m_Color);
@@ -332,7 +332,7 @@ void OptionSelectButton::setMode(Mode mode) {
 	// in general we don't want to draw it.
 	bool empty = m_Text->getText().empty();
 	m_Box.erase();
-	osg::BoundingBox bbox = m_Text->getBound();
+	osg::BoundingBox bbox = m_Text->getBoundingBox();
 	bbox.xMin() -= m_Margin;
 	bbox.zMin() -= m_Margin;
 	bbox.xMax() += m_Margin;

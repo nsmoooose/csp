@@ -9,10 +9,10 @@ Fedora
 Install the following packages::
 
   sudo dnf install git gcc gdb OpenSceneGraph-devel OpenSceneGraph
-  sudo dnf libsigc++20-devel commoncpp2-devel swig
-  sudo dnf scons wxPython python-lxml SDL-devel SDL_image-devel
-  sudo dnf freealut freealut-devel libvorbis-devel
-  sudo dnf python-devel libjpeg-turbo-devel
+  sudo dnf install libsigc++20-devel commoncpp2-devel swig
+  sudo dnf install scons wxPython python-lxml SDL-devel SDL_image-devel
+  sudo dnf install freealut freealut-devel libvorbis-devel
+  sudo dnf install python-devel libjpeg-turbo-devel
 
 **Source code**
 

@@ -351,7 +351,7 @@ void Matrix3::serialize(Writer &writer) const {
 	writer << _mat[2][2];
 }
 
-void Matrix3::parseXML(const char* cdata) throw(ParseException) {
+void Matrix3::parseXML(const char* cdata) {
 	std::stringstream ss(cdata);
 	std::string token;
 	for (int irow = 0; irow < 3; ++irow) {

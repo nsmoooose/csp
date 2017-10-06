@@ -1,6 +1,18 @@
 Building on Linux
 =================
 
+Debian
+------
+
+**Dependencies**
+
+Install the following packages::
+
+  sudo apt-get install cmake cmake-curses-gui libopenthreads-dev
+  sudo apt-get install openscenegraph-3.4-dev swig scons libvorbis-dev
+  sudo apt-get install libalut-dev python-wxgtk3.0 libjpeg62-turbo-dev
+  sudo apt-get install libcommoncpp2-dev libsdl1.2-dev
+
 Fedora
 ------
 
@@ -13,6 +25,9 @@ Install the following packages::
   sudo dnf install scons wxPython python-lxml SDL-devel SDL_image-devel
   sudo dnf install freealut freealut-devel libvorbis-devel
   sudo dnf install python-devel libjpeg-turbo-devel
+
+Building
+--------
 
 **Source code**
 

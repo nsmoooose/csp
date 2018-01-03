@@ -24,6 +24,7 @@ Examples:
   python data-compiler -s data/xml -d bin/sim.dar -m modules/demeter/.bin/demeter.dll
 """
 
+
 def printCompilerMessage(event):
     log = csp.csplib.log()
     if event.GetType() == Compiler.Information:
@@ -34,6 +35,7 @@ def printCompilerMessage(event):
         log.error("===============================================================")
         log.error(event.GetMessage())
         log.error("===============================================================")
+
 
 if __name__ == '__main__':
     data_archive_filename = None
@@ -56,7 +58,7 @@ if __name__ == '__main__':
         sys.exit(1)
 
     for opt, value in options:
-        if opt in ('-h','--help'):
+        if opt in ('-h', '--help'):
             print(USAGE)
             sys.exit(0)
         if opt in ('-d', '--data-archive'):
@@ -83,9 +85,9 @@ if __name__ == '__main__':
     compiler.GetCompilerSignal().Connect(printCompilerMessage)
     result = compiler.CompileAll(source_directory, data_archive_filename)
     log = csp.csplib.log()
-    if result == True:
+    if result:
         log.info("Compiler finished with success.")
         sys.exit(0)
-    elif result == False:
+    elif not result:
         log.error("Compiler finished with errors.")
         sys.exit(2)

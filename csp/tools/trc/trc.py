@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 
 # Combat Simulator Project
 # Copyright 2004 Mark Rose <mkrose@users.sourceforge.net>
@@ -32,7 +32,7 @@ from trc_grammar import yacc
 
 
 def error(msg):
-    print >>sys.stderr, msg
+    print(msg, file=sys.stderr)
     sys.exit(1)
 
 

@@ -24,10 +24,10 @@ import hashlib
 
 def md5hash64(s):
     """return a 64-bit (python long) hash of a string"""
-    return long(hashlib.md5(s).hexdigest()[:16], 16)
+    return int(hashlib.md5(s.encode()).hexdigest()[:16], 16)
 
 
 def md5hash32(s):
     """return a pair of 32-bit hashs of a string"""
-    digest = hashlib.md5(s).hexdigest()
+    digest = hashlib.md5(s.encode()).hexdigest()
     return int(digest[:8], 16), int(digest[8:16], 16)

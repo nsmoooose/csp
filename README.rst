@@ -24,7 +24,7 @@ Install the following packages::
   sudo dnf install libsigc++20-devel commoncpp2-devel swig
   sudo dnf install scons wxPython python-lxml SDL-devel SDL_image-devel
   sudo dnf install freealut freealut-devel libvorbis-devel
-  sudo dnf install python-devel libjpeg-turbo-devel python-ply
+  sudo dnf install python-devel libjpeg-turbo-devel python3-ply
 
 Building
 --------

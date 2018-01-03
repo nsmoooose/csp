@@ -131,17 +131,17 @@ def t_newline(t):
 
 
 def t_error(t):
-    print "Illegal character '%s'" % t.value[0]
+    print("Illegal character '%s'" % t.value[0])
     t.skip(1)
 
 
 tokens = symbols + literals + reserved + include_paths
-tokens = map(string.upper, tokens)
+tokens = [x.upper() for x in tokens]
 
 typedefs = {}
 
 all_types = {}
-for cat, typelist in type_categories.items():
+for cat, typelist in list(type_categories.items()):
     tokens.append(cat)
     for typename in typelist:
         all_types[typename] = cat

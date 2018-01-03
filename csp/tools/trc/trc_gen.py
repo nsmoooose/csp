@@ -26,7 +26,7 @@ import trc_util
 
 
 def error(msg):
-    print >>sys.stderr, msg
+    print(msg, file=sys.stderr)
     sys.exit(1)
 
 
@@ -68,9 +68,9 @@ class Output:
         """Write an object or text to the output file"""
         if isinstance(object, str):
             if object != '__IGNORE__':
-                print >>self.__file, '%s%s' % (self.__indentation, object)
+                print('%s%s' % (self.__indentation, object), file=self.__file)
         elif isinstance(object, tuple):
-            print >>self.__file, '%s%s' % (self.__indentation, str(object))
+            print('%s%s' % (self.__indentation, str(object)), file=self.__file)
         else:
             if self.__mode == Output.HEADER:
                 object.writeHeader(self)
@@ -79,7 +79,7 @@ class Output:
 
     def newline(self):
         """Write a blank line to the output file"""
-        print >>self.__file, ''
+        print('', file=self.__file)
 
     def Header(file=None):
         """Static factory for creating an Output instance for header files."""
@@ -436,8 +436,8 @@ class Compound(Element):
             if child.required:
                 has_required = 1
                 if has_optional:
-                    print 'REQUIRED elements cannot follow OPTIONAL element.'
-                    print '%s::%s' % (typename, child.getId())
+                    print('REQUIRED elements cannot follow OPTIONAL element.')
+                    print('%s::%s' % (typename, child.getId()))
                     sys.exit(1)
                 output('assert(has_%s());' % child.getId())
                 child.writeSerializeWriter(output)
@@ -953,7 +953,7 @@ class BitFlag:
 
     def __init__(self, flagset, bit):
         self.flagset = flagset
-        self.mask = (1L << bit)
+        self.mask = (1 << bit)
 
     def getSetString(self):
         return '%s |= 0x%08x;' % (self.flagset, self.mask)

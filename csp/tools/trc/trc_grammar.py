@@ -34,7 +34,7 @@ def p_toplevel_1(p):
 
 def p_toplevel_2(p):
     'toplevel : declaration_list'
-    print '#header must be the first declaration'
+    print('#header must be the first declaration')
     sys.exit(1)
 
 # declaration_list:
@@ -69,7 +69,7 @@ def p_declaration_1(p):
 
 def p_declaration_err1(p):
     'declaration : header'
-    print '#header multiply defined'
+    print('#header multiply defined')
     sys.exit(1)
 
 # set the namespace for all declarations
@@ -215,7 +215,7 @@ def p_bitset(p):
 def p_bitset_body_0(p):
     'bitset_body : field'
     if p[1].type.category != 'BOOL_TYPE':
-        print 'Expected bool at line %d' % p.lineno(1)
+        print('Expected bool at line %d' % p.lineno(1))
         sys.exit(1)
     p[0] = [p[1]]
 
@@ -223,7 +223,7 @@ def p_bitset_body_0(p):
 def p_bitset_body_1(p):
     'bitset_body : bitset_body field'
     if p[2].type.category != 'BOOL_TYPE':
-        print 'Expected bool at line %d' % p.lineno(2)
+        print('Expected bool at line %d' % p.lineno(2))
         sys.exit(1)
     p[0] = p[1] + [p[2]]
 
@@ -262,7 +262,7 @@ def p_qualified_type(p):
     '''qualified_type : qualified_id'''
     p[0] = state.typedefs.get(p[1], p[1])
     if p[0] not in state.types:
-        print 'Unknown type %s at line %d' % (p[1], p.lineno(1))
+        print('Unknown type %s at line %d' % (p[1], p.lineno(1)))
         sys.exit(1)
 
 # enums
@@ -316,7 +316,7 @@ def p_qualified_id(p):
 
 
 def p_error(p):
-    print 'Syntax error on line %d, at or before "%s"' % (p.lineno, p.value)
+    print('Syntax error on line %d, at or before "%s"' % (p.lineno, p.value))
     sys.exit(1)
 
 

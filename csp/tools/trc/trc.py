@@ -32,62 +32,65 @@ from trc_grammar import yacc
 
 
 def error(msg):
-	print >>sys.stderr, msg
-	sys.exit(1)
+    print >>sys.stderr, msg
+    sys.exit(1)
 
 
 def validate(declarations):
-	pass
+    pass
 
 
 def generate(input, header, source):
-	"""Parse the input text string and generate C++ source and header files."""
+    """Parse the input text string and generate C++ source and header files."""
 
-	declarations = yacc.parse(input)
-	declarations = declarations + [trc_gen.Footer()]
+    declarations = yacc.parse(input)
+    declarations = declarations + [trc_gen.Footer()]
 
-	header_output = trc_gen.Output.Header(open(header, 'wt'))
-	source_output = trc_gen.Output.Source(open(source, 'wt'))
+    header_output = trc_gen.Output.Header(open(header, 'wt'))
+    source_output = trc_gen.Output.Source(open(source, 'wt'))
 
-	validate(declarations)
-	for declaration in declarations:
-		header_output(declaration)
-		source_output(declaration)
+    validate(declarations)
+    for declaration in declarations:
+        header_output(declaration)
+        source_output(declaration)
 
 
 # Arg, it would be nice if this was the default for optparse.  The "usage:" string
 # in the default help formatter gets in the way of the command title.
 class SimpleHelpFormatter(HelpFormatter):
-    def __init__ (self, indent_increment=2, max_help_position=24, width=80, short_first=1):
+    def __init__(self, indent_increment=2, max_help_position=24, width=80, short_first=1):
         HelpFormatter.__init__(self, indent_increment, max_help_position, width, short_first)
-    def format_usage (self, usage):
+
+    def format_usage(self, usage):
         return "%s\n" % usage
-    def format_heading (self, heading):
+
+    def format_heading(self, heading):
         return "%*s%s:\n" % (self.current_indent, "", heading)
 
 
 def main():
-	usage = ('Tagged Record Compiler\n\n'
-	         'Usage: %s [options] input' % sys.argv[0])
-	parser = OptionParser(usage=usage, formatter=SimpleHelpFormatter())
-	parser.add_option("--header", help="output header file (required)", metavar="FILE")
-	parser.add_option("--source", help="output source file (required)", metavar="FILE")
-	(options, args) = parser.parse_args()
+    usage = ('Tagged Record Compiler\n\n'
+             'Usage: %s [options] input' % sys.argv[0])
+    parser = OptionParser(usage=usage, formatter=SimpleHelpFormatter())
+    parser.add_option("--header", help="output header file (required)", metavar="FILE")
+    parser.add_option("--source", help="output source file (required)", metavar="FILE")
+    (options, args) = parser.parse_args()
 
-	header = options.header
-	source = options.source
+    header = options.header
+    source = options.source
 
-	if not header or not source:
-		parser.error('must specify header and source output files')
+    if not header or not source:
+        parser.error('must specify header and source output files')
 
-	if args:
-		if len(args) > 1:
-			parser.error('more than one input file specified')
-		input = open(args[0]).read()
-	else:
-		input = sys.stdin.read()
+    if args:
+        if len(args) > 1:
+            parser.error('more than one input file specified')
+        input = open(args[0]).read()
+    else:
+        input = sys.stdin.read()
 
-	generate(input, header, source)
+    generate(input, header, source)
+
 
 if __name__ == '__main__':
-	main()
+    main()

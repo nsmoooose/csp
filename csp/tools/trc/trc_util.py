@@ -21,11 +21,13 @@ TRC util module: classes for generating tagged record ids
 
 import hashlib
 
+
 def md5hash64(s):
-	"""return a 64-bit (python long) hash of a string"""
-	return long(hashlib.md5(s).hexdigest()[:16], 16)
+    """return a 64-bit (python long) hash of a string"""
+    return long(hashlib.md5(s).hexdigest()[:16], 16)
+
 
 def md5hash32(s):
-	"""return a pair of 32-bit hashs of a string"""
-	digest = hashlib.md5(s).hexdigest()
-	return int(digest[:8], 16), int(digest[8:16], 16)
+    """return a pair of 32-bit hashs of a string"""
+    digest = hashlib.md5(s).hexdigest()
+    return int(digest[:8], 16), int(digest[8:16], 16)

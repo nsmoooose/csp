@@ -69,8 +69,7 @@ tools/trc
 ---------
 
 Compiler for converting tagged record definitions (.net files) into C++ classes.
-Used by the build system. The directory also includes the yacc and the lex tools
-that comes from the PLY python module. Currently version 1.5.
+Used by the build system.
 
 .net files are communication records between the csp server and clients.
 

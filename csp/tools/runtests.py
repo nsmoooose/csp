@@ -22,15 +22,12 @@ Combat Simulator Project - Test Runner
 
 import os
 import sys
+import csp
 
-try:
-	import csp
-	os.environ.setdefault('CSPLOG_FILE', os.path.join(csp.dir, '.testlog'))
-	import csp.csplib
-except ImportError:
-	print 'Unable to import csp.csplib.  Check that it is built and that the'
-	print 'bootstrap module has been installed.  See README for details.'
-	sys.exit(0)
+os.environ.setdefault('CSPLOG_FILE', os.path.join(csp.dir, '.testlog'))
+
+import csp.csplib
+
 
 def LoadOneModule(path):
 	if not csp.csplib.TestRegistry.loadTestModule(path):

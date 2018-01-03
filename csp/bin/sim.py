@@ -24,6 +24,7 @@ Combat Simulator Project : simulation startup script
 Usage: %(prog)s [options]
 """
 
+import csp
 import sys
 import os
 import os.path
@@ -74,24 +75,6 @@ def configureEnvironment():
 	elif sys.platform.startswith('win'):
 		print 'WARNING: CSPDEVPACK environment variable not set; required libraries'
 		print 'may not be found.'
-
-
-def checkModuleSpace():
-	"""
-	Check that the bootstrap module works correctly and that the top-level csp
-	package can be imported.
-	"""
-	try:
-		import csp as _csp
-	except ImportError:
-		fail('Unable to import the csp bootstrap module.  Check that you have run\n'
-		     'setup.py successfully to initialize the workspace.')
-
-	global csp
-	global IS_FROZEN
-	csp = _csp
-	# check if we are running as a py2exe executable
-	IS_FROZEN = hasattr(csp, '__loader__')
 
 
 def checkData():
@@ -364,7 +347,6 @@ def main(args):
 
 if __name__ == '__main__':
 	configureEnvironment()
-	checkModuleSpace()
 	checkData()
 	importModules()
 	# Make all objects available for introspection and serialization

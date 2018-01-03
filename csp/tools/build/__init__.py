@@ -59,21 +59,16 @@ Caveats:
   * The build extensions are not well documented yet.  Refer to the CSP
     SConstruct and SConscript to learn the interface by example.
 """
-
+import csp
 import os
 import sys
+
 
 if __name__ == '__main__':
 	print 'This module provides support for the SCons build system; it is not'
 	print 'intended to be run as a standalone program.'
 	sys.exit(1)
 
-# Before doing any real work, check that the csp bootstrap module is installed.
-try:
-	import csp
-except ImportError:
-	print 'The CSP build environment has not been initialized.  Please'
-	print 'run "python tools/setup.py" as root or admin.'
 
 from csp.tools.build.setup import Environment
 

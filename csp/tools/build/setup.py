@@ -81,7 +81,6 @@ class Environment:
 		if settings is not None:
 			CustomizeForPlatform(env, settings)
 
-		AddSetupTargets(env)
 		AddVCProjectTarget(env)
 		return env
 	Initialize = classmethod(Initialize)
@@ -239,28 +238,6 @@ def MakeDocumentation(env, target, config, sources):
 		env.Alias('dox', dox)
 	env.Clean(['dox', 'all'], html)
 
-
-def SetupClientWorkspace(force):
-	print '"scons setup" is no longer supported, since running scons'
-	print 'as root causes permissions problems for metadata files'
-	print 'created by scons.  Run "python tools/setup.py" as root'
-	print 'or admin instead.'
-	#sys.path.insert(0, scons.Dir('#').abspath)
-	#import tools.setup
-	#del sys.path[0]
-	#setup_log = logging.Logger('setup', logging.INFO)
-	#setup_log.addHandler(logging.FileHandler('.setup.log', mode='wt'))
-	#if tools.setup.SetupClientWorkspace(force, log=setup_log):
-	#	print 'Setup complete.'
-	#else:
-	#	print 'Setup failed; see .setup.log for details.'
-
-def AddSetupTargets(env):
-	def SetupProxy(*args, **kw): SetupClientWorkspace(0)
-	def ForceSetupProxy(*args, **kw): SetupClientWorkspace(1)
-	sources = ['#/tools/csp.bootstrap', '#/tools/setup.py']
-	env.Command('setup', sources, SetupProxy)
-	env.Command('force_setup', sources, ForceSetupProxy)
 
 def AddVCProjectTarget(env):
 	def generate(*args, **kw): vcproj.Generate()

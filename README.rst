@@ -46,6 +46,9 @@ Execute::
 
 **osgal**
 
+Note that this step needs to be reexecuted if you upgrade the OpenSceneGraph
+package (which happens when you upgrade the Linux distribution).
+
 Execute::
 
   cd csp-osgal
@@ -63,7 +66,8 @@ is in your /etc/ld.so.conf.d/ with the following steps::
 
 **Compiling**
 
-Execute the following commands::
+Execute the following commands (note that you run scons in
+python 2)::
 
   cd csp
 
@@ -75,10 +79,10 @@ Execute the following commands::
 
   # This is needed the first time in order to check all
   # dependencies.
-  scons config
+  python2 /usr/bin/scons config
 
   # Build the simulator.
-  scons all
+  python2 /usr/bin/scons all
 
 **Running**
 

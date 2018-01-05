@@ -63,23 +63,14 @@ import csp
 import os
 import sys
 
-
-if __name__ == '__main__':
-	print 'This module provides support for the SCons build system; it is not'
-	print 'intended to be run as a standalone program.'
-	sys.exit(1)
-
-
 from csp.tools.build.setup import Environment
 
 from csp.tools.build.rules import \
-	SourceGroup, Program, Generate, SharedLibrary, PythonSharedLibrary, Command, Test
+    SourceGroup, Program, Generate, SharedLibrary, PythonSharedLibrary, Command, Test
 
 from csp.tools.build.autoconf import \
-	CheckSConsVersion, CheckPythonVersion, CheckWXVersion, CheckLXMLVersion, \
-	GetPythonInclude, GetPythonLibrary, GetGCCVersion
+    CheckSConsVersion, CheckPythonVersion, CheckWXVersion, CheckLXMLVersion, \
+    GetPythonInclude, GetPythonLibrary, GetGCCVersion
 
 from csp.tools.build.libconf import \
-	ExternalLibrary, PkgConfig, CommandConfig, UnixLibConfig, WindowsLibConfig, DevpackConfig
-
-
+    ExternalLibrary, PkgConfig, CommandConfig, UnixLibConfig, WindowsLibConfig, DevpackConfig

@@ -13,7 +13,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-
 import os
 
 import SCons
@@ -39,82 +38,67 @@ IsList = SCons.Util.is_List
 
 
 def GetVersion():
-	return SCons.__version__
+    return SCons.__version__
 
 
 def GetVersionTuple():
-	return tuple(map(int, SCons.__version__.split('.')))
+    return tuple(map(int, SCons.__version__.split('.')))
 
 
 def SetReading():
-	SCons.Script.SConscript.sconscript_reading = 1
+    SCons.Script.SConscript.sconscript_reading = 1
 
 
 def DisableQuiet():
-	# override -Q
-	if hasattr(SCons.SConf, 'SetProgressDisplay'):
-		SCons.SConf.SetProgressDisplay(SCons.Util.display)
+    # override -Q
+    if hasattr(SCons.SConf, 'SetProgressDisplay'):
+        SCons.SConf.SetProgressDisplay(SCons.Util.display)
 
 
 def GetOptions():
-	try:
-		return SCons.Script.Main.OptionsParser.values
-	except:
-		# TODO remove these older accessors; hopefully OptionsParser
-		# is stable going forward.
-		try:
-			return SCons.Script.Main.options
-		except:
-			return SCons.Script.options  # version 0.96.1
+    return SCons.Script.Main.OptionsParser.values
 
 
-# Remove this method.  The only option that we access through it is num_jobs,
-# which is available via GetOptions in scons 0.97.
 def GetSettableOptions():
-	try:
-		return SCons.Script.Main.ssoptions
-	except:
-		try:
-			return SCons.Script.ssoptions  # version 0.96.1
-		except:
-			return GetOptions()
+    return SCons.Script.Main.ssoptions
 
 
 def GetCommandlineTargets():
-	return SCons.Script.SConscript.CommandLineTargets
+    return SCons.Script.SConscript.CommandLineTargets
 
 
 def GetCurrentScript():
-	try:
-		call_stack = SCons.Script.call_stack
-	except AttributeError:
-		call_stack = SCons.Script.SConscript.stack  # pre 0.96.91
-	return call_stack[-1].sconscript
+    try:
+        call_stack = SCons.Script.call_stack
+    except AttributeError:
+        call_stack = SCons.Script.SConscript.stack  # pre 0.96.91
+    return call_stack[-1].sconscript
 
 
 def TargetToString(x):
-	if isinstance(x, list):
-		return map(TargetToString, x)
-	if isinstance(x, SCons.Node.FS.File):
-		return 'FILE:%s' % x.abspath
-	return str(x)
+    if isinstance(x, list):
+        return map(TargetToString, x)
+    if isinstance(x, SCons.Node.FS.File):
+        return 'FILE:%s' % x.abspath
+    return str(x)
 
 
 def SetDistributed(env):
-	'''
-	Use distcc if available to distribute the build across multiple hosts.
-	distcc must be installed and configured correctly.
-	'''
-	CXX = env['CXX']
-	if CXX is None: return
-	distcc = WhereIs('distcc')
-	if not distcc:
-		print 'Concurrent build requested, but distcc not found.'
-		return
-	# add distcc in '$( $)' escapes so that using it doesn't invalidate
-	# objects that were built without it, and vice-versa.
-	CXX = '$( %s $) %s' % (distcc, CXX)
-	# distcc typically needs access to configuration files in the home directory.
-	env['ENV']['HOME'] = os.environ.get('HOME', '')
-	env.Replace(CXX=CXX)
-	print 'Using distcc for distributed build'
+    '''
+    Use distcc if available to distribute the build across multiple hosts.
+    distcc must be installed and configured correctly.
+    '''
+    CXX = env['CXX']
+    if CXX is None:
+        return
+    distcc = WhereIs('distcc')
+    if not distcc:
+        print 'Concurrent build requested, but distcc not found.'
+        return
+    # add distcc in '$( $)' escapes so that using it doesn't invalidate
+    # objects that were built without it, and vice-versa.
+    CXX = '$( %s $) %s' % (distcc, CXX)
+    # distcc typically needs access to configuration files in the home directory.
+    env['ENV']['HOME'] = os.environ.get('HOME', '')
+    env.Replace(CXX=CXX)
+    print('Using distcc for distributed build')

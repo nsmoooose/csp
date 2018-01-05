@@ -14,8 +14,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-
-import exceptions
 import os.path
 import sys
 import types
@@ -23,12 +21,11 @@ import types
 # this path hack allows the csplib extension module to be loaded
 # transparently from the .bin directory.  extending rather than
 # replacing __path__ is necessary for py2exe imports to work.
-bin = os.path.join(os.path.dirname(__file__), '.bin')
-__path__.append(bin)
+sys.path.append(os.path.join(os.path.dirname(__file__), '.bin'))
 
 try:
 	import csplib_module as _csplib
-except ImportError, e:
+except ImportError as e:
 	sys.stderr.write(str(e))
 	sys.stderr.write(
 """

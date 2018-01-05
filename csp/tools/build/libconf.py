@@ -132,7 +132,7 @@ class DevpackConfig:
     def _checkPath(*args):
         path = os.path.join(*args)
         if not os.path.exists(path):
-            print 'CSPDEVPACK path (%s) not found.' % path
+            print('CSPDEVPACK path (%s) not found.' % path)
             sys.exit(1)
     _checkPath = staticmethod(_checkPath)
 
@@ -145,16 +145,16 @@ class DevpackConfig:
             return
         path = os.environ.get('CSPDEVPACK', '')
         if not path:
-            print 'CSPDEVPACK environment variable not set.'
+            print('CSPDEVPACK environment variable not set.')
             sys.exit(1)
         if path.startswith('"') and path.endswith('"'):
             path = path[1:-1]
         try:
-            v = map(int, re.search(r'([0-9.]+)"?$', path).group(1).split('.'))
+            v = list(map(int, re.search(r'([0-9.]+)"?$', path).group(1).split('.')))
         except Exception:
             print('ERROR: CSPDEVPACK environment variable (%s) does not look like a valid devpack path.' % path)
             sys.exit(1)
-        if v < map(int, DevpackConfig.VERSION.split('.')):
+        if v < list(map(int, DevpackConfig.VERSION.split('.'))):
             print('ERROR: The installed devpack (%s) is too old; need version %s' % (path, DevpackConfig.VERSION))
             sys.exit(1)
         DevpackConfig._checkPath(path)

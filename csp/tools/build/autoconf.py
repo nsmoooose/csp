@@ -47,14 +47,12 @@ def CheckPythonVersion(minimum):
 def CheckWXVersion(minimum):
     try:
         import wx
+        version = wx.version()
+        if util.CompareVersions(version, minimum) < 0:
+            print('wxPython version (%s) is too old. Please install %s or newer.' % (version, minimum))
+            sys.exit(1)
     except ImportError:
-        print('Missing wx python module. Please install wxPython')
-        sys.exit(1)
-
-    version = wx.version()
-    if util.CompareVersions(version, minimum) < 0:
-        print('wxPython version (%s) is too old. Please install %s or newer.' % (version, minimum))
-        sys.exit(1)
+        print('WARNING: Missing wx python module. Please install wxPython')
 
 
 def CheckLXMLVersion():
@@ -85,7 +83,7 @@ def CheckSwig(context, min_version, not_versions=[]):
     swig_out, swig_err = p.communicate()
     if swig_err is not None:
         output = swig_err.splitlines() + swig_out.splitlines()
-        output = " ".join(map(lambda x: x.strip(), output))
+        output = " ".join([x.strip() for x in output])
         match = re.search(r'SWIG Version (\d+\.\d+.\d+)', output)
         if match is not None:
             swig_version = match.groups()[0]
@@ -145,8 +143,8 @@ def _CheckPkgConfigWorks(context):
         _checking(context, 'pkg-config', reset_cached=1)
         p = Popen('pkg-config --version', shell=True, stdin=PIPE, stdout=PIPE, stderr=PIPE)
         output, error = p.communicate()
-        version = output.strip()
-        error = error.strip()
+        version = output.decode().strip()
+        error = error.decode().strip()
         if not error and re.match(r'\d', version) is not None:
             HAS_PKG_CONFIG = 1
             context.Result("yes (%s)" % version)
@@ -169,7 +167,7 @@ def CheckPkgConfig(context, lib, version=None, lib_name=None, command='pkg-confi
     output, error = p.communicate()
     ok = 0
     if output is not None:
-        lib_version = output.strip()
+        lib_version = output.decode().strip()
         ok = (version is None) or (util.CompareVersions(lib_version, version) >= 0)
     if ok:
         context.Result("yes (%s)" % lib_version)
@@ -186,8 +184,8 @@ def CheckCommandVersion(context, lib, command, min_version=None, lib_name=None):
     _checking(context, lib, min_version, reset_cached=1)
     p = Popen(command, shell=True, stdin=PIPE, stdout=PIPE, stderr=PIPE, close_fds=True)
     output, error = p.communicate()
-    version = output.strip()
-    error = error.strip()
+    version = output.decode().strip()
+    error = error.decode().strip()
     ok = not error and (util.CompareVersions(version, min_version) >= 0)
     if ok:
         context.Result("yes (%s)" % version)
@@ -233,7 +231,7 @@ def SetConfig(env, config):
 def ReadConfig(env):
     config_file = env.GetBuildPath('.config')
     try:
-        config = open(config_file, 'rt')
+        config = open(config_file, 'rb')
     except IOError:
         return None
     # hack to rerun the config if the SConstruct file is modified; this can
@@ -248,4 +246,4 @@ def ReadConfig(env):
 
 def SaveConfig(env, config):
     config_file = env.GetBuildPath('.config')
-    pickle.dump(config, open(config_file, 'wt'))
+    pickle.dump(config, open(config_file, 'wb'))

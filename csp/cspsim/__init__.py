@@ -7,12 +7,11 @@ import sys
 # this path hack allows the cspsim extension module to be loaded
 # transparently from the .bin directory.  extending rather than
 # replacing __path__ is necessary for py2exe imports to work.
-bin = os.path.join(os.path.dirname(__file__), '.bin')
-__path__.append(bin)
+sys.path.append(os.path.join(os.path.dirname(__file__), '.bin'))
 
 try:
 	from cspsim_module import *
-except ImportError, e:
+except ImportError as e:
 	sys.stderr.write(str(e))
 	sys.stderr.write(
 """

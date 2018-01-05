@@ -69,11 +69,11 @@ class _BuildRegistry:
                 valid = 1
                 conf = autoconf.CustomConfigure(env.Clone())
                 settings = util.Settings()
-                for name, lib in self._libraries.items():
+                for name, lib in list(self._libraries.items()):
                     valid = lib.config(conf, settings) and valid
                 new = conf.Finish()
                 if not valid:
-                    print 'Configure failed'
+                    print('Configure failed')
                     sys.exit(1)
                 self._SaveConfigs(env)
 
@@ -81,10 +81,10 @@ class _BuildRegistry:
         saved = autoconf.ReadConfig(env)
         if not isinstance(saved, dict):
             return 0
-        for name in self._libraries.keys():
+        for name in list(self._libraries.keys()):
             if name not in saved:
                 return 0
-        for name, settings in saved.items():
+        for name, settings in list(saved.items()):
             if name not in self._libraries:
                 return 0
             self._libraries[name]._settings = util.Settings(settings)
@@ -92,7 +92,7 @@ class _BuildRegistry:
 
     def _SaveConfigs(self, env):
         config = {}
-        for name, lib in self._libraries.items():
+        for name, lib in list(self._libraries.items()):
             config[name] = dict(lib._settings)
         autoconf.SaveConfig(env, config)
 
@@ -101,7 +101,7 @@ class _BuildRegistry:
         try:
             import csp.csplib
         except ImportError:
-            print 'ERROR: unnable to import csp.csplib'
+            print('ERROR: unnable to import csp.csplib')
             return
         return csp.csplib.TestRegistry
 
@@ -123,7 +123,7 @@ class _BuildRegistry:
 
     def Build(self, env):
         self.Configure(env)
-        for target in self._targets.values():
+        for target in list(self._targets.values()):
             object = target.build()
             if target.isTest():
                 self._tests.append(object)
@@ -133,7 +133,7 @@ class _BuildRegistry:
                 run_alias = os.path.join(target._path, target._name) + '.run'
                 env.Alias(run_alias, env.Command(run_alias, object, util.SilentAction(self._RunOneTest)))
         env.Alias('runtests', env.Command('runtests', self._tests, util.SilentAction(self._RunTests)))
-        for path, targets in self._dir_tests.items():
+        for path, targets in list(self._dir_tests.items()):
             alias = path + '.runtests'
             env.Alias(alias, env.Command(alias, targets, util.SilentAction(self._RunTests)))
         # sample aliases for running tests:

@@ -28,4 +28,3 @@ logging.addLevelName(logging.ERROR, 'E')
 logging.addLevelName(logging.CRITICAL, 'C')
 
 formatter = logging.Formatter('%(asctime)s%(levelname)s_%(module)s.%(lineno)d %(message)s', '%m%d%H%M%S')
-

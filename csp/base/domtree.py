@@ -22,52 +22,64 @@ from xml.dom.minidom import parse, parseString
 
 
 class DomTree:
-  """
-  Dom node wrapper providing access to child nodes via instance
-  attributes and iterators.
-  """
+    """
+    Dom node wrapper providing access to child nodes via instance
+    attributes and iterators.
+    """
 
-  def __init__(self, dom):
-    self.name = dom.nodeName
-    self.type = dom.nodeType
-    self.node = dom
-    self.text = ''
-    self.children = []
-    self._dict = {}
-    for node in dom.childNodes:
-      if node.nodeType == node.TEXT_NODE:
-        self.text += node.data
-      else:
-        tree = DomTree(node)
-        self.children.append(tree)
-        self._dict[tree.name] = tree
-  def __getattr__(self, key):
-    return self.__dict__['_dict'].get(key, None)
-  def attr(self, name, default=None):
-    return self.node.getAttribute(name)
-  def attrs(self):
-    return self.node._attrs.keys()
-  def hasattr(self, name):
-    return self.node.hasAttribute(name)
-  def __len__(self): return len(self.children)
-  def __str__(self): return self.__repr__()
-  def __repr__(self):
-    if self.text.strip(): return self.text
-    return 'node %s' % self.name
-  def keys(self):
-    return self._dict.keys()
-  def get(self, name, default):
-    return self.child
-  def __iter__(self):
-    for child in self.children:
-      yield child
-    raise StopIteration
+    def __init__(self, dom):
+        self.name = dom.nodeName
+        self.type = dom.nodeType
+        self.node = dom
+        self.text = ''
+        self.children = []
+        self._dict = {}
+        for node in dom.childNodes:
+            if node.nodeType == node.TEXT_NODE:
+                self.text += node.data
+            else:
+                tree = DomTree(node)
+                self.children.append(tree)
+                self._dict[tree.name] = tree
+
+    def __getattr__(self, key):
+        return self.__dict__['_dict'].get(key, None)
+
+    def attr(self, name, default=None):
+        return self.node.getAttribute(name)
+
+    def attrs(self):
+        return self.node._attrs.keys()
+
+    def hasattr(self, name):
+        return self.node.hasAttribute(name)
+
+    def __len__(self):
+        return len(self.children)
+
+    def __str__(self):
+        return self.__repr__()
+
+    def __repr__(self):
+        if self.text.strip():
+            return self.text
+        return 'node %s' % self.name
+
+    def keys(self):
+        return self._dict.keys()
+
+    def get(self, name, default):
+        return self.child
+
+    def __iter__(self):
+        for child in self.children:
+            yield child
+        raise StopIteration
 
 
 def ParseFile(file):
-  return DomTree(parse(file))
+    return DomTree(parse(file))
 
 
 def ParseString(text):
-  return DomTree(parseString(text))
-
+    return DomTree(parseString(text))

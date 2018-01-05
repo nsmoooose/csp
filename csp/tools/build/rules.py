@@ -242,7 +242,6 @@ class SharedLibrary(Target):
         shlib = self._env.SharedLibrary(self._target, objects)
         if util.IsWindows(self._env):
             self._bindManifest(shlib)
-            self._makeVisualStudioProject(shlib)
         return shlib
 
     MT_BIN = 0
@@ -257,26 +256,6 @@ class SharedLibrary(Target):
             CMD = '"%s" /nologo /manifest ${TARGET}.manifest /outputresource:${TARGET};#2' % SharedLibrary.MT_BIN
             MSG = '- Binding manifest to %s' % dll.name
             self._env.AddPostAction(dll, util.SimpleCommand(CMD, MSG))
-
-    def _makeVisualStudioProject(self, shlib):
-        if not hasattr(self._env, 'MSVSProject'):
-            scons.Alias('vs', [])
-            return
-        target = shlib[0]
-        sources = []
-        headers = []
-        misc = []
-        self._findSources()
-        for group in self._groups:
-            sources += group.sources
-            headers += group.headers
-            misc += group.misc
-        sources = map(str, sources)
-        headers = map(str, headers)
-        misc = map(str, misc)
-        dbg = self._env.MSVSProject(target=self._name+'-dbg.vcproj', srcs=sources, incs=headers, misc=misc, buildtarget=target, variant='Debug')
-        rel = self._env.MSVSProject(target=self._name+'-rel.vcproj', srcs=sources, incs=headers, misc=misc, buildtarget=target, variant='Release')
-        scons.Alias('vs', [dbg, rel])
 
     def _addSettings(self, settings, bdeps):
         Target._addSettings(self, settings, bdeps)

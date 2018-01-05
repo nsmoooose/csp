@@ -28,7 +28,6 @@ from csp.tools.build import builders
 from csp.tools.build import registry
 from csp.tools.build import scons
 from csp.tools.build import util
-from csp.tools.build import vcproj
 
 
 class Environment:
@@ -73,8 +72,8 @@ class Environment:
         if settings is not None:
             CustomizeForPlatform(env, settings)
 
-        AddVCProjectTarget(env)
         return env
+
     Initialize = classmethod(Initialize)
 
 
@@ -234,7 +233,3 @@ def MakeDocumentation(env, target, config, sources):
         env.Alias('dox', dox)
     env.Clean(['dox', 'all'], html)
 
-
-def AddVCProjectTarget(env):
-    def generate(*args, **kw): vcproj.Generate()
-    env.Command('vcproj', [], generate)

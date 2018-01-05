@@ -138,8 +138,6 @@ class Environment(build.Environment):
 
 	  scons dox              generate doxygen documentation
 
-	  scons vcproj           generate Microsoft Visual Studio compatible project and solution
-
 	  scons tests            build all unittests
 	  scons runtests         build and run all unittests
 	  scons csplib.runtests  build and run all unittests in csplib

@@ -15,8 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-
-print 'COMBAT SIMULATOR PROJECT - Build System'
+print('COMBAT SIMULATOR PROJECT - Build System')
 
 import os
 import sys
@@ -155,10 +154,10 @@ class Environment(build.Environment):
 
 	def customize_win(self, env):
 		# The following compiler warnings has been disabled:
-		# warning C4251: 'X' : struct 'Y' needs to have dll-interface to be used by clients of class 'Z' 
+		# warning C4251: 'X' : struct 'Y' needs to have dll-interface to be used by clients of class 'Z'
 		# warning C4275: non dll-interface class 'X' used as base for dll-interface class 'Y'
 		# warning C4290: C++ exception specification ignored except to indicate a function is not __declspec(nothrow)
-	
+
 		debug = ARGUMENTS.get('debug', 0)
 		if int(debug) == 0:
 			print('Building release configuration')
@@ -195,7 +194,7 @@ class Environment(build.Environment):
 			env.AppendUnique(CXXFLAGS=Split('-fvisibility=hidden'))
 
 	def customize_darwin(self, env):
-		print 'WARNING: Darwin is not yet a fully supported platform.'
+		print('WARNING: Darwin is not yet a fully supported platform.')
 		self.customize_linux(env)
 		env.Replace(SHLINKFLAGS=Split('-Wl -bundle'))
 

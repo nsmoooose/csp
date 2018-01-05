@@ -210,7 +210,7 @@ def GlobalSetup(env, distributed=1, config=None, timer=1):
         def showtime(start_time=start_time):
             elapsed = time.time() - start_time
             if elapsed > 10:
-                print 'build time: %d sec' % elapsed
+                print(('build time: %d sec' % elapsed))
 
         atexit.register(showtime)
 
@@ -229,7 +229,6 @@ def MakeDocumentation(env, target, config, sources):
                 else:
                     env.Depends(dox, util.Glob(item))
             else:
-                print 'implement me'
+                print('implement me')
         env.Alias('dox', dox)
     env.Clean(['dox', 'all'], html)
-

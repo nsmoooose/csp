@@ -77,7 +77,7 @@ def GetCurrentScript():
 
 def TargetToString(x):
     if isinstance(x, list):
-        return map(TargetToString, x)
+        return list(map(TargetToString, x))
     if isinstance(x, SCons.Node.FS.File):
         return 'FILE:%s' % x.abspath
     return str(x)
@@ -93,7 +93,7 @@ def SetDistributed(env):
         return
     distcc = WhereIs('distcc')
     if not distcc:
-        print 'Concurrent build requested, but distcc not found.'
+        print('Concurrent build requested, but distcc not found.')
         return
     # add distcc in '$( $)' escapes so that using it doesn't invalidate
     # objects that were built without it, and vice-versa.

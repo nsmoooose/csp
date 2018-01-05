@@ -49,7 +49,9 @@ def CompareVersions(a, b):
     aa = a.split('.')
     bb = b.split('.')
     for index in range(min(len(aa), len(bb))):
-        result = cmp(int(aa[index]), int(bb[index]))
+        x = int(aa[index])
+        y = int(bb[index])
+        result = (x > y) - (x < y)
         if result != 0:
             return result
     return 0
@@ -61,7 +63,7 @@ def IsWindows(env):
 
 def SimpleCommand(cmd, msg):
     def s(target, src, env):
-        print msg % {'src': str(src), 'target': str(target[0])}
+        print((msg % {'src': str(src), 'target': str(target[0])}))
     return CommandAction(cmd, strfunction=s)
 
 
@@ -85,7 +87,7 @@ def RemoveFlags(env, **kw):
     Remove flags from environment variables.  The specified environment
     variables must be lists for this function to work.
     """
-    for key, val in kw.items():
+    for key, val in list(kw.items()):
         if isinstance(val, str):
             val = [val]
         if key in env:
@@ -101,7 +103,7 @@ def RemoveFlags(env, **kw):
 def Apply(builder, sources, **overrides):
     def builder_wrap(source):
         return builder(source, **overrides)
-    return map(builder_wrap, sources)
+    return list(map(builder_wrap, sources))
 
 
 class Settings(dict):
@@ -110,7 +112,7 @@ class Settings(dict):
         if args:
             assert len(args) == 1
             settings.update(args[0])
-        for key, value in settings.items():
+        for key, value in list(settings.items()):
             base = self.setdefault(key, [])
             if isinstance(value, list):
                 for item in value:
@@ -120,7 +122,7 @@ class Settings(dict):
                 self[key] = value
 
     def apply(self, env):
-        for key, value in self.iteritems():
+        for key, value in self.items():
             if isinstance(value, list):
                 env.AppendUnique(**{key: value})
             elif isinstance(value, tuple):

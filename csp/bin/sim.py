@@ -70,11 +70,11 @@ def configureEnvironment():
 		PATH = os.environ.get('PATH', '')
 		CSPDEVPACK_BIN = os.path.join(CSPDEVPACK, 'bin')
 		if not PATH.startswith(CSPDEVPACK_BIN):
-			print 'WARNING: placing %s at start of PATH' % CSPDEVPACK_BIN
+			print('WARNING: placing %s at start of PATH' % CSPDEVPACK_BIN)
 			os.environ['PATH'] = os.pathsep.join([CSPDEVPACK_BIN, PATH])
 	elif sys.platform.startswith('win'):
-		print 'WARNING: CSPDEVPACK environment variable not set; required libraries'
-		print 'may not be found.'
+		print('WARNING: CSPDEVPACK environment variable not set; required libraries')
+		print('may not be found.')
 
 
 def checkData():
@@ -96,12 +96,12 @@ def importModules():
 	"""Import csplib and cspsim modules, checking for errors."""
 	try:
 		import csp.csplib
-	except ImportError, e:
+	except ImportError as e:
 		reportImportError(e, 'csp.csplib')
 
 	try:
 		import csp.cspsim
-	except ImportError, e:
+	except ImportError as e:
 		reportImportError(e, 'csp.cspsim')
 
 
@@ -140,7 +140,7 @@ def findConfig(ini, prefer=None, report=1):
 
 
 def printCompilerMessage(event):
-	print(event.GetMessage())
+	print((event.GetMessage()))
 
 def compileData(xml, dar, rebuild=0, level=0):
 	from csp.tools.data.compile import Compiler
@@ -148,12 +148,12 @@ def compileData(xml, dar, rebuild=0, level=0):
 	compiler.GetCompilerSignal().Connect(printCompilerMessage)
 	result = compiler.CompileAll(xml, dar)
 	if result == False:
-		print "Please fix all errors and recompile."
+		print("Please fix all errors and recompile.")
 		sys.exit(1)
 
 def setDefaultJoystick():
 	"""Provide a default value for the SDL joystick environment variable"""
-	if os.name == 'posix' and not os.environ.has_key("SDL_JOYSTICK_DEVICE"):
+	if os.name == 'posix' and "SDL_JOYSTICK_DEVICE" not in os.environ:
 		# try a reasonable default for linux
 		if os.path.exists("/dev/input/js0"):
 			os.environ["SDL_JOYSTICK_DEVICE"]="/dev/input/js0"
@@ -166,7 +166,7 @@ def ensureDefaultHID(hid_file):
 	"""
 	input_path = os.path.join(csp.dir, 'data', 'input')
 	if not os.path.exists(input_path):
-		print("Creating: %s" % input_path)
+		print(("Creating: %s" % input_path))
 		os.mkdir(input_path)
 
 	output = os.path.join(input_path, '%s.hid' % hid_file)
@@ -176,9 +176,9 @@ def ensureDefaultHID(hid_file):
 		example = os.path.join(tooldir, 'examples', '%s.map' % hid_file)
 		MapCompiler.compile(example, output, include_path=tooldir)
 		if os.path.exists(output):
-			print 'Default input map %s created; see tools/hid/README for details.' % relativePath(output)
+			print('Default input map %s created; see tools/hid/README for details.' % relativePath(output))
 		else:
-			print 'Unable to create default input map %s; see tools/hid/README for details.' % relativePath(output)
+			print('Unable to create default input map %s; see tools/hid/README for details.' % relativePath(output))
 
 
 def createTestObjects(sim, file):
@@ -189,8 +189,8 @@ def createTestObjects(sim, file):
 	if file and os.path.exists(file):
 		try:
 			env = {'csp': csp, 'sim': sim}
-			execfile(file, env)
-		except Exception, e:
+			exec(compile(open(file).read(), file, 'exec'), env)
+		except Exception as e:
 			fail('Error executing objects script "%s":\n  %s' % (file, e))
 
 
@@ -265,19 +265,19 @@ def pauseForDebugger():
 	Print a help message for attaching gdb to this process and wait for keyboard
 	input.  Should be called after the cspsim module has been loaded if requested.
 	"""
-	print
-	print "All extension modules have been loaded and the simulation is now paused"
-	print "to give you an opportunity to attach a debugging session.  Under GNU/Linux"
-	print "run the following command from a separate shell to attach a debug session:"
-	print
-	print "   gdb python %d" % os.getpid()
-	print
-	print "This will run gdb and attach to the simulation process.  Once gdb finishes"
-	print "loading symbols for all the modules, you can set breakpoints as needed"
-	print "and then enter 'c' to continue."
-	print
-	print "Finally, return to this window and press <enter> to resume."
-	print
+	print()
+	print("All extension modules have been loaded and the simulation is now paused")
+	print("to give you an opportunity to attach a debugging session.  Under GNU/Linux")
+	print("run the following command from a separate shell to attach a debug session:")
+	print()
+	print("   gdb python %d" % os.getpid())
+	print()
+	print("This will run gdb and attach to the simulation process.  Once gdb finishes")
+	print("loading symbols for all the modules, you can set breakpoints as needed")
+	print("and then enter 'c' to continue.")
+	print()
+	print("Finally, return to this window and press <enter> to resume.")
+	print()
 	sys.stdin.readline()
 
 
@@ -341,7 +341,7 @@ def main(args):
 	finally:
 		sim.cleanup()
 
-	print 'Normal exit.'
+	print('Normal exit.')
 	return 0
 
 

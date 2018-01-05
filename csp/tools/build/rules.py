@@ -45,7 +45,7 @@ class SourceGroup:
                 if lib:
                     lib._addSettings(settings, self._bdeps)
                 else:
-                    print '%s: could not find dependency %s' % (self._name, dep)
+                    print('%s: could not find dependency %s' % (self._name, dep))
                     sys.exit(1)
             self._settings = settings
             settings.apply(self._env)
@@ -175,7 +175,7 @@ class Target:
             for source in self._sources:
                 group = registry.BuildRegistry.GetSourceGroup(source)
                 if not group:
-                    print '%s: unknown source %s' % (self._name, source)
+                    print('%s: unknown source %s' % (self._name, source))
                     sys.exit(1)
                 self._groups.append(group)
 
@@ -250,7 +250,7 @@ class SharedLibrary(Target):
         if SharedLibrary.MT_BIN == 0:
             SharedLibrary.MT_BIN = scons.WhereIs('mt')
             if not SharedLibrary.MT_BIN:
-                print 'WARNING: could not find mt.exe, will not bind manifests'
+                print('WARNING: could not find mt.exe, will not bind manifests')
         if SharedLibrary.MT_BIN:
             dll = shlib[0]
             CMD = '"%s" /nologo /manifest ${TARGET}.manifest /outputresource:${TARGET};#2' % SharedLibrary.MT_BIN

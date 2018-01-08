@@ -59,7 +59,7 @@ class Help(csp.cspsim.Window, SlotManager):
             self.topicsListBox.addItem(csp.cspsim.ListBoxItem('${help_joystick}'))
 
             # Select the correct item in the listbox.
-            for key, value in self.topics.iteritems():
+            for key, value in self.topics.items():
                 if value == topic:
                     self.topicsListBox.setSelectedItemByText(key)
 

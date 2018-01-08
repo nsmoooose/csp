@@ -85,8 +85,8 @@ log.fatal = _fatal
 opt = optparse.OptionParser(usage='', formatter=CustomUsageFormatter())
 addOption = opt.add_option
 
-addOption('-v', '--verbose', default='info', type='string', metavar='<level>',
-          help='set verbosity level (numeric, or by name)')
+addOption('-v', '--verbose', default='INFO', type='string', metavar='<level>',
+          help='set verbosity level (DEBUG, INFO, WARNING, ERROR, CRITICAL). Default %default')
 addOption('--logfile', default='', type='string', help='log file (default stderr)')
 
 
@@ -148,19 +148,8 @@ def start(disable_interspersed_args=0):
             loghandler.setFormatter(applog.formatter)
             loghandler.setLevel(logging.NOTSET)
             log.addHandler(loghandler)
-            try:
-                level = int(options.verbose)
-            except ValueError:
-                levelname = options.verbose.upper()
-                level = logging._levelNames.get(levelname, -1)
-                if level == -1:
-                    levels = list(logging._levelNames.keys())
-                    levels = [x.lower() for x in levels if not isinstance(x, int)]
-                    levels.sort()
-                    sys.stderr.write('logging verbosity "%s" unrecognized; valid level names are:\n' % options.verbose)
-                    sys.stderr.write('    (' + ','.join(levels) + ')\n')
-                    sys.exit(1)
-            log.setLevel(level)
+
+            log.setLevel(logging.getLevelName(options.verbose))
             if main:
                 result = main(args)
     except KeyboardInterrupt:

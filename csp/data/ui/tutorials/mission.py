@@ -42,8 +42,8 @@ class Mission:
         """Name of an xml file that contains the graphical user interface 
         for this mission. Must be implemented by all tutorials."""
 
-        raise NotImplementedError, "Implement this interface to be able " + \
-            "to show a describing user interface for the mission."
+        raise NotImplementedError("Implement this interface to be able " + \
+            "to show a describing user interface for the mission.")
     
     def theatre(self):
         # Informs about what theatre to load.

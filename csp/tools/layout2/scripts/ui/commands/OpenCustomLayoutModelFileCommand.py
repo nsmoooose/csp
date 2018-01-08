@@ -1,6 +1,6 @@
 import os.path
 import wx
-from FileCommand import FileCommand
+from .FileCommand import FileCommand
 from ...data import DataTree
 from ...document.SceneDocument import SceneDocumentFactory
 from ..controls.SceneWindow import SceneWindow
@@ -74,6 +74,6 @@ class OpenCustomLayoutModelFileCommand(FileCommand):
 		# Parse all the xml file and all its child files used.
 		try:
 			return DataTree.Node.ParseFile(fileName, xmlPath)
-		except Exception, e:
+		except Exception as e:
 			wx.MessageDialog(topWindow, str(e), "Error loading XML file", style = wx.OK|wx.ICON_ERROR).ShowModal()
 			return None

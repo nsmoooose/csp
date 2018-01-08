@@ -1,6 +1,6 @@
 import wx
 from csp import csplib
-from Command import Command
+from .Command import Command
 from ...document.OutputDocument import OutputDocumentFactory
 from ..controls.OutputWindow import OutputWindow
 from ..controls.DocumentNotebook import DocumentNotebook

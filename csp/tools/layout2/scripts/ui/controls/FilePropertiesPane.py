@@ -1,7 +1,7 @@
 import wx
 from wx.lib import customtreectrl
 
-from AutoFitTextCtrl import AutoFitTextCtrl
+from .AutoFitTextCtrl import AutoFitTextCtrl
 
 class FilePropertiesPane(wx.Panel):
 	imageListSize = (16, 16)
@@ -25,7 +25,7 @@ class FilePropertiesPane(wx.Panel):
 		if self.GetImageList() is None:
 			width, height = FilePropertiesPane.imageListSize
 			self.SetImageList( wx.ImageList(width, height) )
-			for imageListItemKey, imageListItemName in self.ImageListItemNames().iteritems():
+			for imageListItemKey, imageListItemName in self.ImageListItemNames().items():
 				bitmap = wx.ArtProvider.GetBitmap(imageListItemName, size = FilePropertiesPane.imageListSize)
 				self.TreeImages()[imageListItemKey] = self.GetImageList().Add(bitmap)
 		

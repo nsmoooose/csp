@@ -1,6 +1,6 @@
 import wx
 
-from Command import Command
+from .Command import Command
 
 class UndoCommand(Command):
 	"""Undo the last action."""

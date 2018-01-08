@@ -25,7 +25,7 @@ Only works for objects that do not contain Link tags.
 
 from csp import csplib
 from csp import cspsim
-import domtree
+from . import domtree
 import sys
 
 InterfaceRegistry = csplib.InterfaceRegistry.getInterfaceRegistry()
@@ -79,13 +79,13 @@ class Tag_Bool:
 class Tag_Vector2:
 	def __init__(self, node, parent):
 		name = node.attr('name')
-		vec = csplib.Vector2(*map(float, node.text.split()))
+		vec = csplib.Vector2(*list(map(float, node.text.split())))
 		parent.set(name, vec)
 
 class Tag_Vector3:
 	def __init__(self, node, parent):
 		name = node.attr('name')
-		vec = csplib.Vector3(*map(float, node.text.split()))
+		vec = csplib.Vector3(*list(map(float, node.text.split())))
 		parent.set(name, vec)
 
 class Tag_Path:
@@ -112,7 +112,7 @@ def Realize(node, parent=None):
 	if tag.startswith('#'): return
 	wrapper = globals().get('Tag_' + tag)
 	if wrapper is None:
-		print 'No wrapper for %s' % tag
+		print('No wrapper for %s' % tag)
 		sys.exit(1)
 	wrapper(node, parent)
 

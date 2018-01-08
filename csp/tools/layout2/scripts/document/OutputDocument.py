@@ -1,4 +1,4 @@
-from Document import Document
+from .Document import Document
 
 class OutputDocument(Document):
 	"""This document represents a console like output

@@ -26,7 +26,7 @@ def loadModules():
 		if not os.path.exists(module_path):
 			module_path = os.path.join(module) + extension
 		if not csp.csplib.ModuleLoader.load(module_path):
-			print('Unable to load required extension module "%s"' % module)
+			print(('Unable to load required extension module "%s"' % module))
 
 loadModules()
 

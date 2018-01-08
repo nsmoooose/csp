@@ -1,6 +1,6 @@
 import wx
 
-from controls.OutputPane import OutputPane
+from .controls.OutputPane import OutputPane
 
 class CommandControlMediator(object):
 	"""The purpose of this class is to hold a binding between a command
@@ -31,7 +31,7 @@ class CommandControlMediator(object):
 	def AddControl(self, command, control):
 		"""First argument is the command we wish to remember a binding
 		for. Second argument is a tuple of (parent control, control id, control)"""
-		if not self.commands.has_key(command):
+		if command not in self.commands:
 			self.commands[command] = []
 		self.commands[command].append(control)
 
@@ -40,7 +40,7 @@ class CommandControlMediator(object):
 		enabled or not. Example: if there is no documents opened the
 		SaveCurrentDocumentCommand should be disabled in toolbar and
 		menus."""
-		for command, controls in self.commands.iteritems():
+		for command, controls in self.commands.items():
 			enabled = command.Enabled()
 			for parent, id, control in controls:
 				if control.GetClassName() == "wxToolBarToolBase":
@@ -70,7 +70,7 @@ class CommandControlFactory(object):
 				menu.AppendSeparator()
 				continue
 
-			controlId = wx.NewId() if not controlid.has_key(command) else controlid[command]
+			controlId = wx.NewId() if command not in controlid else controlid[command]
 			control = self.AppendInMenu(parent, menu, controlId, command)
 			self.control_mediator.AddControl(command, (menu, controlId, control))
 		return menu
@@ -93,7 +93,7 @@ class CommandControlFactory(object):
 				toolbar.AddSeparator()
 				continue
 
-			controlId = wx.NewId() if not controlid.has_key(command) else controlid[command]
+			controlId = wx.NewId() if command not in controlid else controlid[command]
 
 			control = self.AppendInToolBar(parent, toolbar, controlId, command)
 			self.control_mediator.AddControl(command, (toolbar, controlId, control))
@@ -118,7 +118,7 @@ class EventToCommandExecutionAdapter(object):
 		"""Constructs this instance with a command object. This command will be
 		executed when the bound event is fired."""
 		if not isinstance(command, type):
-			raise Exception, "The EventToCommandExecutionAdapter takes the command type as parameter. Not an instance. %s" % command.__class__.__name__
+			raise Exception("The EventToCommandExecutionAdapter takes the command type as parameter. Not an instance. %s" % command.__class__.__name__)
 		self.command = command
 
 	def Execute(self, event):

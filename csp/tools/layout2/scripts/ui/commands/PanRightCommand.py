@@ -1,4 +1,4 @@
-from Command import Command
+from .Command import Command
 
 class PanRightCommand(Command):
     caption = "Pan right"

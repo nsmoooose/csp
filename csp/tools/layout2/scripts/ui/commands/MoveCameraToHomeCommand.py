@@ -1,6 +1,6 @@
 import wx
 
-from Command import Command
+from .Command import Command
 
 class MoveCameraToHomeCommand(Command):
 	"""This command moves the camera to the home position for

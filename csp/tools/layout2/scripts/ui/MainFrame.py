@@ -1,14 +1,14 @@
 import wx
 import wx.aui
 
-from CommandControlFactory import CommandControlFactory
-from controls.DocumentNotebook import DocumentNotebook
-from controls.OutputPane import OutputPane
-from controls.ProjectTree import ProjectTree
-from controls.CurrentDocumentPropertiesPane import CurrentDocumentPropertiesPane
-from controls.SceneWindow import SceneWindow
+from .CommandControlFactory import CommandControlFactory
+from .controls.DocumentNotebook import DocumentNotebook
+from .controls.OutputPane import OutputPane
+from .controls.ProjectTree import ProjectTree
+from .controls.CurrentDocumentPropertiesPane import CurrentDocumentPropertiesPane
+from .controls.SceneWindow import SceneWindow
 
-from commands import *
+from .commands import *
 
 class MainFrame(wx.Frame):
 	"""This is the top window that contains all controls used by the layout editor.

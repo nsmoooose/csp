@@ -1,7 +1,7 @@
 import weakref
 import wx
 
-from AutoFitTextCtrl import AutoFitTextCtrl
+from .AutoFitTextCtrl import AutoFitTextCtrl
 from ...data import XmlNode
 from ..commands.ModifyXmlAction import ModifyXmlDataAction
 from ..commands.ModifyXmlAction import ModifyXmlAttributeAction
@@ -17,7 +17,7 @@ class ItemUpdater(object):
 		pass
 	
 	def GetErrorMessage(self, node):
-		return '\n'.join( "- %s" % error for error in node.errors.itervalues() )
+		return '\n'.join( "- %s" % error for error in node.errors.values() )
 	
 	def SetItemImage(self, item, image):
 		self.propertiesPane.tree.SetItemImage(item, self.propertiesPane.TreeImages()[image])

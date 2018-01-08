@@ -1,4 +1,4 @@
-from __future__ import with_statement
+
 import xml.dom.minidom
 
 from csp.tools.layout2 import layout_module
@@ -253,7 +253,7 @@ class XmlNodeElement(layout_module.XmlNodeElement, XmlNodeChild):
 		self.childNodes = xmlNodeElement.childNodes
 		
 		# Re-parent the children
-		for attribute in self.attributes.itervalues():
+		for attribute in self.attributes.values():
 			attribute.parent = self
 		
 		for child in self.childNodes:
@@ -271,7 +271,7 @@ class XmlNodeElement(layout_module.XmlNodeElement, XmlNodeChild):
 	def Dispose(self):
 		super(XmlNodeElement, self).Dispose()
 		
-		for attribute in self.attributes.itervalues():
+		for attribute in self.attributes.values():
 			attribute.Dispose()
 		self.attributes = {}
 		
@@ -372,7 +372,7 @@ class XmlNodeElement(layout_module.XmlNodeElement, XmlNodeChild):
 			return attribute.GetValue()
 	
 	def GetChildren(self):
-		for attribute in self.attributes.itervalues():
+		for attribute in self.attributes.values():
 			yield attribute
 		
 		for child in self.childNodes:

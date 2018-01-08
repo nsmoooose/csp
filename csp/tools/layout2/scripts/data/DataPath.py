@@ -89,8 +89,8 @@ class DataPath:
 		  .x.y.z -> .x.y.z
 		"""
 		thispath = '.'.join(self._datapath.split('.')[:-1]) + '.'
-		print datapath, self._datapath, thispath
+		print(datapath, self._datapath, thispath)
 		if datapath.startswith('.') and datapath.startswith(thispath):
-			print 'truncated: ', datapath[len(thispath):]
+			print('truncated: ', datapath[len(thispath):])
 			return datapath[len(thispath):]
 		return datapath

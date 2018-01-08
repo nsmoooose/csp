@@ -1,6 +1,6 @@
 import wx
 
-from FilePropertiesPane import FilePropertiesPane
+from .FilePropertiesPane import FilePropertiesPane
 
 class ImagePropertiesPane(FilePropertiesPane):
 	imageList = None

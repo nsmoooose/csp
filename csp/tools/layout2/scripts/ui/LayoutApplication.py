@@ -1,4 +1,3 @@
-import dumbdbm
 import os.path
 import locale
 import wx
@@ -8,11 +7,11 @@ import sys
 from csp.base.signals import Signal
 from csp.tools.layout2.layout_module import *
 from csp.tools.layout2.scripts.document.DocumentRegistry import DocumentRegistry
-from CommandControlFactory import CommandControlMediator
-from MainFrame import MainFrame
-from SelectDataDirectoryDialog import SelectDataDirectoryDialog
-from ArtProvider import SearchInDirectoriesArtProvider
-from ArtProvider import MissingImageArtProvider
+from .CommandControlFactory import CommandControlMediator
+from .MainFrame import MainFrame
+from .SelectDataDirectoryDialog import SelectDataDirectoryDialog
+from .ArtProvider import SearchInDirectoriesArtProvider
+from .ArtProvider import MissingImageArtProvider
 
 class LayoutApplication(wx.App):
 	"""This is a singleton instance of the entire application. It contains information

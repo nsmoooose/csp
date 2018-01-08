@@ -1,6 +1,6 @@
 import wx
 
-from Command import Command
+from .Command import Command
 
 class DefaultLayoutCommand(Command):
 	caption = "Default layout"

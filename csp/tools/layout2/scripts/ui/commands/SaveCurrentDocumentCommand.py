@@ -1,6 +1,6 @@
 import wx
 
-from Command import Command
+from .Command import Command
 
 class SaveCurrentDocumentCommand(Command):
     """Saves the current document if it allows it."""

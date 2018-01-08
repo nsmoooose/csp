@@ -1,6 +1,6 @@
 import wx
 
-from DocumentNotebookPage import DocumentNotebookPage
+from .DocumentNotebookPage import DocumentNotebookPage
 
 class ImageWindow(wx.ScrolledWindow, DocumentNotebookPage):
 	"""This window holds a single bitmap control. It is used to display

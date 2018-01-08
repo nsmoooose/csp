@@ -1,9 +1,9 @@
 import wx
 
-from DocumentNotebook import DocumentNotebook
-from FilePropertiesPane import FilePropertiesPane
-import XmlPropertiesPaneItem
-import XmlPropertiesPaneItemArchive
+from .DocumentNotebook import DocumentNotebook
+from .FilePropertiesPane import FilePropertiesPane
+from . import XmlPropertiesPaneItem
+from . import XmlPropertiesPaneItemArchive
 
 class XmlPropertiesPane(FilePropertiesPane):
 	imageList = None

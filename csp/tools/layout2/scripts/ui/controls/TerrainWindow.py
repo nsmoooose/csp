@@ -1,6 +1,6 @@
 from csp.tools.layout2.layout_module import OsgTerrainOverviewWindow
-from GraphicsWindow import GraphicsWindow
-from DocumentNotebookPage import DocumentNotebookPage
+from .GraphicsWindow import GraphicsWindow
+from .DocumentNotebookPage import DocumentNotebookPage
 
 class TerrainWindow(GraphicsWindow, DocumentNotebookPage):
 	def __init__(self, *args, **kwargs):

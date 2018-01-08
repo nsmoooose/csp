@@ -2,8 +2,8 @@ import wx
 import wx.glcanvas
 
 from csp.tools.layout2.layout_module import *
-from GraphicsWindow import GraphicsWindow
-from DocumentNotebookPage import DocumentNotebookPage
+from .GraphicsWindow import GraphicsWindow
+from .DocumentNotebookPage import DocumentNotebookPage
 
 class SceneWindow(GraphicsWindow, DocumentNotebookPage):
 	"""This class is making it possible to display the scene as 

@@ -1,7 +1,7 @@
 import wx
 from csp.tools.layout2.scripts.ui.controls.ProjectTree import ProjectTree
-from Command import Command
-from FileCommandRegistry import FileCommandRegistry
+from .Command import Command
+from .FileCommandRegistry import FileCommandRegistry
 
 class OpenSelectedFileCommand(Command):
 	"""Opens the selected file in the project tree of this

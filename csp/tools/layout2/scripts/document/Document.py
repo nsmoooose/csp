@@ -1,4 +1,4 @@
-from ActionHistory import ActionHistory
+from .ActionHistory import ActionHistory
 from csp.base.signals import Signal
 
 class Document:

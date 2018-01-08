@@ -2,7 +2,7 @@ import wx
 import wx.glcanvas
 
 from csp.tools.layout2.layout_module import *
-from DocumentNotebookPage import DocumentNotebookPage
+from .DocumentNotebookPage import DocumentNotebookPage
 
 class GraphicsWindow(wx.glcanvas.GLCanvas, DocumentNotebookPage):
 	"""This class is making it possible to display 3D content as 

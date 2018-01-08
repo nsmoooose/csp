@@ -1,4 +1,4 @@
-from Command import Command
+from .Command import Command
 from lxml.etree import tostring as toxml
 from lxml.builder import E as tag
 import math
@@ -33,10 +33,10 @@ class CloudBoxGenerator(object):
         #   needed.
 
         if not os.path.exists(self.directory):
-            raise IOError, "Directory %s not found" % self.directory
+            raise IOError("Directory %s not found" % self.directory)
 
         if not self.filename.endswith(".xml"):
-            raise CloudBoxException, "Filename doesn't have .xml extension"
+            raise CloudBoxException("Filename doesn't have .xml extension")
 
         class Sprite(object):
             def __init__(self, position, rotation, size):
@@ -175,7 +175,7 @@ class CloudBoxWizard(wx.Dialog):
         application = wx.GetApp()
         for key in keys:
             fullKey = "LayoutApplication.CloudBoxWizard." + key
-            if application.Configuration.has_key(fullKey):
+            if fullKey in application.Configuration:
                 setattr(obj, key, application.Configuration[fullKey])
 
     def StoreLastValues(self, obj, keys):

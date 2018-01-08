@@ -104,7 +104,7 @@ class DomTree:
 	def attrs(self):
 		attrs = getattr(self.node, '_attrs', None)
 		if attrs is None: return []
-		return attrs.keys()
+		return list(attrs.keys())
 
 	def hasattr(self, name):
 		return self.node.hasAttribute(name)
@@ -118,7 +118,7 @@ class DomTree:
 		return 'node %s' % self.name
 
 	def keys(self):
-		return self._dict.keys()
+		return list(self._dict.keys())
 
 	def get(self, name, default):
 		return self.child

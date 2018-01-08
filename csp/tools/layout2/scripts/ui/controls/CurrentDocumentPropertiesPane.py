@@ -3,10 +3,10 @@ import wx
 from ...document.FileDocument import FileDocument
 from ...document.XmlDocument import XmlDocument
 from ...document.ImageDocument import ImageDocument
-from NoPropertiesPane import NoPropertiesPane
-from XmlPropertiesPane import XmlPropertiesPane
-from ImagePropertiesPane import ImagePropertiesPane
-from FilePropertiesPane import FilePropertiesPane
+from .NoPropertiesPane import NoPropertiesPane
+from .XmlPropertiesPane import XmlPropertiesPane
+from .ImagePropertiesPane import ImagePropertiesPane
+from .FilePropertiesPane import FilePropertiesPane
 
 class CurrentDocumentPropertiesPane(wx.Panel):
 	"""This window display various properties related to the current document."""

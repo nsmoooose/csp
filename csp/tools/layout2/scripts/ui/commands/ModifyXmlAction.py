@@ -1,4 +1,4 @@
-from Action import Action
+from .Action import Action
 
 class ModifyXmlDataAction(Action):
 	def __init__(self, nodeName, imageName, node, newText):

@@ -2,7 +2,7 @@ import wx
 import os.path
 
 from csp.tools.layout2.scripts.document.OutputDocument import OutputDocument
-from Command import Command
+from .Command import Command
 from ..controls.OutputPane import OutputPane
 
 # TODO

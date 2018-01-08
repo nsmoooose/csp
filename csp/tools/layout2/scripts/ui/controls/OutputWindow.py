@@ -1,6 +1,6 @@
 import wx
 
-from DocumentNotebookPage import DocumentNotebookPage
+from .DocumentNotebookPage import DocumentNotebookPage
 
 class OutputWindow(wx.Panel, DocumentNotebookPage):
 	"""This window holds a multi line text box that displays

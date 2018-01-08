@@ -1,9 +1,9 @@
 import weakref
 import wx
 
-from XmlPropertiesPaneItem import ItemUpdaterWithoutChildren
-from XmlPropertiesPaneItem import ItemUpdaterElement
-from XmlPropertiesPaneItem import ItemWindowSimple
+from .XmlPropertiesPaneItem import ItemUpdaterWithoutChildren
+from .XmlPropertiesPaneItem import ItemUpdaterElement
+from .XmlPropertiesPaneItem import ItemWindowSimple
 from ...data.XmlNode import XmlNodeText
 from ...data.XmlNode import XmlNodeAttribute
 from ...data import XmlNodeArchive

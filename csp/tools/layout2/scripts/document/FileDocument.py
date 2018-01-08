@@ -1,6 +1,6 @@
 import os.path
 
-from Document import Document
+from .Document import Document
 
 class FileDocument(Document):
 	"""Base class for all documents representing a single file."""

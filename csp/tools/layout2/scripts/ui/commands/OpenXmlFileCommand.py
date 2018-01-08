@@ -2,10 +2,10 @@ import wx
 import xml.dom.pulldom
 import xml.dom.minidom
 
-from FileCommand import FileCommand
-from OpenUnknownXmlFileCommand import OpenUnknownXmlFileCommand
-from OpenObjectXmlFileCommand import OpenObjectXmlFileCommand
-from OpenCustomLayoutModelFileCommand import OpenCustomLayoutModelFileCommand
+from .FileCommand import FileCommand
+from .OpenUnknownXmlFileCommand import OpenUnknownXmlFileCommand
+from .OpenObjectXmlFileCommand import OpenObjectXmlFileCommand
+from .OpenCustomLayoutModelFileCommand import OpenCustomLayoutModelFileCommand
 from ..controls.TerrainWindow import TerrainWindow
 from ..controls.XmlWindow import XmlWindow
 
@@ -28,13 +28,13 @@ class OpenXmlFileCommand(FileCommand):
 		
 		try:
 			rootObjectName = self.GetRootObjectName( self.GetFileName() )
-		except Exception, error:
+		except Exception as error:
 			loadError = str(error)
 
 			# The error message from xml.dom.minidom is far better than from xml.dom.pulldom
 			try:
 				xml.dom.minidom.parse( self.GetFileName() )
-			except Exception, error:
+			except Exception as error:
 				loadError = str(error)
 
 			wx.MessageDialog(wx.GetApp().GetTopWindow(),

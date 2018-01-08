@@ -1,11 +1,11 @@
 import os
 import wx
-from XmlNode import XmlNodeFactory
-from XmlNode import XmlNodeDocument
-from XmlNode import XmlNodeElement
-from XmlNode import XmlNodeText
-from XmlNode import XmlNodeComment
-from XmlNode import XmlNodeChild
+from .XmlNode import XmlNodeFactory
+from .XmlNode import XmlNodeDocument
+from .XmlNode import XmlNodeElement
+from .XmlNode import XmlNodeText
+from .XmlNode import XmlNodeComment
+from .XmlNode import XmlNodeChild
 from csp.tools.layout2 import layout_module
 from csp import csplib
 
@@ -125,7 +125,7 @@ class XmlNodeContainer(XmlNodeArchive):
 			
 			if not found:
 				child.SetError( "%s.badType" % self.__class__.__name__, None )
-				print "BUG: unknown archive builtin type"
+				print("BUG: unknown archive builtin type")
 			
 			return True
 		
@@ -170,7 +170,7 @@ class XmlNodeContainer(XmlNodeArchive):
 			
 			if not found:
 				child.SetError( "%s.badType" % self.__class__.__name__, None )
-				print "BUG: unknown archive base type"
+				print("BUG: unknown archive base type")
 			
 			return True
 		
@@ -232,7 +232,7 @@ class XmlNodeIntData(object):
 		try:
 			int( self.GetText(), 0 )
 			self.SetError( "parseXML", None )
-		except ValueError, error:
+		except ValueError as error:
 			self.SetError( "parseXML", str(error) )
 
 
@@ -254,7 +254,7 @@ class XmlNodeFloatData(object):
 		try:
 			float( self.GetText() )
 			self.SetError( "parseXML", None )
-		except ValueError, error:
+		except ValueError as error:
 			self.SetError( "parseXML", str(error) )
 
 
@@ -277,7 +277,7 @@ class XmlNodeRealData(object):
 		try:
 			real.parseXML( self.GetText() )
 			self.SetError( "parseXML", None )
-		except csplib.ParseException, error:
+		except csplib.ParseException as error:
 			self.SetError( "parseXML", error.getMessage() )
 			error.clear()
 
@@ -310,7 +310,7 @@ class XmlNodeECEF(layout_module.XmlNodeECEF, XmlNodeSimple):
 		try:
 			ecef.parseXML( self.GetText() )
 			self.SetError( "parseXML", None )
-		except csplib.ParseException, error:
+		except csplib.ParseException as error:
 			self.SetError( "parseXML", error.getMessage() )
 			error.clear()
 	
@@ -336,7 +336,7 @@ class XmlNodeLLA(layout_module.XmlNodeLLA, XmlNodeSimple):
 		try:
 			lla.parseXML( self.GetText() )
 			self.SetError( "parseXML", None )
-		except csplib.ParseException, error:
+		except csplib.ParseException as error:
 			self.SetError( "parseXML", error.getMessage() )
 			error.clear()
 
@@ -356,7 +356,7 @@ class XmlNodeUTM(layout_module.XmlNodeUTM, XmlNodeSimple):
 		try:
 			utm.parseXML( self.GetText() )
 			self.SetError( "parseXML", None )
-		except csplib.ParseException, error:
+		except csplib.ParseException as error:
 			self.SetError( "parseXML", error.getMessage() )
 			error.clear()
 
@@ -376,7 +376,7 @@ class XmlNodeVector2(layout_module.XmlNodeVector2, XmlNodeSimple):
 		try:
 			vector.parseXML( self.GetText() )
 			self.SetError( "parseXML", None )
-		except csplib.ParseException, error:
+		except csplib.ParseException as error:
 			self.SetError( "parseXML", error.getMessage() )
 			error.clear()
 
@@ -402,7 +402,7 @@ class XmlNodeVector3(layout_module.XmlNodeVector3, XmlNodeSimple):
 		try:
 			vector.parseXML( self.GetText() )
 			self.SetError( "parseXML", None )
-		except csplib.ParseException, error:
+		except csplib.ParseException as error:
 			self.SetError( "parseXML", error.getMessage() )
 			error.clear()
 	
@@ -428,7 +428,7 @@ class XmlNodeMatrix(layout_module.XmlNodeMatrix, XmlNodeSimple):
 		try:
 			matrix.parseXML( self.GetText() )
 			self.SetError( "parseXML", None )
-		except csplib.ParseException, error:
+		except csplib.ParseException as error:
 			self.SetError( "parseXML", error.getMessage() )
 			error.clear()
 	
@@ -454,7 +454,7 @@ class XmlNodeQuat(layout_module.XmlNodeQuat, XmlNodeSimple):
 		try:
 			quat.parseXML( self.GetText() )
 			self.SetError( "parseXML", None )
-		except csplib.ParseException, error:
+		except csplib.ParseException as error:
 			self.SetError( "parseXML", error.getMessage() )
 			error.clear()
 
@@ -474,7 +474,7 @@ class XmlNodeDate(layout_module.XmlNodeDate, XmlNodeSimple):
 		try:
 			simDate.parseXML( self.GetText() )
 			self.SetError( "parseXML", None )
-		except csplib.ParseException, error:
+		except csplib.ParseException as error:
 			self.SetError( "parseXML", error.getMessage() )
 			error.clear()
 
@@ -635,7 +635,7 @@ class XmlNodePath(layout_module.XmlNodePath, XmlNodeSimple):
 		documentRegistry = wx.GetApp().GetDocumentRegistry()
 		try:
 			self.subDocument = documentRegistry.GetOrCreateDocument( self.documentOwner.DocumentFactory(fullName), self.documentOwner )
-		except Exception, error:
+		except Exception as error:
 			self.loadError = str(error)
 			return
 		
@@ -914,7 +914,7 @@ class XmlNodeList(layout_module.XmlNodeList, XmlNodeContainer):
 				
 				if not self.CheckVariableType(childVariableType, child):
 					child.SetError( "XmlNodeList.badType", None )
-					print "BUG: unknown archive type"
+					print("BUG: unknown archive type")
 	
 	def GetChildVariableType(self, child):
 		selfVariableType = self.GetSelfVariableType()
@@ -1010,7 +1010,7 @@ class XmlNodeObject(layout_module.XmlNodeObject, XmlNodeContainer):
 			object = interface.createObject()
 			try:
 				object.parseXML( self.GetText() )
-			except csplib.ParseException, error:
+			except csplib.ParseException as error:
 				parseXMLError = error.getMessage()
 				error.clear()
 		
@@ -1072,7 +1072,7 @@ class XmlNodeObject(layout_module.XmlNodeObject, XmlNodeContainer):
 				self.CheckChildType(child, XmlNodeList)
 			elif not self.CheckVariableType(childVariableType, child):
 				child.SetError( "XmlNodeObject.badType", None )
-				print "BUG: unknown archive type"
+				print("BUG: unknown archive type")
 	
 	def CleanRequiredNameErrors(self):
 		requiredNameErrors = [ error for error in self.errors if error.startswith('requiredName_') ]

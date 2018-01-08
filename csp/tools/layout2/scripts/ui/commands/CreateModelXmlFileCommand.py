@@ -1,4 +1,4 @@
-from Command import Command
+from .Command import Command
 
 class CreateModelXmlFileCommand(Command):
     """Creates a new model xml file describing an open scene graph model.

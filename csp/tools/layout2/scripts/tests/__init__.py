@@ -1,1 +1,1 @@
-from CloudBoxTests import *
+from .CloudBoxTests import *

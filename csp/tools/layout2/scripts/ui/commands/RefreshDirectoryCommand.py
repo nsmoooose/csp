@@ -1,4 +1,4 @@
-from Command import Command
+from .Command import Command
 from csp.tools.layout2.scripts.ui.controls.ProjectTree import ProjectTree
 
 class RefreshDirectoryCommand(Command):

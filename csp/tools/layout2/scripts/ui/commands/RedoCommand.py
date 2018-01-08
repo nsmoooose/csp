@@ -1,6 +1,6 @@
 import wx
 
-from Command import Command
+from .Command import Command
 
 class RedoCommand(Command):
 	"""Redo the last action."""

@@ -1,5 +1,5 @@
 import wx
-from FileCommand import FileCommand
+from .FileCommand import FileCommand
 from ...document.ImageDocument import ImageDocumentFactory
 from ..controls.ImageWindow import ImageWindow
 from ..controls.DocumentNotebook import DocumentNotebook

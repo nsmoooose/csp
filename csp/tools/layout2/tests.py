@@ -3,7 +3,7 @@ import os
 import csp.csplib
 import csp.cspsim
 import unittest
-from scripts.tests import *
+from .scripts.tests import *
 
 def loadModules():
 	modules = ('chunklod', 'demeter')
@@ -24,7 +24,7 @@ def loadModules():
 		if not os.path.exists(module_path):
 			module_path = os.path.join(module) + extension
 		if not csp.csplib.ModuleLoader.load(module_path):
-			print('Unable to load required extension module "%s"' % module)
+			print(('Unable to load required extension module "%s"' % module))
 
 if __name__ == "__main__":
     loadModules()

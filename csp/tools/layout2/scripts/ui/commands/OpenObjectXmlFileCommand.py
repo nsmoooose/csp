@@ -1,6 +1,6 @@
 import os
 import wx
-from FileCommand import FileCommand
+from .FileCommand import FileCommand
 from ...document.XmlObjectDocument import XmlObjectDocumentFactory
 from ..controls.DocumentNotebook import DocumentNotebook
 from ..controls.TerrainWindow import TerrainWindow

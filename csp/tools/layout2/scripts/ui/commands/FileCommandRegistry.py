@@ -1,8 +1,8 @@
 import os
 
-from OpenXmlFileCommand import OpenXmlFileCommand
-from OpenImageFileCommand import OpenImageFileCommand
-from OpenOsgModelFileCommand import OpenOsgModelFileCommand
+from .OpenXmlFileCommand import OpenXmlFileCommand
+from .OpenImageFileCommand import OpenImageFileCommand
+from .OpenOsgModelFileCommand import OpenOsgModelFileCommand
 
 class FileCommandRegistry:
 	"""This singleton is responsible for knowing what Command to execute

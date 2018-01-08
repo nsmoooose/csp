@@ -1,6 +1,6 @@
 import wx
 
-from Command import Command
+from .Command import Command
 from ..controls.DocumentNotebook import DocumentNotebook
 
 class CloseCurrentDocumentCommand(Command):

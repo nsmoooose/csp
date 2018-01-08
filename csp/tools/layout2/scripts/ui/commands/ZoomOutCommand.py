@@ -1,4 +1,4 @@
-from Command import Command
+from .Command import Command
 from csp.tools.layout2.scripts.ui.controls.DocumentNotebook import DocumentNotebook
 
 class ZoomOutCommand(Command):

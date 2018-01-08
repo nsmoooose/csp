@@ -1,4 +1,4 @@
-from FileDocument import FileDocument
+from .FileDocument import FileDocument
 
 class ImageDocument(FileDocument):
 	"""Document representing a single Image. """

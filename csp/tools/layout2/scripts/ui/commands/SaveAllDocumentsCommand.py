@@ -1,6 +1,6 @@
 import wx
 
-from Command import Command
+from .Command import Command
 
 class SaveAllDocumentsCommand(Command):
     """Saves all opened documents."""
@@ -18,7 +18,7 @@ class SaveAllDocumentsCommand(Command):
 
 	# Iterate each document and try to save every document
 	# that isn't read only.
-	for document in documentRegistry.GetDocuments().itervalues():
+	for document in documentRegistry.GetDocuments().values():
 		if document.IsReadOnly():
 			continue
 		document.Save()

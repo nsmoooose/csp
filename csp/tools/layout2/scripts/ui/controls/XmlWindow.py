@@ -1,8 +1,8 @@
 import wx
 import wx.stc
 
-from DocumentNotebook import DocumentNotebook
-from DocumentNotebookPage import DocumentNotebookPage
+from .DocumentNotebook import DocumentNotebook
+from .DocumentNotebookPage import DocumentNotebookPage
 
 class XmlWindow(wx.stc.StyledTextCtrl, DocumentNotebookPage):
 	"""This window holds a read only StyledTextCtrl. It is used to display

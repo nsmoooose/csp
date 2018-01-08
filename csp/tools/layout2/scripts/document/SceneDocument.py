@@ -1,4 +1,4 @@
-from FileDocument import FileDocument
+from .FileDocument import FileDocument
 
 class SceneDocument(FileDocument):
 	"""This document represents a scene of 3D objects."""

@@ -1,6 +1,6 @@
 import wx
 
-from Command import Command
+from .Command import Command
 
 class ShowActionHistoryCommand(Command):
 	"""Show the action history."""

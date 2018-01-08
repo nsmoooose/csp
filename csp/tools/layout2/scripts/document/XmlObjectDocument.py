@@ -1,5 +1,5 @@
 import os
-from XmlDocument import XmlDocument
+from .XmlDocument import XmlDocument
 from ..data.XmlNodeArchive import XmlNodeArchiveFactory
 from ..data.XmlNodeArchive import XmlNodeObjectDocument
 

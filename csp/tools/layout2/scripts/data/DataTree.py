@@ -17,13 +17,13 @@
 import sys
 import os
 import os.path
-import domtree
+from . import domtree
 import xml.dom.minidom
 import tempfile
 
-import ObjectInterface
+from . import ObjectInterface
 from csp.tools.layout2 import layout_module
-from DataPath import DataPath
+from .DataPath import DataPath
 
 class RecursionError(Exception):
 	pass
@@ -103,7 +103,7 @@ class NodeMap:
 		return self._graph
 
 	def nodes(self):
-		return self._map.values()
+		return list(self._map.values())
 
 	def pushLayoutNodePath(self, feature_node):
 		assert(feature_node.isGroup())
@@ -202,7 +202,7 @@ class Node:
 		return self._named_children.get(key, default)
 
 	def __getattr__(self, key):
-		if self.__dict__.has_key(key): return self.__dict__[key]
+		if key in self.__dict__: return self.__dict__[key]
 		value = self.__dict__['_named_children'].get(key, None)
 		if value is not None:
 			if isinstance(value, SimpleNode):
@@ -214,7 +214,7 @@ class Node:
 		return value
 
 	def __setattr__(self, key, value):
-		if not self.__dict__.has_key(key) and self.__dict__.has_key('_named_children'):
+		if key not in self.__dict__ and '_named_children' in self.__dict__:
 			child = self._named_children.get(key, None)
 			if child is not None:
 				if isinstance(child, SimpleNode):
@@ -295,7 +295,7 @@ class Node:
 	def delete(self):
 		if not self._deleted:
 			self._deleted = 1
-			print 'delete', self._parent, self
+			print('delete', self._parent, self)
 			self._parent._node.removeChild(self._node)
 			self._parent._dirty = 1
 
@@ -320,9 +320,8 @@ class Node:
 				child.save()
 		if self._node.type == domtree.Node.DOCUMENT_NODE and self.dirty():
 			tmp_fn = os.path.join(os.path.dirname(self.filepath()), '.csplayout-tmp.sav')
-			tmp = open(tmp_fn, 'w+b')
-			print >>tmp, self._node.node.toprettyxml()
-			tmp.close()
+			with open(tmp_fn, 'w+b') as tmp:
+			        tmp.write(self._node.node.toprettyxml().encode())
 			os.rename(tmp_fn, self.filepath())
 			self.makeClean()
 
@@ -349,7 +348,7 @@ class Node:
 	def _hasFileIn(self, files, test=0):
 		if self._node.type == domtree.Node.DOCUMENT_NODE:
 			test = 1
-		if test and files.has_key(self.filepath()): return 1
+		if test and self.filepath() in files: return 1
 		for child in self._children:
 			if child._hasFileIn(files, test): return 1
 		return 0
@@ -450,7 +449,7 @@ Node.Classes['String'] = String
 
 class Vector2(SimpleNode):
 	def init(self):
-		self._value = map(float, self._node.text.split())
+		self._value = list(map(float, self._node.text.split()))
 	def presave(self):
 		self._node.text = '%f %f   ' % tuple(self._value)
 	def MakeDomNode(name, value, doc=None):
@@ -460,7 +459,7 @@ Node.Classes['Vector2'] = Vector2
 
 class Vector3(SimpleNode):
 	def init(self):
-		self._value = map(float, self._node.text.split())
+		self._value = list(map(float, self._node.text.split()))
 	def presave(self):
 		self._node.text = '%f %f %f' % tuple(self._value)
 	def MakeDomNode(name, value, doc=None):
@@ -525,7 +524,7 @@ class CustomLayoutModel(Node):
 		return self.__group, cloned
 	def _realize(self, node_map):
 		group, cloned = self.makeGroup(node_map)
-		print 'CustomLayoutModel._realize', group
+		print('CustomLayoutModel._realize', group)
 		node_map.add(self, group)
 		node_map.addGroup(self, group)
 		node_map.pushLayoutNodePath(group)
@@ -533,7 +532,7 @@ class CustomLayoutModel(Node):
 		node_map.popLayoutNodePath()
 	def create(self, node_map, mapto):
 		group, cloned = self.makeGroup(node_map)
-		print 'CustomLayoutModel._create', group
+		print('CustomLayoutModel._create', group)
 		node_map.getParentLayoutNode().addChild(group)
 		node_map.add(mapto, group)
 		node_map.addGroup(self, group)
@@ -571,7 +570,7 @@ class CustomLayoutModel(Node):
 
 	def addLayoutNode(feature_node):
 		node = FeatureLayout.MakeDomNode('model', feature_node.getX(), feature_node.getY(), feature_node.getAngle())
-		print node.toxml()
+		print(node.toxml())
 	addLayoutNode = staticmethod(addLayoutNode) # XXX temporary hack
 
 

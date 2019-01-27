@@ -53,7 +53,7 @@ if __name__ == '__main__':
         if len(options) == 0:
             print(USAGE)
             sys.exit(0)
-    except getopt.GetoptError, message:
+    except getopt.GetoptError as message:
         print(message)
         sys.exit(1)
 

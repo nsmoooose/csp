@@ -69,7 +69,7 @@ def CheckLXMLVersion():
 
 
 def GetGCCVersion():
-    p = Popen('gcc -dumpversion', shell=True, stdout=PIPE)
+    p = Popen('gcc -dumpfullversion', shell=True, stdout=PIPE)
     out, err = p.communicate()
     version = out.strip()
     try:

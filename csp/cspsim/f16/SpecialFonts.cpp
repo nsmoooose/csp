@@ -156,11 +156,13 @@ osgText::Glyph* ReverseAltFont::getGlyph(const osgText::FontResolution& fontRes,
 			int source_width = normal->s();
 			int source_height = normal->t();
 
+			osgText::Glyph::TextureInfo const *tinfo = reference->getTextureInfo(osgText::NO_TEXT_SHADER);
+
 			// the new glyph should fit the full character cell.  we expand the horizontal dimensions slightly
 			// to compensate for texture blending at the edges of the glyph that might otherwise cause a gap
 			// between adjacent reverse video characters.
 			int cell_height = static_cast<int>(reference->getVerticalAdvance() + 0.5);
-			int cell_width = static_cast<int>(reference->getHorizontalAdvance() + 0.5) + 2 * getGlyphImageMargin();
+			int cell_width = static_cast<int>(reference->getHorizontalAdvance() + 0.5) + 2 * tinfo->texelMargin;
 
 			// sanity checking
 			cell_width = std::max(cell_width, source_width);

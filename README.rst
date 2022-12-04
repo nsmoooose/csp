@@ -22,9 +22,9 @@ Install the following packages::
 
   sudo dnf install git cmake gcc gcc-c++ gdb OpenSceneGraph-devel OpenSceneGraph
   sudo dnf install libsigc++20-devel commoncpp2-devel swig
-  sudo dnf install scons wxPython python-lxml SDL-devel SDL_image-devel
+  sudo dnf install python3-scons python3-wxpython4 python3-lxml SDL-devel SDL_image-devel
   sudo dnf install freealut freealut-devel libvorbis-devel
-  sudo dnf install python-devel libjpeg-turbo-devel python3-ply
+  sudo dnf install python3-devel libjpeg-turbo-devel python3-ply
 
 Building
 --------

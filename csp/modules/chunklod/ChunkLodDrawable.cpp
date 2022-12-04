@@ -156,7 +156,7 @@ void ChunkLodDrawable::drawImplementation(osg::RenderInfo& info) const {
 		_details->disable(*info.getState());
 
 		info.getState()->disableAllVertexArrays();
-		info.getState()->dirtyTexCoordPointersAboveAndIncluding(0);
+		info.getState()->disableTexCoordPointersAboveAndIncluding(0);
 		info.getState()->setActiveTextureUnit(0);
 
 		frame++;

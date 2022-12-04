@@ -17,6 +17,12 @@
  */
 
 %module Vector3
+%include "attribute.i"
+
+%attribute(Vector3, double, x, get_x, set_x);
+%attribute(Vector3, double, y, get_y, set_y);
+%attribute(Vector3, double, z, get_z, set_z);
+
 %{
 #include <csp/csplib/data/Vector3.h>
 #include <csp/csplib/data/Matrix3.h>

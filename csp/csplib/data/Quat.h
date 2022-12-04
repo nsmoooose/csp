@@ -460,21 +460,6 @@ public:
 	double get_y() { return self->y(); }
 	double get_z() { return self->z(); }
 }
-%insert("shadow") %{
-	if _newclass:
-		w = property(_csplib_module.Quat_get_w, _csplib_module.Quat_set_w)
-		x = property(_csplib_module.Quat_get_x, _csplib_module.Quat_set_x)
-		y = property(_csplib_module.Quat_get_y, _csplib_module.Quat_set_y)
-		z = property(_csplib_module.Quat_get_z, _csplib_module.Quat_set_z)
-	__swig_setmethods__["w"] = _csplib_module.Quat_set_w
-	__swig_getmethods__["w"] = _csplib_module.Quat_get_w
-	__swig_setmethods__["x"] = _csplib_module.Quat_set_x
-	__swig_getmethods__["x"] = _csplib_module.Quat_get_x
-	__swig_setmethods__["y"] = _csplib_module.Quat_set_y
-	__swig_getmethods__["y"] = _csplib_module.Quat_get_y
-	__swig_setmethods__["z"] = _csplib_module.Quat_set_z
-	__swig_getmethods__["z"] = _csplib_module.Quat_get_z
-%}
 #endif // SWIG
 
 };

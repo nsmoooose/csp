@@ -17,6 +17,13 @@
  */
 
 %module Quat
+%include "attribute.i"
+
+%attribute(Quat, double, w, get_w, set_w);
+%attribute(Quat, double, x, get_x, set_x);
+%attribute(Quat, double, y, get_y, set_y);
+%attribute(Quat, double, z, get_z, set_z);
+
 %{
 #include <csp/csplib/data/Quat.h>
 %}

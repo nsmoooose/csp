@@ -319,7 +319,6 @@ public:
 		}
 	}
 
-
 #ifdef SWIG
 	// setup accessors for x, y, and z (ugly hack)
 %extend {
@@ -330,18 +329,6 @@ public:
 	double get_y() { return self->y(); }
 	double get_z() { return self->z(); }
 }
-%insert("shadow") %{
-	if _newclass:
-		x = property(_csplib_module.Vector3_get_x, _csplib_module.Vector3_set_x)
-		y = property(_csplib_module.Vector3_get_y, _csplib_module.Vector3_set_y)
-		z = property(_csplib_module.Vector3_get_z, _csplib_module.Vector3_set_z)
-	__swig_setmethods__["x"] = _csplib_module.Vector3_set_x
-	__swig_getmethods__["x"] = _csplib_module.Vector3_get_x
-	__swig_setmethods__["y"] = _csplib_module.Vector3_set_y
-	__swig_getmethods__["y"] = _csplib_module.Vector3_get_y
-	__swig_setmethods__["z"] = _csplib_module.Vector3_set_z
-	__swig_getmethods__["z"] = _csplib_module.Vector3_get_z
-%}
 #endif // SWIG
 
 }; // end of class Vector3

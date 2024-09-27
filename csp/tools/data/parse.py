@@ -43,7 +43,7 @@ class ParserEvent:
         return self.message
 
 
-class XMLSyntax(StandardError):
+class XMLSyntax(Exception):
     def __init__(self, *args):
         self.args = args
 
@@ -85,7 +85,7 @@ def id_to_path(id):
     parts = id.split(':')
     if len(parts) == 2:
         id = parts[1]
-    return apply(os.path.join, id.split('.'))
+    return os.path.join(*id.split('.'))
 
 
 # convert to absolute path id
@@ -177,7 +177,7 @@ class ElementHandler(ContentHandler):
         attr = getattr(obj, name, None)
         if attr is None:
             if isinstance(obj, csplib.Object):
-                if isinstance(type_, types.ClassType):
+                if isinstance(type_, type):
                     attr = type_()
                 else:
                     attr = type_
@@ -403,7 +403,7 @@ class ExternalHandler(SimpleHandler):
 
     def end(self):
         source = self._c.strip()
-        source = apply(os.path.join, source.split("/"))
+        source = os.path.join(*source.split("/"))
         self._element = source
         self._externals.append(source)
 
@@ -428,7 +428,7 @@ class _LUTHandler(SimpleHandler):
         "Values": FloatListHandler,
     }
 
-    members = handlers.keys()
+    members = list(handlers.keys())
     required_members = ["Values"]
 
     def __init__(self, dim, id, base, name, attrs):
@@ -467,11 +467,11 @@ class _LUTHandler(SimpleHandler):
         total = 1
         for i in range(self._dim):
             breakpoints, attrs = tags["Breaks%d" % i]
-            if not attrs.has_key("spacing"):
+            if "spacing" not in attrs:
                 msg = "LUTHander <Breaks%d> tag missing required attribute 'spacing'" % i
                 raise XMLSyntax(msg)
             dx = float(attrs["spacing"])
-            if attrs.has_key("scale"):
+            if "scale" in attrs:
                 scale = float(attrs["scale"])
                 breakpoints = [x * scale for x in breakpoints]
                 dx *= scale
@@ -480,7 +480,7 @@ class _LUTHandler(SimpleHandler):
             spacing.append(n)
             total *= len(breakpoints)
         values, attrs = tags["Values"]
-        if attrs.has_key("scale"):
+        if "scale" in attrs:
             scale = float(attrs["scale"])
             values = [x * scale for x in values]
         if len(values) != total:
@@ -540,7 +540,7 @@ class ObjectHandler(ElementHandler):
             self._interface = g_InterfaceRegistry.getInterface(self._class)
         else:
             msg = "Class '%s' not available" % self._class
-            interface_names = map(lambda x: x.split(":")[0], g_InterfaceRegistry.getInterfaceNames())
+            interface_names = [x.split(":")[0] for x in g_InterfaceRegistry.getInterfaceNames()]
             interface_names.sort()
             raise NameError(msg)
         try:
@@ -554,7 +554,7 @@ class ObjectHandler(ElementHandler):
         self._all_variables = self._interface.getVariableNames()
         self._req_variables = self._interface.getRequiredNames()
 
-        if attrs.has_key("static"):
+        if "static" in attrs:
             self._warningSignal.Emit(ParserEvent("'static' attribute of <Object> is deprecated."))
 
     def endChild(self):
@@ -618,7 +618,7 @@ class ObjectXMLArchive:
             parseString(data, fh, ceh)
         except RuntimeError:
             raise
-        except StandardError, e:
+        except Exception as e:
             errorMessage = ''
             locator = fh._locator
             column = locator.getColumnNumber()

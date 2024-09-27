@@ -43,7 +43,7 @@ class ParserEvent:
         return self.message
 
 
-class XMLSyntax(StandardError):
+class XMLSyntax(Exception):
     def __init__(self, *args):
         self.args = args
 
@@ -85,7 +85,7 @@ def id_to_path(id):
     parts = id.split(':')
     if len(parts) == 2:
         id = parts[1]
-    return apply(os.path.join, id.split('.'))
+    return os.path.join(*id.split('.'))
 
 
 # convert to absolute path id
@@ -177,7 +177,7 @@ class ElementHandler(ContentHandler):
         attr = getattr(obj, name, None)
         if attr is None:
             if isinstance(obj, csplib.Object):
-                if isinstance(type_, types.ClassType):
+                if isinstance(type_, type):
                     attr = type_()
                 else:
                     attr = type_
@@ -257,7 +257,7 @@ class BoolHandler(SimpleHandler):
         SimpleHandler.__init__(self, id, base, name, attrs)
 
     def end(self):
-        value = self._c.encode('ascii').strip()
+        value = self._c.strip()
         if value.upper() == "TRUE":
             self._element = 1
         elif value.upper() == "FALSE":
@@ -280,7 +280,7 @@ class RealHandler(SimpleHandler):
 
     def end(self):
         self._element = csplib.Real()
-        self._element.parseXML(self._c.encode('ascii'))
+        self._element.parseXML(self._c)
 
 
 class ECEFHandler(SimpleHandler):
@@ -289,7 +289,7 @@ class ECEFHandler(SimpleHandler):
 
     def end(self):
         self._element = csplib.ECEF()
-        self._element.parseXML(self._c.encode('ascii'))
+        self._element.parseXML(self._c)
 
 
 class LLAHandler(SimpleHandler):
@@ -298,7 +298,7 @@ class LLAHandler(SimpleHandler):
 
     def end(self):
         self._element = csplib.LLA()
-        self._element.parseXML(self._c.encode('ascii'))
+        self._element.parseXML(self._c)
 
 
 class UTMHandler(SimpleHandler):
@@ -307,7 +307,7 @@ class UTMHandler(SimpleHandler):
 
     def end(self):
         self._element = csplib.UTM()
-        self._element.parseXML(self._c.encode('ascii'))
+        self._element.parseXML(self._c)
 
 
 class Vector2Handler(SimpleHandler):
@@ -316,7 +316,7 @@ class Vector2Handler(SimpleHandler):
 
     def end(self):
         self._element = csplib.Vector2()
-        self._element.parseXML(self._c.encode('ascii'))
+        self._element.parseXML(self._c)
 
 
 class Vector3Handler(SimpleHandler):
@@ -325,7 +325,7 @@ class Vector3Handler(SimpleHandler):
 
     def end(self):
         self._element = csplib.Vector3()
-        self._element.parseXML(self._c.encode('ascii'))
+        self._element.parseXML(self._c)
 
 
 class MatrixHandler(SimpleHandler):
@@ -334,7 +334,7 @@ class MatrixHandler(SimpleHandler):
 
     def end(self):
         self._element = csplib.Matrix3()
-        self._element.parseXML(self._c.encode('ascii'))
+        self._element.parseXML(self._c)
 
 
 class QuatHandler(SimpleHandler):
@@ -343,7 +343,7 @@ class QuatHandler(SimpleHandler):
 
     def end(self):
         self._element = csplib.Quat()
-        self._element.parseXML(self._c.encode('ascii'))
+        self._element.parseXML(self._c)
 
 
 class DateHandler(SimpleHandler):
@@ -352,7 +352,7 @@ class DateHandler(SimpleHandler):
 
     def end(self):
         self._element = csplib.SimDate()
-        self._element.parseXML(self._c.encode('ascii'))
+        self._element.parseXML(self._c)
 
 
 class StringHandler(SimpleHandler):
@@ -360,7 +360,7 @@ class StringHandler(SimpleHandler):
         SimpleHandler.__init__(self, id, base, name, attrs)
 
     def end(self):
-        self._element = self._c.encode('ascii')
+        self._element = self._c
 
     def assign(self, interface, obj, name):
         interface.set(obj, name, str(self._element))
@@ -374,7 +374,7 @@ class EnumHandler(SimpleHandler):
         self._element = self._c
 
     def assign(self, interface, object, name):
-        value = self._element.encode('ascii')
+        value = self._element
         interface.set_enum(object, name, value)
 
 
@@ -384,7 +384,7 @@ class PathHandler(SimpleHandler):
 
     def getElement(self):
         p = csplib.LinkBase()
-        p.setPath(self._element.encode('ascii'))
+        p.setPath(self._element)
         return p
 
     def end(self):
@@ -403,13 +403,13 @@ class ExternalHandler(SimpleHandler):
 
     def end(self):
         source = self._c.strip()
-        source = apply(os.path.join, source.split("/"))
+        source = os.path.join(*source.split("/"))
         self._element = source
         self._externals.append(source)
 
     def assign(self, interface, obj, name):
         ext = csplib.External()
-        ext.setSource(self._element.encode('ascii'))
+        ext.setSource(self._element)
         interface.set(obj, name, ext)
 
 
@@ -418,7 +418,7 @@ class KeyHandler(SimpleHandler):
         SimpleHandler.__init__(self, id, base, name, attrs)
 
     def end(self):
-        id = self._c.encode('ascii')
+        id = self._c
         self._element = csplib.Key(id)
 
 
@@ -428,7 +428,7 @@ class _LUTHandler(SimpleHandler):
         "Values": FloatListHandler,
     }
 
-    members = handlers.keys()
+    members = list(handlers.keys())
     required_members = ["Values"]
 
     def __init__(self, dim, id, base, name, attrs):
@@ -458,7 +458,7 @@ class _LUTHandler(SimpleHandler):
         self._keys[member] = (child, attrs)
 
     def assign(self, interface, object, name):
-        missing = filter(lambda x, f=self._keys.has_key: not f(x), self._required_members)
+        missing = [x for x in self._required_members if x not in self._keys]
         assert len(missing)==0, "LUTHandler required tag(s) missing:\n  %s" % str(missing)
         table = getattr(csplib, "Table%d" % self._dim)()
         tags = self._keys
@@ -467,11 +467,12 @@ class _LUTHandler(SimpleHandler):
         total = 1
         for i in range(self._dim):
             breakpoints, attrs = tags["Breaks%d" % i]
-            if not attrs.has_key("spacing"):
+            breakpoints = list(breakpoints)
+            if "spacing" not in attrs:
                 msg = "LUTHander <Breaks%d> tag missing required attribute 'spacing'" % i
                 raise XMLSyntax(msg)
             dx = float(attrs["spacing"])
-            if attrs.has_key("scale"):
+            if "scale" in attrs:
                 scale = float(attrs["scale"])
                 breakpoints = [x * scale for x in breakpoints]
                 dx *= scale
@@ -480,7 +481,8 @@ class _LUTHandler(SimpleHandler):
             spacing.append(n)
             total *= len(breakpoints)
         values, attrs = tags["Values"]
-        if attrs.has_key("scale"):
+        values = list(values)
+        if "scale" in attrs:
             scale = float(attrs["scale"])
             values = [x * scale for x in values]
         if len(values) != total:
@@ -540,7 +542,7 @@ class ObjectHandler(ElementHandler):
             self._interface = g_InterfaceRegistry.getInterface(self._class)
         else:
             msg = "Class '%s' not available" % self._class
-            interface_names = map(lambda x: x.split(":")[0], g_InterfaceRegistry.getInterfaceNames())
+            interface_names = [x.split(":")[0] for x in g_InterfaceRegistry.getInterfaceNames()]
             interface_names.sort()
             raise NameError(msg)
         try:
@@ -554,11 +556,11 @@ class ObjectHandler(ElementHandler):
         self._all_variables = self._interface.getVariableNames()
         self._req_variables = self._interface.getRequiredNames()
 
-        if attrs.has_key("static"):
+        if "static" in attrs:
             self._warningSignal.Emit(ParserEvent("'static' attribute of <Object> is deprecated."))
 
     def endChild(self):
-        name = self._attrs["name"].encode('ascii')
+        name = self._attrs["name"]
         self._assigned[name] = 1
         self._handler.assign(self._interface, self._object, name)
         self.checkName(name)
@@ -572,13 +574,11 @@ class ObjectHandler(ElementHandler):
     def end(self):
         self._element = self._object
         self.checkAssigned()
-        self._element.parseXML(self._c.encode('ascii'))
+        self._element.parseXML(self._c)
         self._element.convertXML()
 
     def checkAssigned(self):
-        isAssigned = self._assigned.has_key
-        isUnassigned = lambda x, _a=isAssigned: not _a(x)
-        unassigned = filter(isUnassigned, self._req_variables)
+        unassigned = [x for x in self._req_variables if x not in self._assigned]
         if len(unassigned) > 0:
             msg = "'%s' Object in '%s' has unassigned member(s):\n" % (self._class, self._id)
             for member in unassigned:
@@ -599,6 +599,7 @@ class ObjectXMLArchive:
         self._prefix = prefix
 
     def loadPath(self, path, id):
+        print("path: %s, id: %s" % (path, id))
         if not os.path.exists(path):
             path = path + '.xml'
             if not os.path.exists(path):
@@ -618,7 +619,7 @@ class ObjectXMLArchive:
             parseString(data, fh, ceh)
         except RuntimeError:
             raise
-        except StandardError, e:
+        except Exception as e:
             errorMessage = ''
             locator = fh._locator
             column = locator.getColumnNumber()

@@ -1,5 +1,3 @@
-#!/usr/bin/python
-
 # Combat Simulator Project
 # Copyright (C) 2002-2005 Mark Rose <mkrose@users.sf.net>
 #
@@ -87,7 +85,7 @@ class Compiler:
         self.compilerSignal.Emit(CompilerEvent(Compiler.Information, "Loading all objects"))
         try:
             allObjects = xmlDirectoryArchive.loadAll()
-        except Exception, e:
+        except Exception as e:
             self.compilerSignal.Emit(CompilerEvent(Compiler.Error, str(e)))
             return False
         self.compilerSignal.Emit(CompilerEvent(Compiler.Information, "XML parse completed."))
@@ -114,7 +112,7 @@ class Compiler:
         return True
 
     def dumpBadPaths(self, all, paths):
-        badpaths = filter(lambda x, a=all: not a.has_key(x), paths.keys())
+        badpaths = [x for x in paths.keys() if x not in all]
         if len(badpaths) > 0:
             self.compilerSignal.Emit(CompilerEvent(Compiler.Error, "Found %d broken path(s):" % len(badpaths)))
             idx = 0

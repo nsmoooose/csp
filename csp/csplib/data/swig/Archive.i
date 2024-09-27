@@ -26,7 +26,7 @@
 %ignore CSP(Reader)::operator>>;
 %ignore CSP(Writer)::operator<<;
 
-%typemap(python, in) (const char* data, int n) {
+%typemap(in) (const char* data, int n) {
 	$1 = PyString_AsString($input);
 	$2 = PyString_Size($input);
 }

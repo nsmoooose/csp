@@ -336,7 +336,7 @@ const LinkBase DataArchive::getObject(const Path& path, std::string const &path_
 	try {
 		t = _lookupPath(path, path_str);
 	}
-	catch (IndexError) {
+	catch (IndexError &) {
 		if (_manager == 0) throw;
 		return _manager->getObject(path, path_str, this);
 	}
@@ -463,7 +463,7 @@ InterfaceProxy *DataArchive::getObjectInterface(ObjectID const &id, std::string 
 	try {
 		t = _lookupPath(id, path);
 	}
-	catch (IndexError) {
+	catch (IndexError &) {
 		if (_manager == 0) throw;
 		return _manager->getObjectInterface(id, path, this);
 	}

@@ -399,7 +399,7 @@ void SimDate::parseXML(const char* cdata) {
 	try {
 		*this = SimDate(static_cast<year_t>(dy), static_cast<month_t>(dm), static_cast<day_t>(dd), th, tm, ts);
 	}
-	catch (InvalidDate) {
+	catch (InvalidDate &) {
 		throw ParseException("SYNTAX ERROR: invalid date string");
 	}
 }

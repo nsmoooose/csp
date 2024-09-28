@@ -370,6 +370,7 @@ public:
 	LinkBase(const Path& path, Object* ptr): Link<Object>(path, ptr) { }
 	explicit LinkBase(Object* ptr): Link<Object>(ptr) { }
 	LinkBase(const LinkBase& r): Link<Object>(r) { }
+	LinkBase& operator=(const LinkBase &r) = default;
 };
 
 

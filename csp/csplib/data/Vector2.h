@@ -15,6 +15,8 @@ public:
 	Vector2(double x_, double y_): _x(x_), _y(y_) {}
 	Vector2(const Vector2& v): _x(v._x), _y(v._y) {}
 
+	Vector2& operator=(const Vector2&)=default;
+
 	std::string asString() const;
 	std::string typeString() const { return "type::Vector2"; }
 	void serialize(Reader&);

@@ -152,7 +152,7 @@ bool intersectVerticalStrip(
 	// to the right of the test point (no hit).  values of 1-6 indicate
 	// enclosure in one axis.  repeating the test for the other axis is
 	// necessary to detect an intersection.
-	register int comp = 0;
+	int comp = 0;
 	// initialize with our first 2 tests
 	comp |= getX(vertices, indices, i++) > x_pos ? 2 : 0;
 	comp |= getX(vertices, indices, i++) > x_pos ? 4 : 0;

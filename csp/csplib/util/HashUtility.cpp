@@ -57,9 +57,9 @@ namespace csp {
  *  @param length the length of the string in bytes.
  *  @param  initval the previous hash, or an arbitrary value
  */
-inline uint32 newhash(register uint8 const *k, uint32 length, uint32 initval)
+inline uint32 newhash(uint8 const *k, uint32 length, uint32 initval)
 {
-	register uint32 a,b,c;  // the internal state
+	uint32 a,b,c;           // the internal state
 	uint32 len;             // how many key bytes still need mixing
 
 	// Set up the internal state

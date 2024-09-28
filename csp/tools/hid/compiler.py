@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # Combat Simulator Project
 # Copyright (C) 2002, 2004 The Combat Simulator Project
@@ -104,7 +104,7 @@ def generatePermutations(m):
 	if len(m) > 0:
 		subperms = generatePermutations(m[1:])
 		for item in m[0]:
-			result.extend(map(lambda x, i=item: i|x, subperms))
+			result.extend(list(map(lambda x, i=item: i|x, subperms)))
 	else:
 		result = [0]
 	return result
@@ -143,17 +143,17 @@ class Mapping:
 	def write(self, outf=sys.stdout):
 		for action in self.script:
 			script = "@%05.2f %+03d %+05d %+03d %+03d %s" % (action.time, action.mode, action.jmod, action.stop, action.loop, action.id)
-			print >>outf, script
+			print(script, file=outf)
 		code = "+"
 		code = code + self.device.upper()[0]
 		code = code + " %1d " % self.number
 		code = code + self.type.upper()[0]
 		code = code + " %04d %04d %04d %04d" % (self.kmod, self.jmod, self.mmod, self.event_id)
 		code = code + " %02d" % self.mode
-		print >>outf, code
+		print(code, file=outf)
 		
 	def dump(self):
-		print "%s:%d" % (self.device.upper(), self.number),
+		print("%s:%d" % (self.device.upper(), self.number), end=' ')
 		if self.device == 'joystick':
 			self.dump_joystick()
 		elif self.device == 'keyboard':
@@ -163,29 +163,29 @@ class Mapping:
 
 	def dump_joystick(self):
 		if self.type == 'axis':
-			print "AXIS(%d) =" % self.event_id,
-			print self.script
+			print("AXIS(%d) =" % self.event_id, end=' ')
+			print(self.script)
 		else:
 			if self.jmod > 0:
-				print "SHIFT +",
-			print "BUTTON(%d)" % self.event_id,
-			print self.type.upper(),
-			print "=", self.script,
-			print "in mode", self.mode
+				print("SHIFT +", end=' ')
+			print("BUTTON(%d)" % self.event_id, end=' ')
+			print(self.type.upper(), end=' ')
+			print("=", self.script, end=' ')
+			print("in mode", self.mode)
 	
 	def dump_keyboard(self):
-		print "KEY(%d){%d}" % (self.event_id, self.kmod),
-		print "=", self.script,
-		print "in mode", self.mode
+		print("KEY(%d){%d}" % (self.event_id, self.kmod), end=' ')
+		print("=", self.script, end=' ')
+		print("in mode", self.mode)
 
 	def dump_mouse(self):
 		if self.type == "move":
-			print "MOVE (mmod=%d, kmod=%d)" % (self.mmod, self.kmod), 
+			print("MOVE (mmod=%d, kmod=%d)" % (self.mmod, self.kmod), end=' ') 
 		else:
-			print "BUTTON(%d)" % self.event_id,
-			print "(kmod=%d)" % self.kmod,
-		print "=", self.script,
-		print "in mode", self.mode
+			print("BUTTON(%d)" % self.event_id, end=' ')
+			print("(kmod=%d)" % self.kmod, end=' ')
+		print("=", self.script, end=' ')
+		print("in mode", self.mode)
 
 
 class VirtualDeviceDefinition:
@@ -211,10 +211,10 @@ class VirtualDeviceDefinition:
 		self.bind = {}
 
 	def write(self, file):
-		bindings = self.bind.keys()
+		bindings = list(self.bind.keys())
 		bindings.sort()
 		for b in bindings:
-			print >>file, "=%s" % b
+			print("=%s" % b, file=file)
 		for m in self.maps:
 			m.write(file)
 
@@ -230,7 +230,7 @@ class VirtualDeviceDefinition:
 			raise Error("unable to open file '%s'." % fn)
 
 	def parse(self, f):
-		for line in f.xreadlines():
+		for line in f:
 			self.line = self.line + 1
 			idx = line.find("#")
 			if idx >= 0:
@@ -241,11 +241,11 @@ class VirtualDeviceDefinition:
 			command = p[0]
 			try:
 				self.processCommand(command, p[1:])
-			except Error, e:
+			except Error as e:
 				for file, line_number in self.filestack:
-					print >>sys.stderr, "In file included from %s(%d), " % (file, line_number)
-				print >>sys.stderr, "%s(%d): %s" % (self.file, self.line, e.msg)
-				print >>sys.stderr, ">", line
+					print("In file included from %s(%d), " % (file, line_number), file=sys.stderr)
+				print("%s(%d): %s" % (self.file, self.line, e.msg), file=sys.stderr)
+				print(">", line, file=sys.stderr)
 				sys.exit(1)
 
 	def search(self, fn):
@@ -262,7 +262,7 @@ class VirtualDeviceDefinition:
 		n = len(args)
 		if n == 1:
 			fn = args[0]
-			if not self.included.has_key(fn):
+			if fn not in self.included:
 				self.included[fn] = 1
 				self.filestack.append((self.file, self.line))
 				fn, relative = self.search(fn)
@@ -277,7 +277,7 @@ class VirtualDeviceDefinition:
 		n = len(args)
 		if n == 1:
 			mode = args[0]
-			if not self.modes.has_key(mode):
+			if mode not in self.modes:
 				self.modes[mode] = len(self.modes)
 		else:
 			raise Error("incorrect number of parameters for 'mode' statement.")
@@ -291,8 +291,8 @@ class VirtualDeviceDefinition:
 			else:
 				script = args[1]
 				script = self.unrollScript(script)
-				if self.scripts.has_key(name):
-					print "WARNING: script %s is multiply defined." % name
+				if name in self.scripts:
+					print("WARNING: script %s is multiply defined." % name)
 				else:
 					self.scripts[name] = script
 		else:
@@ -310,7 +310,7 @@ class VirtualDeviceDefinition:
 			name = args[2]
 			if n == 4:
 				definitions = args[3]
-				if not self.definitions.has_key(definitions):
+				if definitions not in self.definitions:
 					raise Error("undefined device definition '%s'." % definitions)
 			else:
 				definitions = None
@@ -349,13 +349,13 @@ class VirtualDeviceDefinition:
 				modes = "*"
 				script = args[2]
 			if '*' in modes:
-				modes = self.modes.keys()
+				modes = list(self.modes.keys())
 				if len(modes) == 0:
 					raise Error("map statement, but no modes defined.")
 			else:
 				modes = modes.split("|")
 				for mode in modes:
-					if not self.modes.has_key(mode):
+					if mode not in self.modes:
 						raise Error("mode '%s' used but not defined." % mode)
 			script = self.unrollScript(script)
 			if type in ('move', 'axis') and len(script) > 1:
@@ -421,15 +421,15 @@ class VirtualDeviceDefinition:
 					jmod = 1
 		else:
 			for mod in mods:
-				if KMODS.has_key(mod):
+				if mod in KMODS:
 					kmod = kmod + KMODS[mod]
-				elif MULTI_KMODS.has_key(mod):
-					multi.append(map(KMODS.get, MULTI_KMODS[mod]))
-				elif type == "mouse" and definitions.has_key(mod):
+				elif mod in MULTI_KMODS:
+					multi.append(list(map(KMODS.get, MULTI_KMODS[mod])))
+				elif type == "mouse" and mod in definitions:
 					mmod = mmod | BUTTON_FIELD_BIT(definitions[mod])
 				else:
 					raise Error("unrecognized modifier '%s' in event '%s'." % (mod, event))
-		if definitions.has_key(event):
+		if event in definitions:
 			value = definitions[event]
 		else:
 			try:
@@ -449,7 +449,7 @@ class VirtualDeviceDefinition:
 				if delay > 0.0:
 					result.append(delay)
 			except:
-				if self.scripts.has_key(action):
+				if action in self.scripts:
 					s = self.scripts[action]
 					if s is not None:
 						result.extend(s)
@@ -490,7 +490,7 @@ class VirtualDeviceDefinition:
 					loopstart = len(actions)
 				if 'R' in opts:
 					loop = loopstart
-				if self.modes.has_key(command):
+				if command in self.modes:
 					mode = self.modes[command]
 					command = ""
 				elif command == "SHIFT":

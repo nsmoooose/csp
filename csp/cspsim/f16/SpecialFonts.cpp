@@ -174,7 +174,7 @@ osgText::Glyph* ReverseAltFont::getGlyph(const osgText::FontResolution& fontRes,
 			assert(normal->r() == 1);
 			assert(cell_height >= source_height);
 			assert(cell_width >= source_width);
-			assert(data_size = source_width * source_height);
+			assert((data_size = source_width * source_height));
 
 			// create and initialize the image array for the new glyph
 			unsigned char const *image = normal->data();

@@ -184,7 +184,10 @@ bool AutoTrace::install() {
 }
 
 void AutoTrace::__sigsegv(int /*sig_n*/) {
-	if (_reserve) free(_reserve); _reserve = 0;  // free some memory!
+	if (_reserve) {
+		free(_reserve);
+		_reserve = 0;  // free some memory!
+	}
 	_trace.acquire(/*skip=*/3);
 	LogStream *logstream = log();
 	// don't log at FATAL priority since that allocates another stack trace.
@@ -197,7 +200,10 @@ void AutoTrace::__sigsegv(int /*sig_n*/) {
 void AutoTrace::__sigabort(int /*sig_n*/) {
 	if (_abort) {
 		_abort = false;
-		if (_reserve) free(_reserve); _reserve = 0;  // free some memory!
+		if (_reserve) {
+			free(_reserve);
+			_reserve = 0;  // free some memory!
+		}
 		_trace.acquire(/*skip=*/3);
 		LogStream *logstream = log();
 		LogStream::LogEntry(*logstream, LogStream::cFatal) << "ABORT";

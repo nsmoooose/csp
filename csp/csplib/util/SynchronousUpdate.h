@@ -194,7 +194,7 @@ typedef Ref<UpdateProxy> UpdateProxyRef;
 class CSPLIB_EXPORT UpdateMaster {
 
 	/// Binary predicate for prioritizing delayed update callbacks.
-	struct UpdatePriority: public std::binary_function<UpdateProxyRef, UpdateProxyRef, bool> {
+	struct UpdatePriority {
 		bool operator()(UpdateProxyRef &a, UpdateProxyRef &b) {
 			return (a->nextUpdateTime() > b->nextUpdateTime());
 		}

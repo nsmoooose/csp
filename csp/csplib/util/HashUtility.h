@@ -182,19 +182,19 @@ inline HashT hash_string(std::string const &key) { return newhasht_cstring(key);
 
 
 
-template <class C> struct Equal: public std::binary_function<C, C, bool> {
+template <class C> struct Equal {
 	bool operator()(const C& __x, const C& __y) const { return __x == __y; }
 };
 
-template <> struct Equal<const char*>: public std::binary_function<const char*, const char*, bool> {
+template <> struct Equal<const char*> {
 	bool operator()(const char* __x, const char* __y) const { return strcmp(__x, __y) == 0; }
 };
 
-template <class C> struct Less: public std::binary_function<C, C, bool> {
+template <class C> struct Less {
 	bool operator()(const C& __x, const C& __y) const { return __x < __y; }
 };
 
-template <> struct Less<const char*>: public std::binary_function<const char*, const char*, bool> {
+template <> struct Less<const char*> {
 	bool operator()(const char* __x, const char* __y) const { return strcmp(__x, __y) < 0; }
 };
 

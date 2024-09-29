@@ -125,7 +125,7 @@ public:
 	/** Functor used to order reliable packets in a priority queue by the
 	 *  scheduled time for the next retry attempt.
 	 */
-	struct Order : public std::binary_function<Ref<ReliablePacket>, Ref<ReliablePacket>, bool> {
+	struct Order {
 		inline bool operator()(const Ref<ReliablePacket>& __x, const Ref<ReliablePacket>& __y) const {
 			return __x->nextTime() > __y->nextTime();
 		}

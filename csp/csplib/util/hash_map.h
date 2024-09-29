@@ -1,3 +1,4 @@
+#pragma once
 /* Combat Simulator Project
  * Copyright (C) 2002 Mark Rose <mkrose@users.sf.net>
  *
@@ -21,10 +22,6 @@
  *
  * hash_map portability definitions.
  */
-
-
-#ifndef __CSPLIB_UTIL_HASH_MAP_H__
-#define __CSPLIB_UTIL_HASH_MAP_H__
 
 #if defined(__GNUC__) //|| defined(__INTEL_COMPILER)
 #  if __GNUC__ >= 3
@@ -64,6 +61,3 @@
 #    error "PLEASE PROVIDE CORRECT #INCLUDE<HASH_MAP> STATEMENT FOR YOUR PLATFORM!"
 #  endif
 #endif
-
-#endif // __CSPLIB_UTIL_HASH_MAP_H__
-

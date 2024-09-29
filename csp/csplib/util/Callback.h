@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2004 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -64,10 +65,6 @@
  * @endcode
  *
  **/
-
-
-#ifndef __CSPLIB_UTIL_CALLBACK_H__
-#define __CSPLIB_UTIL_CALLBACK_H__
 
 #include <csp/csplib/util/Namespace.h>
 #include <sigc++/sigc++.h>
@@ -186,6 +183,3 @@ struct callback<ret, arg1, arg2, arg3, arg4>: public callback4<ret, arg1, arg2, 
 };
 
 } // namespace csp
-
-#endif // __CSPLIB_UTIL_CALLBACK_H__
-

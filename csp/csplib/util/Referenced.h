@@ -1,3 +1,4 @@
+#pragma once
 /* Combat Simulator Project
  * Copyright (C) 2002-2005 Mark Rose <mkrose@users.sf.net>
  *
@@ -23,10 +24,6 @@
  * Provides a base class for reference counted objects.  See Ref.h for
  * more details.
  */
-
-
-#ifndef __CSPLIB_UTIL_REFERENCED_H__
-#define __CSPLIB_UTIL_REFERENCED_H__
 
 #include <csp/csplib/util/Namespace.h>
 #include <csp/csplib/util/Export.h>
@@ -89,7 +86,3 @@ typedef ReferencedBase<int> Referenced;
 
 
 } // namespace csp
-
-
-#endif // __CSPLIB_UTIL_REFERENCED_H__
-

@@ -1,3 +1,4 @@
+#pragma once
 /* Combat Simulator Project
  * Copyright (C) 2002, 2003 Mark Rose <mkrose@users.sf.net>
  *
@@ -21,10 +22,6 @@
  * @file Conversions.h
  * @brief Common unit conversion templates.
  */
-
-#ifndef __CSPLIB_UTIL_CONVERSIONS_H__
-#define __CSPLIB_UTIL_CONVERSIONS_H__
-
 
 // SWIG template instantiations
 #ifdef SWIG
@@ -133,7 +130,3 @@ CSP_CVT(l_gal)
 //@}
 
 } // namespace csp
-
-
-#endif // __CSPLIB_UTIL_CONVERSIONS_H__
-

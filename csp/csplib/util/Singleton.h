@@ -1,3 +1,4 @@
+#pragma once
 /* Combat Simulator Project
  * Copyright (C) 2003 Mark Rose <mkrose@users.sf.net>
  *
@@ -21,10 +22,6 @@
  * @file Singleton.h
  * @brief Pattern for creating single global instances.
  */
-
-
-#ifndef __CSPLIB_UTIL_SINGLETON_H__
-#define __CSPLIB_UTIL_SINGLETON_H__
 
 #include <csp/csplib/util/Namespace.h>
 #include <csp/csplib/util/Properties.h>
@@ -58,6 +55,3 @@ protected:
 };
 
 } // namespace csp
-
-#endif // __CSPLIB_UTIL_SINGLETON_H__
-

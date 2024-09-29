@@ -1,3 +1,4 @@
+#pragma once
 /* Combat Simulator Project
  * Copyright 2003, 2004 Mark Rose <mkrose@users.sourceforge.net>
  *
@@ -24,10 +25,6 @@
  * TODO does not show the offending address (need siginfo_t).
  * TODO need a windows implementation
  */
-
-
-#ifndef __CSPLIB_UTIL_TRACE_H__
-#define __CSPLIB_UTIL_TRACE_H__
 
 #include <csp/csplib/util/Export.h>
 #include <csp/csplib/util/Namespace.h>
@@ -110,6 +107,3 @@ private:
 };
 
 } // namespace csp
-
-#endif // __CSPLIB_UTIL_TRACE_H__
-

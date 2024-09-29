@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2005 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -21,9 +22,6 @@
  * @file Modules.h
  *
  **/
-
-#ifndef __CSPLIB_UTIL_MODULES_H__
-#define __CSPLIB_UTIL_MODULES_H__
 
 #include <csp/csplib/util/Export.h>
 #include <csp/csplib/util/Namespace.h>
@@ -57,6 +55,3 @@ public:
 };
 
 } // namespace csp
-
-#endif // __CSPLIB_UTIL_MODULES_H__
-

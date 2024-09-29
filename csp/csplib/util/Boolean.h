@@ -1,3 +1,4 @@
+#pragma once
 /* Combat Simulator Project
  * Copyright (C) 2006 Mark Rose <mkrose@users.sourceforge.net>
  *
@@ -15,10 +16,6 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-
-
-#ifndef __CSPLIB_UTIL_BOOLEAN_H__
-#define __CSPLIB_UTIL_BOOLEAN_H__
 
 #include <csp/csplib/util/Namespace.h>
 #include <csp/csplib/util/Uniform.h>
@@ -114,6 +111,3 @@ public:
 };
 
 } // namespace csp
-
-#endif // __CSPLIB_UTIL_BOOLEAN_H__
-

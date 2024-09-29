@@ -1,3 +1,4 @@
+#pragma once
 /* Combat Simulator Project
  * Copyright (C) 2002, 2003, 2004 Mark Rose <mkrose@users.sf.net>
  *
@@ -22,10 +23,6 @@
  *
  * Reference counting smart-pointer classes.
  */
-
-
-#ifndef __CSPLIB_UTIL_REF_H__
-#define __CSPLIB_UTIL_REF_H__
 
 #include <list>
 #include <vector>
@@ -306,7 +303,3 @@ protected:
 
 
 } // namespace csp
-
-
-#endif //__CSPLIB_UTIL_REF_H__
-

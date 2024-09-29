@@ -1,3 +1,4 @@
+#pragma once
 /* Combat Simulator Project
  * Copyright (C) 2002, 2003, 2005 Mark Rose <mkrose@users.sf.net>
  *
@@ -29,10 +30,6 @@
  * OpenSceneGraph Public License Version 0.0 (exception 3) and the GNU
  * Lesser Public  License Version 2 (clause 3).
  **/
-
-
-#ifndef __CSPLIB_DATA_VECTOR3_H__
-#define __CSPLIB_DATA_VECTOR3_H__
 
 #include <csp/csplib/data/BaseType.h>
 #include <csp/csplib/util/Math.h>
@@ -342,7 +339,3 @@ inline Vector3 operator * (double lhs, const Vector3 &rhs) { return rhs*lhs; }
 CSPLIB_EXPORT std::ostream &operator <<(std::ostream &o, Vector3 const &v);
 
 } // namespace csp
-
-
-#endif // __CSPLIB_DATA_VECTOR3_H__
-

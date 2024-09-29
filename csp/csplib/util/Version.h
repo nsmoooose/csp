@@ -1,3 +1,4 @@
+#pragma once
 /* Combat Simulator Project
  * Copyright 2002, 2003, 2004 Mark Rose <mkrose@users.sourceforge.net>
  *
@@ -20,9 +21,6 @@
  * @file Version.h
  * @brief Functions and constants related to the version of csplib.
  */
-
-#ifndef __CSPLIB_UTIL_VERSION_H__
-#define __CSPLIB_UTIL_VERSION_H__
 
 #include <csp/csplib/util/Export.h>
 #include <csp/csplib/util/Namespace.h>
@@ -81,6 +79,3 @@ CSPLIB_EXPORT const char *buildDate();
  * See http://csp.sourceforge.net/wiki for more information or post to
  * http://csp.sourceforge.net/forum if you have suggestions or need help.
  */
-
-#endif // __CSPLIB_UTIL_VERSION_H__
-

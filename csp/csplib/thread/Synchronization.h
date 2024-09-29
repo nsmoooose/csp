@@ -1,3 +1,4 @@
+#pragma once
 /* Combat Simulator Project
  * Copyright (C) 2004 Mark Rose <mkrose@users.sourceforge.net>
  *
@@ -21,10 +22,6 @@
  * @file Synchronization.h
  * @brief PosixThreads synchronization and utility classes.
  */
-
-
-#ifndef __CSPLIB_THREAD_SYNCHRONIZATION_H__
-#define __CSPLIB_THREAD_SYNCHRONIZATION_H__
 
 #include <csp/csplib/util/Namespace.h>
 #include <csp/csplib/util/Properties.h>
@@ -306,6 +303,3 @@ CSP_SCOPEDLOCK(SemaphoreUnlock, Semaphore, post, wait)
 
 
 } // namespace csp
-
-#endif // __CSPLIB_THREAD_SYNCHRONIZATION_H__
-

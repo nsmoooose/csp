@@ -1,3 +1,4 @@
+#pragma once
 /* Combat Simulator Project
  * Copyright (C) 2002-2005 Mark Rose <mkrose@users.sf.net>
  *
@@ -23,9 +24,6 @@
  * more details.
  */
  
-#ifndef __CSPLIB_UTIL_WEAKREFERENCED_H__
-#define __CSPLIB_UTIL_WEAKREFERENCED_H__
-
 #include <csp/csplib/util/Namespace.h>
 #include <csp/csplib/util/Export.h>
 
@@ -57,5 +55,3 @@ private:
 typedef WeakReferencedBase WeakReferenced;
 
 } // namespace csp
-
-#endif // __CSPLIB_UTIL_WEAKREFERENCED_H__

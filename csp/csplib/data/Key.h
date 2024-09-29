@@ -1,3 +1,4 @@
+#pragma once
 /* Combat Simulator Project
  * Copyright 2002-2005 Mark Rose <mkrose@users.sourceforge.net>
  *
@@ -21,9 +22,6 @@
  *
  * 32-Bit hash key identifier class.
  */
-
-#ifndef __CSPLIB_DATA_KEY_H__
-#define __CSPLIB_DATA_KEY_H__
 
 #include <csp/csplib/util/HashUtility.h>
 #include <csp/csplib/data/BaseType.h>
@@ -118,7 +116,3 @@ CSPLIB_EXPORT std::ostream &operator <<(std::ostream &o, Key const &k);
 
 
 } // namespace csp
-
-
-#endif // __CSPLIB_DATA_KEY_H__
-

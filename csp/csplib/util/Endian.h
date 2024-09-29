@@ -1,3 +1,4 @@
+#pragma once
 /* Combat Simulator Project
  * Copyright (C) 2004 Mark Rose <mkrose@users.sf.net>
  *
@@ -53,9 +54,6 @@
  * files for a list of changes.  These files are distributed with
  * GLib at ftp://ftp.gtk.org/pub/gtk/.
  */
-
-#ifndef __CSPLIB_UTIL_ENDIAN_H__
-#define __CSPLIB_UTIL_ENDIAN_H__
 
 #include <csp/csplib/util/Uniform.h>
 
@@ -309,6 +307,3 @@ CSP_ENDIAN_TEMPLATE(double, UINT64)
 #undef CSP_ENDIAN_TEMPLATE
 
 } // namespace csp
-
-#endif  // __CSPLIB_UTIL_ENDIAN_H__
-

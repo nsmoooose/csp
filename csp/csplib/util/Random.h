@@ -1,3 +1,4 @@
+#pragma once
 /* Combat Simulator Project
  * Copyright (C) 2002, 2003 Mark Rose <mkrose@users.sf.net>
  *
@@ -20,10 +21,6 @@
  * @file Random.h
  * @brief Random number generators and distributions.
  */
-
-#ifndef __CSPLIB_UTIL_RANDOM_H__
-#define __CSPLIB_UTIL_RANDOM_H__
-
 
 #include <csp/csplib/util/Ref.h>
 #include <csp/csplib/util/Export.h>
@@ -728,6 +725,3 @@ extern CSPLIB_EXPORT random::Taus2 g_Random;
 
 
 } // namespace csp
-
-#endif // __CSPLIB_UTIL_RANDOM_H__
-

@@ -1,3 +1,4 @@
+#pragma once
 /* Combat Simulator Project
  * Copyright (C) 2002, 2005 Mark Rose <mkrose@users.sf.net>
  *
@@ -20,9 +21,6 @@
  * @file External.h
  * @brief Data type for referencing external data sources.
  */
-
-#ifndef __CSPLIB_DATA_EXTERNAL_H__
-#define __CSPLIB_DATA_EXTERNAL_H__
 
 #include <string>
 #include <csp/csplib/data/BaseType.h>
@@ -110,6 +108,3 @@ CSPLIB_EXPORT std::ostream &operator <<(std::ostream &o, External const &e);
 
 
 } // namespace csp
-
-#endif // __CSPLIB_DATA_EXTERNAL_H__
-

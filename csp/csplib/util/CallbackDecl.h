@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2004 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -22,10 +23,6 @@
  * @brief Forward declarations for callback and signal templates.
  *
  **/
-
-
-#ifndef __CSPLIB_UTIL_CALLBACKDECL_H__
-#define __CSPLIB_UTIL_CALLBACKDECL_H__
 
 #include <csp/csplib/util/Namespace.h>
 #include <csp/csplib/util/ScopedPointer.h>
@@ -62,6 +59,3 @@ struct ScopedCallback0R: public ScopedPointer<Callback0R<R> > {
 };
 
 } // namespace csp
-
-#endif // __CSPLIB_UTIL_CALLBACKDECL_H__
-

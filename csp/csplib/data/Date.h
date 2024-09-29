@@ -1,3 +1,4 @@
+#pragma once
 /* Combat Simulator Project
  * Copyright 2002-2005 Mark Rose <mkrose@users.sourceforge.net>
  *
@@ -48,10 +49,6 @@
  *         implemented.
  *
  */
-
-
-#ifndef __CSPLIB_DATA_DATE_H__
-#define __CSPLIB_DATA_DATE_H__
 
 #include <csp/csplib/data/Archive.h>
 #include <csp/csplib/data/BaseType.h>
@@ -938,6 +935,3 @@ CSPLIB_EXPORT std::ostream &operator <<(std::ostream &o, SimDate const &d);
 
 
 } // namespace csp
-
-#endif // __CSPLIB_DATA_DATE_H__
-

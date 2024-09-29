@@ -1,3 +1,5 @@
+#pragma once
+#define __CSPLIB_UTIL_UNIFORM_H__
 /* Combat Simulator Project
  * Copyright (C) 2002, 2003 Mark Rose <mkrose@users.sf.net>
  *
@@ -20,9 +22,6 @@
  * @file Uniform.h
  * @brief Provides fixed size integer typedefs and endian tests.
  */
-
-#ifndef __CSPLIB_UTIL_UNIFORM_H__
-#define __CSPLIB_UTIL_UNIFORM_H__
 
 // generated using Source/Config.cpp during the build.
 #include <csp/csplib/util/Config.h>
@@ -114,6 +113,3 @@ inline T1 alias_cast(T2 src) {
 //@}
 
 } // namespace csp
-
-#endif // __CSPLIB_UTIL_UNIFORM_H__
-

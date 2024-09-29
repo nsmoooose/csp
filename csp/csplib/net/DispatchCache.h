@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2004 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -22,9 +23,6 @@
  *
  * Class for caching frequently used message dispatch callbacks.
  */
-
-#ifndef __CSPLIB_NET_DISPATCHCACHE_H__
-#define __CSPLIB_NET_DISPATCHCACHE_H__
 
 #include <csp/csplib/net/Callbacks.h>
 #include <csp/csplib/util/Cache.h>
@@ -108,7 +106,3 @@ public:
 
 
 } // namespace csp
-
-#endif // __CSPLIB_NET_DISPATCHCACHE_H__
-
-

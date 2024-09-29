@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2004 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -21,9 +22,6 @@
  * @file NetRandom.h
  *
  */
-
-#ifndef __CSPLIB_NET_NETRANDOM_H__
-#define __CSPLIB_NET_NETRANDOM_H__
 
 #include <csp/csplib/util/Export.h>
 #include <csp/csplib/util/Uniform.h>
@@ -70,6 +68,3 @@ public:
 };
 
 } // namespace csp
-
-#endif // __CSPLIB_NET_NETRANDOM_H__
-

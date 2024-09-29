@@ -1,3 +1,4 @@
+#pragma once
 /* Combat Simulator Project
  * Copyright (C) 2004 Mark Rose <mkrose@users.sourceforge.net>
  *
@@ -23,10 +24,6 @@
  * @brief Circular buffer and ring queue classes for efficient data
  *        transfer between threads.
  */
-
-
-#ifndef  __CSPLIB_UTIL_CIRCULARBUFFER_H__
-#define  __CSPLIB_UTIL_CIRCULARBUFFER_H__
 
 #include <csp/csplib/util/Uniform.h>
 #include <csp/csplib/util/Properties.h>
@@ -415,6 +412,3 @@ public:
 
 
 } // namespace csp
-
-#endif // __CSPLIB_UTIL_CIRCULARBUFFER_H__
-

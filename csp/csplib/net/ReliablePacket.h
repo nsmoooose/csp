@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2004 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -21,9 +22,6 @@
  * @file ReliablePacket.h
  *
  */
-
-#ifndef __CSPLIB_NET_RELIABLEPACKET_H__
-#define __CSPLIB_NET_RELIABLEPACKET_H__
 
 #include <csp/csplib/net/NetBase.h>
 #include <csp/csplib/util/Ref.h>
@@ -133,6 +131,3 @@ public:
 };
 
 } // namespace csp
-
-#endif // __CSPLIB_NET_RELIABLEPACKET_H__
-

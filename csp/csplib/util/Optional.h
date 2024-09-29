@@ -1,3 +1,4 @@
+#pragma once
 /* Combat Simulator Project
  * Copyright (C) 2002, 2003, 2004 Mark Rose <mkrose@users.sf.net>
  *
@@ -21,9 +22,6 @@
  * @file Optional.h
  *
  */
-
-#ifndef __CSPLIB_UTIL_OPTIONAL_H__
-#define __CSPLIB_UTIL_OPTIONAL_H__
 
 #include <csp/csplib/util/Namespace.h>
 
@@ -110,5 +108,3 @@ private:
 };
 
 } // namespace csp
-
-#endif //__CSPLIB_UTIL_OPTIONAL_H__

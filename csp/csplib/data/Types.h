@@ -1,3 +1,4 @@
+#pragma once
 /* Combat Simulator Project
  * Copyright (C) 2002 Mark Rose <mkrose@users.sf.net>
  *
@@ -21,9 +22,6 @@
  * @brief Convenience header for including all BaseType headers.
  */
 
-#ifndef __CSPLIB_DATA_TYPES_H__
-#define __CSPLIB_DATA_TYPES_H__
-
 #include <csp/csplib/data/Date.h>
 #include <csp/csplib/data/Enum.h>
 #include <csp/csplib/data/External.h>
@@ -37,6 +35,3 @@
 #include <csp/csplib/data/Real.h>
 #include <csp/csplib/data/Vector2.h>
 #include <csp/csplib/data/Vector3.h>
-
-#endif // __CSPLIB_DATA_TYPES_H__
-

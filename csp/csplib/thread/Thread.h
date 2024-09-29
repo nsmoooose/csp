@@ -1,3 +1,4 @@
+#pragma once
 /* Combat Simulator Project
  * Copyright (C) 2004 Mark Rose <mkrose@users.sourceforge.net>
  *
@@ -21,10 +22,6 @@
  * @file Thread.h
  * @brief PosixThreads wrapper and utility classes.
  */
-
-
-#ifndef __CSPLIB_THREAD_THREAD_H__
-#define __CSPLIB_THREAD_THREAD_H__
 
 #include <csp/csplib/util/Namespace.h>
 #include <csp/csplib/util/Properties.h>
@@ -297,7 +294,3 @@ private:
 
 
 } // namespace csp
-
-#endif // __CSPLIB_THREAD_THREAD_H__
-
-

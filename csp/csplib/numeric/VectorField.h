@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2003, 2004 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -21,9 +22,6 @@
  * @file VectorField.h
  *
  **/
-
-#ifndef __CSPLIB_NUMERIC_VECTORFIELD_H__
-#define __CSPLIB_NUMERIC_VECTORFIELD_H__
 
 #include <csp/csplib/util/Export.h>
 #include <csp/csplib/util/Properties.h>
@@ -56,6 +54,3 @@ protected:
 } // namespace numeric
 
 } // namespace csp
-
-#endif // __CSPLIB_NUMERIC_VECTORFIELD_H__
-

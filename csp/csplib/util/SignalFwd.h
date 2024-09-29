@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2006 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -56,9 +57,6 @@
  *    Handler::~Handler() { delete callback; }
  *  @endcode
  */
-
-#ifndef __CSPLIB_UTIL_SIGNALFWD_H__
-#define __CSPLIB_UTIL_SIGNALFWD_H__
 
 // We need one sigc forward declaration to make this work.  sigc::nil
 // is defined in exactly this way in sigc++/functors/functor_trait.h,
@@ -122,6 +120,3 @@ template <class ret, class arg1, class arg2, class arg3, class arg4, class arg5,
 class slot<ret, arg1, arg2, arg3, arg4, arg5, arg6, sigc::nil>;
 
 } // namespace csp
-
-#endif // __CSPLIB_UTIL_SIGNALFWD_H__
-

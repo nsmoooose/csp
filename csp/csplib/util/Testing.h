@@ -1,3 +1,4 @@
+#pragma once
 /* Combat Simulator Project
  * Copyright (C) 2005 Mark Rose <mkrose@users.sf.net>
  *
@@ -88,10 +89,6 @@
 
 
 // TODO add support for temporary and test data files.
-
-#ifndef __CSPLIB_UTIL_TESTING_H__
-#define __CSPLIB_UTIL_TESTING_H__
-
 
 #include <csp/csplib/util/Exception.h>
 #include <csp/csplib/util/Export.h>
@@ -590,6 +587,3 @@ TestCaseT<tFIXTURE>::TestCaseT(std::string const &name, void (tFIXTURE::*test)()
 } // namespace test
 
 } // namespace csp
-
-#endif // __CSPLIB_UTIL_TESTING_H__
-

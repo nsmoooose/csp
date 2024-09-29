@@ -1,3 +1,4 @@
+#pragma once
 /* Combat Simulator Project
  * Copyright (C) 2002, 2003, 2005 Mark Rose <mkrose@users.sf.net>
  *
@@ -29,10 +30,6 @@
  * OpenSceneGraph Public License version 0.0 (exception 3) and the
  * GNU Lesser Public  License version 2 (clause 3).
  **/
-
-#ifndef __CSPLIB_DATA_QUAT_H__
-#define __CSPLIB_DATA_QUAT_H__
-
 
 #include <csp/csplib/data/BaseType.h>
 #include <csp/csplib/data/Vector3.h>
@@ -467,5 +464,3 @@ public:
 CSPLIB_EXPORT std::ostream &operator <<(std::ostream &o, Quat const &q);
 
 } // namespace csp
-
-#endif  // __CSPLIB_DATA_QUAT_H__

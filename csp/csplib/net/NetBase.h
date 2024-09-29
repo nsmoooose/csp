@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2004 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -32,9 +33,6 @@
  * combines a client-server interface with peer-to-peer communications
  * between clients.
  */
-
-#ifndef __CSPLIB_NET_NETBASE_H__
-#define __CSPLIB_NET_NETBASE_H__
 
 #include <csp/csplib/util/Endian.h>
 #include <csp/csplib/util/Export.h>
@@ -215,6 +213,3 @@ inline std::ostream &operator <<(std::ostream &os, PacketReceiptHeader const &he
 
 
 } // namespace csp
-
-#endif // __CSPLIB_NET_NETBASE_H__
-

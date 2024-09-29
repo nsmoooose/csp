@@ -1,3 +1,4 @@
+#pragma once
 /* Combat Simulator Project
  * Copyright (C) 2002-2004 Mark Rose <mkrose@users.sourceforge.net>
  *
@@ -21,10 +22,6 @@
  * @file Properties.h
  * @brief Inheritable class properties.
  */
-
-
-#ifndef __CSPLIB_UTIL_PROPERTIES_H__
-#define __CSPLIB_UTIL_PROPERTIES_H__
 
 #include <csp/csplib/util/Namespace.h>
 #include <csp/csplib/util/Export.h>
@@ -81,7 +78,3 @@ struct HasBase {
 
 
 } // namespace csp
-
-
-#endif // __CSPLIB_UTIL_PROPERTIES_H__
-

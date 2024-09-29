@@ -1,3 +1,4 @@
+#pragma once
 // Copyright 2007 Mark Rose <mkrose@users.sf.net>
 //
 // This program is free software; you can redistribute it and/or
@@ -32,8 +33,6 @@
  *
  * For conversions from Python, no type checks are performed.
  */
-#ifndef PYCASTS_H__
-#define PYCASTS_H__
 
 #include <Python.h>
 #include <string>
@@ -85,5 +84,3 @@ DEFINE_PY_CASTS(float, PyFloat_AsDouble)
 DEFINE_PY_CASTS(double, PyFloat_AsDouble)
 
 DEFINE_PY_CASTS(std::string, PyString_AsString)
-
-#endif // PYCASTS_H__

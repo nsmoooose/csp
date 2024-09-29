@@ -1,3 +1,4 @@
+#pragma once
 /* Combat Simulator Project
  * Copyright (C) 2002, 2003 Mark Rose <mkrose@users.sf.net>
  *
@@ -63,10 +64,6 @@
  *
  */
 
-
-#ifndef __CSPLIB_DATA_BASETYPE_H__
-#define __CSPLIB_DATA_BASETYPE_H__
-
 #include <csp/csplib/util/Export.h>
 #include <csp/csplib/util/Namespace.h>
 #include <csp/csplib/util/Exception.h>
@@ -118,7 +115,3 @@ class Vector3;
 
 
 } // namespace csp
-
-
-#endif // __CSPLIB_DATA_BASETYPE_H__
-

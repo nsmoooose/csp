@@ -1,3 +1,4 @@
+#pragma once
 /* Combat Simulator Project
  * Copyright 2002, 2003, 2004 Mark Rose <mkrose@users.sourceforge.net>
  *
@@ -21,10 +22,6 @@
  * @file Exception.h
  * @brief Exception classes and macros for creating new exceptions.
  */
-
-
-#ifndef __CSPLIB_UTIL_EXCEPTION_H__
-#define __CSPLIB_UTIL_EXCEPTION_H__
 
 #include <string>
 
@@ -152,7 +149,3 @@ public: \
 CSP_EXCEPTION(PythonException)
 
 } // namespace csp
-
-
-#endif // __CSPLIB_UTIL_EXCEPTION_H__
-

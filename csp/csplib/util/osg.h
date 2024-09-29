@@ -1,3 +1,4 @@
+#pragma once
 /* Combat Simulator Project
  * Copyright (C) 2002 Mark Rose <mkrose@users.sf.net>
  *
@@ -24,10 +25,6 @@
  *
  * See http://www.openscenegraph.org
  */
-
-
-#ifndef __CSPLIB_UTIL_OSG_H__
-#define __CSPLIB_UTIL_OSG_H__
 
 #include <csp/csplib/util/Namespace.h>
 #include <csp/csplib/data/Vector3.h>
@@ -92,6 +89,3 @@ inline Quat fromOSG(osg::Quat const &q) {
 
 
 } // namespace csp
-
-#endif // __CSPLIB_UTIL_OSG_H__
-

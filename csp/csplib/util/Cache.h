@@ -1,3 +1,4 @@
+#pragma once
 /* Combat Simulator Project
  * Copyright 2004 Mark Rose <mkrose@users.sourceforge.net>
  *
@@ -49,10 +50,6 @@
  * @endcode
  *
  */
-
-
-#ifndef __CSPLIB_UTIL_CACHE_H__
-#define __CSPLIB_UTIL_CACHE_H__
 
 #include <cassert>
 #include <list>
@@ -162,6 +159,3 @@ public:
 
 
 } // namespace csp
-
-#endif // __CSPLIB_UTIL_CACHE_H__
-

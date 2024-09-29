@@ -1,3 +1,4 @@
+#pragma once
 /* Combat Simulator Project
  * Copyright 2002, 2003, 2004 Mark Rose <mkrose@users.sourceforge.net>
  *
@@ -21,11 +22,6 @@
  * @file Link.h
  * @brief Smart pointers to Object classes in data archives.
  */
-
-
-#ifndef __CSPLIB_DATA_LINK_H__
-#define __CSPLIB_DATA_LINK_H__
-
 
 #if defined(_MSC_VER) && (_MSC_VER <= 1300)
 #pragma warning (disable : 4290)
@@ -429,6 +425,3 @@ void TypeAdapter::set(Link<Q> &x) const {
 }
 
 } // namespace csp
-
-#endif // __CSPLIB_DATA_LINK_H__
-

@@ -1,3 +1,4 @@
+#pragma once
 /* Combat Simulator Project
  * Copyright 2002, 2003, 2004 Mark Rose <mkrose@users.sourceforge.net>
  *
@@ -20,9 +21,6 @@
  * @file Object.h
  * @brief Object class and related boilerplate macros.
  */
-
-#ifndef __CSPLIB_DATA_OBJECT_H__
-#define __CSPLIB_DATA_OBJECT_H__
 
 #include <string>
 
@@ -210,5 +208,3 @@ public:
 CSPLIB_EXPORT std::ostream &operator <<(std::ostream &o, Object const &obj);
 
 } // namespace csp
-
-#endif // __CSPLIB_DATA_OBJECT_H__

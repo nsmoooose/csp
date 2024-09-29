@@ -1,3 +1,4 @@
+#pragma once
 /* Combat Simulator Project
  * Copyright (C) 2002-2005 Mark Rose <mkrose@users.sf.net>
  *
@@ -21,10 +22,6 @@
  * @file InterfaceRegistry.h
  * @brief Classes for storing and accessing object interfaces.
  */
-
-
-#ifndef __CSPLIB_DATA_INTERFACEREGISTRY_H__
-#define __CSPLIB_DATA_INTERFACEREGISTRY_H__
 
 #include <string>
 #include <vector>
@@ -113,6 +110,3 @@ private:
 
 
 } // namespace csp
-
-#endif // __CSPLIB_DATA_INTERFACEREGISTRY_H__
-

@@ -1,3 +1,4 @@
+#pragma once
 /* Combat Simulator Project
  * Copyright (C) 2002, 2003, 2004 Mark Rose <mkrose@users.sourceforge.net>
  *
@@ -22,10 +23,6 @@
  * @brief Adapter class providing uniform access to built-in types
  *   and BaseType classes.
  */
-
-
-#ifndef __CSPLIB_DATA_TYPEADAPTER_H__
-#define __CSPLIB_DATA_TYPEADAPTER_H__
 
 #if defined(_MSC_VER) && (_MSC_VER <= 1300)
 #pragma warning (disable : 4290)
@@ -257,7 +254,3 @@ CSPLIB_EXPORT std::ostream &operator <<(std::ostream &o, TypeAdapter const &t);
 
 
 } // namespace csp
-
-
-#endif // __CSPLIB_DATA_TYPEADAPTER_H__
-

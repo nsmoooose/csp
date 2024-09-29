@@ -1,3 +1,4 @@
+#pragma once
 /* Combat Simulator Project
  * Copyright 2002, 2003, 2004 Mark Rose <mkrose@users.sourceforge.net>
  *
@@ -20,9 +21,6 @@
  * @file DataArchive.h
  * @brief Classes for data archive manipulation.
  */
-
-#ifndef __CSPLIB_DATA_DATAARCHIVE_H__
-#define __CSPLIB_DATA_DATAARCHIVE_H__
 
 #include <csp/csplib/data/Link.h>
 #include <csp/csplib/util/Exception.h>
@@ -400,6 +398,3 @@ private:
 
 
 } // namespace csp
-
-#endif // __CSPLIB_DATA_DATAARCHIVE_H__
-

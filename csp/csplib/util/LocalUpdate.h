@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project - CSPSim
 // Copyright (C) 2005 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -21,9 +22,6 @@
  * @file LocalUpdate.h
  *
  **/
-
-#ifndef __CSPLIB_UTIL_LOCALUPDATE_H__
-#define __CSPLIB_UTIL_LOCALUPDATE_H__
 
 #include <csp/csplib/util/Export.h>
 #include <csp/csplib/util/Namespace.h>
@@ -118,6 +116,3 @@ private:
 };
 
 } // namespace csp
-
-#endif // __CSPLIB_UTIL_LOCALUPDATE_H__
-

@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2004 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -21,10 +22,6 @@
  * @file NetworkMessage.h
  *
  */
-
-#ifndef __CSPLIB_NET_NETWORKMESSAGE_H__
-#define __CSPLIB_NET_NETWORKMESSAGE_H__
-
 
 #include <csp/csplib/net/NetBase.h>
 #include <csp/csplib/net/TaggedRecord.h>
@@ -160,6 +157,3 @@ inline Ref<NetworkMessage> NetworkMessage::FastCast(Ref<NetworkMessage> const &r
 
 
 } // namespace csp
-
-#endif // __CSPLIB_NET_NETWORKMESSAGE_H__
-

@@ -1,3 +1,4 @@
+#pragma once
 /* Combat Simulator Project
  * Copyright 2002, 2003, 2004 Mark Rose <mkrose@users.sourceforge.net>
  *
@@ -20,10 +21,6 @@
  * @file Timing.h
  * @brief Uniform interface to platform specific "fast" timing functions.
  */
-
-
-#ifndef __CSPLIB_UTIL_TIMING_H__
-#define __CSPLIB_UTIL_TIMING_H__
 
 #include <csp/csplib/util/Exception.h>
 #include <csp/csplib/util/Export.h>
@@ -159,5 +156,3 @@ public:
 // end of timing routines
 
 } // namespace csp
-
-#endif // __CSPLIB_UTIL_TIMING_H__

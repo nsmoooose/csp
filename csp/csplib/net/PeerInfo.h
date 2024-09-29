@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2004 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -21,10 +22,6 @@
  * @file PeerInfo.h
  *
  */
-
-#ifndef __CSPLIB_NET_PEERINFO_H__
-#define __CSPLIB_NET_PEERINFO_H__
-
 
 #include <csp/csplib/net/NetBase.h>
 #include <csp/csplib/net/NetRandom.h>
@@ -461,6 +458,3 @@ public:
 };
 
 } // namespace csp
-
-#endif // __CSPLIB_NET_PEERINFO_H__
-

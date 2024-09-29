@@ -1,3 +1,4 @@
+#pragma once
 /* Combat Simulator Project
  * Copyright 2002, 2003, 2004 Mark Rose <mkrose@users.sourceforge.net>
  *
@@ -21,10 +22,6 @@
  * @file Path.h
  * @brief Classes for referring to data sources.
  */
-
-
-#ifndef __CSPLIB_DATA_PATH_H__
-#define __CSPLIB_DATA_PATH_H__
 
 #if defined(_MSC_VER) && (_MSC_VER <= 1300)
 #pragma warning (disable : 4290)
@@ -138,6 +135,3 @@ public:
 CSPLIB_EXPORT std::ostream &operator <<(std::ostream &o, Path const &p);
 
 } // namespace csp
-
-#endif // __CSPLIB_DATA_PATH_H__
-

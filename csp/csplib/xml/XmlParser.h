@@ -1,3 +1,4 @@
+#pragma once
 /**
  ****************************************************************************
  * <P> XML.c - implementation file for basic XML parser written in ANSI C++
@@ -46,9 +47,6 @@
  *   All Rights Reserved.
  *   Licensed under the terms of the BSD license included above.
  */
-
-#ifndef __CSPLIB_XML_XMLPARSER_H__
-#define __CSPLIB_XML_XMLPARSER_H__
 
 #include <csp/csplib/util/Export.h>
 #include <csp/csplib/util/Namespace.h>
@@ -500,6 +498,4 @@ private:
 };
 
 } // namespace csp
-
-#endif // __CSPLIB_XML_XMLPARSER_H__
 

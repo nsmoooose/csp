@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2003, 2004 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -15,10 +16,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-
-#ifndef __CSPLIB_NUMERIC_VECTOR_H__
-#define __CSPLIB_NUMERIC_VECTOR_H__
-
 #include <csp/csplib/util/Namespace.h>
 
 #include <cassert>
@@ -64,6 +61,3 @@ inline std::ostream &operator<<(std::ostream& os, const numeric::Vectord& v) {
 }
 
 } // namespace csp
-
-#endif // __CSPLIB_NUMERIC_VECTOR_H__
-

@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2004 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -39,9 +40,6 @@
  * @endcode
  *
  */
-
-#ifndef __CSPLIB_UTIL_MESSAGETYPES_H__
-#define __CSPLIB_UTIL_MESSAGETYPES_H__
 
 #include <csp/csplib/data/Archive.h>
 #include <csp/csplib/data/Quat.h>
@@ -240,6 +238,3 @@ inline std::ostream & operator << (std::ostream &o, Vector4f const &p) {
 }
 
 } // namespace csp
-
-#endif  // __CSPLIB_UTIL_MESSAGETYPES_H__
-

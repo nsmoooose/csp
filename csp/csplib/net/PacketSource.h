@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2004 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -21,9 +22,6 @@
  * @file PacketSource.h
  *
  */
-
-#ifndef __CSPLIB_NET_PACKETSOURCE_H__
-#define __CSPLIB_NET_PACKETSOURCE_H__
 
 #include <csp/csplib/net/NetBase.h>
 #include <csp/csplib/util/Ref.h>
@@ -87,5 +85,3 @@ public:
 };
 
 } // namespace csp
-
-#endif // __CSPLIB_NET_PACKETSOURCE_H__

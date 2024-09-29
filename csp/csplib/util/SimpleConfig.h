@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2002, 2004 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -25,10 +26,6 @@
  * implementation can be "purified" later (if desired) without
  * affecting its use.
  */
-
-
-#ifndef __CSPLIB_UTIL_SIMPLECONFIG_H__
-#define __CSPLIB_UTIL_SIMPLECONFIG_H__
 
 # if defined(_MSC_VER) && (_MSC_VER <= 1200)
 #pragma warning (disable : 4786)
@@ -360,6 +357,3 @@ private:
 
 
 } // namespace csp
-
-#endif // __CSPLIB_UTIL_SIMPLECONFIG_H__
-

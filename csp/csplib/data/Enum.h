@@ -1,3 +1,4 @@
+#pragma once
 /* Combat Simulator Project
  * Copyright 2002, 2003, 2004 Mark Rose <mkrose@users.sourceforge.net>
  *
@@ -67,10 +68,6 @@
 
  * @endcode
  */
-
-
-#ifndef __CSPLIB_DATA_ENUM_H__
-#define __CSPLIB_DATA_ENUM_H__
 
 #include <csp/csplib/data/BaseType.h>
 #include <csp/csplib/util/Exception.h>
@@ -725,6 +722,3 @@ inline EnumLink Enumeration::first() const {
 CSPLIB_EXPORT std::ostream &operator <<(std::ostream &o, EnumLink &e);
 
 } // namespace csp
-
-#endif // __CSPLIB_DATA_ENUM_H__
-

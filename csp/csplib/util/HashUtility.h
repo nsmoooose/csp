@@ -1,3 +1,4 @@
+#pragma once
 /* Combat Simulator Project
  * Copyright (C) 2002, 2005 Mark Rose <mkrose@users.sf.net>
  *
@@ -21,9 +22,6 @@
  * @file HashUtility.h
  * @brief Hash function utilities.
  */
-
-#ifndef __CSPLIB_UTIL_HASHUTILITY_H__
-#define __CSPLIB_UTIL_HASHUTILITY_H__
 
 #include <csp/csplib/util/Export.h>
 #include <csp/csplib/util/Uniform.h>
@@ -270,7 +268,3 @@ inline fprint32 make_unordered_fingerprint(fprint32 x, fprint32 y) {
 
 
 } // namespace csp
-
-
-#endif // __CSPLIB_UTIL_HASHUTILITY_H__
-

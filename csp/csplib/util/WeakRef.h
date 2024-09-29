@@ -1,3 +1,4 @@
+#pragma once
 /* Combat Simulator Project
  * Copyright (C) 2002, 2003, 2004 Mark Rose <mkrose@users.sf.net>
  *
@@ -22,10 +23,6 @@
  *
  * Reference counting smart-pointer classes.
  */
-
-
-#ifndef __CSPLIB_UTIL_WEAKREF_H__
-#define __CSPLIB_UTIL_WEAKREF_H__
 
 #include <csp/csplib/util/WeakReferenced.h>
 
@@ -137,5 +134,3 @@ private:
 };
 
 } // namespace csp
-  
-#endif // __CSPLIB_UTIL_WEAKREF_H__

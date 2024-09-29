@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2004 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -72,10 +73,6 @@
  *
  */
 
-#ifndef __CSPLIB_NET_ROUTINGHANDLER_H__
-#define __CSPLIB_NET_ROUTINGHANDLER_H__
-
-
 #include <csp/csplib/net/NetBase.h>
 #include <csp/csplib/net/NetworkMessage.h>
 #include <csp/csplib/net/MessageHandler.h>
@@ -137,6 +134,3 @@ public:
 
 
 } // namespace csp
-
-#endif // __CSPLIB_NET_ROUTINGHANDLER_H__
-

@@ -1,3 +1,4 @@
+#pragma once
 /* Combat Simulator Project
  * Copyright (C) 2002, 2003 Mark Rose <mkrose@users.sf.net>
  *
@@ -20,9 +21,6 @@
  * @file DataManager.h
  * @brief Classes for managing multiple data archives.
  */
-
-#ifndef __CSPLIB_DATA_DATAMANAGER_H__
-#define __CSPLIB_DATA_DATAMANAGER_H__
 
 #include <csp/csplib/util/Export.h>
 #include <csp/csplib/util/HashUtility.h>
@@ -189,6 +187,3 @@ private:
 
 
 } // namespace csp
-
-#endif // __CSPLIB_DATA_DATAMANAGER_H__
-

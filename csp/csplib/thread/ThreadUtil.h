@@ -1,3 +1,4 @@
+#pragma once
 /* Combat Simulator Project
  * Copyright (C) 2004 Mark Rose <mkrose@users.sourceforge.net>
  *
@@ -22,10 +23,6 @@
  * @brief Thread utility classes.
  */
 
-
-#ifndef __CSPLIB_THREAD_THREADUTIL_H__
-#define __CSPLIB_THREAD_THREADUTIL_H__
-
 #include <csp/csplib/util/Namespace.h>
 #include <csp/csplib/util/Properties.h>
 #include <csp/csplib/util/Exception.h>
@@ -35,6 +32,3 @@ namespace csp {
 CSP_EXCEPTION(ThreadException)
 
 } // namespace csp
-
-#endif // __CSPLIB_THREAD_THREADUTIL_H__
-

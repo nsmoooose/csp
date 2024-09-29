@@ -1,3 +1,4 @@
+#pragma once
 /* Combat Simulator Project
  * Copyright 2002, 2003, 2004 Mark Rose <mkrose@users.sourceforge.net>
  *
@@ -21,10 +22,6 @@
  * @file Noise.h
  * @brief Noise distribution classes.
  */
-
-
-#ifndef __CSPLIB_UTIL_NOISE_H__
-#define __CSPLIB_UTIL_NOISE_H__
 
 #include <csp/csplib/util/Export.h>
 #include <csp/csplib/util/Namespace.h>
@@ -202,7 +199,3 @@ private:
 
 
 } // namespace csp
-
-
-#endif // __CSPLIB_UTIL_NOISE_H__
-

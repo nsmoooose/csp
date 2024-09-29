@@ -1,3 +1,4 @@
+#pragma once
 /* Combat Simulator Project
  * Copyright (C) 2004 Mark Rose <mkrose@users.sourceforge.net>
  *
@@ -22,10 +23,6 @@
  * @brief Thread-safe queue classes for efficiently sharing data
  *   between threads.
  */
-
-
-#ifndef __CSPLIB_THREAD_THREADQUEUE_H__
-#define __CSPLIB_THREAD_THREADQUEUE_H__
 
 #include <csp/csplib/util/Namespace.h>
 #include <csp/csplib/util/Properties.h>
@@ -223,6 +220,3 @@ private:
 
 
 } // namespace csp
-
-#endif // __CSPLIB_THREAD_THREADQUEUE_H__
-

@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2004 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -21,9 +22,6 @@
  * @file Sockets.h
  *
  */
-
-#ifndef __CSPLIB_NET_SOCKETS_H__
-#define __CSPLIB_NET_SOCKETS_H__
 
 #ifdef _WIN32
 // use this to fix compile problems with mulitple includes of windows and winsock headers.
@@ -92,6 +90,3 @@ public:
 
 
 } // namespace csp
-
-#endif // __CSPLIB_NET_SOCKETS_H__
-

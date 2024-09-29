@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2004 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -21,10 +22,6 @@
  * @file TimeStamp.h
  * @brief Utilities functions for working with network event timestamps.
  **/
-
-
-#ifndef __CSPLIB_UTIL_TIMESTAMP_H__
-#define __CSPLIB_UTIL_TIMESTAMP_H__
 
 #include <csp/csplib/util/Namespace.h>
 #include <csp/csplib/util/Uniform.h>
@@ -54,5 +51,3 @@ inline TimeStamp getTimeStamp(SimTime time) {
 
 
 } // namespace csp
-
-#endif // __CSPLIB_UTIL_TIMESTAMP_H__

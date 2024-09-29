@@ -1,3 +1,4 @@
+#pragma once
 /* Combat Simulator Project
  * Copyright (C) 2002 Mark Rose <mkrose@users.sourceforge.net>
  *
@@ -28,9 +29,6 @@
  * License Version 0.0 (exception 3) and the GNU Lesser Public License Version
  * 2 (clause 3).
  */
-
-#ifndef __CSPLIB_UTIL_MATH_H__
-#define __CSPLIB_UTIL_MATH_H__
 
 #include <csp/csplib/util/Namespace.h>
 
@@ -121,6 +119,3 @@ inline typename ToFloat<T>::Type inRadians(T angle) { return static_cast<typenam
 
 
 } // namespace csp
-
-#endif // __CSPLIB_UTIL_MATH_H__
-

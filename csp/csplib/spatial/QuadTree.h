@@ -1,3 +1,4 @@
+#pragma once
 /* Integer QuadTree Spatial Index
  * Copyright 2004 Mark Rose <mkrose@users.sourceforge.net>
  *
@@ -38,9 +39,6 @@
  * externally when multiple threads need access to the structure.
  *
  */
-
-#ifndef __CSPLIB_SPATIAL_QUADTREE_H__
-#define __CSPLIB_SPATIAL_QUADTREE_H__
 
 #include <csp/csplib/util/Export.h>
 #include <csp/csplib/util/Namespace.h>
@@ -378,6 +376,3 @@ extern CSPLIB_EXPORT std::ostream & operator << (std::ostream &os, Region const 
 
 } // namespace spatial
 } // namespace csp
-
-#endif // __CSPLIB_SPATIAL_QUADTREE_H__
-

@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright 2002-2005 Mark Rose <mkrose@users.sourceforge.net>
 // Copyright (C) 2002 The Combat Simulator Project
@@ -22,10 +23,6 @@
  * @file Log.h
  *
  **/
-
-
-#ifndef __CSPLIB_UTIL_LOG_H__
-#define __CSPLIB_UTIL_LOG_H__
 
 #include <csp/csplib/util/Namespace.h>
 #include <csp/csplib/util/Export.h>
@@ -70,6 +67,3 @@ inline LogStream &log() {
 
 
 } // namespace csp
-
-#endif // __CSPLIB_UTIL_LOG_H__
-

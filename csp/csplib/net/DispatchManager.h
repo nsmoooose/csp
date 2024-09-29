@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2004 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -40,9 +41,6 @@
  * point has access to the DispatchManager and can proactively
  * invalidate the cache.
  */
-
-#ifndef __CSPLIB_NET_DISPATCHMANAGER_H__
-#define __CSPLIB_NET_DISPATCHMANAGER_H__
 
 #include <csp/csplib/net/Callbacks.h>
 #include <csp/csplib/net/DispatchCache.h>
@@ -119,7 +117,3 @@ private:
 };
 
 } // namespace csp
-
-#endif // __CSPLIB_NET_DISPATCHMANAGER_H__
-
-

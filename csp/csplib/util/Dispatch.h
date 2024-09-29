@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2004 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -61,11 +62,6 @@
  *
  **/
 
-
-#ifndef __CSPLIB_UTIL_DISPATCH_H__
-#define __CSPLIB_UTIL_DISPATCH_H__
-
-
 #include <csp/csplib/util/Export.h>
 #include <csp/csplib/util/Namespace.h>
 // TODO move to net (util/* shouldn't depend on net/*)
@@ -111,6 +107,3 @@ public:
 };
 
 } // namespace csp
-
-#endif // __CSPLIB_UTIL_DISPATCH_H__
-

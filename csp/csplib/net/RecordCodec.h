@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project - CSPSim
 // Copyright (C) 2004 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -45,11 +46,6 @@
  * object pool in order to minimize allocation/deallocation overhead.
  *
  **/
-
-
-#ifndef __CSPLIB_NET_RECORDCODEC_H__
-#define __CSPLIB_NET_RECORDCODEC_H__
-
 
 #include <csp/csplib/net/TaggedRecord.h>
 #include <vector>
@@ -106,6 +102,3 @@ private:
 };
 
 } // namespace csp
-
-#endif // __CSPLIB_NET_RECORDCODEC_H__
-

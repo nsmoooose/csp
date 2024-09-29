@@ -1,3 +1,4 @@
+#pragma once
 /* Combat Simulator Project
  * Copyright 2002-2005 Mark Rose <mkrose@users.sf.net>
  *
@@ -21,10 +22,6 @@
  * @file LogStream.h
  * @brief Stream based logging mechanism.
  */
-
-
-#ifndef __CSPLIB_UTIL_LOGSTREAM_H__
-#define __CSPLIB_UTIL_LOGSTREAM_H__
 
 #include <csp/csplib/util/Exception.h>
 #include <csp/csplib/util/Export.h>
@@ -279,8 +276,3 @@ private:
 
 
 } // namespace csp
-
-
-#endif // __CSPLIB_UTIL_LOGSTREAM_H__
-
-

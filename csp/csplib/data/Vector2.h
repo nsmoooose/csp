@@ -1,5 +1,4 @@
-#ifndef __CSPLIB_DATA_VECTOR2_H__
-#define __CSPLIB_DATA_VECTOR2_H__
+#pragma once
 
 #include <csp/csplib/data/BaseType.h>
 
@@ -34,5 +33,3 @@ private:
 CSPLIB_EXPORT std::ostream &operator <<(std::ostream &o, Vector2 const &v);
 
 }
-
-#endif

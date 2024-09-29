@@ -1,3 +1,4 @@
+#pragma once
 /* Combat Simulator Project
  * Copyright (C) 2004 Mark Rose <mkrose@users.sourceforge.net>
  *
@@ -37,9 +38,6 @@
 //           127: offset is greater than 100, is contained in the next
 //                two bytes
 
-
-#ifndef __CSPLIB_NET_TAGGED_RECORD_H__
-#define __CSPLIB_NET_TAGGED_RECORD_H__
 
 #include <csp/csplib/data/Archive.h>
 #include <csp/csplib/util/Namespace.h>
@@ -295,6 +293,3 @@ protected:
 
 
 } // namespace csp
-
-#endif // __CSPLIB_NET_TAGGED_RECORD_H__
-

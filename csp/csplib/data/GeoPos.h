@@ -1,3 +1,4 @@
+#pragma once
 /* Combat Simulator Project
  * Copyright 2002-2005 Mark Rose <mkrose@users.sourceforge.net>
  *
@@ -20,10 +21,6 @@
  * @file GeoPos.h
  * @brief Geodetic coordinate class and conversions.
  */
-
-
-#ifndef __CSPLIB_DATA_GEOPOS_H__
-#define __CSPLIB_DATA_GEOPOS_H__
 
 #include <csp/csplib/data/Vector3.h>
 #include <csp/csplib/util/Export.h>
@@ -513,7 +510,3 @@ CSPLIB_EXPORT std::ostream &operator <<(std::ostream &o, UTM const &q);
 CSPLIB_EXPORT std::ostream &operator <<(std::ostream &o, ECEF const &q);
 
 } // namespace csp
-
-
-#endif // __CSPLIB_DATA_GEOPOS_H__
-

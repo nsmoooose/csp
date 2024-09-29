@@ -1,3 +1,4 @@
+#pragma once
 /* Combat Simulator Project
  * Copyright 2002-2005 Mark Rose <mkrose@users.sourceforge.net>
  *
@@ -20,10 +21,6 @@
  * @file LogConstants.h
  * @brief Constants writing to the csp log.
  */
-
-
-#ifndef __CSPLIB_UTIL_LOGCONSTANTS_H__
-#define __CSPLIB_UTIL_LOGCONSTANTS_H__
 
 #include <csp/csplib/util/Namespace.h>
 
@@ -84,6 +81,3 @@ enum {
 };
 
 } // namespace csp
-
-#endif // __CSPLIB_UTIL_LOGCONSTANTS_H__
-

@@ -1,3 +1,4 @@
+#pragma once
 /* Combat Simulator Project
  * Copyright 2002-2005 Mark Rose <mkrose@users.sourceforge.net>
  *
@@ -20,10 +21,6 @@
  * @file Real.h
  * @brief A guassian distributed floating-point value.
  */
-
-
-#ifndef __CSPLIB_DATA_REAL_H__
-#define __CSPLIB_DATA_REAL_H__
 
 #include <csp/csplib/util/Random.h>
 #include <csp/csplib/data/BaseType.h>
@@ -174,5 +171,3 @@ public:
 CSPLIB_EXPORT std::ostream &operator <<(std::ostream &o, Real const &r);
 
 } // namespace csp
-
-#endif // __CSPLIB_DATA_REAL_H__

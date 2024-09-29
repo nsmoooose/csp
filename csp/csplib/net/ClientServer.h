@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2004 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -24,10 +25,6 @@
  * client-server (and client-client) applications.
  *
  */
-
-#ifndef __CSPLIB_NET_CLIENTSERVER_H__
-#define __CSPLIB_NET_CLIENTSERVER_H__
-
 
 #include <csp/csplib/net/NetBase.h>
 
@@ -300,5 +297,3 @@ public:
 
 
 } // namespace csp
-
-#endif // __CSPLIB_NET_CLIENTSERVER_H__

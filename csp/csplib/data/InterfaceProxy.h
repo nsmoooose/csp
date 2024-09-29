@@ -1,3 +1,4 @@
+#pragma once
 /* Combat Simulator Project
  * Copyright (C) 2002-2005 Mark Rose <mkrose@users.sf.net>
  *
@@ -21,10 +22,6 @@
  * @file InterfaceProxy.h
  * @brief Classes for storing and accessing object interfaces.
  */
-
-
-#ifndef __CSPLIB_DATA_INTERFACEPROXY_H__
-#define __CSPLIB_DATA_INTERFACEPROXY_H__
 
 #include <string>
 #include <vector>
@@ -524,6 +521,3 @@ inline hasht classhash_helper(std::string const &class_name, const fprint32 sign
 
 
 } // namespace csp
-
-#endif // __CSPLIB_DATA_INTERFACEPROXY_H__
-

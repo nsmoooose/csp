@@ -1,3 +1,4 @@
+#pragma once
 /* Combat Simulator Project
  * Copyright (C) 2002 Mark Rose <mkrose@users.sf.net>
  *
@@ -21,11 +22,6 @@
  * @file FileUtility.h
  * @brief Platform independent file utilities.
  */
-
-
-#ifndef __CSPLIB_UTIL_FILEUTILITY_H__
-#define __CSPLIB_UTIL_FILEUTILITY_H__
-
 
 #include <string>
 #include <vector>
@@ -164,6 +160,3 @@ namespace ospath {
 
 
 } // namespace csp
-
-#endif // __CSPLIB_UTIL_FILEUTILITY_H__
-

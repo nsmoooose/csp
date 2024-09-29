@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2003 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -21,11 +22,6 @@
  * @file SynchronousUpdate.h
  *
  **/
-
-
-#ifndef __CSPLIB_UTIL_SYNCHRONOUSUPDATE_H__
-#define __CSPLIB_UTIL_SYNCHRONOUSUPDATE_H__
-
 
 #include <csp/csplib/util/Export.h>
 #include <csp/csplib/util/Namespace.h>
@@ -238,6 +234,3 @@ public:
 };
 
 } // namespace csp
-
-#endif // __CSPLIB_UTIL_SYNCHRONOUSUPDATE_H__
-

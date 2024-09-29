@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2004 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -22,10 +23,6 @@
  *
  * Callback types and closures for message handling.
  */
-
-#ifndef __CSPLIB_NET_CALLBACKS_H__
-#define __CSPLIB_NET_CALLBACKS_H__
-
 
 #include <csp/csplib/net/NetworkMessage.h>
 #include <csp/csplib/net/MessageHandler.h>
@@ -85,6 +82,3 @@ private:
 
 
 } // namespace csp
-
-#endif // __CSPLIB_NET_CALLBACKS_H__
-

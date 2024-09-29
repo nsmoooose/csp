@@ -1,3 +1,4 @@
+#pragma once
 /* Combat Simulator Project
  * Copyright (C) 2002, 2003 Mark Rose <mkrose@users.sf.net>
  *
@@ -23,10 +24,6 @@
  * Composite and Visitor design pattern templates.
  *
  **/
-
-
-#ifndef __CSPLIB_UTIL_COMPOSITE_H__
-#define __CSPLIB_UTIL_COMPOSITE_H__
 
 #include <csp/csplib/util/Ref.h>
 #include <csp/csplib/util/Log.h>
@@ -548,6 +545,3 @@ private:
 
 
 } // namespace csp
-
-#endif // __CSPLIB_UTIL_COMPOSITE_H__
-

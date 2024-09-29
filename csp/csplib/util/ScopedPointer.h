@@ -1,3 +1,4 @@
+#pragma once
 /* Combat Simulator Project
  * Copyright (C) 2004 Mark Rose <mkrose@users.sourceforge.net>
  *
@@ -21,10 +22,6 @@
  * @file ScopedPointer.h
  * @brief A pointer wrapper with scope-based auto deletion.
  */
-
-
-#ifndef __CSPLIB_UTIL_SCOPEDPOINTER_H__
-#define __CSPLIB_UTIL_SCOPEDPOINTER_H__
 
 #include <csp/csplib/util/Namespace.h>
 #include <csp/csplib/util/Properties.h>
@@ -152,6 +149,3 @@ public:
 };
 
 } // namespace csp
-
-#endif // __CSPLIB_UTIL_SCOPEDPOINTER_H__
-

@@ -1,3 +1,4 @@
+#pragma once
 /* Combat Simulator Project
  * Copyright 2002, 2003, 2004 Mark Rose <mkrose@users.sourceforge.net>
  *
@@ -22,10 +23,6 @@
  * @brief Internal classes for accessing the public xml interface of
  *   an Object class.
  */
-
-
-#ifndef __CSPLIB_DATA_OBJECTINTERFACE_H__
-#define __CSPLIB_DATA_OBJECTINTERFACE_H__
 
 #include <csp/csplib/data/Archive.h>
 #include <csp/csplib/data/Link.h>
@@ -641,6 +638,3 @@ public:
 
 
 } // namespace csp
-
-#endif // __CSPLIB_DATA_OBJECTINTERFACE_H__
-

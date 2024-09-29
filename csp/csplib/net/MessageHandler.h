@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2004 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -21,9 +22,6 @@
  * @file MessageHandler.h
  *
  */
-
-#ifndef __CSPLIB_NET_MESSAGEHANDLER_H__
-#define __CSPLIB_NET_MESSAGEHANDLER_H__
 
 #include <csp/csplib/net/NetworkMessage.h>
 #include <csp/csplib/util/Ref.h>
@@ -82,7 +80,3 @@ inline Ref<MessageHandler> MessageHandler::Callback(CLASS *instance, void (CLASS
 
 
 } // namespace csp
-
-#endif // __CSPLIB_NET_MESSAGEHANDLER_H__
-
-

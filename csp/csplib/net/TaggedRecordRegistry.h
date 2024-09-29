@@ -1,3 +1,4 @@
+#pragma once
 /* Combat Simulator Project
  * Copyright (C) 2004 Mark Rose <mkrose@users.sourceforge.net>
  *
@@ -21,10 +22,6 @@
  * @file TaggedRecordRegistry.h
  * @brief Classes for storing and accessing tagged record factories.
  */
-
-
-#ifndef __CSPLIB_NET_TAGGEDRECORDREGISTRY_H__
-#define __CSPLIB_NET_TAGGEDRECORDREGISTRY_H__
 
 #include <csp/csplib/net/TaggedRecord.h>
 #include <csp/csplib/util/Export.h>
@@ -154,6 +151,3 @@ public:
 
 
 } // namespace csp
-
-#endif //  __CSPLIB_NET_TAGGEDRECORDREGISTRY_H__
-

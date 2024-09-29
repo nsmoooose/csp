@@ -1,3 +1,4 @@
+#pragma once
 // Copyright 2007 Mark Rose <mkrose@users.sf.net>
 //
 // This program is free software; you can redistribute it and/or
@@ -32,8 +33,6 @@
  * %}
  * ...
  */
-#ifndef PYSIG_PYSWIG_H__
-#define PYSIG_PYSWIG_H__
 
 #define DEFINE_SWIG_CASTS(T) \
 	static T* pycast_from_##T(PyObject *obj) { \
@@ -56,5 +55,3 @@
 	inline PyObject* py_cast(ref_ptr<T>& x) { return pycast_to_##T(x.get()); } \
 	template <> inline ref_ptr<T> py_cast<ref_ptr<T> >(PyObject* o) { return pycast_from_##T(o); } \
 	template <> inline ref_ptr<T> py_decref_cast<ref_ptr<T> >(PyObject* o) { ref_ptr<T> result = pycast_from_##T(o); Py_XDECREF(o); return result; }
-
-#endif // PYSIG_PYSWIG_H__

@@ -1,3 +1,4 @@
+#pragma once
 /* Combat Simulator Project
  * Copyright (C) 2002-2005 Mark Rose <mkrose@users.sf.net>
  *
@@ -15,11 +16,6 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-
-
-#ifndef __CSPLIB_DATA_LUT_H__
-#define __CSPLIB_DATA_LUT_H__
-
 
 /**
  * @file LUT.h
@@ -748,6 +744,3 @@ CSPLIB_EXPORT std::ostream &operator <<(std::ostream &o, Table2 const &t);
 CSPLIB_EXPORT std::ostream &operator <<(std::ostream &o, Table3 const &t);
 
 } // namespace csp
-
-#endif // __CSPLIB_DATA_LUT_H__
-

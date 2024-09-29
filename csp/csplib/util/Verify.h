@@ -1,3 +1,4 @@
+#pragma once
 /* Combat Simulator Project
  * Copyright 2004 Mark Rose <mkrose@users.sourceforge.net>
  *
@@ -40,10 +41,6 @@
  * @endcode
  *
  */
-
-
-#ifndef __CSPLIB_UTIL_VERIFY_H__
-#define __CSPLIB_UTIL_VERIFY_H__
 
 #include <cstdlib>
 #include <csp/csplib/util/Log.h>
@@ -159,6 +156,3 @@ inline void verify_floateq(const char *type, A const &lhs, A const &rhs, const c
 #endif
 
 } // namespace csp
-
-
-#endif // __CSPLIB_UTIL_VERIFY_H__

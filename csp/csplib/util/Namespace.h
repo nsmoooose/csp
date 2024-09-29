@@ -1,6 +1,3 @@
-#ifndef __CSPLIB_UTIL_NAMESPACE_H__
-#define __CSPLIB_UTIL_NAMESPACE_H__
+#pragma once
 
 #define CSP(x) csp::x
-
-#endif // __CSPLIB_UTIL_NAMESPACE_H__

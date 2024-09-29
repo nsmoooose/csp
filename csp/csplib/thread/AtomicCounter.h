@@ -1,3 +1,4 @@
+#pragma once
 /* Combat Simulator Project
  * Copyright (C) 2004 Mark Rose <mkrose@users.sourceforge.net>
  *
@@ -22,10 +23,6 @@
  * @brief An integer counter that supports atomic updates, and can be
  *        used to implement thread-safe reference counters.
  */
-
-
-#ifndef __CSPLIB_THREAD_ATOMICCOUNTER_H__
-#define __CSPLIB_THREAD_ATOMICCOUNTER_H__
 
 #include <csp/csplib/util/Export.h>
 #include <csp/csplib/util/Namespace.h>
@@ -82,6 +79,3 @@ public:
 };
 
 } // namespace csp
-
-#endif // __CSPLIB_THREAD_ATOMICCOUNTER_H__
-

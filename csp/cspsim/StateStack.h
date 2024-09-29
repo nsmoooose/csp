@@ -151,7 +151,7 @@ private:
 	void pushModeList(ModeMap &mode_map, osg::StateSet::ModeList const &mode_list) {
 		for (osg::StateSet::ModeList::const_iterator iter = mode_list.begin(); iter != mode_list.end(); ++iter) {
 			ModeStack &ms = mode_map[iter->first];
-			if (!ms.empty() && (ms.back() && osg::StateAttribute::OVERRIDE) && (!iter->second && osg::StateAttribute::PROTECTED)) {
+			if (!ms.empty() && (ms.back() & osg::StateAttribute::OVERRIDE) && (!(iter->second & osg::StateAttribute::PROTECTED))) {
 				ms.push_back(ms.back());
 			} else {
 				ms.push_back(iter->second);
@@ -169,7 +169,7 @@ private:
 	void pushAttributeList(AttributeMap &attr_map, osg::StateSet::AttributeList const &attr_list) {
 		for (osg::StateSet::AttributeList::const_iterator iter = attr_list.begin(); iter != attr_list.end(); ++iter) {
 			AttributeStack &as = attr_map[iter->first];
-			if (!as.empty() && (as.back().second && osg::StateAttribute::OVERRIDE) && (!iter->second.second && osg::StateAttribute::PROTECTED)) {
+			if (!as.empty() && (as.back().second & osg::StateAttribute::OVERRIDE) && (!(iter->second.second & osg::StateAttribute::PROTECTED))) {
 				as.push_back(as.back());
 			} else {
 				as.push_back(AttributePair(iter->second.first.get(), iter->second.second));

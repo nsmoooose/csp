@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2002 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -22,9 +23,6 @@
  *
  **/
 
-#ifndef __CSPSIM_WF_SIZE_H__
-#define __CSPSIM_WF_SIZE_H__
-
 #include <csp/csplib/util/Namespace.h>
 
 namespace csp {
@@ -42,5 +40,3 @@ struct Size {
 } // namespace wf
 
 } // namespace csp
-
-#endif // __CSPSIM_WF_SIZE_H__

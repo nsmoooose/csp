@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2002 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -21,9 +22,6 @@
  * @file WindowManager.h
  *
  **/
-
-#ifndef __CSPSIM_WF_WINDOWMANAGER_H__
-#define __CSPSIM_WF_WINDOWMANAGER_H__
 
 #include <csp/csplib/util/Ref.h>
 #include <csp/csplib/util/Referenced.h>
@@ -163,5 +161,3 @@ protected:
 
 } // namespace wf
 } // namespace csp
-
-#endif // __CSPSIM_WF_WINDOWMANAGER_H__

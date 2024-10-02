@@ -1,5 +1,4 @@
-#ifndef __CSPSIM_WF_CONTROLMOVEEVENTHANDLER_H__
-#define __CSPSIM_WF_CONTROLMOVEEVENTHANDLER_H__
+#pragma once
 
 #include <csp/cspwf/Control.h>
 
@@ -33,5 +32,3 @@ protected:
 
 } // namespace wf
 } // namespace csp
-
-#endif // __CSPSIM_WF_CONTROLMOVEEVENTHANDLER_H__

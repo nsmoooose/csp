@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2002 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -21,9 +22,6 @@
  * @file ListBox.h
  *
  **/
-
-#ifndef __CSPSIM_WF_LISTBOX_H__
-#define __CSPSIM_WF_LISTBOX_H__
 
 #include <csp/cspwf/Container.h>
 #include <csp/cspwf/ListBoxItem.h>
@@ -72,5 +70,3 @@ protected:
 
 } // namespace wf
 } // namespace csp
-
-#endif // __CSPSIM_WF_LISTBOX_H__

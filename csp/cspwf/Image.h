@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2002 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -22,9 +23,6 @@
  *
  **/
 
-#ifndef __CSPSIM_WF_IMAGE_H__
-#define __CSPSIM_WF_IMAGE_H__
-
 #include <csp/cspwf/Control.h>
 
 namespace csp {
@@ -44,6 +42,3 @@ public:
 
 } // namespace wf
 } // namespace csp
-
-#endif // __CSPSIM_WF_IMAGE_H__
-

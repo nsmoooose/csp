@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2002 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -15,9 +16,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-
-#ifndef __CSPSIM_WF_WINDOWMANAGEREVENTHANDLER_H__
-#define __CSPSIM_WF_WINDOWMANAGEREVENTHANDLER_H__
 
 #include <osgGA/GUIEventHandler>
 
@@ -46,5 +44,3 @@ private:
 
 } // namespace wf
 } // namespace csp
-
-#endif // __CSPSIM_WF_WINDOWMANAGEREVENTHANDLER_H__

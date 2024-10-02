@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2002 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -21,9 +22,6 @@
  * @file StyleBuilder.h
  *
  **/
-
-#ifndef __CSPSIM_WF_STYLEBUILDER_H__
-#define __CSPSIM_WF_STYLEBUILDER_H__
 
 #include <csp/csplib/util/Ref.h>
 
@@ -57,5 +55,3 @@ public:
 } // namespace wf
 
 } // namespace csp
-
-#endif // __CSPSIM_WF_STYLEBUILDER_H__

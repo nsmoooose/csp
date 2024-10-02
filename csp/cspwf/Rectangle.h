@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2002 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -21,9 +22,6 @@
  * @file Rectangle.h
  *
  **/
-#ifndef __CSPSIM_WF_RECTANGLE_H__
-#define __CSPSIM_WF_RECTANGLE_H__
-
 #include <csp/cspwf/Point.h>
 
 namespace csp {
@@ -45,5 +43,3 @@ struct Rectangle {
 } // namespace wf
 
 } // namespace csp
-
-#endif // __CSPSIM_WF_RECTANGLE_H__

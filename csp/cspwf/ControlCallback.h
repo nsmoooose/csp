@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2002-2005 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -21,9 +22,6 @@
  * @file ControlCallback.h
  *
  **/
-
-#ifndef __CSPSIM_WF_CONTROLCALLBACK_H__
-#define __CSPSIM_WF_CONTROLCALLBACK_H__
 
 #include <osg/NodeCallback>
 #include <csp/csplib/util/Ref.h>
@@ -53,5 +51,3 @@ private:
 
 } // namespace wf
 } // namespace csp
-
-#endif // __CSPSIM_WF_CONTROLCALLBACK_H__

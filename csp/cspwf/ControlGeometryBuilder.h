@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2002 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -21,9 +22,6 @@
  * @file ControlGeometryBuilder.h
  *
  **/
-
-#ifndef __CSPSIM_WF_CONTROLGEOMETRYBUILDER_H__
-#define __CSPSIM_WF_CONTROLGEOMETRYBUILDER_H__
 
 #include <osg/ref_ptr>
 #include <osg/Vec4>
@@ -105,6 +103,3 @@ private:
 
 } // namespace wf
 } // namespace csp
-
-#endif // __CSPSIM_WF_CONTROLGEOMETRYBUILDER_H__
-

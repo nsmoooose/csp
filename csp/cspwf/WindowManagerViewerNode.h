@@ -1,5 +1,4 @@
-#ifndef __CSPWF_WINDOWMANAGERVIEWERNODE_H__
-#define __CSPWF_WINDOWMANAGERVIEWERNODE_H__
+#pragma once
 
 #include <csp/csplib/util/Ref.h>
 #include <csp/cspwf/WindowManager.h>
@@ -29,6 +28,3 @@ private:
 
 } // namespace wf
 } // namespace csp
-
-
-#endif // __CSPWF_WINDOWMANAGERVIEWERNODE_H__

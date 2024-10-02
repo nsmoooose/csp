@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2002 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -21,9 +22,6 @@
  * @file Slot.h
  *
  **/
-
-#ifndef __CSPSIM_WF_SLOT_H__
-#define __CSPSIM_WF_SLOT_H__
 
 #include <csp/csplib/util/Ref.h>
 #include <csp/cspwf/Export.h>
@@ -49,5 +47,3 @@ private:
 
 } // namespace wf
 } // namespace csp
-
-#endif // __CSPSIM_WF_SLOT_H__

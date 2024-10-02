@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2002 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -21,9 +22,6 @@
  * @file ResourceLocator.h
  *
  **/
-
-#ifndef __CSPSIM_WF_RESOURCELOCATOR_H__
-#define __CSPSIM_WF_RESOURCELOCATOR_H__
 
 #include <vector>
 #include <string>
@@ -65,5 +63,3 @@ CSPWF_EXPORT void setDefaultResourceLocator(ResourceLocator* locator);
 
 } // namespace wf
 } // namespace csp
-
-#endif // __CSPSIM_WF_RESOURCELOCATOR_H__

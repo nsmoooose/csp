@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2002 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -21,9 +22,6 @@
  * @file StringResourceManager.h
  *
  **/
-
-#ifndef __CSPSIM_WF_STRINGRESOURCEMANAGER_H__
-#define __CSPSIM_WF_STRINGRESOURCEMANAGER_H__
 
 #include <map>
 #include <csp/csplib/util/Referenced.h>
@@ -67,6 +65,3 @@ private:
 
 } // namespace wf
 } // namespace csp
-
-#endif // __CSPSIM_WF_STRINGRESOURCEMANAGER_H__
-

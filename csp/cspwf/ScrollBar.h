@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2002 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -21,9 +22,6 @@
  * @file ScrollBar.h
  *
  **/
-
-#ifndef __CSPSIM_WF_SCROLLBAR_H__
-#define __CSPSIM_WF_SCROLLBAR_H__
 
 #include <csp/cspwf/Container.h>
 
@@ -154,7 +152,3 @@ private:
 } // namespace wf
 
 } // namespace csp
-
-#endif // __CSPSIM_WF_SCROLLBAR_H__
-
-

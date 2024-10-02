@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2002 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -21,9 +22,6 @@
  * @file ListBoxItem.h
  *
  **/
-
-#ifndef __CSPSIM_WF_LISTBOXITEM_H__
-#define __CSPSIM_WF_LISTBOXITEM_H__
 
 #include <csp/cspwf/SingleControlContainer.h>
 
@@ -70,5 +68,3 @@ typedef std::vector<Ref<ListBoxItem> > ListBoxItemVector;
 
 } // namespace wf
 } // namespace csp
-
-#endif // __CSPSIM_WF_LISTBOXITEM_H__

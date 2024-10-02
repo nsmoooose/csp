@@ -78,7 +78,6 @@ void FixedFlybyView::newFixedCamPos(SimObject* target) {
 	Vector3 object_pos = target->getGlobalPosition();
 	DynamicObject* dynamic = dynamic_cast<DynamicObject*>(target);
 	if (dynamic) {
-		Vector3 up = dynamic->getUpDirection();
 		Vector3 object_dir = dynamic->getVelocity().normalized();
 		m_FixedCameraPosition =  object_pos - 20.0 * object_dir;
 	} else {

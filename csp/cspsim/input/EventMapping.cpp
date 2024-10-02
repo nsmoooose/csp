@@ -62,6 +62,7 @@ int EventMapping::getMouseButtonID(unsigned int button, RawEvent::MouseButton::T
 	{
 		case RawEvent::MouseButton::PRESSED : press = (2 << 30); break;
 		case RawEvent::MouseButton::DOUBLECLICK : press = (3 << 30); break;
+		default: break;
 	}
 	return (button & 0xFF) + ((modifierMask & 0x3FFF) << 8) + ((mode & 0xF) << 22) + press;
 }

@@ -705,19 +705,22 @@ void XYZ_to_Luv(float X, float Y, float Z, float &Lstar, float &ustar, float &vs
 	} else {
 		if (Y <= 0.0) {
 			Lstar = 0.0;
-		} else
+		} else {
 			if (Y <= 0.008856 * Yn) {
 				Lstar = 903.3f * Y / Yn;
-			} else
+			} else {
 				if (Y <= Yn) {
 					Lstar = 116.0f * cubert(Y/Yn) - 16.0f;
 				} else {
 					Lstar = 100.0;
 				}
-			float uprime, vprime, wprime;
-			XYZ_to_uvwp(X, Y, Z, uprime, vprime, wprime);
-			ustar = 13.0f * Lstar * (uprime - unprime);
-			vstar = 13.0f * Lstar * (vprime - vnprime);
+			}
+		}
+			
+		float uprime, vprime, wprime;
+		XYZ_to_uvwp(X, Y, Z, uprime, vprime, wprime);
+		ustar = 13.0f * Lstar * (uprime - unprime);
+		vstar = 13.0f * Lstar * (vprime - vnprime);
 	}
 }
 
@@ -1009,6 +1012,7 @@ Color Color::toCIELuv(bool internal_check) const {
 			RGB709_to_XYZ(a, b, c, X, Y, Z);
 			if (internal_check) XYZ_check(X, Y, Z);
 			XYZ_to_Luv(X, Y, Z, L, u, v);
+			break;
 		case CMY:
 			CMY_to_RGB(a, b, c, R, G, B);
 			if (internal_check) RGB_check(R, G, B);

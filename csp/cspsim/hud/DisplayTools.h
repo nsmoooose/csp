@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2005 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -21,10 +22,6 @@
  * @file DisplayTools.h
  *
  **/
-
-
-#ifndef __CSPSIM_HUD_DISPLAYTOOLS_H__
-#define __CSPSIM_HUD_DISPLAYTOOLS_H__
 
 #include <csp/csplib/util/Uniform.h>
 #include <osg/PositionAttitudeTransform>
@@ -262,6 +259,3 @@ class FloatingFrame: public DirectionElement, public Frame {
 } // end namespace display
 } // end namespace hud
 } // end namespace csp
-
-#endif // __CSPSIM_HUD_DISPLAYTOOLS_H__
-

@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2004 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -21,9 +22,6 @@
  * @file CameraAgent.h
  *
  **/
-
-#ifndef __CSPSIM_VIEWS_CAMERAAGENT_H__
-#define __CSPSIM_VIEWS_CAMERAAGENT_H__
 
 #include <csp/csplib/util/Ref.h>
 #include <csp/csplib/data/Vector3.h>
@@ -74,6 +72,3 @@ private:
 };
 
 } // namespace csp
-
-#endif //__CAMERAAGENT_H__
-

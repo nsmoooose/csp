@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2005 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -21,10 +22,6 @@
  * @file GroundAvoidanceAdvisory.h
  *
  **/
-
-
-#ifndef __CSPSIM_F16_GROUND_AVOIDANCE_ADVISORY_H__
-#define __CSPSIM_F16_GROUND_AVOIDANCE_ADVISORY_H__
 
 #include <csp/cspsim/System.h>
 #include <csp/csplib/data/Vector3.h>
@@ -118,6 +115,3 @@ private:
 };
 
 } // namespace csp
-
-#endif // __CSPSIM_F16_GROUND_AVOIDANCE_ADVISORY_H__
-

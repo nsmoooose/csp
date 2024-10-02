@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2005 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -21,10 +22,6 @@
  * @file SoundEffect.h
  *
  **/
-
-
-#ifndef __SOUNDEFFECT_H__
-#define __SOUNDEFFECT_H__
 
 #include <csp/csplib/util/Ref.h>
 #include <osg/ref_ptr>
@@ -65,6 +62,3 @@ private:
 };
 
 } // namespace csp
-
-#endif // __SOUNDEFFECT_H__
-

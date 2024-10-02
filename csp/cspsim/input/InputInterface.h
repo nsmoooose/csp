@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2002, 2004 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -33,9 +34,6 @@
  * member instances that implement InputInterface).
  *
  **/
-
-#ifndef __INPUTINTERFACE_H__
-#define __INPUTINTERFACE_H__
 
 #include <csp/cspsim/Export.h>
 #include <csp/cspsim/input/RawEvent.h>
@@ -472,6 +470,3 @@ protected: \
 
 } // namespace input
 } // namespace csp
-
-#endif // __INPUTINTERFACE_H__
-

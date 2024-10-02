@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2005 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -24,9 +25,6 @@
  **/
 
 // TODO if no other resources fit here, rename to SoundBundle and move to csplib/sound?
-
-#ifndef __RESOURCEBUNDLE_H__
-#define __RESOURCEBUNDLE_H__
 
 #include <csp/csplib/data/Link.h>
 #include <csp/csplib/data/Object.h>
@@ -56,6 +54,3 @@ private:
 };
 
 } // namespace csp
-
-#endif // __RESOURCEBUNDLE_H__
-

@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2002-2005 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -21,9 +22,6 @@
  * @file DynamicObject.h
  *
  **/
-
-#ifndef __CSPSIM_DYNAMICOBJECT_H__
-#define __CSPSIM_DYNAMICOBJECT_H__
 
 #include <csp/cspsim/Bus.h>
 #include <csp/cspsim/input/InputInterface.h>
@@ -252,6 +250,3 @@ private:
 };
 
 } // namespace csp
-
-#endif // __CSPSIM_DYNAMICOBJECT_H__
-

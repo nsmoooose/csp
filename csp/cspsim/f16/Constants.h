@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2006 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -21,9 +22,6 @@
  * @file f16/Constants.h
  *
  **/
-
-#ifndef __CSPSIM_F16_CONSTANTS_H__
-#define __CSPSIM_F16_CONSTANTS_H__
 
 #include <csp/csplib/data/Enum.h>
 #include <csp/cspsim/f16/MasterModes.h>
@@ -51,5 +49,3 @@ namespace AirToGround {
 } // namespace f16
 
 } // namespace csp
-
-#endif // __CSPSIM_F16_CONSTANTS_H__

@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2002 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -21,10 +22,6 @@
  * @file DamageModifier.h
  *
  **/
-
-
-#ifndef __CSPSIM_DAMAGEMODIFIER_H__
-#define __CSPSIM_DAMAGEMODIFIER_H__
 
 #include <csp/csplib/data/Object.h>
 
@@ -83,6 +80,3 @@ public:
 };
 
 } // namespace csp
-
-#endif  // __DAMAGEMODIFIER_H__
-

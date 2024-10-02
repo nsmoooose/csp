@@ -1,4 +1,4 @@
-
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2007 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -24,9 +24,6 @@
  **/
 
 // there might be some unneeded includes
-
-#ifndef __CSPSIM_STORES_FUELTANK_H__
-#define __CSPSIM_STORES_FUELTANK_H__
 
 #include <csp/cspsim/stores/Stores.h>
 #include <csp/cspsim/stores/StoresDynamics.h>
@@ -110,7 +107,3 @@ private:
 };
 
 } // namespace csp
-
-#endif // __CSPSIM_STORES_FUELTANK_H__
-
-

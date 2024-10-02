@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2005 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -21,11 +22,6 @@
  * @file SoundEngine.h
  *
  **/
-
-
-#ifndef __SOUNDENGINE_H__
-#define __SOUNDENGINE_H__
-
 
 #include <csp/csplib/util/Namespace.h>
 #include <osg/ref_ptr>
@@ -57,6 +53,3 @@ private:
 };
 
 } // namespace csp
-
-#endif // __SOUNDENGINE_H__
-

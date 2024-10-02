@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2002, 2005 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -21,9 +22,6 @@
  * @file AircraftEngine.h
  *
  **/
-
-#ifndef __CSPSIM_AIRCRAFTENGINE_H__
-#define __CSPSIM_AIRCRAFTENGINE_H__
 
 #include <csp/csplib/data/LUT.h>
 #include <csp/csplib/data/Vector3.h>
@@ -148,6 +146,3 @@ public:
 };
 
 } // namespace csp
-
-#endif // __CSPSIM_AIRCRAFTENGINE_H__
-

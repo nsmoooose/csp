@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2002, 2004 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -21,10 +22,6 @@
  * @file Controller.h
  *
  **/
-
-
-#ifndef __CONTROLLER_H__
-#define __CONTROLLER_H__
 
 #include <csp/cspsim/ChannelMirror.h>
 #include <csp/cspsim/System.h>
@@ -164,6 +161,3 @@ public:
 };
 
 } // namespace csp
-
-#endif // __CONTROLLER_H__
-

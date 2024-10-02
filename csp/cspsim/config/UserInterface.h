@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2005 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -20,9 +21,6 @@
  * @file UserInterface.h
  *
  **/
-
-#ifndef __CSPSIM_CONFIG_USERINTERFACE_H__
-#define __CSPSIM_CONFIG_USERINTERFACE_H__
 
 #include <string>
 #include <vector>
@@ -69,6 +67,3 @@ private:
 
 } // end namespace config
 } // end namespace csp
-
-#endif // __CSPSIM_CONFIG_USERINTERFACE_H__
-

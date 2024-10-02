@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2002 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -21,11 +22,6 @@
  * @file StabilityFlightModel.h
  *
  **/
-
-
-#ifndef __CSPSIM_STABILITYFLIGHTMODEL_H__
-#define __CSPSIM_STABILITYFLIGHTMODEL_H__
-
 
 #include <csp/cspsim/FlightModel.h>
 #include <csp/csplib/data/LUT.h>
@@ -100,6 +96,3 @@ protected:
 };
 
 } // namespace csp
-
-#endif  // __STABILITYFLIGHTMODEL_H__
-

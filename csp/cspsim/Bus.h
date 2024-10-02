@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright 2003, 2004 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -44,9 +45,6 @@
  * @namespace csp::bus
  * @brief Namespace used for data channel identifiers.
  */
-
-#ifndef __CSPSIM_BUS_H__
-#define __CSPSIM_BUS_H__
 
 #include <csp/csplib/util/Log.h>
 #include <csp/csplib/util/Callback.h>
@@ -731,6 +729,3 @@ public:
 };
 
 } // namespace csp
-
-#endif // __CSPSIM_BUS_H__
-

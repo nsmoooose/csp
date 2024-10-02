@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2004-2005 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -21,9 +22,6 @@
  * @file IsoContour.h
  *
  **/
-
-#ifndef __CSPSIM_THEATER_ISOCONTOUR_H__
-#define __CSPSIM_THEATER_ISOCONTOUR_H__
 
 #include <csp/csplib/data/Vector3.h>
 #include <csp/csplib/data/Object.h>
@@ -94,6 +92,3 @@ public:
 };
 
 } // namespace csp
-
-#endif // __CSPSIM_THEATER_ISOCONTOUR_H__
-

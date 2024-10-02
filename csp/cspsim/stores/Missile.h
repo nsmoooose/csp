@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2007 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -21,9 +22,6 @@
  * @file Missile.h
  *
  **/
-
-#ifndef __CSPSIM_STORES_MISSILE_H__
-#define __CSPSIM_STORES_MISSILE_H__
 
 #include <csp/cspsim/stores/Stores.h>
 
@@ -59,5 +57,3 @@ private:
 };
 
 } // namespace csp
-
-#endif // __CSPSIM_STORES_MISSILE_H__

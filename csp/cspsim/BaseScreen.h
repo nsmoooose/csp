@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2002 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -21,9 +22,6 @@
  * @file BaseScreen.h
  *
  **/
-
-#ifndef __CSPSIM_BASESCREEN_H__
-#define __CSPSIM_BASESCREEN_H__
 
 // On Mac OS X, force use of Cocoa as the OpenGL backend
 #ifdef __APPLE__
@@ -58,6 +56,3 @@ protected:
 };
 
 } // namespace csp
-
-#endif // __CSPSIM_BASESCREEN_H__
-

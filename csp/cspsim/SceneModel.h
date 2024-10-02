@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2002-2005 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -21,9 +22,6 @@
  * @file ObjectModel.h
  *
  **/
-
-#ifndef __CSPSIM_SCENEMODEL_H__
-#define __CSPSIM_SCENEMODEL_H__
 
 #include <csp/csplib/data/Vector3.h>
 
@@ -135,6 +133,3 @@ public:
 };
 
 } // namespace csp
-
-#endif // __CSPSIM_SCENEMODEL_H__
-

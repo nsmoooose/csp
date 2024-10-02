@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2002 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -21,10 +22,6 @@
  * @file FeatureObjectModel.h
  *
  **/
-
-
-#ifndef __CSPSIM_THEATER_FEATUREOBJECTMODEL_H__
-#define __CSPSIM_THEATER_FEATUREOBJECTMODEL_H__
 
 #include <csp/cspsim/theater/Feature.h>
 #include <csp/cspsim/theater/FeatureModel.h>
@@ -86,7 +83,3 @@ public:
 };
 
 } // namespace csp
-
-#endif // __CSPSIM_THEATER_FEATUREOBJECTMODEL_H__
-
-

@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2005 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -21,10 +22,6 @@
  * @file CockpitInterface.h
  *
  **/
-
-
-#ifndef __COCKPIT_INTERFACE_H__
-#define __COCKPIT_INTERFACE_H__
 
 #include <csp/cspsim/Bus.h>
 #include <csp/cspsim/input/InputInterface.h>
@@ -99,6 +96,3 @@ private:
 };
 
 } // namespace csp
-
-#endif // __COCKPIT_INTERFACE_H__
-

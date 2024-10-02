@@ -1,5 +1,4 @@
-#ifndef __CSPSIM_CLOUDS_CLOUDTEXTUREFACTORY_H__
-#define __CSPSIM_CLOUDS_CLOUDTEXTUREFACTORY_H__
+#pragma once
 
 #include <csp/cspsim/Export.h>
 #include <osg/ref_ptr>
@@ -34,5 +33,3 @@ private:
 }	// end namespace clouds
 } 	// end namespace weather
 }	// end namespace csp
-
-#endif

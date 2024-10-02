@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2002-2005 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -24,9 +25,6 @@
  * 2D battlefield and theater map.
  *
  **/
-
-#ifndef __CSPSIM_PROJECTION_H__
-#define __CSPSIM_PROJECTION_H__
 
 #include <csp/csplib/data/Vector3.h>
 #include <csp/csplib/util/Math.h>
@@ -128,7 +126,3 @@ public:
 };
 
 } // namespace csp
-
-#endif // __CSPSIM_PROJECTION_H__
-
-

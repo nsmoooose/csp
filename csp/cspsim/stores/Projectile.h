@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2007 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -21,9 +22,6 @@
  * @file Projectile.h
  *
  **/
-
-#ifndef __CSPSIM_STORES_PROJECTILE_H__
-#define __CSPSIM_STORES_PROJECTILE_H__
 
 #include <csp/cspsim/DynamicObject.h>
 
@@ -63,6 +61,3 @@ private:
 };
 
 } // namespace csp
-
-#endif // __CSPSIM_STORES_PROJECTILE_H__
-

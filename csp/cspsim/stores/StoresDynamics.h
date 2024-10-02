@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2007 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -21,10 +22,6 @@
  * @file StoresDynamics.h
  *
  **/
-
-
-#ifndef __CSPSIM_STORESDYNAMICS_H__
-#define __CSPSIM_STORESDYNAMICS_H__
 
 #include <csp/csplib/data/Vector3.h>
 #include <csp/csplib/data/Matrix3.h>
@@ -134,6 +131,3 @@ private:
 };
 
 } // namespace csp
-
-#endif // __CSPSIM_STORESDYNAMICS_H__
-

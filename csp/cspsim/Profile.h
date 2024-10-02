@@ -1,4 +1,4 @@
-
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2002 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -32,9 +32,6 @@
  *
  **/
 
-#ifndef __CSPSIM_PROFILE_H__
-#define __CSPSIM_PROFILE_H__
-
 #include <csp/csplib/util/Log.h>
 #include <csp/csplib/data/Date.h>
 
@@ -51,7 +48,3 @@
 		id##_t = 0; \
 		id##_c = 0; \
 	}
-
-#endif // __CSPSIM_PROFILE_H__
-
-

@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2002-2005 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -21,9 +22,6 @@
  * @file Atmosphere.h
  *
  **/
-
-#ifndef __CSPSIM_ATMOSPHERE_H__
-#define __CSPSIM_ATMOSPHERE_H__
 
 #include <csp/csplib/data/Date.h>
 #include <csp/csplib/data/Object.h>
@@ -188,6 +186,3 @@ inline float Atmosphere::getCAS(double mach, double altitude) const {
 } // end namespace weather
 
 } // namespace csp
-
-#endif // __CSPSIM_ATMOSPHERE_H__
-

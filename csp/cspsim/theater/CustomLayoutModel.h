@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2002 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -21,9 +22,6 @@
  * @file CustomLayoutModel.h
  *
  **/
-
-#ifndef __CSPSIM_THEATER_CUSTOMLAYOUTMODEL_H__
-#define __CSPSIM_THEATER_CUSTOMLAYOUTMODEL_H__
 
 #include <csp/cspsim/theater/FeatureGroupModel.h>
 #include <csp/csplib/data/Link.h>
@@ -70,7 +68,3 @@ public:
 };
 
 } // namespace csp
-
-#endif // __CSPSIM_THEATER_CUSTOMLAYOUTMODEL_H__
-
-

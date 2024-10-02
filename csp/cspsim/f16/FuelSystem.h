@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2005 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -21,9 +22,6 @@
  * @file F16/FuelSystem.h
  *
  **/
-
-#ifndef __CSPSIM_F16_FUELSYSTEM_H__
-#define __CSPSIM_F16_FUELSYSTEM_H__
 
 #include <csp/cspsim/FuelManagementSystem.h>
 
@@ -106,5 +104,3 @@ private:
 
 } // namespace f16
 } // namespace csp
-
-#endif // __CSPSIM_F16_FUELSYSTEM_H__

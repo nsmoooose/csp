@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2006 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -16,10 +17,6 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-
-#ifndef __CSPSIM_AI_DIVERECOVERY_H__
-#define __CSPSIM_AI_DIVERECOVERY_H__
-
 #include <csp/cspsim/ai/AircraftTask.h>
 
 namespace csp {
@@ -36,6 +33,4 @@ private:
 
 } // end namespace ai
 } // end namespace csp
-
-#endif // __CSPSIM_AI_DIVERECOVERY_H__
 

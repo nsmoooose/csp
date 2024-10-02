@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2002 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -21,9 +22,6 @@
  * @file Config.h
  *
  **/
-
-#ifndef __CSPSIM_CONFIG_H__
-#define __CSPSIM_CONFIG_H__
 
 #include <csp/cspsim/Export.h>
 #include <csp/csplib/util/Namespace.h>
@@ -93,7 +91,3 @@ extern CSPSIM_EXPORT std::string getUITheme();
 extern CSPSIM_EXPORT void setUITheme(const std::string& themeName);
 
 } // namespace csp
-
-#endif // __CSPSIM_CONFIG_H__
-
-

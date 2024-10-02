@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2005 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -49,9 +50,6 @@
  *  subclasses could be modified to establish consistent parameters through a
  *  handshake on first connection.
  */
-
-#ifndef __CSPSIM_CHANNEL_MIRROR_H__
-#define __CSPSIM_CHANNEL_MIRROR_H__
 
 #include <csp/csplib/data/Object.h>
 #include <string>
@@ -117,6 +115,3 @@ public:
 void registerChannelMirrorObjects();
 
 } // namespace csp
-
-#endif // __CSPSIM_CHANNEL_MIRROR_H__
-

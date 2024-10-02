@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2005 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -22,10 +23,6 @@
  *
  * TODO Rename DisplayText.h
  **/
-
-
-#ifndef __CSPSIM_HUD_TEXT_H__
-#define __CSPSIM_HUD_TEXT_H__
 
 #include <csp/csplib/util/Namespace.h>
 
@@ -79,6 +76,3 @@ public:
 
 } // end namespace hud
 } // end namespace csp
-
-#endif // __CSPSIM_HUD_TEXT_H__
-

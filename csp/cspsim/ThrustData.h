@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2002, 2005 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -21,9 +22,6 @@
  * @file ThrustData.h
  *
  **/
-
-#ifndef __CSPSIM_THRUSTDATA_H__
-#define __CSPSIM_THRUSTDATA_H__
 
 #include <csp/csplib/data/LUT.h>
 #include <csp/csplib/data/Object.h>
@@ -55,6 +53,3 @@ protected:
 };
 
 } // namespace csp
-
-#endif // __CSPSIM_THRUSTDATA_H__
-

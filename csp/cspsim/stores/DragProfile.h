@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2007 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -21,11 +22,6 @@
  * @file DragProfile.h
  *
  **/
-
-
-#ifndef __CSPSIM_DRAGPROFILE_H__
-#define __CSPSIM_DRAGPROFILE_H__
-
 
 #include <csp/csplib/data/LUT.h>
 #include <csp/csplib/data/Object.h>
@@ -55,6 +51,3 @@ private:
 };
 
 } // namespace csp
-
-#endif // __CSPSIM_DRAGPROFILE_H__
-

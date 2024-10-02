@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2006 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -16,9 +17,6 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-#ifndef __CSP_CSPSIM_SKY_COMMON_H__
-#define __CSP_CSPSIM_SKY_COMMON_H__
-
 #include <csp/csplib/util/Math.h>
 #include <csp/csplib/util/StringTools.h>
 
@@ -35,6 +33,3 @@ inline std::string FormatSiderealTime(double angle) {
 }
 
 } // namespace csp
-
-#endif // __CSP_CSPSIM_SKY_COMMON_H__
-

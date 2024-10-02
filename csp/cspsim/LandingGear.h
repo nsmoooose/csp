@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2002 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -21,10 +22,6 @@
  * @file LandingGear.h
  *
  **/
-
-
-#ifndef __CSPSIM_LANDINGGEAR_H__
-#define __CSPSIM_LANDINGGEAR_H__
 
 #include <csp/cspsim/BaseDynamics.h>
 
@@ -337,6 +334,3 @@ private:
 };
 
 } // namespace csp
-
-#endif // __CSPSIM_LANDINGGEAR_H__
-

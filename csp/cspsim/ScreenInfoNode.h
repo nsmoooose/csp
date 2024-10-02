@@ -1,5 +1,4 @@
-#ifndef __CSPSIM_SCREENINFONODE_H__
-#define __CSPSIM_SCREENINFONODE_H__
+#pragma once
 
 #include <osg/Group>
 
@@ -23,5 +22,3 @@ namespace csp {
 		static void tearDown(osg::Group* scene);
 	};
 }
-
-#endif // __CSPSIM_SCREENINFONODE_H__

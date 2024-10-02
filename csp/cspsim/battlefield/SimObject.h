@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project - FlightSim Demo
 // Copyright (C) 2002 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -21,9 +22,6 @@
  * @file SimObject.h
  *
  **/
-
-#ifndef __CSPSIM_BATTLEFIELD_SIMOBJECT_H__
-#define __CSPSIM_BATTLEFIELD_SIMOBJECT_H__
 
 #include <csp/cspsim/Export.h>
 
@@ -365,6 +363,3 @@ inline std::ostream &operator << (std::ostream &os, SimObject &object) {
 }
 
 } // namespace csp
-
-#endif // __CSPSIM_BATTLEFIELD_SIMOBJECT_H__
-

@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2002-2005 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -21,10 +22,6 @@
  * @file LogoScreen.h
  *
  **/
-
-#ifndef __CSPSIM_LOGOSCREEN_H__
-#define __CSPSIM_LOGOSCREEN_H__
-
 
 #include <csp/cspsim/BaseScreen.h>
 
@@ -59,6 +56,3 @@ private:
 };
 
 } // namespace csp
-
-#endif // __CSPSIM_LOGOSCREEN_H__
-

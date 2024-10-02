@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project - FlightSim Demo
 // Copyright (C) 2004 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -21,9 +22,6 @@
  * @file GlobalBattlefield.h
  *
  **/
-
-#ifndef __CSPSIM_BATTLEFIELD_GLOBALBATTLEFIELD_H__
-#define __CSPSIM_BATTLEFIELD_GLOBALBATTLEFIELD_H__
 
 #include <csp/cspsim/battlefield/SimObject.h>
 #include <csp/cspsim/battlefield/Battlefield.h>
@@ -533,6 +531,3 @@ private:
 };
 
 } // namespace csp
-
-#endif // __CSPSIM_BATTLEFIELD_GLOBALBATTLEFIELD_H__
-

@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2005 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -21,10 +22,6 @@
  * @file GearAnimation.h
  *
  **/
-
-
-#ifndef __CSPSIM_GEAR_ANIMATION_H__
-#define __CSPSIM_GEAR_ANIMATION_H__
 
 #include <csp/cspsim/Bus.h>
 #include <csp/cspsim/AnimationSequence.h>
@@ -173,6 +170,3 @@ public:
 };
 
 } // namespace csp
-
-#endif // __CSPSIM_GEAR_ANIMATION_H__
-

@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright 2003, 2004 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -76,9 +77,6 @@
  * while less demanding systems can request less frequent updates.
  *
  **/
-
-#ifndef __CSPSIM_SYSTEM_H__
-#define __CSPSIM_SYSTEM_H__
 
 #include <csp/cspsim/Bus.h>  /** @todo header file csp/cspsim/Bus.h could be forward declared, but most Bus users will need it in the header anyway. */
 #include <csp/cspsim/input/InputInterface.h>
@@ -341,6 +339,3 @@ private:
 
 
 } // namespace csp
-
-#endif // __CSPSIM_SYSTEM_H__
-

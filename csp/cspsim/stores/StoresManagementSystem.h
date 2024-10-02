@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2007 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -21,10 +22,6 @@
  * @file StoresManagementSystem.h
  *
  **/
-
-
-#ifndef __CSPSIM_STORESMANAGEMENTSYSTEM_H__
-#define __CSPSIM_STORESMANAGEMENTSYSTEM_H__
 
 #include <csp/cspsim/System.h>
 #include <csp/csplib/data/Link.h>
@@ -112,6 +109,3 @@ private:
 };
 
 } // namespace csp
-
-#endif // __CSPSIM_STORESMANAGEMENTSYSTEM_H__
-

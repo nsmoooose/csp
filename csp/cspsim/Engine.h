@@ -1,6 +1,4 @@
-#ifndef __CSPSIM_ENGINE_H__
-#define __CSPSIM_ENGINE_H__
-
+#pragma once
 #include <csp/csplib/data/Object.h>
 #include <csp/csplib/data/Real.h>
 #include <csp/cspsim/Bus.h>
@@ -33,5 +31,3 @@ private:
 };
 
 }
-
-#endif

@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2007 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -20,10 +21,6 @@
  * @file Hardpoint.h
  * @brief classes representing vehicle hardpoints
  **/
-
-
-#ifndef __CSPSIM_STORES_HARDPOINT_H__
-#define __CSPSIM_STORES_HARDPOINT_H__
 
 #include <csp/cspsim/stores/Stores.h>
 #include <csp/cspsim/stores/StoresDynamics.h>
@@ -134,6 +131,3 @@ private:
 };
 
 } // namespace csp
-
-#endif // __CSPSIM_STORES_HARDPOINT_H__
-

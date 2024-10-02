@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2007 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -21,10 +22,6 @@
  * @file StoresDatabase.h
  *
  **/
-
-
-#ifndef __CSPSIM_STORESDATABASE_H__
-#define __CSPSIM_STORESDATABASE_H__
 
 #include <csp/csplib/util/Ref.h>
 #include <csp/csplib/util/Singleton.h>
@@ -127,6 +124,3 @@ private:
 };
 
 } // namespace csp
-
-#endif // __CSPSIM_STOREDATABASE_H__
-

@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2003, 2005 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -23,9 +24,6 @@
  **/
 
 #include <csp/cspsim/Export.h>
-
-#ifndef __CSPSIM_KINETICS_CHANNELS_H__
-#define __CSPSIM_KINETICS_CHANNELS_H__
 
 namespace csp {
 namespace bus {
@@ -53,6 +51,3 @@ struct Kinetics {
 
 } // namespace bus
 } // namespace csp
-
-#endif // __CSPSIM_KINETICS_CHANNELS_H__
-

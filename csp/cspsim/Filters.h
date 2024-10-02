@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2005 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -23,10 +24,6 @@
  * Various digital filters.
  *
  **/
-
-
-#ifndef __CSPSIM_FILTERS_H__
-#define __CSPSIM_FILTERS_H__
 
 #include <csp/csplib/util/Namespace.h>
 
@@ -77,6 +74,3 @@ private:
 };
 
 } // namespace csp
-
-#endif // __CSPSIM_FILTERS_H__
-

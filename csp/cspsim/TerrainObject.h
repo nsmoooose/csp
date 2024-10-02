@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2002 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -25,9 +26,6 @@
  * this interface can be used with CSPSim.
  *
  **/
-
-#ifndef __CSPSIM_TERRAINOBJECT_H__
-#define __CSPSIM_TERRAINOBJECT_H__
 
 #include <csp/cspsim/Export.h>
 #include <csp/csplib/util/Ref.h>
@@ -164,6 +162,3 @@ protected:
 };
 
 } // namespace csp
-
-#endif // __CSPSIM_TERRAINOBJECT_H__
-

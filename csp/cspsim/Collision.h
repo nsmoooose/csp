@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2002 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -21,9 +22,6 @@
  * @file Collision.h
  *
  **/
-
-#ifndef __COLLISION_H__
-#define __COLLISION_H__
 
 #include <csp/cspsim/BaseDynamics.h>
 
@@ -114,6 +112,3 @@ public:
 };
 
 } // namespace csp
-
-#endif // __COLLISION_H__
-

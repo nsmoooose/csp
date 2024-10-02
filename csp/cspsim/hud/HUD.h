@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2005 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -21,10 +22,6 @@
  * @file HUD.h
  *
  **/
-
-
-#ifndef __CSPSIM_HUD_HUD_H__
-#define __CSPSIM_HUD_HUD_H__
 
 #include <csp/cspsim/hud/Display.h>
 #include <csp/cspsim/hud/DisplayTools.h>
@@ -131,5 +128,3 @@ private:
 
 } // end namespace hud
 } // end namespace csp
-
-#endif // __CSPSIM_HUD_HUD_H__

@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2006 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -21,10 +22,6 @@
  * @file AircraftAgent.h
  *
  **/
-
-
-#ifndef __CSPSIM_AI_AIRCRAFTAGENT_H__
-#define __CSPSIM_AI_AIRCRAFTAGENT_H__
 
 #include <csp/cspsim/System.h>
 
@@ -66,6 +63,3 @@ protected:
 
 } // end namespace ai
 } // end namespace csp
-
-#endif // __CSPSIM_AI_AIRCRAFTAGENT_H__
-

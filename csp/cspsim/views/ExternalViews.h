@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2004-2005 The Combat Simulator Project
 // http: //csp.sourceforge.net
@@ -21,9 +22,6 @@
  * @file ExternalViews.h
  *
  **/
-
-#ifndef __CSPSIM_EXTERNAL_VIEWS_H__
-#define __CSPSIM_EXTERNAL_VIEWS_H__
 
 #include <csp/cspsim/views/View.h>
 #include <csp/csplib/data/Vector3.h>
@@ -80,6 +78,3 @@ public:
 };
 
 } // namespace csp
-
-#endif // __CSPSIM_EXTERNAL_VIEWS_H__
-

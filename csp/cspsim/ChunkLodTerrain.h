@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2002 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -21,9 +22,6 @@
  * @file ChunkLodTerrain.h
  *
  **/
-
-#ifndef __CSPSIM_CHUNKLODTERRAIN_H__
-#define __CSPSIM_CHUNKLODTERRAIN_H__
 
 #include <csp/cspsim/TerrainObject.h>
 
@@ -123,6 +121,3 @@ protected:
 };
 
 } // namespace csp
-
-#endif // __CHUNKLODTERRAIN_H__
-

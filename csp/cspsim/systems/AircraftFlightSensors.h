@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2002, 2003 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -21,10 +22,6 @@
  * @file AircraftFlightSensors.h
  *
  **/
-
-
-#ifndef __CSPSIM_SYSTEMS_AIRCRAFTFLIGHTSENSORS_H__
-#define __CSPSIM_SYSTEMS_AIRCRAFTFLIGHTSENSORS_H__
 
 #include <csp/cspsim/System.h>
 #include <csp/csplib/data/Vector3.h>
@@ -59,6 +56,3 @@ private:
 };
 
 } // namespace csp
-
-#endif // __CSPSIM_SYSTEMS_AIRCRAFTFLIGHTSENSORS_H__
-

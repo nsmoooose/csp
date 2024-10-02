@@ -1,5 +1,4 @@
-#ifndef __CSPSIM_SKY_SKYGROUP_H__
-#define __CSPSIM_SKY_SKYGROUP_H__
+#pragma once
 
 #include <osg/Transform>
 
@@ -27,5 +26,3 @@ private:
 };
 
 } // namespace csp
-
-#endif // __CSPSIM_SKY_SKYGROUP_H__

@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2002-2005 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -21,10 +22,6 @@
  * @file F16GearDynamics.h
  *
  **/
-
-
-#ifndef __CSPSIM_F16_GEARDYNAMICS_H__
-#define __CSPSIM_F16_GEARDYNAMICS_H__
 
 #include <csp/cspsim/LandingGear.h>
 #include <csp/csplib/util/Callback.h>
@@ -60,6 +57,3 @@ private:
 };
 
 } // namespace csp
-
-#endif // __CSPSIM_F16_GEARDYNAMICS_H__
-

@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2005 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -21,10 +22,6 @@
  * @file cspsim/sound/Loader.h
  * @brief Base class and registry for loading sound samples.
  **/
-
-
-#ifndef __CSPSIM_SOUND_LOADER_H__
-#define __CSPSIM_SOUND_LOADER_H__
 
 #include <csp/cspsim/Export.h>
 #include <csp/csplib/util/Namespace.h>
@@ -74,6 +71,3 @@ private:
 
 
 } // namespace csp
-
-#endif // __CSPLIB_SOUND_LOADER_H__
-

@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2005 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -21,10 +22,6 @@
  * @file PitchLadder.h
  *
  **/
-
-
-#ifndef __CSPSIM_HUD_PITCHLADDER_H__
-#define __CSPSIM_HUD_PITCHLADDER_H__
 
 #include <csp/cspsim/hud/HUD.h>
 
@@ -84,6 +81,3 @@ private:
 
 } // end namespace hud
 } // end namespace csp
-
-#endif // __CSPSIM_HUD_PITCHLADDER_H__
-

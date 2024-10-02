@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2002 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -21,9 +22,6 @@
  * @file InputInterfaceWfAdapter.h
  *
  **/
-
-#ifndef __CSPSIM_INPUTINTERFACEWFADAPTER_H__
-#define __CSPSIM_INPUTINTERFACEWFADAPTER_H__
 
 #include <map>
 #include <string>
@@ -75,5 +73,3 @@ private:
 
 } // namespace input
 } // namespace csp
-
-#endif // __CSPSIM_INPUTINTERFACEWFADAPTER_H__

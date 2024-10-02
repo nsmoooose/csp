@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2002 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -21,10 +22,6 @@
  * @file EventMapIndex.h
  *
  **/
-
-#ifndef __CSPSIM_EVENTMAPINDEX_H__
-#define __CSPSIM_EVENTMAPINDEX_H__
-
 
 #include <csp/cspsim/input/EventMapping.h>
 
@@ -58,6 +55,3 @@ protected:
 
 } // namespace input
 } // namespace csp
-
-#endif // __CSPSIM_EVENTMAPINDEX_H__
-

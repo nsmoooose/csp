@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2004 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -21,9 +22,6 @@
  * @file CameraCommand.h
  *
  **/
-
-#ifndef __CSPSIM_VIEWS_CAMERACOMMAND_H__
-#define __CSPSIM_VIEWS_CAMERACOMMAND_H__
 
 #include <csp/cspsim/views/CameraKinematics.h>
 
@@ -204,6 +202,3 @@ struct CameraCommands {
 
 
 } // namespace csp
-
-#endif // __CSPSIM_VIEWS_CAMERACOMMAND_H__
-

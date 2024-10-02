@@ -1,6 +1,4 @@
-#ifndef __CSPSIM_F16_F16_INS_H__
-#define __CSPSIM_F16_F16_INS_H__
-
+#pragma once
 #include <csp/csplib/data/Quat.h>
 #include <csp/cspsim/System.h>
 
@@ -28,5 +26,3 @@ protected:
 };
 
 } // namespace csp
-
-#endif // __CSPSIM_F16_F16_INS_H__

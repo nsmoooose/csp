@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2005 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -22,10 +23,6 @@
  *
  * @todo Should stuff such as the ICP be generalized and turned in to a configurable option in XML or Python?
  **/
-
-
-#ifndef __CSPSIM_F16_UP_FRONT_CONTROLS_H__
-#define __CSPSIM_F16_UP_FRONT_CONTROLS_H__
 
 #include <csp/cspsim/f16/DataEntryPage.h>
 #include <csp/cspsim/f16/MasterModes.h>
@@ -118,6 +115,3 @@ private:
 };
 
 } // namespace csp
-
-#endif // __CSPSIM_F16_UP_FRONT_CONTROLS_H__
-

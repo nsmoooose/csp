@@ -1,5 +1,4 @@
-#ifndef __CSPSIM_WEATHER_CLOUDS_CLOUDCOVERMODEL_H__
-#define __CSPSIM_WEATHER_CLOUDS_CLOUDCOVERMODEL_H__
+#pragma once
 
 #include <vector>
 #include <csp/csplib/data/Link.h>
@@ -37,5 +36,3 @@ namespace clouds {
 }
 }
 }
-
-#endif

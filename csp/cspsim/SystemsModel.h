@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2003 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -23,9 +24,6 @@
  * Vehicle systems base classes and infrastructure.
  *
  **/
-
-#ifndef __CSPSIM_SYSTEMSMODEL_H__
-#define __CSPSIM_SYSTEMSMODEL_H__
 
 #include <csp/cspsim/System.h>
 #include <csp/cspsim/PhysicsModel.h>
@@ -134,6 +132,3 @@ private:
 };
 
 } // namespace csp
-
-#endif // __CSPSIM_SYSTEMSMODEL_H__
-

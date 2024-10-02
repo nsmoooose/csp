@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2002 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -26,9 +27,6 @@
  * @namespace csp::fx
  * @brief 3D special effects.
  */
-
-#ifndef __CSPSIM_SMOKEEFFECTS_H__
-#define __CSPSIM_SMOKEEFFECTS_H__
 
 #include <csp/csplib/util/Namespace.h>
 #include <csp/csplib/data/Quat.h>
@@ -212,6 +210,3 @@ protected:
 } // fx
 
 } // namespace csp
-
-#endif // __CSPSIM_SMOKEEFFECTS_H__
-

@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project - FlightSim Demo
 // Copyright (C) 2004 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -21,9 +22,6 @@
  * @file SceneManager.h
  *
  **/
-
-#ifndef __CSPSIM_BATTLEFIELD_SCENEMANAGER_H__
-#define __CSPSIM_BATTLEFIELD_SCENEMANAGER_H__
 
 #include <csp/csplib/util/Ref.h>
 
@@ -115,6 +113,3 @@ private:
 };
 
 } // namespace csp
-
-#endif // __SIMCORE_BATTLEFIELD_SCENEMANAGER_H__
-

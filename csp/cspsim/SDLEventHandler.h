@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2002-2005 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -15,10 +16,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-
-#ifndef __CSPSIM_SDLEVENTHANDLER_H__
-#define __CSPSIM_SDLEVENTHANDLER_H__
-
 #include <osgGA/GUIEventHandler>
 #include <csp/cspsim/input/HID.h>
 
@@ -81,5 +78,3 @@ protected:
 };
 
 }
-
-#endif // __CSPSIM_SDLEVENTHANDLER_H__

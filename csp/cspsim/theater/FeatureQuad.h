@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2002 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -21,10 +22,6 @@
  * @file FeatureQuad.h
  *
  **/
-
-
-#ifndef __CSPSIM_THEATER_FEATUREQUAD_H__
-#define __CSPSIM_THEATER_FEATUREQUAD_H__
 
 #include <csp/csplib/util/Ref.h>
 #include <csp/csplib/data/External.h>
@@ -75,7 +72,3 @@ public:
 };
 
 } // namespace csp
-
-#endif // __CSPSIM_THEATER_FEATUREQUAD_H__
-
-

@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2005 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -21,10 +22,6 @@
  * @file PageLIST.h
  *
  **/
-
-
-#ifndef __CSPSIM_F16_PAGE_LIST_H__
-#define __CSPSIM_F16_PAGE_LIST_H__
 
 #include <csp/cspsim/f16/DataEntryPage.h>
 
@@ -60,6 +57,3 @@ public:
 };
 
 } // namespace csp
-
-#endif // __CSPSIM_F16_PAGE_LIST_H__
-

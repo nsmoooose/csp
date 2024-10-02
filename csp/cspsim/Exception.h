@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2002 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -22,9 +23,6 @@
  *
  **/
 
-#ifndef __CSPSIM_EXCEPTION_H__
-#define __CSPSIM_EXCEPTION_H__
-
 #include <csp/csplib/util/Exception.h>
 
 class DemeterException;
@@ -42,7 +40,3 @@ void DemeterFatalException(DemeterException &e,  std::string const &location);
 void OtherFatalException(std::string const &location);
 
 } // namespace csp
-
-
-#endif // __CSP_EXCEPTION_H__
-

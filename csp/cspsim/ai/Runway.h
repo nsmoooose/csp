@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2006 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -18,9 +19,6 @@
 
 
 // TODO move out of cspsim/ai?
-
-#ifndef __CSPSIM_AI_RUNWAY_H__
-#define __CSPSIM_AI_RUNWAY_H__
 
 #include <csp/csplib/util/Referenced.h>
 #include <csp/csplib/data/Matrix3.h>
@@ -51,6 +49,3 @@ public:
 
 } // end namespace ai
 } // end namespace csp
-
-#endif  // __CSPSIM_AI_RUNWAY_H__
-

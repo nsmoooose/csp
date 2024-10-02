@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2004-2005 The Combat Simulator Project
 // http: //csp.sourceforge.net
@@ -21,9 +22,6 @@
  * @file InternalView.h
  *
  **/
-
-#ifndef __CSPSIM_VIEWS_INTERNALVIEW_H__
-#define __CSPSIM_VIEWS_INTERNALVIEW_H__
 
 #include <csp/cspsim/views/View.h>
 #include <csp/csplib/data/Quat.h>
@@ -86,6 +84,3 @@ private:
 };
 
 } // namespace csp
-
-#endif // __CSPSIM_VIEWS_INTERNALVIEW_H__
-

@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2002, 2003 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -21,10 +22,6 @@
  * @file AircraftSimpleFCS.h
  *
  **/
-
-
-#ifndef __CSPSIM_AIRCRAFTSIMPLEFCS_H__
-#define __CSPSIM_AIRCRAFTSIMPLEFCS_H__
 
 #include <csp/cspsim/System.h>
 #include <csp/csplib/util/ScopedPointer.h>
@@ -70,6 +67,3 @@ private:
 };
 
 } // namespace csp
-
-#endif // __CSPSIM_AICRAFTSIMPLEFCS_H__
-

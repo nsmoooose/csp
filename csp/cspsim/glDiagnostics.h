@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2004 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -21,9 +22,6 @@
  * @file glDiagnostics.h
  *
  **/
-
-#ifndef __CSPSIM_GLDIAGNOSTICS_H__
-#define __CSPSIM_GLDIAGNOSTICS_H__
 
 #include <csp/csplib/util/Namespace.h>
 
@@ -80,5 +78,3 @@ public:
 };
 
 } // namespace csp
-
-#endif // __CSPSIM_GLDIAGNOSTICS_H__

@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2004 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -21,9 +22,6 @@
  * @file IndexServer.h
  *
  **/
-
-#ifndef __CSPSIM_INDEXSERVER_H__
-#define __CSPSIM_INDEXSERVER_H__
 
 #include <csp/csplib/util/Ref.h>
 #include <csp/cspsim/Export.h>
@@ -53,5 +51,3 @@ private:
 };
 
 } // namespace csp
-
-#endif // __CSPSIM_INDEXSERVER_H__

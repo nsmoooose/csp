@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2005 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -21,10 +22,6 @@
  * @file DataEntryPage.h
  *
  **/
-
-
-#ifndef __CSPSIM_F16_DATA_ENTRY_PAGE_H__
-#define __CSPSIM_F16_DATA_ENTRY_PAGE_H__
 
 #include <csp/cspsim/f16/DataEntry.h>
 #include <csp/csplib/util/Callback.h>
@@ -161,6 +158,3 @@ private:
 };
 
 } // namespace csp
-
-#endif // __CSPSIM_F16_DATA_ENTRY_PAGE_H__
-

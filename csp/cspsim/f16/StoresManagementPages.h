@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2006 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -21,10 +22,6 @@
  * @file StoresManagementPages.h
  *
  **/
-
-
-#ifndef __CSPSIM_F16_STORESMANAGEMENTPAGES_H__
-#define __CSPSIM_F16_STORESMANAGEMENTPAGES_H__
 
 #include <csp/cspsim/f16/MultiFunctionDisplay.h>
 #include <map>
@@ -75,6 +72,3 @@ protected:
 } // namespace f16
 
 } // namespace csp
-
-#endif // __CSPSIM_F16_STORESMANAGEMENTPAGES_H__
-

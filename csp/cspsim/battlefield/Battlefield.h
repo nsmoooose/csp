@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project - FlightSim Demo
 // Copyright (C) 2004 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -23,9 +24,6 @@
  * @todo move unitupdateproxy and associated code to localbattlefield.  this may require subclassing unitwrapper in localbattlefield.
  * @todo slow unit refresh for nearby objects; adjust update rates
  **/
-
-#ifndef __CSPSIM_BATTLEFIELD_BATTLEFIELD_H__
-#define __CSPSIM_BATTLEFIELD_BATTLEFIELD_H__
 
 #include <csp/cspsim/battlefield/SimObject.h>
 #include <csp/csplib/util/TimeStamp.h>
@@ -560,7 +558,3 @@ private:
 };
 
 } // namespace csp
-
-#endif // __CSPSIM_BATTLEFIELD_BATTLEFIELD_H__
-
-

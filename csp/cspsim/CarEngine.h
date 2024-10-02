@@ -1,5 +1,4 @@
-#ifndef __CSPSIM_CARENGINE_H__
-#define __CSPSIM_CARENGINE_H__
+#pragma once
 
 #include <csp/cspsim/BaseDynamics.h>
 #include <csp/cspsim/Engine.h>
@@ -33,5 +32,3 @@ protected:
 };
 
 }
-
-#endif

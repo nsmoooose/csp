@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2002-2005 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -21,10 +22,6 @@
  * @file FlightDynamics.h
  *
  **/
-
-
-#ifndef __CSPSIM_FLIGHTDYNAMICS_H__
-#define __CSPSIM_FLIGHTDYNAMICS_H__
 
 #include <csp/csplib/util/Namespace.h>
 #include <csp/cspsim/BaseDynamics.h>
@@ -109,6 +106,3 @@ protected:
 };
 
 } // namespace csp
-
-#endif  // __FLIGHTDYNAMICS_H__
-

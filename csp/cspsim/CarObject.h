@@ -1,5 +1,4 @@
-#ifndef __CSPSIM_CAROBJECT_H__
-#define __CSPSIM_CAROBJECT_H__
+#pragma once
 
 #include <csp/cspsim/DynamicObject.h>
 #include <csp/cspsim/input/HID.h>
@@ -20,5 +19,3 @@ namespace csp {
 	};
 
 } /* namespace csp */
-
-#endif /* __CSPSIM_CAROBJECT_H__ */

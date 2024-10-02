@@ -1,6 +1,4 @@
-#ifndef __CSPSIM_CLOUDS_CLOUDMODEL_H__
-#define __CSPSIM_CLOUDS_CLOUDMODEL_H__
-
+#pragma once
 #include <csp/csplib/data/Link.h>
 #include <csp/csplib/data/Object.h>
 #include <csp/csplib/data/Vector2.h>
@@ -99,5 +97,3 @@ namespace clouds {
 }	// end namespace clouds
 } 	// end namespace weather
 }	// end namespace csp
-
-#endif

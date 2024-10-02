@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2005 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -22,10 +23,6 @@
  *
  * SoundModel manages sounds for a single DynamicObject.
  **/
-
-
-#ifndef __SOUNDMODEL_H__
-#define __SOUNDMODEL_H__
 
 #include <csp/csplib/util/Ref.h>
 #include <csp/csplib/data/Vector3.h>
@@ -99,6 +96,3 @@ private:
 
 
 } // namespace csp
-
-#endif // __SOUNDMODEL_H__
-

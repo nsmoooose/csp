@@ -1,3 +1,4 @@
+#pragma once
 /* Combat Simulator Project
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -21,12 +22,7 @@
 
 #include <csp/cspsim/Export.h>
  
-#ifndef __CSPSIM_REGISTEROBJECTINTERFACES_H__
-#define __CSPSIM_REGISTEROBJECTINTERFACES_H__
-
 namespace csp {
 	/** Register all known objects into the global registry. This makes it possible to serialize and inspect objects. */
 	void CSPSIM_EXPORT registerAllObjectInterfaces();
 } // namespace csp
-
-#endif // __CSPSIM_REGISTEROBJECTINTERFACES_H__

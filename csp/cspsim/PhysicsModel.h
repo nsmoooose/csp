@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2002 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -21,10 +22,6 @@
  * @file PhysicsModel.h
  *
  **/
-
-
-#ifndef __CSPSIM_PHYSICSMODEL_H__
-#define __CSPSIM_PHYSICSMODEL_H__
 
 #include <csp/csplib/data/Matrix3.h>
 #include <csp/csplib/data/Vector3.h>
@@ -169,6 +166,3 @@ private:
 };
 
 } // namespace csp
-
-#endif  // __PHYSICSMODEL_H__
-

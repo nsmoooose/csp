@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2002-2005 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -21,9 +22,6 @@
  * @file ControlNode.h
  *
  **/
-
-#ifndef __CSPSIM_CONTROL_NODE_H__
-#define __CSPSIM_CONTROL_NODE_H__
 
 #include <csp/csplib/util/Math.h>
 #include <csp/csplib/util/Namespace.h>
@@ -183,6 +181,3 @@ private:
 };
 
 } // namespace csp
-
-#endif // __CSPSIM_CONTROL_NODE_H__
-

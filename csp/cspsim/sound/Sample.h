@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2005 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -21,10 +22,6 @@
  * @file cspsim/sound/Sample.h
  * @brief Object class for sound samples and related utilities.
  **/
-
-
-#ifndef __CSPSIM_SOUND_SAMPLE_H__
-#define __CSPSIM_SOUND_SAMPLE_H__
 
 #include <csp/csplib/data/External.h>
 #include <csp/csplib/data/Object.h>
@@ -83,6 +80,3 @@ private:
 
 
 } // namespace csp
-
-#endif // __CSPLIB_SOUND_SAMPLE_H__
-

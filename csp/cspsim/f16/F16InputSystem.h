@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2002-2005 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -23,9 +24,6 @@
  * @todo F16InputSystem is not currently included in the build. Is it still needed?
  **/
 
-#ifndef __CSPSIM_F16_F16INPUTSYSTEM_H__
-#define __CSPSIM_F16_F16INPUTSYSTEM_H__
-
 #include <csp/cspsim/systems/AircraftInputSystem.h>
 
 namespace csp {
@@ -46,6 +44,3 @@ public:
 };
 
 } // namespace csp
-
-#endif // __CSPSIM_F16_F16INPUTSYSTEM_H__
-

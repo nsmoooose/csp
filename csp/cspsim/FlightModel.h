@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2002 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -21,11 +22,6 @@
  * @file FlightModel.h
  *
  **/
-
-
-#ifndef __CSPSIM_FLIGHTMODEL_H__
-#define __CSPSIM_FLIGHTMODEL_H__
-
 
 #include <csp/csplib/util/Namespace.h>
 #include <csp/csplib/util/Math.h>
@@ -140,6 +136,3 @@ protected:
 };
 
 } // namespace csp
-
-#endif // __CSPSIM_FLIGHTMODEL_H__
-

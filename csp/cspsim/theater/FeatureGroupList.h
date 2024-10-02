@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2002 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -21,11 +22,6 @@
  * @file FeatureGroupList.h
  *
  **/
-
-
-#ifndef __CSPSIM_THEATER_FEATUREGROUPLIST_H__
-#define __CSPSIM_THEATER_FEATUREGROUPLIST_H__
-
 
 #include <csp/csplib/data/Path.h>
 #include <csp/csplib/data/Object.h>
@@ -61,7 +57,3 @@ public:
 };
 
 } // namespace csp
-
-#endif // __CSPSIM_THEATER_FEATUREGROUPLIST_H__
-
-

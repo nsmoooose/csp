@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2005 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -21,10 +22,6 @@
  * @file Display.h
  *
  **/
-
-
-#ifndef __CSPSIM_CONFIG_DISPLAY_H__
-#define __CSPSIM_CONFIG_DISPLAY_H__
 
 #include <csp/csplib/util/Ref.h>
 #include <csp/cspsim/Export.h>
@@ -69,6 +66,3 @@ private:
 
 } // end namespace config
 } // end namespace csp
-
-#endif // __CSPSIM_CONFIG_DISPLAY_H__
-

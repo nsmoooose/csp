@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2005 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -21,9 +22,6 @@
  * @file Station.h
  *
  **/
-
-#ifndef __CSPSIM_STATION_H__
-#define __CSPSIM_STATION_H__
 
 #include <csp/csplib/data/Link.h>
 #include <csp/csplib/data/Object.h>
@@ -85,6 +83,3 @@ public:
 };
 
 } // namespace csp
-
-#endif // __CSPSIM_STATION_H__
-

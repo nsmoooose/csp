@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2007 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -21,10 +22,6 @@
  * @file StoresDefinition.h
  *
  **/
-
-
-#ifndef __CSPSIM_STORESDEFINITION_H__
-#define __CSPSIM_STORESDEFINITION_H__
 
 #include <csp/csplib/data/Object.h>
 #include <csp/csplib/data/Link.h>
@@ -71,6 +68,3 @@ private:
 };
 
 } // namespace csp
-
-#endif // __CSPSIM_STORESDEFINITION_H__
-

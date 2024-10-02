@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2002 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -21,9 +22,6 @@
  * @file DataRecorder.h
  *
  **/
-
-#ifndef __CSPSIM_DATARECORDER_H__
-#define __CSPSIM_DATARECORDER_H__
 
 #include <csp/csplib/util/Referenced.h>
 #include <csp/csplib/util/ScopedPointer.h>
@@ -143,6 +141,3 @@ private:
 
 
 } // namespace csp
-
-#endif // __CSPSIM_DATARECORDER_H__
-

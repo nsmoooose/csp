@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2002 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -21,10 +22,6 @@
  * @file RandomForest.h
  *
  **/
-
-
-#ifndef __CSPSIM_THEATER_RANDOMFORESTMODEL_H__
-#define __CSPSIM_THEATER_RANDOMFORESTMODEL_H__
 
 #include <csp/cspsim/theater/Feature.h>
 #include <csp/cspsim/theater/FeatureQuad.h>
@@ -95,7 +92,3 @@ public:
 };
 
 } // namespace csp
-
-#endif // __CSPSIM_THEATER_RANDOMFORESTMODEL_H__
-
-

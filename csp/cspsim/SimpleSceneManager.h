@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2004 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -21,9 +22,6 @@
  * @file SimpleSceneManager.h
  *
  **/
-
-#ifndef __CSPSIM_SIMPLESCENEMANAGER_H__
-#define __CSPSIM_SIMPLESCENEMANAGER_H__
 
 #include <csp/cspsim/battlefield/SceneManager.h>
 
@@ -68,6 +66,3 @@ public:
 };
 
 } // namespace csp
-
-#endif // __CSPSIM_SIMPLESCENEMANAGER_H__
-

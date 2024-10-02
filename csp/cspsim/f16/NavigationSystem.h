@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2005 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -21,10 +22,6 @@
  * @file NavigationSystem.h
  *
  **/
-
-
-#ifndef __CSPSIM_NAVIGATION_SYSTEM_H__
-#define __CSPSIM_NAVIGATION_SYSTEM_H__
 
 #include <csp/cspsim/Projection.h>
 #include <csp/cspsim/System.h>
@@ -57,6 +54,3 @@ protected:
 };
 
 } // namespace csp
-
-#endif // __CSPSIM_NAVIGATION_SYSTEM_H__
-

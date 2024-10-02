@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2002 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -21,9 +22,6 @@
  * @file FeatureGroup.h
  *
  **/
-
-#ifndef __CSPSIM_THEATER_FEATUREGROUP_H__
-#define __CSPSIM_THEATER_FEATUREGROUP_H__
 
 #include <csp/cspsim/theater/Feature.h>
 #include <csp/cspsim/theater/FeatureModel.h>
@@ -133,7 +131,3 @@ public:
 typedef Ref<FeatureGroup> FeatureGroupRef;
 
 } // namespace csp
-
-#endif // __CSPSIM_THEATER_FEATUREGROUP_H__
-
-

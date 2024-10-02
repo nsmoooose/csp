@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2002 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -25,10 +26,6 @@
  * http://www.psc.edu/~burkardt/src/colors/colors.html.
  *
  */
-
-
-#ifndef __CSPSIM_SKY_COLORSPACE_H__
-#define __CSPSIM_SKY_COLORSPACE_H__
 
 #include <csp/csplib/util/Namespace.h>
 #include <iosfwd>
@@ -303,6 +300,3 @@ private:
 };
 
 } // namespace csp
-
-#endif // __CSPSIM_SKY_COLORSPACE_H__
-

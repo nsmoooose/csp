@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2005 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -24,10 +25,6 @@
  * 
  * @TODO generalize this implementation to work with arbitrary triggers and sounds.
  **/
-
-
-#ifndef __F16_VOICEMESSAGEUNIT_H__
-#define __F16_VOICEMESSAGEUNIT_H__
 
 #include <csp/cspsim/System.h>
 
@@ -57,6 +54,3 @@ private:
 
 
 } // namespace csp
-
-#endif // __F16_VOICEMESSAGEUNIT_H__
-

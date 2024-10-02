@@ -1,3 +1,4 @@
+#pragma once
 /* Combat Simulator Project
  * Copyright (C) 2002 Mark Rose <mkrose@users.sf.net>
  *
@@ -21,9 +22,6 @@
  * @file Export.h
  * @brief Macros needed to export/import symbols from shared libraries.
  */
-
-#ifndef __CSPSIM_EXPORT_H__
-#define __CSPSIM_EXPORT_H__
 
 #if defined(_MSC_VER) || defined(__CYGWIN__) || defined(__MINGW32__) || defined( __BCPLUSPLUS__) || defined( __MWERKS__)
 #  ifdef SWIG
@@ -50,7 +48,3 @@
 // 4996, level 1: 'function': was declared deprecated
 #pragma warning (disable : 4786 4251 4290 4996)
 # endif
-
-
-#endif // __CSPSIM_EXPORT_H__
-

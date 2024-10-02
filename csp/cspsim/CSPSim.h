@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2002 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -48,10 +49,6 @@
  * @namespace csp
  * @brief Primary namespace for all internal code (csplib and cspsim).
  */
-
-
-#ifndef __CSPSIM_H__
-#define __CSPSIM_H__
 
 #include <csp/cspsim/Export.h>
 #include <csp/cspsim/SDLViewer.h>
@@ -198,6 +195,3 @@ private:
 };
 
 } // namespace csp
-
-#endif // __CSPSIM_H__
-

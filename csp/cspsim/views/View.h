@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2004 The Combat Simulator Project
 // http: //csp.sourceforge.net
@@ -21,9 +22,6 @@
  * @file View.h
  *
  **/
-
-#ifndef __CSPSIM_VIEWS_VIEW_H__
-#define __CSPSIM_VIEWS_VIEW_H__
 
 #include <csp/csplib/util/Ref.h>
 #include <csp/csplib/util/ScopedPointer.h>
@@ -92,6 +90,3 @@ public:
 };
 
 } // namespace csp
-
-#endif // __CSPSIM_VIEWS_VIEW_H__
-

@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2006 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -21,9 +22,6 @@
 // OpenSceneGraph Public License, version 0.0.  All code in this file,
 // including portions adapted from OpenSceneGraph, is licensed under
 // the GNU General Public License.
-
-#ifndef __CSPSIM_STATESTACK_H__
-#define __CSPSIM_STATESTACK_H__
 
 #include <csp/csplib/util/Namespace.h>
 
@@ -192,6 +190,3 @@ private:
 };
 
 } // namespace csp
-
-#endif  // __CSPSIM_STATESTACK_H__
-

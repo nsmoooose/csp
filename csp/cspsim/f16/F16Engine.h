@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2005 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -21,10 +22,6 @@
  * @file F16Engine.h
  *
  **/
-
-
-#ifndef __CSPSIM_F16_F16ENGINE_H__
-#define __CSPSIM_F16_F16ENGINE_H__
 
 #include <csp/cspsim/AircraftEngine.h>
 #include <csp/cspsim/FuelManagementSystem.h>  /** @todo only need FuelManagementInterface */
@@ -136,6 +133,3 @@ private:
 };
 
 } // namespace csp
-
-#endif // __CSPSIM_F16_F16ENGINE_H__
-

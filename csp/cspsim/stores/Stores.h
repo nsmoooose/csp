@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2007 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -24,10 +25,6 @@
  **/
 
 // TODO(OS) add more documentation.
-
-#ifndef __CSPSIM_STORES_STORES_H__
-#define __CSPSIM_STORES_STORES_H__
-
 
 #include <csp/csplib/data/Key.h>
 #include <csp/csplib/data/Link.h>
@@ -409,6 +406,3 @@ inline Key Store::key() const { return data()->key(); }
 inline std::string const &Store::name() const { return data()->name(); }
 
 } // namespace csp
-
-#endif // __CSPSIM_STORES_STORES_H__
-

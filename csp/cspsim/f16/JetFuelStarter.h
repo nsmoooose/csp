@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2005 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -21,10 +22,6 @@
  * @file JetFuelStarter.h
  *
  **/
-
-
-#ifndef __JETFUELSTARTER_H__
-#define __JETFUELSTARTER_H__
 
 #include <csp/csplib/data/Object.h>
 
@@ -68,6 +65,3 @@ private:
 };
 
 } // namespace csp
-
-#endif // __JETFUELSTARTER_H__
-

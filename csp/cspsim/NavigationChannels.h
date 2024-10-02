@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2003-2005 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -22,10 +23,6 @@
  *
  **/
 
-
-#ifndef __CSPSIM_NAVIGATION_CHANNELS_H__
-#define __CSPSIM_NAVIGATION_CHANNELS_H__
-
 #include <csp/csplib/util/Namespace.h>
 
 namespace csp {
@@ -39,6 +36,3 @@ struct Navigation {
 } // namespace bus
 
 } // namespace csp
-
-#endif // __CSPSIM_NAVIGATION_CHANNELS_H__
-

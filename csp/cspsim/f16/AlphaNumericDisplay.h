@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2005 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -21,10 +22,6 @@
  * @file AlphaNumericDisplay.h
  *
  **/
-
-
-#ifndef __CSPSIM_F16_ALPHA_NUMERIC_DISPLAY_H__
-#define __CSPSIM_F16_ALPHA_NUMERIC_DISPLAY_H__
 
 #include <csp/csplib/util/Ref.h>
 #include <cstdio>
@@ -72,6 +69,3 @@ private:
 };
 
 } // namespace csp
-
-#endif // __CSPSIM_F16_ALPHA_NUMERIC_DISPLAY_H__
-

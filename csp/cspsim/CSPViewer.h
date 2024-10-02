@@ -1,6 +1,4 @@
-#ifndef __CSPSIM_CSPVIEWER_H__
-#define __CSPSIM_CSPVIEWER_H__
-
+#pragma once
 #include <csp/cspsim/Export.h>
 
 namespace osg {
@@ -49,5 +47,3 @@ namespace csp {
 		osg::ref_ptr<osgViewer::Viewer> m_Viewer;
 	}; 
 } // namespace csp
-
-#endif /* __CSPSIM_CSPVIEWER_H__ */

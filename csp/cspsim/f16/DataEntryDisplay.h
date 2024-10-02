@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2005 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -21,10 +22,6 @@
  * @file DataEntryDisplay.h
  *
  **/
-
-
-#ifndef __CSPSIM_F16_DATAENTRYDISPLAY_H__
-#define __CSPSIM_F16_DATAENTRYDISPLAY_H__
 
 #include <csp/cspsim/System.h>
 #include <csp/cspsim/hud/Display.h>
@@ -69,6 +66,3 @@ private:
 };
 
 } // end namespace csp
-
-#endif // __CSPSIM_F16_MULTIFUNCTIONDISPLAY_H__
-

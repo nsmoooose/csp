@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2005 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -22,10 +23,6 @@
  *
  **/
 
-
-#ifndef __CSPSIM_F16_F16CHANNELS_H__
-#define __CSPSIM_F16_F16CHANNELS_H__
-
 #include <csp/csplib/util/Namespace.h>
 
 namespace csp {
@@ -49,6 +46,3 @@ struct F16 {
 } // namespace bus
 
 } // namespace csp
-
-#endif // __CSPSIM_F16CHANNELS_H__
-

@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2002-2005 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -22,9 +23,6 @@
  *
  * Classes for driving 3D animations.
  **/
-
-#ifndef __CSPSIM_ANIMATION_H__
-#define __CSPSIM_ANIMATION_H__
 
 #include <csp/csplib/data/Object.h>
 #include <osg/NodeCallback>
@@ -124,6 +122,3 @@ private:
 	void registerAnimationObjects();
 
 } // namespace csp
-
-#endif // __CSPSIM_ANIMATION_H__
-

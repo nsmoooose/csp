@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2002 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -21,9 +22,6 @@
  * @file GameScreen.h
  *
  **/
-
-#ifndef __CSPSIM_GAMESCREEN_H__
-#define __CSPSIM_GAMESCREEN_H__
 
 #include <csp/cspsim/BaseScreen.h>
 #include <csp/cspsim/input/InputInterfaceWfAdapter.h>
@@ -202,6 +200,3 @@ private:
 };
 
 } // namespace csp
-
-#endif // __CSPSIM_GAMESCREEN_H__
-

@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2002-2005 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -21,10 +22,6 @@
  * @file AircraftObject.h
  *
  **/
-
-
-#ifndef __CSPSIM_AIRCRAFTOBJECT_H__
-#define __CSPSIM_AIRCRAFTOBJECT_H__
 
 #include <csp/cspsim/DynamicObject.h>
 #include <csp/cspsim/input/HID.h>
@@ -85,6 +82,3 @@ protected:
 };
 
 } // namespace csp
-
-#endif // __CSPSIM_AIRCRAFTOBJECT_H__
-

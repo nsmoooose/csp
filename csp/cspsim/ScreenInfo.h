@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2002 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -21,10 +22,6 @@
  * @file ScreenInfo.h
  *
  **/
-
-
-#ifndef __CSPSIM_SCREENINFO_H__
-#define __CSPSIM_SCREENINFO_H__
 
 #include <csp/csplib/util/Ref.h>
 
@@ -109,6 +106,3 @@ protected:
 };
 
 } // namespace csp
-
-#endif  // __SCREENINFO_H__
-

@@ -1,4 +1,4 @@
-
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2007 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -22,9 +22,6 @@
  * @file Rack.h
  *
  **/
-
-#ifndef __CSPSIM_STORES_RACK_H__
-#define __CSPSIM_STORES_RACK_H__
 
 #include <csp/cspsim/stores/StoresDynamics.h>
 #include <csp/cspsim/stores/Stores.h>
@@ -219,6 +216,3 @@ private:
 	Store::RefT *m_Children;
 };
 } // namespace csp
-
-#endif // __CSPSIM_STORES_RACK_H__
-

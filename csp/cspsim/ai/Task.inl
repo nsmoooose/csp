@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2006 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -15,10 +16,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-
-
-#ifndef __CSPSIM_AI_TASK_INL__
-#define __CSPSIM_AI_TASK_INL__
 
 #include <csp/cspsim/ai/Task.h>
 #include <csp/csplib/util/Signal.h>
@@ -41,6 +38,3 @@ void Task::override(Task *task, void (CLASS::*method)(Status)) {
 
 } // end namespace ai
 } // end namespace csp
-
-#endif // __CSPSIM_AI_TASK_INL__
-

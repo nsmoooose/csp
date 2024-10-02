@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2002 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -26,10 +27,6 @@
  * used to organize and manage this data.
  *
  **/
-
-
-#ifndef __CSPSIM_THEATER_H__
-#define __CSPSIM_THEATER_H__
 
 #include <csp/cspsim/theater/FeatureGroupList.h>
 
@@ -76,7 +73,3 @@ public:
 };
 
 } // namespace csp
-
-#endif // __CSPSIM_THEATER_H__
-
-

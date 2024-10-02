@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2005 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -26,9 +27,6 @@
  * @namespace csp::f16
  * @brief F16 systems implementation.
  */
-
-#ifndef __CSPSIM_F16_F16SYSTEM_H__
-#define __CSPSIM_F16_F16SYSTEM_H__
 
 #include <csp/cspsim/f16/Constants.h>
 #include <csp/cspsim/f16/NavigationSystem.h>
@@ -151,6 +149,3 @@ protected:
 };
 
 } // namespace csp
-
-#endif // __CSPSIM_F16_F16SYSTEM_H__
-

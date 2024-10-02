@@ -1,3 +1,4 @@
+#pragma once
 // Combat Simulator Project
 // Copyright (C) 2005 The Combat Simulator Project
 // http://csp.sourceforge.net
@@ -27,9 +28,6 @@
  * of the original glyph.
  *
  **/
-
-#ifndef __CSPSIM_F16_SPECIAL_FONTS__
-#define __CSPSIM_F16_SPECIAL_FONTS__
 
 #include <csp/csplib/util/Namespace.h>
 
@@ -91,6 +89,3 @@ private:
 };
 
 } // namespace csp
-
-#endif // __SPECIAL_FONTS__
-

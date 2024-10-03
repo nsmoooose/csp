@@ -52,7 +52,7 @@ CSP_XML_END
 
 template<class T>
 T FindCorrectLevel(std::vector<float>& limits, std::vector<T>& values, float value) {
-	T default_value;
+	T default_value = values.at(0);
 
 	for(typename std::vector<float>::size_type index = 0;index < limits.size();++index) {
 		if(value >= limits.at(index)) {

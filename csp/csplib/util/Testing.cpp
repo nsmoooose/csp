@@ -230,15 +230,18 @@ bool TestRunner::_runTest(Test const &test, TestReporter::Log *log) {
 }
 
 
-TestLogEntry::~TestLogEntry() {
-	LogStream::LogEntry(CSPLOG_, CSPLOG_PRIORITY(ERROR), _filename, _linenum) << _buffer.get();
-	TestCase::AddMessage(stringprintf("%s:%d %s", _filename, _linenum, _buffer.get()));
+void TestLogEntry::check() {
 	switch (_mode) {
 		case PASS: throw PassTest();
 		case FAIL: throw FailTest();
 		case SOFTFAIL: TestCase::Fail();
 		default: break;
 	}
+}
+
+TestLogEntry::~TestLogEntry() {
+	LogStream::LogEntry(CSPLOG_, CSPLOG_PRIORITY(ERROR), _filename, _linenum) << _buffer.get();
+	TestCase::AddMessage(stringprintf("%s:%d %s", _filename, _linenum, _buffer.get()));
 }
 
 void TestReporter::Log::add(std::string const &fixture_name, std::string const &testcase_name, bool success) {

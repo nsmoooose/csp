@@ -262,6 +262,8 @@ public:
 	~TestLogEntry();
 	template <typename T> TestLogEntry & operator<<(T const& x) { _buffer << x; return *this; }
 	template <typename T> TestLogEntry & operator<<(T& (*formatter)(T&)) { _buffer << formatter; return *this; }
+
+	void check();
 private:
 	LogStream::LogEntry::BufferStream _buffer;
 	const char *_filename;
@@ -271,10 +273,19 @@ private:
 
 #define CSP_TEST__(A, B, OP, MODE) \
 	if (CSP(test::TestResult) result = CSP(test::TestResult)(A, B, OP, #A, #B)); \
-    else CSP(test::TestLogEntry)(__FILE__, __LINE__, CSP(test::TestLogEntry)::MODE) << result.msg() << " "
+	else { \
+		auto entry = CSP(test::TestLogEntry)(__FILE__, __LINE__, CSP(test::TestLogEntry)::MODE); \
+		entry << result.msg() << " "; \
+		entry.check(); \
+	}
 
 #define CSP_TEST_U__(A, MODE) \
-	if (A); else CSP(test::TestLogEntry)(__FILE__, __LINE__, CSP(test::TestLogEntry)::MODE) << "TEST FAILED (" #A ") "
+	if (A); \
+	else { \
+		auto entry = CSP(test::TestLogEntry)(__FILE__, __LINE__, CSP(test::TestLogEntry)::MODE); \
+		entry << "TEST FAILED (" #A ") "; \
+		entry.check(); \
+	}
 
 #define CSP_ENSURE(A) CSP_TEST_U__(A, FAIL)
 #define CSP_ENSURE_TRUE(A) CSP_TEST_U__(A, FAIL)

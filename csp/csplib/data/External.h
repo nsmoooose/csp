@@ -42,6 +42,7 @@ protected:
 public: // BaseType
 	External();
 	External(const char* data);
+	External(const External&) = default;
 
 	/// String representation.
 	std::string asString() const;

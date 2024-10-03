@@ -53,10 +53,10 @@ CSP_XML_END
 
 osg::Geometry *FeatureQuad::makeGeometry() const {
 	float vv[][3] = {
-		{ m_Width*(m_OffsetX-0.5), 0.0, m_Height*(m_OffsetY-0.5) },
-		{ m_Width*(m_OffsetX+0.5), 0.0, m_Height*(m_OffsetY-0.5) },
-		{ m_Width*(m_OffsetX+0.5), 0.0, m_Height*(m_OffsetY+0.5) },
-		{ m_Width*(m_OffsetX-0.5), 0.0, m_Height*(m_OffsetY+0.5) },
+		{ m_Width*(m_OffsetX-0.5f), 0.0, m_Height*(m_OffsetY-0.5f) },
+		{ m_Width*(m_OffsetX+0.5f), 0.0, m_Height*(m_OffsetY-0.5f) },
+		{ m_Width*(m_OffsetX+0.5f), 0.0, m_Height*(m_OffsetY+0.5f) },
+		{ m_Width*(m_OffsetX-0.5f), 0.0, m_Height*(m_OffsetY+0.5f) },
 	};
 
 	osg::Vec3Array& v = *(new osg::Vec3Array(4));

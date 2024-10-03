@@ -22,13 +22,13 @@
 osg::Geometry *csp::layout::Handle::makeDiamond(osg::Vec4 const &color, osg::Vec3 const &pos, float size) {
 	float vv[][3] =
 	{
-		{   0.0,   0.0,  size * 0.8164966 },
+		{   0.0,   0.0,  size * 0.8164966f },
 		{  size,   0.0,   0.0 },
 		{   0.0,  size,   0.0 },
 		{ -size,   0.0,   0.0 },
 		{   0.0, -size,   0.0 },
 		{  size,   0.0,   0.0 },
-		{   0.0,   0.0, -size * 0.8164966 },
+		{   0.0,   0.0, -size * 0.8164966f },
 		{  size,   0.0,   0.0 },
 		{   0.0, -size,   0.0 },
 		{ -size,   0.0,   0.0 },

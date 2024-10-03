@@ -234,7 +234,7 @@ Color SkyShader::SkyColor(float elevation, float azimuth, float &intensity) {
 	if (m_Dirty) _computeBase();
 	float theta = static_cast<float>( 0.5*PI - elevation );
 	float A = azimuth + m_AzimuthCorrection;
-	float v[3] = {sin(A)*sin(theta), cos(A)*sin(theta), cos(theta)};
+	float v[3] = {(float)(sin(A)*sin(theta)), (float)(cos(A)*sin(theta)), (float)cos(theta)};
 	float dot = v[0]*m_SunVector[0]+v[1]*m_SunVector[1]+v[2]*m_SunVector[2];
 	// numerical error can cause abs(dot) to exceed 1...
 	if (dot < -1.0f) dot = -1.0f; else

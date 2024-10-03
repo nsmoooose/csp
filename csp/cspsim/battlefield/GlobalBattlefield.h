@@ -329,7 +329,6 @@ private:
 		UnitWrapper *wrapper = findUnitWrapper(msg->unit_id());
 		if (wrapper) {
 			CSPLOG(INFO, BATTLEFIELD) << "unit moved " << *(wrapper->unit());
-			GridPoint old_position = wrapper->point();
 			GridPoint new_position(msg->grid_x(), msg->grid_y());
 			updatePosition(wrapper, new_position);
 		} else {
@@ -359,7 +358,6 @@ private:
 		Ref<UnitContact> unit = new UnitContact(static_cast<SimObject::TypeId>(msg->unit_type()), msg->unit_class(), unit_id);
 		wrapper = new ContactWrapper(unit, owner);
 		addUnit(wrapper);
-		GridPoint old_position = wrapper->point();
 		GridPoint new_position(msg->grid_x(), msg->grid_y());
 		updatePosition(wrapper, new_position);
 		m_ClientData[owner].units.insert(unit_id);

@@ -25,12 +25,11 @@
 
 #include <csp/csplib/util/Export.h>
 #include <csp/csplib/util/Uniform.h>
-#include <csp/csplib/util/hash_map.h>
 #include <csp/csplib/util/Namespace.h>
 
 #include <iosfwd>
 #include <string>
-
+#include <unordered_map>
 
 namespace csp {
 
@@ -197,7 +196,7 @@ template <> struct Less<const char*> {
 };
 
 template <class C> struct Hash {
-	std::size_t operator()(const C& __x) const { return CSP_HASH<C>()(__x); }
+	std::size_t operator()(const C& __x) const { return std::hash<C>()(__x); }
 };
 
 template <> struct Hash<int64> {
@@ -213,12 +212,14 @@ template <> struct Hash<hasht> {
 };
 
 template <> struct Hash<std::string> {
-	std::size_t operator()(const std::string& __x) const { return CSP_HASH<const char*>()(__x.c_str()); }
+	std::size_t operator()(const std::string& __x) const {
+		return std::hash<std::string>()(__x);
+	}
 };
 
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1300)
-template<class C> struct HashCompare: public CSP_HASH<C> {
+template<class C> struct HashCompare: public std::hash<C> {
 	inline std::size_t operator()(C const &x) const { return Hash<C>()(x); }
 	inline bool operator()(C const &x, C const &y) const { return Less<C>()(x, y); }
 };
@@ -234,9 +235,9 @@ template<class C> struct HashCompare {
  */
 template <class key, class val, class cmp = HashCompare<key> > struct HashMap {
 #if defined(_MSC_VER) && (_MSC_VER >= 1300)
-	typedef CSP_HASHMAP<key, val, cmp> Type;
+	typedef std::unordered_map<key, val, cmp> Type;
 #else
-	typedef CSP_HASHMAP<key, val, cmp, cmp> Type;
+	typedef std::unordered_map<key, val, cmp, cmp> Type;
 #endif
 };
 

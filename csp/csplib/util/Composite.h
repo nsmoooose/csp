@@ -27,6 +27,7 @@
 
 #include <csp/csplib/util/Ref.h>
 #include <csp/csplib/util/Log.h>
+#include <algorithm>
 #include <vector>
 
 

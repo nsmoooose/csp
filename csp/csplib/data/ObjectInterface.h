@@ -27,7 +27,6 @@
 #include <csp/csplib/data/Archive.h>
 #include <csp/csplib/data/Link.h>
 #include <csp/csplib/data/TypeAdapter.h>
-#include <csp/csplib/util/hash_map.h>
 #include <csp/csplib/util/HashUtility.h>
 #include <csp/csplib/util/Namespace.h>
 

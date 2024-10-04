@@ -204,7 +204,7 @@ private:
  */
 class CSPSIM_EXPORT InputInterfaceDispatch {
 private:
-	typedef HashMap<const char*, EventAdapter*>::Type EventHandlerMap;
+	typedef HashMap<std::string, EventAdapter*>::Type EventHandlerMap;
 
 	// a map from string event identifiers to the corresponding handler adapters.  the
 	// adapters are allocated during construction, and freed when this instance is destroyed.

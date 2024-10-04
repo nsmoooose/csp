@@ -180,7 +180,6 @@ build.SourceGroup(expenv,
 		'util/Version.h',
 		'util/WeakReferenced.cpp',
 		'util/WeakReferenced.h',
-		'util/hash_map.h',
 		'util/osg.h',
 
 		'xml/XmlParser.cpp',

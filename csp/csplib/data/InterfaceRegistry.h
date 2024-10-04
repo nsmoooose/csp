@@ -99,7 +99,7 @@ private:
 
 	InterfaceRegistry();
 	
-	typedef HashMap<const char*, InterfaceProxy*>::Type proxy_map;
+	typedef HashMap<std::string, InterfaceProxy*>::Type proxy_map;
 	typedef HashMap<hasht, InterfaceProxy*>::Type proxy_id_map;
 
 	proxy_map __map;

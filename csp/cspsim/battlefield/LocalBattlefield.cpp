@@ -602,7 +602,7 @@ void LocalBattlefield::__test__addLocalHumanUnit(Unit const &unit, bool human) {
 		Ref<RegisterUnit> msg = new RegisterUnit();
 		msg->set_unit_id(unit->id());
 		msg->set_unit_class(unit->getObjectPath());
-		msg->set_unit_type(static_cast<const uint8>(unit->type()));
+		msg->set_unit_type(static_cast<uint8>(unit->type()));
 		msg->set_grid_x(wrapper->point().x());
 		msg->set_grid_y(wrapper->point().y());
 		sendServerCommand(msg);

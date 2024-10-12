@@ -84,7 +84,7 @@ def configureEnvironment():
 
 def checkData():
     """Spot check some of the data to detect common problems."""
-    DATA = os.path.join('..', 'data')
+    DATA = os.path.join(csp.dir, 'data')
     checks = (
         ('xml', 'theater', 'balkan.xml'),
         ('terrain', 'balkanMapElev.11-9.bmp'),
@@ -131,7 +131,7 @@ def findConfig(ini, prefer=None, report=1):
     """Find and open the cspsim.ini file, searching several standard locations."""
     if prefer is not None and os.path.exists(prefer):
         return prefer
-    paths = ['.', '~/.cspsim', '/etc/cspsim']
+    paths = ['.', os.path.join(csp.dir, 'bin'), '~/.cspsim', '/etc/cspsim']
     searched = []
     for path in paths:
         path = os.path.expanduser(os.path.join(path, ini))
@@ -220,7 +220,7 @@ def loadExtensionModules():
     }.get(os.name, '')
 
     for module in modules:
-        module_path = os.path.join('..', 'modules', module, '.bin', prefix + module) + extension
+        module_path = os.path.join(csp.dir, 'modules', module, '.bin', prefix + module) + extension
 
         # for windows demos, the modules are instead placed in the current directory.
         # TODO move them to ../modules/*.dll?
@@ -365,7 +365,7 @@ if __name__ == '__main__':
 
     import csp.base.app
     csp.base.app.addOption('--ini', metavar='INIFILE', default=None, help='specify the .ini file path')
-    csp.base.app.addOption('--xml', metavar='XMLPATH', default='../data/xml', help='specify the xml data path')
+    csp.base.app.addOption('--xml', metavar='XMLPATH', default=os.path.join(csp.dir, 'data/xml'), help='specify the xml data path')
     csp.base.app.addOption('-c', '--compile', action='store_true', default=False, help='compile the data archive')
     csp.base.app.addOption('-r', '--rebuild', action='store_true', default=False, help='rebuilde the data archive')
     csp.base.app.addOption('--logpri', metavar='LEVEL', default=None, help='set log priority level (e.g, "info")')

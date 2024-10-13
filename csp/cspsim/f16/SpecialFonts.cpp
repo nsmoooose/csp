@@ -156,7 +156,7 @@ osgText::Glyph* ReverseAltFont::getGlyph(const osgText::FontResolution& fontRes,
 			int source_width = normal->s();
 			int source_height = normal->t();
 
-			osgText::Glyph::TextureInfo const *tinfo = reference->getTextureInfo(osgText::NO_TEXT_SHADER);
+			osgText::Glyph::TextureInfo const *tinfo = reference->getTextureInfo(osgText::GREYSCALE);
 
 			// the new glyph should fit the full character cell.  we expand the horizontal dimensions slightly
 			// to compensate for texture blending at the edges of the glyph that might otherwise cause a gap

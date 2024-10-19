@@ -1,6 +1,6 @@
 #include <osgGA/GUIEventAdapter>
 #include <osgViewer/Viewer>
-#include <SDL/SDL.h>
+#include <SDL2/SDL.h>
 #include "SDLViewer.h"
 
 bool convertEvent(SDL_Event& event, osgGA::EventQueue& eventQueue)
@@ -79,7 +79,6 @@ void SDLViewer::initialize() {
 		exit(1);
 	}
 	SDL_WM_SetCaption("CSP example application", "");
-    SDL_EnableUNICODE(1);
 
     m_GraphicsWindow = m_Viewer.setUpViewerAsEmbeddedInWindow(0, 0, 800, 600);
     m_Viewer.realize();

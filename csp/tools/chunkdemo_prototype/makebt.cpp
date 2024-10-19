@@ -9,7 +9,7 @@
 
 #include <stdlib.h>
 #include <png.h>
-#include <SDL/SDL.h>
+#include <SDL2/SDL.h>
 #include "engine/utility.h"
 
 

@@ -13,7 +13,7 @@
 extern "C" {
 #include <jpeglib.h>
 }
-#include <SDL/SDL.h>
+#include <SDL2/SDL.h>
 
 
 namespace jpeg

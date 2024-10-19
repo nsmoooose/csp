@@ -23,7 +23,8 @@
  **/
 
 #include <sstream>
-#include <SDL/SDL.h>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_video.h>
 #include <csp/cspsim/config/Display.h>
 
 namespace csp {
@@ -74,6 +75,30 @@ void Display::setClouds(bool clouds) {
 StringVector Display::enumerateDisplayModes() {
 	StringVector displayModes;
 
+	auto window = SDL_GL_GetCurrentWindow();
+	if(!window) {
+		return displayModes;
+	}
+	auto display_index = SDL_GetWindowDisplayIndex(window);
+	auto mode_count = SDL_GetNumDisplayModes(display_index);
+	for(int i = 0; i < mode_count; ++i) {
+		SDL_DisplayMode mode;
+		if(SDL_GetDisplayMode(display_index, i, &mode) != 0) {
+			// Failed
+			continue;
+		}
+
+		if(mode.w < 640 || mode.h < 480) {
+			continue;
+		}
+
+		std::stringstream textStream;
+		textStream << mode.w << 'x' << mode.h;
+		displayModes.push_back(textStream.str());
+	}
+	return displayModes;
+
+#if 0
 	/* Get available fullscreen/hardware modes */
 	Uint32 flags = SDL_OPENGL | SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_FULLSCREEN;
 	SDL_Rect **modes=SDL_ListModes(NULL, flags);
@@ -96,6 +121,7 @@ StringVector Display::enumerateDisplayModes() {
 		}
 	}
 	return displayModes;
+#endif
 }
 
 } // end namespace config

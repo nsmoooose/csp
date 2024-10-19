@@ -10,8 +10,8 @@
 #include "engine/utility.h"
 #include "engine/jpeg.h"
 #include "engine/dlmalloc.h"
-#include <SDL/SDL.h>
-#include <SDL/SDL_endian.h>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_endian.h>
 #include <stdlib.h>
 
 

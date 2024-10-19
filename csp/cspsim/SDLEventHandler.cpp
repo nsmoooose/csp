@@ -19,7 +19,7 @@
 #include <csp/cspsim/SDLEventHandler.h>
 #include <csp/cspsim/CSPSim.h>
 #include <csp/cspsim/BaseScreen.h>
-#include <SDL/SDL.h>
+#include <SDL2/SDL.h>
 
 namespace csp {
 

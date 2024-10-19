@@ -110,7 +110,7 @@ build.ExternalLibrary(
 build.ExternalLibrary(
 	name = 'sdl',
 	config = [
-		build.CommandConfig(package='sdl', version_command='sdl-config --version', flags_command='sdl-config --cflags --libs', version='1.2.5', label='sdl'),
+		build.CommandConfig(package='sdl2', version_command='sdl2-config --version', flags_command='sdl2-config --cflags --libs', version='2.30', label='sdl'),
 		build.DevpackConfig(dlls=['SDL'], headers=[('SDL', 'SDL_mouse.h')]),
 	])
 

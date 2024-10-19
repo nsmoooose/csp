@@ -1,5 +1,3 @@
-#!/usr/bin/python
-
 # Combat Simulator Project
 # Copyright (C) 2002-2005 The Combat Simulator Project
 # http://csp.sourceforge.net
@@ -30,25 +28,25 @@ class Help(csp.cspsim.Window, SlotManager):
     def __init__(self):
         csp.cspsim.Window.__init__(self)
         SlotManager.__init__(self)
-        
+
         # Install the move window event handler.
         self.moveEventHandler = csp.cspsim.ControlMoveEventHandler(self)
 
-        self.topics = {'${help_welcome}' : 'index.xml', 
+        self.topics = {'${help_welcome}' : 'index.xml',
                        '${help_f16_first_steps}' : 'f16_first_steps.xml',
                        '${help_keyboard_aircraft}' : 'aircraft_controls.xml',
                        '${help_keyboard_view}' : 'view_controls.xml',
                        '${help_mouse}' : 'mouse.xml',
                        '${help_joystick}' : 'joystick.xml'}
-                
+
     def displayTopic(self, topic):
         serializer = csp.cspsim.Serialization()
         serializer.load(self, os.path.join('help', topic))
-        
+
         closeButton = self.getById('close')
         if closeButton != None:
             self.connectToClickSignal(closeButton, self.close_Click)
-            
+
         self.topicsListBox = self.getById('topics')
         if self.topicsListBox != None:
             self.topicsListBox.addItem(csp.cspsim.ListBoxItem('${help_welcome}'))
@@ -64,7 +62,7 @@ class Help(csp.cspsim.Window, SlotManager):
                     self.topicsListBox.setSelectedItemByText(key)
 
             self.connectToSelectedItemChangedSignal(self.topicsListBox, self.topics_Changed)
-        
+
     def topics_Changed(self):
         newHelpWindow = Help()
         selectedText = self.topicsListBox.getSelectedItem().getText()

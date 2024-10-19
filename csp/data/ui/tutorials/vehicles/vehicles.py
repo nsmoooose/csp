@@ -1,5 +1,3 @@
-#!/usr/bin/python
-
 # Combat Simulator Project
 # Copyright (C) 2002-2009 The Combat Simulator Project
 # http://csp.sourceforge.net
@@ -34,10 +32,10 @@ class Vehicles(Mission):
 
     def describingUI(self):
         return "vehicles/mission.xml"
-       
+
     def startMission(self):
         Mission.startMission(self)
-        
+
     def modifyTheatreForMission(self):
         # We add a single aircraft at the airport.
         vec = csp.csplib.Vector3
@@ -47,10 +45,10 @@ class Vehicles(Mission):
 
         f16dj = "sim:vehicles.aircraft.f16dj"
         self.cspsim.createVehicle(f16dj, vec(-29495, -10530, 91.3), vec(0, 0, 0), vec(0.0, 0.0, 180.0), True)
-       
+
         # Set the date and time. We want daylight for the first mission.
         date = csp.csplib.SimDate(2007,6,12,10,0,0)
         self.cspsim.setCurrentTime(date)
-        
+
     def onStart(self):
         pass

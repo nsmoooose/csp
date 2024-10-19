@@ -1,5 +1,3 @@
-#!/usr/bin/python
-
 # Combat Simulator Project
 # Copyright (C) 2002-2005 The Combat Simulator Project
 # http://csp.sourceforge.net
@@ -34,22 +32,22 @@ class MainMenu(csp.cspsim.Window, SlotManager):
         SlotManager.__init__(self)
 
         self.cspsim = cspsim
-        
+
         serializer = csp.cspsim.Serialization()
         serializer.load(self, 'main_menu.xml')
-        
+
         instantActionButton = self.getById('instantAction')
         if instantActionButton != None:
             self.connectToClickSignal(instantActionButton, self.instantAction_Click)
-        
+
         optionsButton = self.getById('options')
         if optionsButton != None:
             self.connectToClickSignal(optionsButton, self.options_Click)
-            
+
         tutorialsButton = self.getById('tutorials')
         if tutorialsButton != None:
             self.connectToClickSignal(tutorialsButton, self.tutorials_Click)
-        
+
         quitButton = self.getById('quit')
         if quitButton != None:
             self.connectToClickSignal(quitButton, self.quit_Click)
@@ -58,24 +56,23 @@ class MainMenu(csp.cspsim.Window, SlotManager):
         self.getWindowManager().closeAll()
         self.cspsim.displayLogoScreen()
         self.cspsim.loadSimulation()
-        
+
         vec = csp.csplib.Vector3
         m2k = "sim:vehicles.aircraft.m2k"
         f16dj = "sim:vehicles.aircraft.f16dj"
         self.cspsim.createVehicle(f16dj, vec(-29495, -10530, 91.3), vec(0, 0, 0), vec(0.0, 0.0, 180.0), True) 
         self.cspsim.createVehicle(f16dj, vec(-29510, -10530, 91.3), vec(0, 0, 0), vec(0.0, 0.0, 180.0), False) 
-        
+
         gameScreenManager = GameScreenManager(self.cspsim)
-        
+
     def tutorials_Click(self):
         tutorials = Tutorials(self.cspsim)
         tutorials.displayMission('index.xml')
         self.getWindowManager().show(tutorials)
-                        
+
     def options_Click(self):
         options = Options(self.cspsim)
         self.getWindowManager().show(options)
-        
+
     def quit_Click(self):
         self.cspsim.quit()
-        

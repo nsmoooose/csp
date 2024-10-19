@@ -1,5 +1,3 @@
-#!/usr/bin/python
-
 # Combat Simulator Project
 # Copyright (C) 2002-2005 The Combat Simulator Project
 # http://csp.sourceforge.net
@@ -29,8 +27,8 @@ from csp.data.ui.scripts.utils import SlotManager
 class Library(csp.cspsim.Window, SlotManager):
     def __init__(self):
         csp.cspsim.Window.__init__(self)
-        SlotManager.__init__(self)    
-        
+        SlotManager.__init__(self)
+
         # Install the move window event handler.
         self.moveEventHandler = csp.cspsim.ControlMoveEventHandler(self)
 
@@ -40,7 +38,7 @@ class Library(csp.cspsim.Window, SlotManager):
         closeButton = self.getById('close')
         if closeButton != None:
             self.connectToClickSignal(closeButton, self.close_Click)
-        
+
     def displayTopic(self, topic):
         print(topic)
 

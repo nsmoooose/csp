@@ -1,5 +1,3 @@
-#!/usr/bin/python
-
 # Combat Simulator Project
 # Copyright (C) 2002-2009 The Combat Simulator Project
 # http://csp.sourceforge.net
@@ -31,7 +29,7 @@ class Mission:
 
     def __init__(self, cspsim):
         self.cspsim = cspsim
-        
+
     def name(self):
         """Provides a name to the mission. Usually a name that comes from
         a localized xml resource. Example: ${tutorials_takeoff}"""
@@ -39,12 +37,12 @@ class Mission:
         return "No name set"
 
     def describingUI(self):
-        """Name of an xml file that contains the graphical user interface 
+        """Name of an xml file that contains the graphical user interface
         for this mission. Must be implemented by all tutorials."""
 
         raise NotImplementedError("Implement this interface to be able " + \
             "to show a describing user interface for the mission.")
-    
+
     def theatre(self):
         # Informs about what theatre to load.
         return "No theatre set"
@@ -54,14 +52,14 @@ class Mission:
         windowManager.closeAll()
         self.cspsim.displayLogoScreen()
         self.cspsim.loadSimulation()
-        
+
         self.modifyTheatreForMission()
         gameScreenManager = GameScreenManager(self.cspsim)
-        
+
         self.onStart()
-                
+
     def modifyTheatreForMission(self):
         pass
-    
+
     def onStart(self):
         pass

@@ -1,5 +1,3 @@
-#!/usr/bin/python
-
 # Combat Simulator Project
 # Copyright (C) 2002-2005 The Combat Simulator Project
 # http://csp.sourceforge.net
@@ -33,10 +31,10 @@ class GameScreenManager(SlotManager):
         SlotManager.__init__(self)
 
         self.cspsim = cspsim
-               
+
         self.connectToInputInterfaceAction(self.cspsim, 'QUIT', self.on_Quit)
         self.connectToInputInterfaceAction(self.cspsim, 'PAUSE', self.on_Pause)
-        
+
     def closePausingWindows(self):
         self.closeWindowById('topMenuWindow')
         self.closeWindowById('resumeWindow')
@@ -48,7 +46,7 @@ class GameScreenManager(SlotManager):
         window = windowManager.getById(id)
         if window != None:
             window.close()
-                                
+
     def on_Quit(self):
         topMenu = self.cspsim.getWindowManager().getById('topMenuWindow')
         resumeWindow = self.cspsim.getWindowManager().getById('resumeWindow')
@@ -71,4 +69,3 @@ class GameScreenManager(SlotManager):
             self.closePausingWindows()
             pause = Pause(self.cspsim)
             self.cspsim.getWindowManager().show(pause)
-        

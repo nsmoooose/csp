@@ -1,5 +1,3 @@
-#!/usr/bin/python
-
 # Combat Simulator Project
 # Copyright (C) 2002-2005 The Combat Simulator Project
 # http://csp.sourceforge.net
@@ -38,20 +36,20 @@ class MessageBox(csp.cspsim.Window, SlotManager):
         # Load the user interface for this window.
         serializer = csp.cspsim.Serialization()
         serializer.load(self, 'messagebox.xml')
-                
+
         # Listen to the click signal for the ok button.
         okButton = self.getById('ok')
         if okButton != None:
             self.connectToClickSignal(okButton, self.ok_Click)
-        
+
     def ok_Click(self):
         self.close()
-        
+
     def setMessage(self, message):
         messageLabel = self.getById('message')
         if messageLabel != None:
             messageLabel.setText(message)
-            
+
     def show(self, parentWindow, message):
         self.setMessage(message)
         parentWindow.getWindowManager().show(self)

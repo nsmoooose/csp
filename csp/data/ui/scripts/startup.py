@@ -1,5 +1,3 @@
-#!/usr/bin/python
-
 # Combat Simulator Project
 # Copyright (C) 2002-2005 The Combat Simulator Project
 # http://csp.sourceforge.net
@@ -36,15 +34,15 @@ class UserInterfaceStartup:
     def __init__(self, cspsim):
         self.cspsim = cspsim
         self.configuration = cspsim.getConfiguration()
-        
+
     def displayDesktop(self):
-        # Displays the background of the desktop. 
+        # Displays the background of the desktop.
         self.desktopWindow = Desktop()
         self.windowManager.show(self.desktopWindow)
         self.desktopWindow.maximizeWindow()
-        
+
     def displayTopMenu(self):
-        # Displays the top menu with the most important buttons. 
+        # Displays the top menu with the most important buttons.
         self.topMenu = TopMenu(self.cspsim)
         self.windowManager.show(self.topMenu)
 
@@ -52,12 +50,12 @@ class UserInterfaceStartup:
         # Displays the main menu that lets the user interact with the game.
         self.mainMenuWindow = MainMenu(self.cspsim)
         self.windowManager.show(self.mainMenuWindow)
-        
+
     def run(self):
         # We want to connect to the configuration changed event.
         self.configurationChangedSlot = SlotProxy(self.configuration_Changed)
         self.cspsim.getConfigurationChangedSignal().connect(self.configurationChangedSlot)
-        
+
         # Display a screen that is capable of displaying windows and
         # controls.
         self.cspsim.displayMenuScreen()

@@ -1,5 +1,3 @@
-#!/usr/bin/python
-
 # Combat Simulator Project
 # Copyright (C) 2002-2005 The Combat Simulator Project
 # http://csp.sourceforge.net
@@ -43,14 +41,14 @@ class QuitResume(csp.cspsim.Window, SlotManager):
         resumeButton = self.getById('resume')
         if resumeButton != None:
             self.connectToClickSignal(resumeButton, self.resume_Click)
-       
+
         endSimButton = self.getById('end_simulation')
         if endSimButton != None:
             self.connectToClickSignal(endSimButton, self.end_simulation_Click)
-            
+
         if self.cspsim.isPaused() == False:
             self.cspsim.togglePause()
-        
+
     def resume_Click(self):
         if self.cspsim.isPaused():
             self.cspsim.togglePause()
@@ -58,15 +56,15 @@ class QuitResume(csp.cspsim.Window, SlotManager):
         if topMenu != None:
             topMenu.close()
         self.close()
-       
+
     def end_simulation_Click(self):
-        # Start by changing the screen. This makes it possible for us to 
+        # Start by changing the screen. This makes it possible for us to
         # display the main menu and the desktop.
         self.getWindowManager().closeAll()
         self.cspsim.displayMenuScreen()
         # End the simulation by unloading everything.
         self.cspsim.unloadSimulation()
-        
+
         # Use the UserInterfaceStartup class to return to the main menu
         # and the desktop.
         from csp.data.ui.scripts.startup import UserInterfaceStartup

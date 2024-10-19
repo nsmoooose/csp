@@ -1,5 +1,3 @@
-#!/usr/bin/python
-
 # Combat Simulator Project
 # Copyright (C) 2002-2005 The Combat Simulator Project
 # http://csp.sourceforge.net
@@ -31,9 +29,9 @@ class TopMenu(csp.cspsim.Window, SlotManager):
     def __init__(self, cspsim):
         csp.cspsim.Window.__init__(self)
         SlotManager.__init__(self)
-       
+
         self.cspsim = cspsim
-       
+
         serializer = csp.cspsim.Serialization()
         serializer.load(self, 'topmenu.xml')
 
@@ -44,7 +42,7 @@ class TopMenu(csp.cspsim.Window, SlotManager):
         quitButton = self.getById('quit')
         if quitButton != None:
             self.connectToClickSignal(quitButton, self.quit_Click)
-            
+
         helpButton = self.getById('help')
         if helpButton != None:
             self.connectToClickSignal(helpButton, self.help_Click)
@@ -52,10 +50,10 @@ class TopMenu(csp.cspsim.Window, SlotManager):
     def options_Click(self):
         options = Options(self.cspsim)
         self.getWindowManager().show(options)
-        
+
     def quit_Click(self):
         self.cspsim.quit()
-        
+
     def help_Click(self):
         help = Help()
         help.displayTopic('index.xml')

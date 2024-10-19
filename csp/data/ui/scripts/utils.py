@@ -1,5 +1,3 @@
-#!/usr/bin/python
-
 # Combat Simulator Project
 # Copyright (C) 2002-2005 The Combat Simulator Project
 # http://csp.sourceforge.net
@@ -28,26 +26,26 @@ class SlotProxy(csp.cspsim.Slot):
     def __init__(self, method):
         csp.cspsim.Slot.__init__(self)
         self.method = method
-        
+
     def notify(self, data):
         self.method()
 
 class SlotManager:
     def __init__(self):
         self.slots = []
-    
+
     def connectToClickSignal(self, control, method):
         signal = control.getClickSignal()
         slot = SlotProxy(method)
         signal.connect(slot)
         self.slots.append(slot)
-        
+
     def connectToCheckedChangedSignal(self, control, method):
         signal = control.getCheckedChangedSignal()
         slot = SlotProxy(method)
         signal.connect(slot)
         self.slots.append(slot)
-        
+
     def connectToSelectedItemChangedSignal(self, control, method):
         signal = control.getSelectedItemChangedSignal()
         slot = SlotProxy(method)

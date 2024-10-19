@@ -1,5 +1,3 @@
-#!/usr/bin/python
-
 # Combat Simulator Project
 # Copyright (C) 2002-2005 The Combat Simulator Project
 # http://csp.sourceforge.net
@@ -30,6 +28,6 @@ class Desktop(csp.cspsim.Window, SlotManager):
     def __init__(self):
         csp.cspsim.Window.__init__(self)
         SlotManager.__init__(self)
-       
+
         serializer = csp.cspsim.Serialization()
         serializer.load(self, 'desktop.xml')

@@ -21,8 +21,8 @@ import os
 import sys
 from tools import build
 
-build.CheckSConsVersion('0.96.93')
-build.CheckPythonVersion('2.5.0')
+build.CheckSConsVersion('4.6.0')
+build.CheckPythonVersion('3.10')
 build.CheckWXVersion('2.6')
 build.CheckLXMLVersion()
 build.DevpackConfig.SetMinimumVersion('0.6')

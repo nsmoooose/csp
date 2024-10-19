@@ -8,7 +8,7 @@
 
 #include <stdlib.h>
 #include <engine/ogl.h>
-#include <SDL/SDL.h>
+#include <SDL2/SDL.h>
 
 
 #undef main	// SDL weirdness under WIN32!!

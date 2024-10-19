@@ -19,7 +19,6 @@
 #include <csp/cspsim/SDLGraphicsWindow.h>
 #include <csp/cspsim/Config.h>
 #include <csp/csplib/util/Log.h>
-#include <SDL/SDL.h>
 #include <iostream>
 
 namespace csp {
@@ -37,22 +36,19 @@ SDLGraphicsWindow::SDLGraphicsWindow(const char *caption, const ::csp::ScreenSet
 		return;
 	}
 
-	const SDL_VideoInfo *info = SDL_GetVideoInfo();
-	int bpp = info->vfmt->BitsPerPixel;
-
-	CSPLOG(INFO, APP) << "Initializing video at " << bpp << " bits per pixel.";
-
-	Uint32 flags = SDL_OPENGL | SDL_HWSURFACE | SDL_DOUBLEBUF;
-
-	if ( screenSettings.fullScreen )
-	{
-		flags |= SDL_FULLSCREEN;
+	int windowFlags = SDL_WINDOW_OPENGL;
+	if ( screenSettings.fullScreen ) {
+		windowFlags |= SDL_WINDOW_FULLSCREEN;
+	}
+	m_window = SDL_CreateWindow(caption, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, screenSettings.width, screenSettings.height, windowFlags);
+	if (! m_window ) {
+		std::cerr << "Unable to create window (" << SDL_GetError() << ")" <<::std::endl;
+		return;
 	}
 
-	if ( !SDL_SetVideoMode(screenSettings.width, screenSettings.height, bpp, flags) )
-	{
-		std::cerr << "Unable to set video mode (" << SDL_GetError() << ")" << std::endl;
-		CSPLOG(ERROR, APP) << "Unable to set video mode (" << SDL_GetError() << ")";
+	m_context = SDL_GL_CreateContext(m_window);
+	if(!m_context) {
+		std::cerr << "Unable to create GL context (" << SDL_GetError() << ")" <<::std::endl;
 		return;
 	}
 
@@ -60,10 +56,6 @@ SDLGraphicsWindow::SDLGraphicsWindow(const char *caption, const ::csp::ScreenSet
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
 	SDL_JoystickEventState(SDL_ENABLE);
-
-	SDL_EnableUNICODE(1);
-
-	SDL_WM_SetCaption(caption, "");
 
 	m_valid = true;
 }
@@ -75,7 +67,7 @@ SDLGraphicsWindow::~SDLGraphicsWindow()
 
 void SDLGraphicsWindow::swapBuffersImplementation()
 {
-	SDL_GL_SwapBuffers();
+	SDL_GL_SwapWindow(m_window);
 }
 
 } // namespace csp

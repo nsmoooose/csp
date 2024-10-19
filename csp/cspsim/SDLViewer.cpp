@@ -26,7 +26,7 @@
 #include <csp/cspsim/battlefield/LocalBattlefield.h>
 #include <csp/cspsim/weather/Atmosphere.h>
 #include <csp/csplib/util/Log.h>
-#include <SDL/SDL.h>
+#include <SDL2/SDL.h>
 
 namespace csp {
 

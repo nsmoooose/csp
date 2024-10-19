@@ -12,8 +12,8 @@
 #ifdef WIN32
 #include <windows.h>
 #endif
-#include <SDL/SDL.h>
-#include <SDL/SDL_image.h>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include <string.h>

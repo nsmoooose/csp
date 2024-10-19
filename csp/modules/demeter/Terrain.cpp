@@ -44,7 +44,7 @@ Boston, MA  02111-1307, USA.
 
 #ifndef _WIN32
  #define GL_GLEXT_PROTOTYPES
- #include <SDL/SDL_opengl.h>
+ #include <SDL2/SDL_opengl.h>
  typedef uint64_t GLuint64;
  typedef int64_t GLint64;
  #define _O_BINARY 0

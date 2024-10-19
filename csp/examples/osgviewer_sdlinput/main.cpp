@@ -17,7 +17,7 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "main.h"
-#include <SDL/SDL.h>
+#include <SDL2/SDL.h>
 #include <osgDB/ReadFile>
 #include <osgDB/FileUtils>
 #include <osgViewer/Viewer>
@@ -53,7 +53,6 @@ class SdlApplication
 
 			if ( SDL_Init( SDL_INIT_VIDEO | SDL_INIT_JOYSTICK ) < 0 ) throw SdlError("SDL_Init");
 
-			SDL_EnableUNICODE( 1 );
 			SDL_JoystickEventState( SDL_ENABLE );
 		}
 

@@ -36,7 +36,7 @@ SDLGraphicsWindow::SDLGraphicsWindow(const char *caption, const ::csp::ScreenSet
 		return;
 	}
 
-	int windowFlags = SDL_WINDOW_OPENGL;
+	int windowFlags = SDL_WINDOW_OPENGL|SDL_WINDOW_RESIZABLE;
 	if ( screenSettings.fullScreen ) {
 		windowFlags |= SDL_WINDOW_FULLSCREEN;
 	}

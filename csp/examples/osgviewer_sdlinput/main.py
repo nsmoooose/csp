@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 
 # Combat Simulator Project
 # Copyright (C) 2009 The Combat Simulator Project

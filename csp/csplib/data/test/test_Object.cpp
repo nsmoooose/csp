@@ -91,8 +91,14 @@ CSP_XML_BEGIN(SubObject2)
 	CSP_DEF("value", _value, false)
 CSP_XML_END
 
-
 CSP_TESTFIXTURE(Object) {
+public:
+
+	virtual void setupFixture() {
+		static TestObject::__csp_interface_proxy instance1;
+		static SubObject1::__csp_interface_proxy instance2;
+		static SubObject2::__csp_interface_proxy instance3;
+	}
 
 	void testObjectInterface(csp::InterfaceProxy *proxy) {
 		CSP_VERIFY(proxy != 0);

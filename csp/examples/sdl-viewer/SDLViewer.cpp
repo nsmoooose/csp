@@ -45,8 +45,8 @@ bool convertEvent(SDL_Event& event, osgGA::EventQueue& eventQueue)
 				eventQueue.keyPress( (osgGA::GUIEventAdapter::KeySymbol) event.key.keysym.unicode);
             return true;
 
-        case SDL_VIDEORESIZE:
-            eventQueue.windowResize(0, 0, event.resize.w, event.resize.h );
+        case SDL_WINDOWEVENT_RESIZED:
+            eventQueue.windowResize(0, 0, event.window.data1, event.window.data2 );
             return true;
 
         default:
@@ -61,10 +61,6 @@ SDLViewer::SDLViewer() : m_Initialized(false) {
 }
 
 void SDLViewer::initialize() {
-	/*
-	  ========================================================================
-	   Initialize SDL and the main loop.
-	*/
     if ( SDL_Init(SDL_INIT_VIDEO) < 0 ) {
         fprintf(stderr, "Unable to init SDL: %s\n", SDL_GetError());
         exit(1);
@@ -107,8 +103,8 @@ void SDLViewer::run() {
 
             switch (event.type) {
 
-                case SDL_VIDEORESIZE:
-                    SDL_SetVideoMode(event.resize.w, event.resize.h, 0, SDL_OPENGL | SDL_RESIZABLE);
+                case SDL_WINDOWEVENT_RESIZED:
+                    SDL_SetVideoMode(event.window.data1, event.window.data2, 0, SDL_OPENGL | SDL_RESIZABLE);
                     m_GraphicsWindow->resized(0, 0, event.resize.w, event.resize.h );
                     break;
 

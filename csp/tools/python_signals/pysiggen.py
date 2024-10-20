@@ -1,4 +1,4 @@
-#!/usr/bin/python2.4
+#!/usr/bin/python3
 
 # Copyright 2007 Mark Rose <mkrose@users.sf.net>
 #
@@ -84,9 +84,9 @@ pysig = Generator()
 
 HEADER = r"""
 // Generated code --- do not edit!
+// Created by: tools/python_signals/pysiggen.py
 
-#ifndef PYSIG_H__
-#define PYSIG_H__
+#pragma once
 
 #include <Python.h>
 #include <sigc++/functors/slot.h>
@@ -116,7 +116,6 @@ struct pyslot : public pyslot[[$N-1]]<T_return[[P_ARGLIST,0,$N-1]]> {
 	pyslot(PyObject* handler) : pyslot[[$N-1]]<T_return[[P_ARGLIST,0,$N-1]]>(handler) {}
 };
 [[PYSLOT_OVERLOAD,0,$N-1]]
-#endif // PYSIG_H__
 """
 
 pysig.define('PYSLOT',
@@ -156,5 +155,4 @@ struct pyslot<T_return[[P_ARGLIST,0,$N]]> : public pyslot[[$N]]<T_return[[P_ARGL
 
 
 # Generate the pysig header for up to seven arguments, writing to stdout.
-print pysig.generate(HEADER, 8)
-
+print(pysig.generate(HEADER, 8))

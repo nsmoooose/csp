@@ -1,8 +1,8 @@
 
 // Generated code --- do not edit!
+// Created by: tools/python_signals/pysiggen.py
 
-#ifndef PYSIG_H__
-#define PYSIG_H__
+#pragma once
 
 #include <Python.h>
 #include <sigc++/functors/slot.h>
@@ -175,5 +175,4 @@ struct pyslot<T_return, T_arg0, T_arg1, T_arg2, T_arg3, T_arg4, T_arg5> : public
 	pyslot(PyObject* handler) : pyslot6<T_return, T_arg0, T_arg1, T_arg2, T_arg3, T_arg4, T_arg5>(handler) {}
 };
 
-#endif // PYSIG_H__
 

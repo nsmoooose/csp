@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # Copyright 2005 Mark Rose <mkrose@users.sourceforge.net>
 #
@@ -31,7 +31,7 @@ import csp.csplib
 
 def LoadOneModule(path):
 	if not csp.csplib.TestRegistry.loadTestModule(path):
-		print 'Unable to load test module "%s".  Check that it has been built.' % path
+		print('Unable to load test module "%s".  Check that it has been built.' % path)
 		sys.exit(0)
 
 def LoadModules(modules):
@@ -43,10 +43,9 @@ if __name__ == '__main__':
 		LoadModules(sys.argv[1:])
 		csp.csplib.TestRegistry.runAll()
 	else:
-		print 'A simple utility to run CSP test modules manually.'
-		print
-		print 'Note that scons is generally a better tool for running tests (e.g.,'
-		print 'use "scons runtests" to build and run all tests).'
-		print
-		print 'Usage: %s test_module [test_module ...]' % sys.argv[0]
-
+		print('A simple utility to run CSP test modules manually.')
+		print('')
+		print('Note that scons is generally a better tool for running tests (e.g.,')
+		print('use "scons runtests" to build and run all tests).')
+		print('')
+		print('Usage: %s test_module [test_module ...]' % sys.argv[0])

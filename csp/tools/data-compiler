@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 import csp.csplib
 import csp.cspsim
 import getopt
@@ -19,9 +19,9 @@ Options:
                                 modules used.
 
 Examples:
-  python data-compiler -s data/xml -d bin/sim.dar -m modules/demeter/.bin/libdemeter.so
+  data-compiler -s data/xml -d bin/sim.dar -m modules/demeter/.bin/libdemeter.so
 
-  python data-compiler -s data/xml -d bin/sim.dar -m modules/demeter/.bin/demeter.dll
+  data-compiler -s data/xml -d bin/sim.dar -m modules/demeter/.bin/demeter.dll
 """
 
 
@@ -53,7 +53,7 @@ if __name__ == '__main__':
         if len(options) == 0:
             print(USAGE)
             sys.exit(0)
-    except getopt.GetoptError, message:
+    except getopt.GetoptError as message:
         print(message)
         sys.exit(1)
 

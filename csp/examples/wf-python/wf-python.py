@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 import csp.cspsim
 import os.path
 import sys
@@ -16,7 +16,7 @@ class HelloWorldWindow(csp.cspsim.Window, SlotManager):
         print("Loading hello_world.xml user interface file.")
         serializer = csp.cspsim.Serialization()
         serializer.load(self, 'hello_world.xml')
-        
+
         helloButton = self.getById('hello')
         if helloButton != None:
             print("Connecting click event to button")
@@ -71,6 +71,6 @@ try:
     # lets run the rendering loop.
     print("Run the rendering loop.")
     viewer.run()
-except csp.cspsim.SerializationException, message:
+except csp.cspsim.SerializationException as message:
     print("An exception has occured.")
     print(message.what())

@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 import csp.csplib
 
 # Get the one and only logstream there is.

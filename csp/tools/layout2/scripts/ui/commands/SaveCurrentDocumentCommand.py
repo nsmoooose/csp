@@ -10,22 +10,20 @@ class SaveCurrentDocumentCommand(Command):
     toolbarimage = "document-save"
 
     def Execute(self):
-	application = wx.GetApp()
+        application = wx.GetApp()
 
-	# Get the registry of documents. This class holds a
-	# reference to the current document that has focus.
-	documentRegistry = application.GetDocumentRegistry()
+        # Get the registry of documents. This class holds a
+        # reference to the current document that has focus.
+        documentRegistry = application.GetDocumentRegistry()
 
-	# Retreive the current document. There may not be any
-	# opened documents. In that case we cannot continue.
-	currentDocument = documentRegistry.GetCurrentDocument()
-	if currentDocument is not None and currentDocument.IsReadOnly() == False:
-		currentDocument.Save()
+        # Retreive the current document. There may not be any
+        # opened documents. In that case we cannot continue.
+        currentDocument = documentRegistry.GetCurrentDocument()
+        if currentDocument is not None and currentDocument.IsReadOnly() == False:
+            currentDocument.Save()
 
     @staticmethod
     def Enabled():
-	application = wx.GetApp()
-	documentRegistry = application.GetDocumentRegistry()
-	return False if documentRegistry.GetCurrentDocument() is None else True
-
-
+        application = wx.GetApp()
+        documentRegistry = application.GetDocumentRegistry()
+        return False if documentRegistry.GetCurrentDocument() is None else True

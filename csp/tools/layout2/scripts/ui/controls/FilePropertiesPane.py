@@ -1,5 +1,5 @@
 import wx
-from wx.lib import customtreectrl
+from wx.lib.agw import customtreectrl
 
 from .AutoFitTextCtrl import AutoFitTextCtrl
 

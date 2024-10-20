@@ -24,117 +24,117 @@ import xml.dom
 
 
 class DomTree:
-	"""
-	Dom node wrapper providing access to child nodes via instance
-	attributes and iterators.
-	"""
+    """
+    Dom node wrapper providing access to child nodes via instance
+    attributes and iterators.
+    """
 
-	def __init__(self, dom):
-		self.name = dom.nodeName
-		self.type = dom.nodeType
-		self.node = dom
-		text = ''
-		self.children = []
-		self._dict = {}
-		remove = []
-		for node in dom.childNodes:
-			if node.nodeType == node.TEXT_NODE:
-				text += node.data
-				remove.append(node)
-			else:
-				tree = DomTree(node)
-				self.children.append(tree)
-				self._dict[tree.name] = tree
-		for node in remove:
-			dom.removeChild(node)
-		self.settext(text)
+    def __init__(self, dom):
+        self.name = dom.nodeName
+        self.type = dom.nodeType
+        self.node = dom
+        text = ''
+        self.children = []
+        self._dict = {}
+        remove = []
+        for node in dom.childNodes:
+            if node.nodeType == node.TEXT_NODE:
+                text += node.data
+                remove.append(node)
+            else:
+                tree = DomTree(node)
+                self.children.append(tree)
+                self._dict[tree.name] = tree
+        for node in remove:
+            dom.removeChild(node)
+        self.settext(text)
 
-	def addchild(self, dom):
-		if not isinstance(dom, DomTree):
-			dom = DomTree(dom)
-		node = dom.node
-		self.node.appendChild(node)
-		if node.nodeType == node.TEXT_NODE:
-			self.setattr('text', self.text + dom.data)
-		else:
-			self.children.append(dom)
-			self._dict[dom.name] = dom
+    def addchild(self, dom):
+        if not isinstance(dom, DomTree):
+            dom = DomTree(dom)
+        node = dom.node
+        self.node.appendChild(node)
+        if node.nodeType == node.TEXT_NODE:
+            self.setattr('text', self.text + dom.data)
+        else:
+            self.children.append(dom)
+            self._dict[dom.name] = dom
 
-	def removeChild(self, dom):
-		assert(isinstance(dom, DomTree))
-		self.children.remove(dom)
-		self.node.removeChild(dom.node)
+    def removeChild(self, dom):
+        assert(isinstance(dom, DomTree))
+        self.children.remove(dom)
+        self.node.removeChild(dom.node)
 
-	def __setattr__(self, key, value):
-		if key == 'text':
-			self.settext(value)
-		else:
-			self.__dict__[key] = value
+    def __setattr__(self, key, value):
+        if key == 'text':
+            self.settext(value)
+        else:
+            self.__dict__[key] = value
 
-	def setattr(self, key, value):
-		self.__dict__[key] = value
+    def setattr(self, key, value):
+        self.__dict__[key] = value
 
-	def settext(self, text):
-		text = text.strip()
-		set = 0
-		for node in self.node.childNodes:
-			if node.nodeType == node.TEXT_NODE:
-				if not set:
-					set = 1
-					node.data = text
-				else:
-					node.data = ''
-		self.setattr('text', text)
-		if not set and text:
-			text_node = xml.dom.minidom.Text()
-			text_node.data = text
-			self.node.appendChild(text_node)
+    def settext(self, text):
+        text = text.strip()
+        set = 0
+        for node in self.node.childNodes:
+            if node.nodeType == node.TEXT_NODE:
+                if not set:
+                    set = 1
+                    node.data = text
+                else:
+                    node.data = ''
+        self.setattr('text', text)
+        if not set and text:
+            text_node = xml.dom.minidom.Text()
+            text_node.data = text
+            self.node.appendChild(text_node)
 
-	def __getattr__(self, key):
-		if key.startswith('_'):
-			return self.__dict__[key]
-		return self.__dict__['_dict'].get(key, None)
+    def __getattr__(self, key):
+        if key.startswith('_'):
+            return self.__dict__[key]
+        return self.__dict__['_dict'].get(key, None)
 
-	def __eq__(self, other):
-		return self is other
+    def __eq__(self, other):
+        return self is other
 
-	def attr(self, name, default=None):
-		return self.node.getAttribute(name)
+    def attr(self, name, default=None):
+        return self.node.getAttribute(name)
 
-	def attrs(self):
-		attrs = getattr(self.node, '_attrs', None)
-		if attrs is None: return []
-		return list(attrs.keys())
+    def attrs(self):
+        attrs = getattr(self.node, '_attrs', None)
+        if attrs is None: return []
+        return list(attrs.keys())
 
-	def hasattr(self, name):
-		return self.node.hasAttribute(name)
+    def hasattr(self, name):
+        return self.node.hasAttribute(name)
 
-	def __len__(self): return len(self.children)
+    def __len__(self): return len(self.children)
 
-	def __str__(self): return self.__repr__()
+    def __str__(self): return self.__repr__()
 
-	def __repr__(self):
-		if self.text.strip(): return self.text
-		return 'node %s' % self.name
+    def __repr__(self):
+        if self.text.strip(): return self.text
+        return 'node %s' % self.name
 
-	def keys(self):
-		return list(self._dict.keys())
+    def keys(self):
+        return list(self._dict.keys())
 
-	def get(self, name, default):
-		return self.child
+    def get(self, name, default):
+        return self.child
 
-	def __iter__(self):
-		for child in self.children:
-			yield child
-		raise StopIteration
+    def __iter__(self):
+        for child in self.children:
+            yield child
+        raise StopIteration
 
 
 def ParseFile(file):
-	"""Generate a DomTree from an open file handle"""
-	return DomTree(parse(file))
+    """Generate a DomTree from an open file handle"""
+    return DomTree(parse(file))
 
 
 def ParseString(text):
-	"""Generate a DomTree from a string of XML data"""
-	return DomTree(parseString(text))
+    """Generate a DomTree from a string of XML data"""
+    return DomTree(parseString(text))
 

@@ -3,18 +3,18 @@ from .GraphicsWindow import GraphicsWindow
 from .DocumentNotebookPage import DocumentNotebookPage
 
 class ModelWindow(GraphicsWindow, DocumentNotebookPage):
-	def __init__(self, *args, **kwargs):
-		GraphicsWindow.__init__(self, *args, **kwargs)
+    def __init__(self, *args, **kwargs):
+        GraphicsWindow.__init__(self, *args, **kwargs)
 
-		# Set the graphics window implementation used. This class we are instantiating here
-		# is implemented in c++ and is responsible for all renderings.
-		self.SetGraphicsWindow(OsgModelWindow())
+        # Set the graphics window implementation used. This class we are instantiating here
+        # is implemented in c++ and is responsible for all renderings.
+        self.SetGraphicsWindow(OsgModelWindow())
 
-	def SetDocument(self, document):
-		# Let the base class handle this document.
-		GraphicsWindow.SetDocument(self, document)
+    def SetDocument(self, document):
+        # Let the base class handle this document.
+        GraphicsWindow.SetDocument(self, document)
 
-		# Get the C++ implementation of the rendering engine and 
-		# load the osg model.
-		implementation = self.GetGraphicsWindow()
-		implementation.loadModel(document.GetFileName())
+        # Get the C++ implementation of the rendering engine and 
+        # load the osg model.
+        implementation = self.GetGraphicsWindow()
+        implementation.loadModel(document.GetFileName())

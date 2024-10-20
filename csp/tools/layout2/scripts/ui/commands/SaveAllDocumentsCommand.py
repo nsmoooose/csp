@@ -10,22 +10,21 @@ class SaveAllDocumentsCommand(Command):
     toolbarimage = "document-save"
 
     def Execute(self):
-	application = wx.GetApp()
+        application = wx.GetApp()
 
-	# Get the registry of documents. This class holds a
-	# reference to the current document that has focus.
-	documentRegistry = application.GetDocumentRegistry()
+        # Get the registry of documents. This class holds a
+        # reference to the current document that has focus.
+        documentRegistry = application.GetDocumentRegistry()
 
-	# Iterate each document and try to save every document
-	# that isn't read only.
-	for document in documentRegistry.GetDocuments().values():
-		if document.IsReadOnly():
-			continue
-		document.Save()
+        # Iterate each document and try to save every document
+        # that isn't read only.
+        for document in documentRegistry.GetDocuments().values():
+            if document.IsReadOnly():
+                continue
+            document.Save()
 
     @staticmethod
     def Enabled():
-	application = wx.GetApp()
-	documentRegistry = application.GetDocumentRegistry()
+        application = wx.GetApp()
+        documentRegistry = application.GetDocumentRegistry()
         return len(documentRegistry.GetDocuments()) > 0
-

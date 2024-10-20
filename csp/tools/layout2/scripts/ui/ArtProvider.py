@@ -20,29 +20,29 @@ import os
 import wx
 
 class MissingImageArtProvider(wx.ArtProvider):
-	def CreateBitmap(self, id, client, size):
-		if id == wx.ART_MISSING_IMAGE:
-			return wx.NullBitmap
-		
-		return wx.ArtProvider.GetBitmap(wx.ART_MISSING_IMAGE, client, size)
+    def CreateBitmap(self, id, client, size):
+        if id == wx.ART_MISSING_IMAGE:
+            return wx.NullBitmap
+        
+        return wx.ArtProvider.GetBitmap(wx.ART_MISSING_IMAGE, client, size)
 
 class SearchInDirectoriesArtProvider(wx.ArtProvider):
-	def __init__(self, baseDirectories, *args, **kwargs):
-		wx.ArtProvider.__init__(self, *args, **kwargs)
-		
-		self.baseDirectories = baseDirectories
-	
-	def CreateBitmap(self, id, client, size):
-		if ( size == wx.DefaultSize ):
-			sizeDirectories = [""]
-		else:
-			sizeDirectories = ["%dx%d" % (size.GetWidth(), size.GetHeight()), ""]
-		
-		for sizeDirectory in sizeDirectories:
-			for baseDirectory in self.baseDirectories:
-				for ext in ('.png', '.gif'):
-					fullPath = os.path.join(baseDirectory, sizeDirectory, id + ext)
-					if os.path.isfile(fullPath):
-						return wx.Bitmap(fullPath)
-		
-		return wx.NullBitmap
+    def __init__(self, baseDirectories, *args, **kwargs):
+        wx.ArtProvider.__init__(self, *args, **kwargs)
+        
+        self.baseDirectories = baseDirectories
+    
+    def CreateBitmap(self, id, client, size):
+        if ( size == wx.DefaultSize ):
+            sizeDirectories = [""]
+        else:
+            sizeDirectories = ["%dx%d" % (size.GetWidth(), size.GetHeight()), ""]
+        
+        for sizeDirectory in sizeDirectories:
+            for baseDirectory in self.baseDirectories:
+                for ext in ('.png', '.gif'):
+                    fullPath = os.path.join(baseDirectory, sizeDirectory, id + ext)
+                    if os.path.isfile(fullPath):
+                        return wx.Bitmap(fullPath)
+        
+        return wx.NullBitmap

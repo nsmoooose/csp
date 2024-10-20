@@ -18,13 +18,13 @@ from . import Object
 from csp.tools.layout2 import layout_module
 
 def MakeFeatureModel(node):
-	"""Create an OSG subgraph for the specified FeatureModel domtree node."""
-	object = Object.MakeObject(node)
-	return layout_module.getFeatureModel(object)
+    """Create an OSG subgraph for the specified FeatureModel domtree node."""
+    object = Object.MakeObject(node)
+    return layout_module.getFeatureModel(object)
 
 def MakeObjectModel(node):
-	"""Create an OSG subgraph for the specified ObjectModel domtree node. Uses the
-	full ObjectModel loader to create the subgraph."""
-	object = Object.MakeObject(node)
-	return layout_module.getObjectModel(object)
+    """Create an OSG subgraph for the specified ObjectModel domtree node. Uses the
+    full ObjectModel loader to create the subgraph."""
+    object = Object.MakeObject(node)
+    return layout_module.getObjectModel(object)
 

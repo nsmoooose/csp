@@ -1,4 +1,4 @@
 from .FileDocument import FileDocument
 
 class TerrainDocument(FileDocument):
-	"""Document representing a terrain."""
+    """Document representing a terrain."""

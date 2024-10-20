@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import os
+import csp
 import csp.csplib
 import csp.cspsim
 
@@ -20,11 +21,12 @@ def loadModules():
     }.get(os.name, '')
 
     for module in modules:
-        module_path = os.path.join('..', '..', 'modules', module, '.bin', prefix + module) + extension
+        module_path = os.path.join(csp.dir, 'modules', module, '.bin', prefix + module) + extension
+
         # for windows demos, the modules are instead placed in the current directory.
         # TODO move them to ../modules/*.dll?
         if not os.path.exists(module_path):
-            module_path = os.path.join(module) + extension
+            module_path = prefix + os.path.join(module) + extension
         if not csp.csplib.ModuleLoader.load(module_path):
             print('Unable to load required extension module "%s"' % module)
 

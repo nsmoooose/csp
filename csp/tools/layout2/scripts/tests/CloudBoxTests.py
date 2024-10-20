@@ -59,8 +59,8 @@ class CloudBoxTests(unittest.TestCase):
 
         dar = os.path.join(self.directory, "my_file.dar")
         compiler = Compiler()
-	compiler.GetCompilerSignal().Connect(printCompilerMessage)
-	self.assertTrue(compiler.CompileAll(self.directory, dar), "Compilation failed for xml: %s" % self.comp_errors)
+        compiler.GetCompilerSignal().Connect(printCompilerMessage)
+        self.assertTrue(compiler.CompileAll(self.directory, dar), "Compilation failed for xml: %s" % self.comp_errors)
 
 if __name__ == '__main__':
     unittest.main()

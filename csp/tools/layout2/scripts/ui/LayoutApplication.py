@@ -55,12 +55,12 @@ class LayoutApplication(wx.App):
         if not os.path.isfile(readmeFile):
             return False
 
-        wx.ArtProvider.Insert( SearchInDirectoriesArtProvider([
+        wx.ArtProvider.Push(SearchInDirectoriesArtProvider([
             os.path.join('images', 'csp'),
             os.path.join('images', 'tango-icon-theme'),
             os.path.join('images', 'famfamfam_silk_icons_v013'),
-            ]) )
-        wx.ArtProvider.Insert( MissingImageArtProvider() )
+            ]))
+        wx.ArtProvider.PushBack(MissingImageArtProvider())
 
         self.Configuration = shelve.open('.csplayout')
 

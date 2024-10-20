@@ -2,9 +2,9 @@ import wx
 import os
 
 class SelectDataDirectoryDialog(wx.Dialog):
-    """A dialog to be used to display a splash window for 
+    """A dialog to be used to display a splash window for
     this layout tool. You must also select a valid data
-    directory for this application to work with. After 
+    directory for this application to work with. After
     you press OK the main frame is loaded and you can begin
     to edit your layout of CSP."""
 

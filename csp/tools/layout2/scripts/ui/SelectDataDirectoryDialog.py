@@ -81,7 +81,7 @@ class SelectDataDirectoryDialog(wx.Dialog):
         self.directoryText.SetValue(directoryBrowser.GetPath())
 
     def okButton_Click(self, event):
-        dataDirectory = self.directoryText.GetValue().encode('utf8')
+        dataDirectory = self.directoryText.GetValue()
         application = wx.GetApp()
         application.Configuration['LayoutApplication.DataDirectory'] = dataDirectory
         application.Configuration['LayoutApplication.XmlPath'] = os.path.join(dataDirectory, 'xml')

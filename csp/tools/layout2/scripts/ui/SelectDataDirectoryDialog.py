@@ -30,7 +30,6 @@ class SelectDataDirectoryDialog(wx.Dialog):
         infoLabel = wx.StaticText(rightPanel, wx.ID_ANY, 'Select the data directory of your CSP installation.')
         verticalSizer.Add(infoLabel)
 
-
         directoryLabel = wx.StaticText(rightPanel, wx.ID_ANY, 'Directory:')
         verticalSizer.Add(directoryLabel, border=5, flag=wx.TOP)
 
@@ -41,7 +40,7 @@ class SelectDataDirectoryDialog(wx.Dialog):
         self.directoryText = wx.TextCtrl(directoryPanel, wx.ID_ANY, '')
         self.directoryText.SetMinSize(wx.Size(300, self.directoryText.GetSize().GetHeight()))
         directorySizer.Add(self.directoryText, flag=wx.RIGHT, border=5)
-        browseDirectoryButton = wx.Button(directoryPanel, label='...', size=wx.Size(20,20))
+        browseDirectoryButton = wx.Button(directoryPanel, label='...')
         browseDirectoryButton.Bind(wx.EVT_BUTTON, self.browseDirectoryButton_Click)
         directorySizer.Add(browseDirectoryButton)
 
@@ -64,7 +63,7 @@ class SelectDataDirectoryDialog(wx.Dialog):
         # the selected directory.
         application = wx.GetApp()
         self.directoryText.SetValue(application.Configuration.get('LayoutApplication.DataDirectory', '.'))
-        
+
         # Bind events to buttons
         wx.EVT_BUTTON(self, wx.ID_OK, self.okButton_Click)
 
@@ -72,7 +71,7 @@ class SelectDataDirectoryDialog(wx.Dialog):
         # Use the current value in the text box. This will
         # be the default directory in the directory browser.
         defaultDataDirectory = self.directoryText.GetValue()
-        
+
         # Show the directory browser.
         directoryBrowser = wx.DirDialog(None, 'Select the data directory for your csp application', defaultDataDirectory)
         if directoryBrowser.ShowModal() != wx.ID_OK:

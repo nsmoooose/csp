@@ -65,7 +65,7 @@ class SelectDataDirectoryDialog(wx.Dialog):
         self.directoryText.SetValue(application.Configuration.get('LayoutApplication.DataDirectory', '.'))
 
         # Bind events to buttons
-        wx.EVT_BUTTON(self, wx.ID_OK, self.okButton_Click)
+        okButton.Bind(wx.EVT_BUTTON, self.okButton_Click, id=wx.ID_OK)
 
     def browseDirectoryButton_Click(self, event):
         # Use the current value in the text box. This will

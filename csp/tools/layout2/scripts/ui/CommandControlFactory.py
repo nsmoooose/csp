@@ -104,8 +104,12 @@ class CommandControlFactory(object):
         imageName = command.toolbarimage
         if not imageName:
             imageName = 'generic'
-        bitmap = wx.ArtProvider.GetBitmap(imageName, client = wx.ART_TOOLBAR, size = toolbar.GetToolBitmapSize())
-        tool = toolbar.AddLabelTool( id = controlId, label = command.caption, bitmap = bitmap, bmpDisabled = wx.NullBitmap, kind = wx.ITEM_NORMAL, shortHelp = command.tooltip, longHelp = command.tooltip )
+        bitmap = wx.ArtProvider.GetBitmap(
+            imageName, client=wx.ART_TOOLBAR, size=toolbar.GetToolBitmapSize())
+        tool = toolbar.AddTool(
+            toolId=controlId, label=command.caption, bitmap=bitmap,
+            bmpDisabled=wx.NullBitmap, kind=wx.ITEM_NORMAL, shortHelp=command.tooltip,
+            longHelp=command.tooltip)
         parent.Bind(wx.EVT_TOOL, EventToCommandExecutionAdapter(command).Execute, tool)
         return tool
 

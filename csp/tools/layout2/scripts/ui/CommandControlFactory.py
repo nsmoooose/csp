@@ -76,11 +76,12 @@ class CommandControlFactory(object):
         return menu
 
     def AppendInMenu(self, parent, menu, controlId, command):
-        menuItem = menu.Append(id=controlId, item=command.caption, helpString=command.tooltip, kind=wx.ITEM_NORMAL)
+        menuItem = wx.MenuItem(id=controlId, text=command.caption, helpString=command.tooltip, kind=wx.ITEM_NORMAL)
         imageName = command.toolbarimage
         if imageName:
-            bitmap = wx.ArtProvider.GetBitmap(imageName, client = wx.ART_MENU, size = (16, 16))
+            bitmap = wx.ArtProvider.GetBitmap(imageName, client=wx.ART_MENU, size=(16, 16))
             menuItem.SetBitmap(bitmap)
+        menu.Append(menuItem)
         parent.Bind(wx.EVT_MENU, EventToCommandExecutionAdapter(command).Execute, menuItem)
         return menuItem
 

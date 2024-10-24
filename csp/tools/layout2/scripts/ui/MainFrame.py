@@ -156,7 +156,7 @@ class MainFrame(wx.Frame):
         application.auiManager.Update()
 
         # Connect idle event.
-        wx.EVT_IDLE(self, self.on_Idle)
+        self.Bind(wx.EVT_IDLE, self.on_Idle)
         self.Bind(wx.EVT_CLOSE, self.on_Close)
 
         application.UpdateUI()

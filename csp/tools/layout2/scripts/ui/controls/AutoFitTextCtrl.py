@@ -11,7 +11,7 @@ class AutoFitTextCtrl(wx.TextCtrl):
             text = wx.TextCtrl(parent)
             AutoFitTextCtrl.CharWidth = text.GetCharWidth()
             AutoFitTextCtrl.CharHeight = text.GetCharHeight()
-            width, height = text.GetSizeTuple()
+            width, height = text.GetSize()
             AutoFitTextCtrl.MarginLineHeight = height - AutoFitTextCtrl.CharHeight
             text.Destroy()
     

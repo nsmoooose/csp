@@ -32,6 +32,14 @@ class GraphicsWindow(wx.glcanvas.GLCanvas, DocumentNotebookPage):
         with rendering capabilities."""
         self.graphicsWindow = graphicsWindow
 
+        # TODO: DEPTH buffer doesn't seem to work and I can't get
+        # it to work right now.
+        #
+        # https://docs.wxpython.org/wx.glcanvas.1moduleindex.html
+        #
+        # dispAttrs = wx.glcanvas.GLAttributes().PlatformDefaults().MinRGBA(8, 8, 8, 8).DoubleBuffer().Depth(32).EndList()
+        self.context = wx.glcanvas.GLContext(self)  # ctxAttrs=dispAttrs
+
         self.Bind(wx.EVT_SIZE, self.on_Size)
         self.Bind(wx.EVT_KEY_DOWN, self.on_KeyDown)
         self.Bind(wx.EVT_KEY_UP, self.on_KeyUp)
@@ -127,4 +135,4 @@ class GraphicsWindow(wx.glcanvas.GLCanvas, DocumentNotebookPage):
         self.SwapBuffers()
 
     def on_SetCurrent(self):
-        self.SetCurrent()
+        self.SetCurrent(self.context)

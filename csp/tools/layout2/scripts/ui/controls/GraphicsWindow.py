@@ -80,7 +80,7 @@ class GraphicsWindow(wx.glcanvas.GLCanvas, DocumentNotebookPage):
             event.RequestMore()
     
     def on_Size(self, event):
-        width, height = self.GetClientSizeTuple()
+        width, height = self.GetClientSize()
 
         # If the window size is set to 0 the scene graph 
         # will not be rendered correctly even if correct size

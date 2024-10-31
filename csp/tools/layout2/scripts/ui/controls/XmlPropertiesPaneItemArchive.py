@@ -268,7 +268,7 @@ class ItemWindowMatrix(wx.Panel):
         
         self.SetOwnBackgroundColour( tree.GetBackgroundColour() )
         
-        sizer = wx.GridSizer(rows = rows, cols = cols)
+        sizer = wx.GridSizer(rows=rows, cols=cols, vgap=2, hgap=2)
         self.SetSizer(sizer)
         
         for value in item.xmlNode.GetStringValues():
@@ -287,7 +287,7 @@ class ModifyWindowMatrix(wx.Panel):
         self.nodeName = nodeName
         self.imageName = imageName
         
-        sizer = wx.GridSizer( rows = self.rows, cols = self.cols )
+        sizer = wx.GridSizer(rows=self.rows, cols=self.cols, vgap=2, hgap=2)
         self.SetSizer(sizer)
         
         self.textCtrl = []

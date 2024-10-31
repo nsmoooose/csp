@@ -144,7 +144,7 @@ class CloudBoxWizard(wx.Dialog):
         panel = wx.Panel(self)
         sizerPanel.Add(panel, flag=wx.EXPAND)
 
-        grid = wx.FlexGridSizer(11, 2)
+        grid = wx.FlexGridSizer(rows=11, cols=2, vgap=2, hgap=2)
         panel.SetSizer(grid)
 
         application = wx.GetApp()

@@ -120,10 +120,6 @@ void AircraftObject::SmokeToggle() {
 	}
 }
 
-void AircraftObject::MarkersToggle() {
-	m_Model->showDebugMarkers(!m_Model->getDebugMarkersVisible());
-}
-
 void AircraftObject::setAttitude(double pitch, double roll, double heading) {
 	b_Pitch->value() = pitch;
 	b_Roll->value() = roll;

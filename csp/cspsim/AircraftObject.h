@@ -39,7 +39,6 @@ public:
 		BIND_ACTION("SMOKE_ON", SmokeOn);
 		BIND_ACTION("SMOKE_OFF", SmokeOff);
 		BIND_ACTION("SMOKE_TOGGLE", SmokeToggle);
-		BIND_ACTION("MARKS_TOGGLE_DEPRECATED", MarkersToggle);
 	END_INPUT_INTERFACE  // protected:
 
 public:
@@ -50,7 +49,6 @@ public:
 	void SmokeOn();
 	void SmokeOff();
 	void SmokeToggle();
-	void MarkersToggle();
 
 	virtual void dump();
 	

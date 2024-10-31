@@ -305,19 +305,19 @@ class ItemWindowWithError(wx.Panel):
         
         if errorMessage:
             itemErrorImage = ItemErrorImage(self, errorMessage)
-            sizer.AddF( itemErrorImage, wx.SizerFlags().Center() )
+            sizer.Add( itemErrorImage, wx.SizerFlags().Center() )
             sizer.AddSpacer(5)
         
         if itemWindow is not None:
             itemWindow.Reparent(self)
-            sizer.AddF( itemWindow, wx.SizerFlags().Center().Border(wx.TOP | wx.BOTTOM, 2) )
+            sizer.Add( itemWindow, wx.SizerFlags().Center().Border(wx.TOP | wx.BOTTOM, 2) )
             
             if modifyWindowFactory is not None:
                 sizer.AddSpacer(5)
                 editBitmap = wx.ArtProvider.GetBitmap('pencil', size = (16, 16))
                 editButton = wx.BitmapButton(self, bitmap = editBitmap)
                 editButton.Bind(wx.EVT_BUTTON, self.on_EditButton)
-                sizer.AddF( editButton, wx.SizerFlags().Center() )
+                sizer.Add( editButton, wx.SizerFlags().Center() )
         
         self.Fit()
     
@@ -338,7 +338,7 @@ class ModifyDialog(wx.Dialog):
         self.SetSizer(sizer)
         
         self.modifyWindow = modifyWindowFactory(self, node)
-        sizer.AddF( self.modifyWindow, wx.SizerFlags().Expand().Proportion(1).Border(wx.ALL, 5) )
+        sizer.Add( self.modifyWindow, wx.SizerFlags().Expand().Proportion(1).Border(wx.ALL, 5) )
         
         sizer.Add( self.CreateButtonSizer(wx.OK | wx.CANCEL) )
         

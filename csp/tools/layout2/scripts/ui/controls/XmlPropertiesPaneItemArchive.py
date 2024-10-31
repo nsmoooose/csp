@@ -273,7 +273,7 @@ class ItemWindowMatrix(wx.Panel):
         
         for value in item.xmlNode.GetStringValues():
             textCtrl = ItemWindowSimple(self, item, tree = tree, value = value, style = wx.TE_READONLY)
-            sizer.AddF( textCtrl, wx.SizerFlags().Expand() )
+            sizer.Add( textCtrl, wx.SizerFlags().Expand() )
         
         self.Fit()
 
@@ -294,7 +294,7 @@ class ModifyWindowMatrix(wx.Panel):
         
         for value in node.GetStringValues():
             textCtrl = wx.TextCtrl( self, value = value )
-            sizer.AddF( textCtrl, wx.SizerFlags().Expand() )
+            sizer.Add( textCtrl, wx.SizerFlags().Expand() )
             self.textCtrl.append( textCtrl )
     
     def GetAction(self):

@@ -40,7 +40,7 @@ class ActionHistoryDialog(wx.Dialog):
         self.SetSizer(sizer)
 
         self.listView = wx.ListView(self)
-        sizer.AddF( self.listView, wx.SizerFlags().Expand().Proportion(1).Border(wx.ALL, 5) )
+        sizer.Add( self.listView, wx.SizerFlags().Expand().Proportion(1).Border(wx.ALL, 5) )
 
         self.InitListView()
         self.FillListView()

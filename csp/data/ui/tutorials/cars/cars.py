@@ -40,11 +40,11 @@ class Cars(Mission):
         # We add a single aircraft at the airport.
         vec = csp.csplib.Vector3
 
-        m2k = "sim:vehicles.cars.generic"
-        self.cspsim.createVehicle(m2k, vec(-29510, -10530, 91.3), vec(0, 0, 0), vec(0.0, 0.0, 180.0), True)
+        hmmwv = "sim:vehicles.cars.hmmwv"
+        self.cspsim.createVehicle(hmmwv, vec(-29510, -10530, 91.3), vec(0, 0, 0), vec(0.0, 0.0, 180.0), True)
 
-        f16dj = "sim:vehicles.aircraft.m2k"
-        self.cspsim.createVehicle(f16dj, vec(-29495, -10530, 91.3), vec(0, 0, 0), vec(0.0, 0.0, 180.0), True)
+        m2k = "sim:vehicles.aircraft.m2k"
+        self.cspsim.createVehicle(m2k, vec(-29495, -10530, 91.3), vec(0, 0, 0), vec(0.0, 0.0, 180.0), True)
 
         # Set the date and time. We want daylight for the first mission.
         date = csp.csplib.SimDate(2007,6,12,10,0,0)

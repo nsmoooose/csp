@@ -1,7 +1,7 @@
 <?xml version="1.0" standalone="no"?>
 <Object class="ObjectModel">
 	<String name="label">Generic car</String>
-	<External name="model_path">vehicles/cars/hummer.lwo</External>
+	<External name="model_path">vehicles/Hmmwv01/hmmwv01.osg</External>
 	<Vector3 name="axis_0">1 0 0</Vector3>
 	<Vector3 name="axis_1">0 1 0</Vector3>
 	<Vector3 name="view_point">0.0 4.3 1.12</Vector3>

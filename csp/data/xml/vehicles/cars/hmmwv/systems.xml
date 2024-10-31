@@ -6,6 +6,7 @@
 		<Object class="CarEngine" name="engine">
 		</Object>
 	  </Object>
+	  <Object class="GroundCollisionDynamics" />
 	</List>
   </Object>
 </Object>

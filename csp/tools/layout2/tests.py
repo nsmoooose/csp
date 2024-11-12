@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 import os
 import csp
 import csp.csplib
@@ -6,16 +6,17 @@ import csp.cspsim
 import unittest
 from scripts.tests import *
 
+
 def loadModules():
     modules = ('chunklod', 'demeter')
     extension = {
-        'posix' : '.so',
-        'nt' : '.dll',
+        'posix': '.so',
+        'nt': '.dll',
     }.get(os.name, '')
 
     prefix = {
-        'posix' : 'lib',
-        'nt' : '',
+        'posix': 'lib',
+        'nt': '',
     }.get(os.name, '')
 
     for module in modules:
@@ -27,6 +28,7 @@ def loadModules():
             module_path = prefix + os.path.join(module) + extension
         if not csp.csplib.ModuleLoader.load(module_path):
             print(('Unable to load required extension module "%s"' % module))
+
 
 if __name__ == "__main__":
     loadModules()

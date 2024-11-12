@@ -102,7 +102,7 @@ class CloudBoxGenerator(object):
         #
         #     index = index - 1
 
-        with open(os.path.join(self.directory, self.filename), "w") as f:
+        with open(os.path.join(self.directory, self.filename), "wb") as f:
             xml = tag.Object(
                 {"class" : "CloudBox"},
                 tag.Path(self.lod_path, name="lod"),

@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 from csp.tools.data.compile import Compiler
 from csp.tools.layout2.scripts.ui.commands.CloudBoxWizardCommand import CloudBoxException
 from csp.tools.layout2.scripts.ui.commands.CloudBoxWizardCommand import CloudBoxGenerator
@@ -10,21 +10,19 @@ import shutil
 import tempfile
 import unittest
 
+
 class CloudBoxTests(unittest.TestCase):
     def setUp(self):
         self.directory = tempfile.mkdtemp()
 
-        f = open(os.path.join(self.directory, "color_levels.xml"), "w")
-        f.write(toxml(tag.Object({"class" : "CloudColorLevels"})))
-        f.close()
+        with open(os.path.join(self.directory, "color_levels.xml"), "wb") as f:
+            f.write(toxml(tag.Object({"class": "CloudColorLevels"})))
 
-        f = open(os.path.join(self.directory, "opacity_levels.xml"), "w")
-        f.write(toxml(tag.Object({"class" : "CloudOpacityLevels"})))
-        f.close()
+        with open(os.path.join(self.directory, "opacity_levels.xml"), "wb") as f:
+            f.write(toxml(tag.Object({"class": "CloudOpacityLevels"})))
 
-        f = open(os.path.join(self.directory, "lod.xml"), "w")
-        f.write(toxml(tag.Object({"class" : "CloudLOD"})))
-        f.close()
+        with open(os.path.join(self.directory, "lod.xml"), "wb") as f:
+            f.write(toxml(tag.Object({"class": "CloudLOD"})))
 
     def tearDown(self):
         shutil.rmtree(self.directory)
@@ -47,13 +45,13 @@ class CloudBoxTests(unittest.TestCase):
         generator.color_path = "my_file:color_levels"
         generator.opacity_path = "my_file:opacity_levels"
         generator.lod_path = "my_file:lod"
-        xml = generator.generate()
-        print(xml)
+        generator.generate()
 
         self.assertTrue(os.path.exists(os.path.join(self.directory, "my_cloud_box.xml")), "cloud box file wasn't created")
 
         # Collect compiler errors in this variable.
         self.comp_errors = ""
+
         def printCompilerMessage(event):
             self.comp_errors = self.comp_errors + event.GetMessage() + "\n"
 
@@ -61,6 +59,7 @@ class CloudBoxTests(unittest.TestCase):
         compiler = Compiler()
         compiler.GetCompilerSignal().Connect(printCompilerMessage)
         self.assertTrue(compiler.CompileAll(self.directory, dar), "Compilation failed for xml: %s" % self.comp_errors)
+
 
 if __name__ == '__main__':
     unittest.main()

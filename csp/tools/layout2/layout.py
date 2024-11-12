@@ -5,8 +5,8 @@ import csp
 import csp.csplib
 import csp.cspsim
 
-from csp.tools.layout2 import layout_module
 from csp.tools.layout2.scripts.ui.LayoutApplication import LayoutApplication
+
 
 def loadModules():
     modules = ('chunklod', 'demeter')
@@ -30,11 +30,13 @@ def loadModules():
         if not csp.csplib.ModuleLoader.load(module_path):
             print('Unable to load required extension module "%s"' % module)
 
-loadModules()
 
-# Make all objects available for introspection and serialization
-csp.cspsim.registerAllObjectInterfaces()
+if __name__ == "__main__":
+    loadModules()
 
-# Create the application object and run the main loop.
-app = LayoutApplication(0)
-app.MainLoop()
+    # Make all objects available for introspection and serialization
+    csp.cspsim.registerAllObjectInterfaces()
+
+    # Create the application object and run the main loop.
+    app = LayoutApplication(0)
+    app.MainLoop()

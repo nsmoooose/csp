@@ -3,6 +3,7 @@ import wx
 
 from csp.tools.layout2.scripts.ui.CommandControlFactory import EventToCommandExecutionAdapter
 
+
 class ProjectTreeContextMenu(wx.Menu):
     def __init__(self):
         wx.Menu.__init__(self)
@@ -17,6 +18,7 @@ class ProjectTreeContextMenu(wx.Menu):
             self.AppendItem(item)
             self.Bind(wx.EVT_MENU, EventToCommandExecutionAdapter(command).Execute, item)
 
+
 class ProjectTree(wx.TreeCtrl):
     """A tree control that provides information about all files
     within the project directory. All folders and files above
@@ -25,7 +27,7 @@ class ProjectTree(wx.TreeCtrl):
     Instance = None
 
     def __init__(self, parent):
-        wx.TreeCtrl.__init__(self, parent, style=wx.TR_HAS_BUTTONS|wx.TR_LINES_AT_ROOT)
+        wx.TreeCtrl.__init__(self, parent, style=wx.TR_HAS_BUTTONS | wx.TR_LINES_AT_ROOT)
         self.Bind(wx.EVT_RIGHT_DOWN, self._right_mouse_down)
         self.context_file_commands = []
         self.context_directory_commands = []

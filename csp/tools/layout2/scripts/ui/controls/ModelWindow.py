@@ -2,6 +2,7 @@ from csp.tools.layout2.layout_module import OsgModelWindow
 from .GraphicsWindow import GraphicsWindow
 from .DocumentNotebookPage import DocumentNotebookPage
 
+
 class ModelWindow(GraphicsWindow, DocumentNotebookPage):
     def __init__(self, *args, **kwargs):
         GraphicsWindow.__init__(self, *args, **kwargs)
@@ -14,7 +15,7 @@ class ModelWindow(GraphicsWindow, DocumentNotebookPage):
         # Let the base class handle this document.
         GraphicsWindow.SetDocument(self, document)
 
-        # Get the C++ implementation of the rendering engine and 
+        # Get the C++ implementation of the rendering engine and
         # load the osg model.
         implementation = self.GetGraphicsWindow()
         implementation.loadModel(document.GetFileName())

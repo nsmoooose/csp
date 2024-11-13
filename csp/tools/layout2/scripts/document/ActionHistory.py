@@ -1,5 +1,6 @@
 from csp.base.signals import Signal
 
+
 class ActionHistory(object):
     def __init__(self, documentOwner):
         # The Document that own this ActionHistory
@@ -56,7 +57,7 @@ class ActionHistory(object):
         if not action.Undo():
             return
 
-        self.undoneActions.append( self.doneActions.pop() )
+        self.undoneActions.append(self.doneActions.pop())
         self.EmitChangedSignal()
 
     def Redo(self):
@@ -68,5 +69,5 @@ class ActionHistory(object):
         if not action.Do():
             return
 
-        self.doneActions.append( self.undoneActions.pop() )
+        self.doneActions.append(self.undoneActions.pop())
         self.EmitChangedSignal()

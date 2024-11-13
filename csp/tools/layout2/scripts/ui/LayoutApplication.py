@@ -5,13 +5,14 @@ import shelve
 import sys
 
 from csp.base.signals import Signal
-from csp.tools.layout2.layout_module import *
+from csp.tools.layout2.layout_module import CspLayoutApplication
 from csp.tools.layout2.scripts.document.DocumentRegistry import DocumentRegistry
 from .CommandControlFactory import CommandControlMediator
 from .MainFrame import MainFrame
 from .SelectDataDirectoryDialog import SelectDataDirectoryDialog
 from .ArtProvider import SearchInDirectoriesArtProvider
 from .ArtProvider import MissingImageArtProvider
+
 
 class LayoutApplication(wx.App):
     """This is a singleton instance of the entire application. It contains information
@@ -32,7 +33,7 @@ class LayoutApplication(wx.App):
 
         if sys.platform == "linux2":
             # Change the default language of the application to english.
-            loc = wx.Locale(wx.LANGUAGE_ENGLISH)
+            wx.Locale(wx.LANGUAGE_ENGLISH)
             locale.setlocale(locale.LC_ALL, '')
         elif sys.platform == "win32":
             # Locale names is different in windows. What to use?
@@ -83,11 +84,11 @@ class LayoutApplication(wx.App):
 
             # Create an instance of our customized Frame class
             pos = self.Configuration.get('LayoutApplication.MainFrame.position', wx.DefaultPosition)
-            size = self.Configuration.get('LayoutApplication.MainFrame.size', (800,600))
+            size = self.Configuration.get('LayoutApplication.MainFrame.size', (800, 600))
             style = wx.DEFAULT_FRAME_STYLE
             if self.Configuration.get('LayoutApplication.MainFrame.IsMaximized', False):
                 style = style | wx.MAXIMIZE
-            frame = MainFrame( None, title="CSP Theater Layout Tool", pos=pos, size=size, style=style )
+            frame = MainFrame(None, title="CSP Theater Layout Tool", pos=pos, size=size, style=style)
             frame.Show(True)
 
             # Return a success flag

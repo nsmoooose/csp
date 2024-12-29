@@ -187,7 +187,7 @@ class Environment(build.Environment):
 
 	def customize_linux(self, env):
 		gcc = build.GetGCCVersion()
-		env.Replace(CXXFLAGS=Split('-O2 -g -W -Wall -pedantic -Wno-long-long -Wno-deprecated -fno-strict-aliasing -Wno-unused-local-typedefs'))
+		env.Replace(CXXFLAGS=Split('-O2 -g -W -Wall -pedantic -Wno-deprecated -fno-strict-aliasing -Wno-unused-local-typedefs'))
 		env.Replace(SWIGCXXFLAGS=Split('-O2 -g'))
 		env.Replace(ARFLAGS=Split('cr'))
 		if gcc and gcc >= (4, 2, 0):

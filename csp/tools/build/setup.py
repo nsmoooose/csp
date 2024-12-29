@@ -125,7 +125,7 @@ def CustomizeForPlatform(env, settings):
             def customize_win(self, env):
                 env['CXXFLAGS'] = Split('/GR /MD /O2 /EHsc /W3 /nologo')
             def customize_linux(self, env):
-                env['CXXFLAGS'] = Split('-O2 -g -W -Wall -pedantic -Wno-long-long')
+                env['CXXFLAGS'] = Split('-O2 -g -W -Wall -pedantic')
                 env['ARFLAGS'] = Split('cr')
 
         env.CustomizeForPlatform(PlatformSettings)

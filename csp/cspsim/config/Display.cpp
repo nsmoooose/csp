@@ -73,16 +73,16 @@ void Display::setClouds(bool clouds) {
 
 StringVector Display::enumerateDisplayModes() {
 	StringVector displayModes;
-	
+
 	/* Get available fullscreen/hardware modes */
 	Uint32 flags = SDL_OPENGL | SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_FULLSCREEN;
 	SDL_Rect **modes=SDL_ListModes(NULL, flags);
-	
+
 	/* Check is there are any modes available */
 	if(modes == (SDL_Rect **)0){
 		return displayModes;
 	}
-	
+
 	/* Check if or resolution is restricted */
 	if(modes != (SDL_Rect **)-1){
 		for(int i=0;modes[i];++i) {

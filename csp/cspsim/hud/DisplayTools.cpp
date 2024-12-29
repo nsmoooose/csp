@@ -194,7 +194,7 @@ void Element::setLineWidth(double width) {
 	}
 }
 
-void Element::setLineStipple(uint8 scale, uint16 pattern) {
+void Element::setLineStipple(uint8_t scale, uint16_t pattern) {
 	osg::StateSet *stateset = node()->getOrCreateStateSet();
 	if (scale > 0) {
 		osg::LineStipple *stipple = new osg::LineStipple;

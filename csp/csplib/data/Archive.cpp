@@ -16,7 +16,7 @@ void PackFile::close() {
 	}
 }
 
-Reader::Reader(uint8 const *buffer, uint32 length, DataArchive *data_archive, bool load_all) :
+Reader::Reader(uint8_t const *buffer, uint32_t length, DataArchive *data_archive, bool load_all) :
 	_buffer(buffer),
 	_read(buffer),
 	_end(buffer + length),
@@ -24,7 +24,7 @@ Reader::Reader(uint8 const *buffer, uint32 length, DataArchive *data_archive, bo
 	_load_all(load_all) { 
 }
 
-void Reader::bind(uint8 const *buffer, uint32 length) {
+void Reader::bind(uint8_t const *buffer, uint32_t length) {
 	_buffer = buffer;
 	_read = buffer;
 	_end = buffer + length;
@@ -51,61 +51,61 @@ Reader& Reader::operator>>(char &x) {
 	return *this;
 }
 
-Reader& Reader::operator>>(int8 &x) {
+Reader& Reader::operator>>(int8_t &x) {
 	if (_read >= _end) throw DataUnderflow();
-	x = static_cast<int8>(*_read++);
+	x = static_cast<int8_t>(*_read++);
 	return *this;
 }
 
-Reader& Reader::operator>>(uint8 &x) {
+Reader& Reader::operator>>(uint8_t &x) {
 	if (_read >= _end) throw DataUnderflow();
-	x = static_cast<uint8>(*_read++);
+	x = static_cast<uint8_t>(*_read++);
 	return *this;
 }
 
-Reader& Reader::operator>>(int16 &x) {
+Reader& Reader::operator>>(int16_t &x) {
 	if (_read + sizeof(x) > _end) throw DataUnderflow();
-	const int16 le = *(reinterpret_cast<int16 const*>(_read));
+	const int16_t le = *(reinterpret_cast<int16_t const*>(_read));
 	x = CSP_INT16_FROM_LE(le);
 	_read += sizeof(x);
 	return *this;
 }
 
-Reader& Reader::operator>>(uint16 &x) {
+Reader& Reader::operator>>(uint16_t &x) {
 	if (_read + sizeof(x) > _end) throw DataUnderflow();
-	const uint16 le = *(reinterpret_cast<uint16 const*>(_read));
+	const uint16_t le = *(reinterpret_cast<uint16_t const*>(_read));
 	x = CSP_UINT16_FROM_LE(le);
 	_read += sizeof(x);
 	return *this;
 }
 
-Reader& Reader::operator>>(int32 &x) {
+Reader& Reader::operator>>(int32_t &x) {
 	if (_read + sizeof(x) > _end) throw DataUnderflow();
-	const int32 le = *(reinterpret_cast<int32 const*>(_read));
+	const int32_t le = *(reinterpret_cast<int32_t const*>(_read));
 	x = CSP_INT32_FROM_LE(le);
 	_read += sizeof(x);
 	return *this;
 }
 
-Reader& Reader::operator>>(uint32 &x) {
+Reader& Reader::operator>>(uint32_t &x) {
 	if (_read + sizeof(x) > _end) throw DataUnderflow();
-	const uint32 le = *(reinterpret_cast<uint32 const*>(_read));
+	const uint32_t le = *(reinterpret_cast<uint32_t const*>(_read));
 	x = CSP_UINT32_FROM_LE(le);
 	_read += sizeof(x);
 	return *this;
 }
 
-Reader& Reader::operator>>(int64 &x) {
+Reader& Reader::operator>>(int64_t &x) {
 	if (_read + sizeof(x) > _end) throw DataUnderflow();
-	const int64 le = *(reinterpret_cast<int64 const*>(_read));
+	const int64_t le = *(reinterpret_cast<int64_t const*>(_read));
 	x = CSP_INT64_FROM_LE(le);
 	_read += sizeof(x);
 	return *this;
 }
 
-Reader& Reader::operator>>(uint64 &x) {
+Reader& Reader::operator>>(uint64_t &x) {
 	if (_read + sizeof(x) > _end) throw DataUnderflow();
-	const uint64 le = *(reinterpret_cast<uint64 const*>(_read));
+	const uint64_t le = *(reinterpret_cast<uint64_t const*>(_read));
 	x = CSP_UINT64_FROM_LE(le);
 	_read += sizeof(x);
 	return *this;
@@ -133,29 +133,29 @@ Reader& Reader::operator>>(double &x) {
 }
 
 Reader& Reader::operator>>(hasht &x) {
-	uint64 val;
+	uint64_t val;
 	operator>>(val);
-	x = hasht(static_cast<uint32>(val >> 32), static_cast<uint32>(val));
+	x = hasht(static_cast<uint32_t>(val >> 32), static_cast<uint32_t>(val));
 	return *this;
 }
 
 Reader& Reader::operator>>(std::string &x) {
-	int32 n = readLength();
+	int32_t n = readLength();
 	if (_read + n > _end) throw DataUnderflow();
 	x.assign(reinterpret_cast<char const*>(_read), n);
 	_read += n;
 	return *this;
 }
 
-int32 Reader::readLength() {
+int32_t Reader::readLength() {
 	if (_read >= _end) throw DataUnderflow();
-	const uint32 bytes = (static_cast<uint32>(*_read) & 3) + 1;
+	const uint32_t bytes = (static_cast<uint32_t>(*_read) & 3) + 1;
 	if (_read + bytes > _end) throw DataUnderflow();
-	uint8 val[4] = {0,0,0,0};
-	for (uint32 i=0; i < bytes; ++i) val[i] = *_read++;
-	const uint32 le = *(reinterpret_cast<uint32*>(val));
-	const uint32 length = CSP_UINT32_FROM_LE(le);
-	return static_cast<int32>(length >> 2);
+	uint8_t val[4] = {0,0,0,0};
+	for (uint32_t i=0; i < bytes; ++i) val[i] = *_read++;
+	const uint32_t le = *(reinterpret_cast<uint32_t*>(val));
+	const uint32_t length = CSP_UINT32_FROM_LE(le);
+	return static_cast<int32_t>(length >> 2);
 }
 
 Writer::~Writer() {
@@ -166,48 +166,48 @@ Writer& Writer::operator<<(const char y) {
 	return *this;
 }
 
-Writer& Writer::operator<<(const int8 y) {
+Writer& Writer::operator<<(const int8_t y) {
 	write(&y, sizeof(y));
 	return *this;
 }
 
-Writer& Writer::operator<<(const uint8 y) {
+Writer& Writer::operator<<(const uint8_t y) {
 	write(&y, sizeof(y));
 	return *this;
 }
 
-Writer& Writer::operator<<(const int16 y) {
-	const int16 le = CSP_INT16_TO_LE(y);
+Writer& Writer::operator<<(const int16_t y) {
+	const int16_t le = CSP_INT16_TO_LE(y);
 	write(&le, sizeof(le));
 	return *this;
 }
 
-Writer& Writer::operator<<(const uint16 y) {
-	const uint16 le = CSP_UINT16_TO_LE(y);
+Writer& Writer::operator<<(const uint16_t y) {
+	const uint16_t le = CSP_UINT16_TO_LE(y);
 	write(&le, sizeof(le));
 	return *this;
 }
 
-Writer& Writer::operator<<(const int32 y) {
-	const int32 le = CSP_INT32_TO_LE(y);
+Writer& Writer::operator<<(const int32_t y) {
+	const int32_t le = CSP_INT32_TO_LE(y);
 	write(&le, sizeof(le));
 	return *this;
 }
 
-Writer& Writer::operator<<(const uint32 y) {
-	const uint32 le = CSP_UINT32_TO_LE(y);
+Writer& Writer::operator<<(const uint32_t y) {
+	const uint32_t le = CSP_UINT32_TO_LE(y);
 	write(&le, sizeof(le));
 	return *this;
 }
 
-Writer& Writer::operator<<(const int64 y) {
-	const int64 le = CSP_INT64_TO_LE(y);
+Writer& Writer::operator<<(const int64_t y) {
+	const int64_t le = CSP_INT64_TO_LE(y);
 	write(&le, sizeof(le));
 	return *this;
 }
 
-Writer& Writer::operator<<(const uint64 y) {
-	const uint64 le = CSP_UINT64_TO_LE(y);
+Writer& Writer::operator<<(const uint64_t y) {
+	const uint64_t le = CSP_UINT64_TO_LE(y);
 	write(&le, sizeof(le));
 	return *this;
 }
@@ -229,27 +229,27 @@ Writer& Writer::operator<<(const double y) {
 }
 
 Writer& Writer::operator<<(const hasht &y) {
-	uint64 val = y.b;
+	uint64_t val = y.b;
 	val = (val << 32) | y.a;
 	return operator<<(val);
 }
 
 Writer& Writer::operator<<(const std::string &y) {
-	const int32 n = y.length();
+	const int32_t n = y.length();
 	writeLength(n);
 	write(y.data(), n);
 	return *this;
 }
 
-void Writer::writeLength(int32 length) {
+void Writer::writeLength(int32_t length) {
 	assert(length >= 0 && length <= 1073741823);
-	uint32 bf0 = static_cast<uint32>(length - 0x40) & 0x80000000;
-	uint32 bf1 = static_cast<uint32>(length - 0x4000) & 0x80000000;
+	uint32_t bf0 = static_cast<uint32_t>(length - 0x40) & 0x80000000;
+	uint32_t bf1 = static_cast<uint32_t>(length - 0x4000) & 0x80000000;
 	// 0-63             : bf0=00b, 1 byte representation
 	// 64-16383         : bf0=01b, 2 byte representation
 	// 16384-1073741823 : bf0=11b, 4 byte representation
 	bf0 = (((bf0 >> 1) | bf1) >> 30) ^ 3;
-	uint32 output = static_cast<int32>((length << 2) | bf0);
+	uint32_t output = static_cast<int32_t>((length << 2) | bf0);
 	// store little-endian so the bits indicating the number of bytes
 	// stored are in the first byte, and the length value is packed
 	// toward the front of the stream.
@@ -257,7 +257,7 @@ void Writer::writeLength(int32 length) {
 	write(&output, bf0 + 1);
 }
 
-void ArchiveWriter::write(const void* x, uint32 n) {
+void ArchiveWriter::write(const void* x, uint32_t n) {
 	fwrite(x, n, 1, _f);
 	_n += n;
 }
@@ -271,12 +271,12 @@ void ArchiveWriter::resetCount() {
 	_n = 0; 
 }
 
-int32 ArchiveWriter::getCount() { 
+int32_t ArchiveWriter::getCount() { 
 	return _n; 
 }
 
-ArchiveReader::ArchiveReader(const char* data, int32 n, DataArchive* archive, bool loadall) :
-	Reader(reinterpret_cast<const uint8*>(data), n, archive, loadall) { 
+ArchiveReader::ArchiveReader(const char* data, int32_t n, DataArchive* archive, bool loadall) :
+	Reader(reinterpret_cast<const uint8_t*>(data), n, archive, loadall) { 
 }
 
 } // namespace csp

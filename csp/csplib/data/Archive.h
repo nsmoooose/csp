@@ -75,16 +75,16 @@ public:
 /** Base class for serializing standard types and BaseTypes from a data source.
  */
 class CSPLIB_EXPORT Reader {
-	uint8 const *_buffer;
-	uint8 const *_read;
-	uint8 const *_end;
+	uint8_t const *_buffer;
+	uint8_t const *_read;
+	uint8_t const *_end;
 	DataArchive *_data_archive;
 	bool _load_all;
 
 protected:
-	Reader(uint8 const *buffer, uint32 length, DataArchive *data_archive=0, bool load_all=false);
+	Reader(uint8_t const *buffer, uint32_t length, DataArchive *data_archive=0, bool load_all=false);
 
-	void bind(uint8 const *buffer, uint32 length);
+	void bind(uint8_t const *buffer, uint32_t length);
 
 public:
 	virtual ~Reader();
@@ -95,14 +95,14 @@ public:
 
 #ifndef SWIG
 	Reader& operator>>(char &x);
-	Reader& operator>>(int8 &x);
-	Reader& operator>>(uint8 &x);
-	Reader& operator>>(int16 &x);
-	Reader& operator>>(uint16 &x);
-	Reader& operator>>(int32 &x);
-	Reader& operator>>(uint32 &x);
-	Reader& operator>>(int64 &x);
-	Reader& operator>>(uint64 &x);
+	Reader& operator>>(int8_t &x);
+	Reader& operator>>(uint8_t &x);
+	Reader& operator>>(int16_t &x);
+	Reader& operator>>(uint16_t &x);
+	Reader& operator>>(int32_t &x);
+	Reader& operator>>(uint32_t &x);
+	Reader& operator>>(int64_t &x);
+	Reader& operator>>(uint64_t &x);
 	Reader& operator>>(bool &x);
 	Reader& operator>>(float &x);
 	Reader& operator>>(double &x);
@@ -110,7 +110,7 @@ public:
 	Reader& operator>>(std::string &x);
 #endif // SWIG
 
-	int32 readLength();
+	int32_t readLength();
 
 	// explicit methods for use from Python
 
@@ -129,14 +129,14 @@ public:
 	__CSP_ARCHIVE(bool, _bool)
 	__CSP_ARCHIVE(char, _char)
 	__CSP_ARCHIVE(std::string, _string)
-	__CSP_ARCHIVE(CSP(int64), _int64)
-	__CSP_ARCHIVE(CSP(int32), _int32)
-	__CSP_ARCHIVE(CSP(int16), _int16)
-	__CSP_ARCHIVE(CSP(int8), _int8)
-	__CSP_ARCHIVE(CSP(uint64), _uint64)
-	__CSP_ARCHIVE(CSP(uint32), _uint32)
-	__CSP_ARCHIVE(CSP(uint16), _uint16)
-	__CSP_ARCHIVE(CSP(uint8), _uint8)
+	__CSP_ARCHIVE(int64_t, _int64)
+	__CSP_ARCHIVE(int32_t, _int32)
+	__CSP_ARCHIVE(int16_t, _int16)
+	__CSP_ARCHIVE(int8_t, _int8)
+	__CSP_ARCHIVE(uint64_t, _uint64)
+	__CSP_ARCHIVE(uint32_t, _uint32)
+	__CSP_ARCHIVE(uint16_t, _uint16)
+	__CSP_ARCHIVE(uint8_t, _uint8)
 	__CSP_ARCHIVE(CSP(hasht), _hasht)
 	__CSP_ARCHIVE(CSP(SimDate), _SimDate);
 	__CSP_ARCHIVE(CSP(Matrix3), _Matrix3);
@@ -182,7 +182,7 @@ inline Reader& operator>>(Reader &reader, BASETYPE &x) {
 
 template<typename T>
 inline Reader& operator>>(Reader& reader, std::vector<T> &y) {
-	int32 n = reader.readLength();
+	int32_t n = reader.readLength();
 	y.resize(n);
 	typename std::vector<T>::iterator i = y.begin();
 	while (n-- > 0) reader >> (*i++);
@@ -196,21 +196,21 @@ inline Reader& operator>>(Reader& reader, std::vector<T> &y) {
  */
 class CSPLIB_EXPORT Writer {
 protected:
-	virtual void write(void const* data, uint32 bytes)=0;
+	virtual void write(void const* data, uint32_t bytes)=0;
 
 public:
 	virtual ~Writer();
 
 #ifndef SWIG
 	Writer& operator<<(const char y);
-	Writer& operator<<(const int8 y);
-	Writer& operator<<(const uint8 y);
-	Writer& operator<<(const int16 y);
-	Writer& operator<<(const uint16 y);
-	Writer& operator<<(const int32 y);
-	Writer& operator<<(const uint32 y);
-	Writer& operator<<(const int64 y);
-	Writer& operator<<(const uint64 y);
+	Writer& operator<<(const int8_t y);
+	Writer& operator<<(const uint8_t y);
+	Writer& operator<<(const int16_t y);
+	Writer& operator<<(const uint16_t y);
+	Writer& operator<<(const int32_t y);
+	Writer& operator<<(const uint32_t y);
+	Writer& operator<<(const int64_t y);
+	Writer& operator<<(const uint64_t y);
 	Writer& operator<<(const bool y);
 	Writer& operator<<(const float y);
 	Writer& operator<<(const double y);
@@ -218,7 +218,7 @@ public:
 	Writer& operator<<(const std::string &y);
 #endif // SWIG
 
-	void writeLength(int32 length);
+	void writeLength(int32_t length);
 
 	// explicit packing (use from python)
 
@@ -227,15 +227,15 @@ public:
 	inline void _double(double x) { (*self) << x; }
 	inline void _float(float x) { (*self) << x; }
 	inline void _bool(bool x) { (*self) << x; }
-	inline void _int64(int64 x) { (*self) << x; }
-	inline void _int32(int32 x) { (*self) << x; }
-	inline void _int16(int16 x) { (*self) << x; }
-	inline void _int8(int8 x) { (*self) << x; }
+	inline void _int64(int64_t x) { (*self) << x; }
+	inline void _int32(int32_t x) { (*self) << x; }
+	inline void _int16(int16_t x) { (*self) << x; }
+	inline void _int8(int8_t x) { (*self) << x; }
 	inline void _char(char x) { (*self) << x; }
-	inline void _uint8(uint8 x) { (*self) << x; }
-	inline void _uint16(uint16 x) { (*self) << x; }
-	inline void _uint32(uint32 x) { (*self) << x; }
-	inline void _uint64(uint64 x) { (*self) << x; }
+	inline void _uint8(uint8_t x) { (*self) << x; }
+	inline void _uint16(uint16_t x) { (*self) << x; }
+	inline void _uint32(uint32_t x) { (*self) << x; }
+	inline void _uint64(uint64_t x) { (*self) << x; }
 	inline void _hasht(hasht const &x) { (*self) << x; }
 	inline void _string(std::string const &x) { (*self) << x; }
 	inline void _Object(Object const &x) { (*self) << x; }
@@ -289,14 +289,14 @@ public:
 
 	void resetCount();
 
-	int32 getCount();
+	int32_t getCount();
 
 protected:
-	virtual void write(const void* x, uint32 n);
+	virtual void write(const void* x, uint32_t n);
 
 private:
 	FILE *_f;
-	int32 _n;
+	int32_t _n;
 };
 
 
@@ -311,7 +311,7 @@ private:
  */
 class CSPLIB_EXPORT ArchiveReader: public Reader {
 public:
-	ArchiveReader(const char* data, int32 n, DataArchive* archive=0, bool loadall=true);
+	ArchiveReader(const char* data, int32_t n, DataArchive* archive=0, bool loadall=true);
 };
 
 } // namespace csp

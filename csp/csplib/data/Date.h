@@ -87,11 +87,11 @@ CSP_EXCEPTION(InvalidDate)
  */
 class CSPLIB_EXPORT Date {
 public:
-	typedef int32 julian_t;
-	typedef uint8 day_t;
-	typedef uint8 weekday_t;
-	typedef uint8 month_t;
-	typedef int16 year_t;
+	typedef int32_t julian_t;
+	typedef uint8_t day_t;
+	typedef uint8_t weekday_t;
+	typedef uint8_t month_t;
+	typedef int16_t year_t;
 
 	typedef enum {
 		MONDAY       = 1,

@@ -103,14 +103,14 @@ void DataArchive::readTable() {
 		throw CorruptArchive("Lookup table offset.");
 	}
 	fseek(_f, _table_offset, SEEK_SET);
-	uint32 n_objects;
+	uint32_t n_objects;
 	n = fread(&n_objects, sizeof(n_objects), 1, _f);
 	if (n != 1 || n_objects > 100000) {
 		throw CorruptArchive("Number of objects.");
 	}
 	_table.resize(n_objects);
 	n = fread(&(_table[0]), sizeof(TableEntry), n_objects, _f);
-	if (static_cast<uint32>(n) != n_objects) {
+	if (static_cast<uint32_t>(n) != n_objects) {
 		throw CorruptArchive("Lookup table truncated.");
 	}
 	for (std::size_t i = 0; i < static_cast<std::size_t>(n_objects); i++) {
@@ -120,25 +120,25 @@ void DataArchive::readTable() {
 }
 
 void DataArchive::_readPaths() {
-	uint32 path_toc_size;
+	uint32_t path_toc_size;
 	size_t n;
 	n = fread(&path_toc_size, sizeof(path_toc_size), 1, _f);
-	if (n != 1 || path_toc_size < static_cast<uint32>(sizeof(uint32)*2) || path_toc_size > 1000000) {
+	if (n != 1 || path_toc_size < static_cast<uint32_t>(sizeof(uint32_t)*2) || path_toc_size > 1000000) {
 		throw CorruptArchive("Path table of contents.");
 	}
 	std::vector<char> toc_buffer(path_toc_size);
 	n = fread(&(toc_buffer[0]), 1, path_toc_size, _f);
-	if (static_cast<uint32>(n) != path_toc_size || toc_buffer[path_toc_size-1] != 0) {
+	if (static_cast<uint32_t>(n) != path_toc_size || toc_buffer[path_toc_size-1] != 0) {
 		throw CorruptArchive("Path table of contents truncated.");
 	}
-	uint32 *iptr = reinterpret_cast<uint32*>(&toc_buffer[0]);
-	uint32 n_paths = *iptr++;
-	uint32 n_directories = *iptr++;
+	uint32_t *iptr = reinterpret_cast<uint32_t*>(&toc_buffer[0]);
+	uint32_t n_paths = *iptr++;
+	uint32_t n_directories = *iptr++;
 	_paths.reserve(n_paths);
 	ObjectID *hptr = reinterpret_cast<ObjectID *>(iptr);
 	while (n_directories-- > 0) {
 		ObjectID node = *hptr++;
-		uint32 n_children = hptr->a;
+		uint32_t n_children = hptr->a;
 		++hptr;
 		if (n_children > n_paths) {
 			throw CorruptArchive("Path table of contents.");
@@ -168,20 +168,20 @@ void DataArchive::_readPaths() {
 void DataArchive::writeTable() {
 	assert(!_is_read);
 	if (_finalized) return;
-	_table_offset = static_cast<uint32>(ftell(_f));
-	uint32 n_objects = static_cast<uint32>(_table.size());
+	_table_offset = static_cast<uint32_t>(ftell(_f));
+	uint32_t n_objects = static_cast<uint32_t>(_table.size());
 	fwrite(&n_objects, sizeof(n_objects), 1, _f);
 	fwrite(&(_table[0]), sizeof(TableEntry), _table.size(), _f);
 	_writePaths();
 	fseek(_f, 8, SEEK_SET);
 	fwrite(&_table_offset, sizeof(_table_offset), 1, _f);
 	_finalized = true;
-}	
+}
 
 void DataArchive::_writePaths() const {
 	ChildMap::const_iterator iter;
 	long start = ftell(_f);
-	uint32 size = 0;
+	uint32_t size = 0;
 	fwrite(&size, sizeof(size), 1, _f);
 	size = _paths.size();
 	fwrite(&size, sizeof(size), 1, _f);
@@ -204,7 +204,7 @@ void DataArchive::_writePaths() const {
 	}
 	long end = ftell(_f);
 	fseek(_f, start, SEEK_SET);
-	size = static_cast<uint32>(end - start - sizeof(int));
+	size = static_cast<uint32_t>(end - start - sizeof(int));
 	fwrite(&size, sizeof(size), 1, _f);
 	fseek(_f, end, SEEK_SET);
 }
@@ -356,8 +356,8 @@ const LinkBase DataArchive::getObject(const Path& path, std::string const &path_
 	}
 	CSPLOG(DEBUG, ARCHIVE) << "Creating object using interface proxy [" << proxy->getClassName() << "]";
 	Ref<Object> dup = proxy->createObject();
-	uint32 offset = t->offset;
-	uint32 length = t->length;
+	uint32_t offset = t->offset;
+	uint32_t length = t->length;
 	char* buffer = 0;
 	Buffer temp_buffer;
 	if (_buffer < _buffers.size() && length <= _buffers[_buffer].size()) {

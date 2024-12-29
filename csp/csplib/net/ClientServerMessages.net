@@ -25,15 +25,15 @@ message Reset : NetworkMessage {  @id=4;
 
 message ConnectionRequest : NetworkMessage {  @id=5;
 	std::string password;
-	int32 incoming_bw;
-	int32 outgoing_bw;
+	int32_t incoming_bw;
+	int32_t outgoing_bw;
 }
 
 message ConnectionResponse : NetworkMessage {  @id=6;
 	std::string server_id;
 	std::string response;
 	bool success;
-	int16 client_id;
-	int32 incoming_bw;
-	int32 outgoing_bw;
+	int16_t client_id;
+	int32_t incoming_bw;
+	int32_t outgoing_bw;
 }

@@ -70,29 +70,29 @@ class CSPLIB_EXPORT PeerInfo: public NonCopyable {
 
 	ConfirmationId m_next_confirmation_id;
 
-	uint32 *m_duplicate_filter;
+	uint32_t *m_duplicate_filter;
 	bool m_duplicate_filter_low;
 
 	bool m_statmode_toggle;
-	uint32 m_throttle_threshold;
+	uint32_t m_throttle_threshold;
 
 	// number of bytes for the ip + udp headers
-	static const uint32 UDP_OVERHEAD = 24;
+	static const uint32_t UDP_OVERHEAD = 24;
 
 	// these are the total number of packets and bytes sent or received
 	// during the current cycle
-	uint32 m_packets_peer_to_self;
-	uint32 m_packets_self_to_peer;
-	uint32 m_bytes_peer_to_self;
-	uint32 m_bytes_self_to_peer;
+	uint32_t m_packets_peer_to_self;
+	uint32_t m_packets_self_to_peer;
+	uint32_t m_bytes_peer_to_self;
+	uint32_t m_bytes_self_to_peer;
 
 	double m_average_outgoing_packet_size;
-	uint32 m_packets_throttled;
+	uint32_t m_packets_throttled;
 
-	uint32 m_desired_rate_self_to_peer;
-	uint32 m_desired_rate_peer_to_self;
-	uint32 m_allocation_peer_to_self;
-	uint32 m_allocation_self_to_peer;
+	uint32_t m_desired_rate_self_to_peer;
+	uint32_t m_desired_rate_peer_to_self;
+	uint32_t m_allocation_peer_to_self;
+	uint32_t m_allocation_self_to_peer;
 
 	// NB: all bandwidths are bytes per second
 
@@ -164,7 +164,7 @@ class CSPLIB_EXPORT PeerInfo: public NonCopyable {
 	/** Register a reliable packet, and assign a confirmation id.  PeerInfo will resend this packet
 	 *  periodically until the corresponding confirmation id is received.
 	 */
-	void registerConfirmation(PacketReceiptHeader *receipt, const uint32 payload_length);
+	void registerConfirmation(PacketReceiptHeader *receipt, const uint32_t payload_length);
 
 public:
 
@@ -199,14 +199,14 @@ public:
 	/** Returns an estimate of the average transmission rate (in bytes per second) from
 	 *  this peer to us that would be sent in the absense of bandwidth constraints.
 	 */
-	inline uint32 getDesiredRatePeerToSelf() const {
+	inline uint32_t getDesiredRatePeerToSelf() const {
 		return m_desired_rate_peer_to_self;
 	}
 
 	/** Record a packet received from this peer.  This method updates statistics used
 	 *  for packet throttling.
 	 */
-	inline void tallyReceivedPacket(uint32 bytes) {
+	inline void tallyReceivedPacket(uint32_t bytes) {
 		m_packets_peer_to_self++;
 		m_bytes_peer_to_self += bytes + UDP_OVERHEAD;
 	}
@@ -214,7 +214,7 @@ public:
 	/** Record a packet sent to this peer.  This method updates statistics used
 	 *  for packet throttling.
 	 */
-	inline void tallySentPacket(uint32 bytes) {
+	inline void tallySentPacket(uint32_t bytes) {
 		m_packets_self_to_peer++;
 		m_bytes_self_to_peer += bytes + UDP_OVERHEAD;
 		m_quiet_time = 0.0;
@@ -304,7 +304,7 @@ public:
 	 *  use PacketHeader, rather than the extended PacketReceiptHeader, when there are no pending
 	 *  confirmations to be sent.
 	 */
-	void setReceipt(PacketReceiptHeader *receipt, bool reliable, uint32 payload_length);
+	void setReceipt(PacketReceiptHeader *receipt, bool reliable, uint32_t payload_length);
 
 	/** Called for reliable packets received from this peer.  Adds the confirmation id to a queue
 	 *  of ids that are included in extended headers of packets sent to this peer.  Once the
@@ -440,7 +440,7 @@ public:
  */
 class CSPLIB_EXPORT ActivePeerList: public NonCopyable {
 	double m_ElapsedTime;
-	uint32 m_DesiredRateToSelf;
+	uint32_t m_DesiredRateToSelf;
 	typedef std::vector<PeerInfo *> PeerList;
 	PeerList m_ActivePeers;
 

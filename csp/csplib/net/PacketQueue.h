@@ -69,7 +69,7 @@ public:
 	 *  @param drop_percent the percentage of packets to drop when dropOldest
 	 *                      is called.
 	 */
-	PacketQueue(uint32 size, double drop_percent): m_Buffer(size), m_Depth(0) {
+	PacketQueue(uint32_t size, double drop_percent): m_Buffer(size), m_Depth(0) {
 		m_DropFraction = drop_percent * 0.01;
 	}
 
@@ -83,7 +83,7 @@ public:
 	 *  @return a pointer to a writeable buffer, or NULL if insufficient
 	 *    space was available.
 	 */
-	inline uint8 *getWriteBuffer(const uint32 size) {
+	inline uint8_t *getWriteBuffer(const uint32_t size) {
 		return m_Buffer.getWriteBuffer(size);
 	}
 
@@ -95,7 +95,7 @@ public:
 	 *    number allocated, the extra bytes are released and made available
 	 *    for subsequent allocations.
 	 */
-	inline void commitWriteBuffer(uint32 size) {
+	inline void commitWriteBuffer(uint32_t size) {
 		m_Buffer.commitWriteBuffer(size);
 		m_Depth++;
 	}
@@ -118,7 +118,7 @@ public:
 	 *  @return a pointer to the packet buffer, or null if the queue is
 	 *  empty.
 	 */
-	inline uint8* getReadBuffer(uint32 &size) {
+	inline uint8_t* getReadBuffer(uint32_t &size) {
 		return m_Buffer.getReadBuffer(size);
 	}
 	
@@ -171,7 +171,7 @@ public:
 	int dropOldest() {
 		int excess = int(m_Depth * m_DropFraction);
 		int drop_count = excess;
-		uint32 size;
+		uint32_t size;
 		while (--drop_count >= 0) {
 			m_Buffer.getReadBuffer(size);
 			m_Buffer.releaseReadBuffer();

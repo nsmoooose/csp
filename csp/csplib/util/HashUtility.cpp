@@ -57,10 +57,10 @@ namespace csp {
  *  @param length the length of the string in bytes.
  *  @param  initval the previous hash, or an arbitrary value
  */
-inline uint32 newhash(uint8 const *k, uint32 length, uint32 initval)
+inline uint32_t newhash(uint8_t const *k, uint32_t length, uint32_t initval)
 {
-	uint32 a,b,c;           // the internal state
-	uint32 len;             // how many key bytes still need mixing
+	uint32_t a,b,c;           // the internal state
+	uint32_t len;             // how many key bytes still need mixing
 
 	// Set up the internal state
 	len = length;
@@ -70,9 +70,9 @@ inline uint32 newhash(uint8 const *k, uint32 length, uint32 initval)
 	// handle most of the key
 
 	while (len >= 12) {
-		a=a+(k[0]+((uint32)k[1]<<8)+((uint32)k[2]<<16) +((uint32)k[3]<<24));
-		b=b+(k[4]+((uint32)k[5]<<8)+((uint32)k[6]<<16) +((uint32)k[7]<<24));
-		c=c+(k[8]+((uint32)k[9]<<8)+((uint32)k[10]<<16)+((uint32)k[11]<<24));
+		a=a+(k[0]+((uint32_t)k[1]<<8)+((uint32_t)k[2]<<16) +((uint32_t)k[3]<<24));
+		b=b+(k[4]+((uint32_t)k[5]<<8)+((uint32_t)k[6]<<16) +((uint32_t)k[7]<<24));
+		c=c+(k[8]+((uint32_t)k[9]<<8)+((uint32_t)k[10]<<16)+((uint32_t)k[11]<<24));
 		mix(a,b,c);
 		k = k+12; len = len-12;
 	}
@@ -80,17 +80,17 @@ inline uint32 newhash(uint8 const *k, uint32 length, uint32 initval)
 	// handle the last 11 bytes
 	c = c+length;
 	switch(len)  { // all the case statements fall through
-	case 11: c=c+((uint32)k[10]<<24);  /* fall through */
-	case 10: c=c+((uint32)k[9]<<16);   /* fall through */
-	case 9 : c=c+((uint32)k[8]<<8);    /* fall through */
+	case 11: c=c+((uint32_t)k[10]<<24);  /* fall through */
+	case 10: c=c+((uint32_t)k[9]<<16);   /* fall through */
+	case 9 : c=c+((uint32_t)k[8]<<8);    /* fall through */
 	// the first byte of c is reserved for the length
-	case 8 : b=b+((uint32)k[7]<<24);   /* fall through */
-	case 7 : b=b+((uint32)k[6]<<16);   /* fall through */
-	case 6 : b=b+((uint32)k[5]<<8);    /* fall through */
+	case 8 : b=b+((uint32_t)k[7]<<24);   /* fall through */
+	case 7 : b=b+((uint32_t)k[6]<<16);   /* fall through */
+	case 6 : b=b+((uint32_t)k[5]<<8);    /* fall through */
 	case 5 : b=b+k[4]; /* fall through */
-	case 4 : a=a+((uint32)k[3]<<24);   /* fall through */
-	case 3 : a=a+((uint32)k[2]<<16);   /* fall through */
-	case 2 : a=a+((uint32)k[1]<<8);    /* fall through */
+	case 4 : a=a+((uint32_t)k[3]<<24);   /* fall through */
+	case 3 : a=a+((uint32_t)k[2]<<16);   /* fall through */
+	case 2 : a=a+((uint32_t)k[1]<<8);    /* fall through */
 	case 1 : a=a+k[0];                 /* fall through */
 	 // case 0: nothing left to add
 	}
@@ -102,35 +102,35 @@ inline uint32 newhash(uint8 const *k, uint32 length, uint32 initval)
 
 /** Generate a 32-bit hash from a string
  */
-uint32 newhash4_cstring(std::string const &str) {
-	return newhash((uint8 const*)str.c_str(), str.size(), 0);
+uint32_t newhash4_cstring(std::string const &str) {
+	return newhash((uint8_t const*)str.c_str(), str.size(), 0);
 }
 
 /** Generate a 64-bit hash (HashT) from a string
  */
 HashT newhasht_cstring(std::string const &str) {
-	uint32 h0, h1;
-	h0 = newhash(reinterpret_cast<uint8 const*>(str.c_str()), str.size(), 0);
-	h1 = newhash(reinterpret_cast<uint8 const*>(str.c_str()), str.size(), 1);
+	uint32_t h0, h1;
+	h0 = newhash(reinterpret_cast<uint8_t const*>(str.c_str()), str.size(), 0);
+	h1 = newhash(reinterpret_cast<uint8_t const*>(str.c_str()), str.size(), 1);
 	return HashT(h1, h0);
 }
 
 // 32-bit hash helpers
 
-uint32 hash_uint32(uint32 x) {
-	return newhash(reinterpret_cast<uint8 const*>(&x), 4, 0);
+uint32_t hash_uint32(uint32_t x) {
+	return newhash(reinterpret_cast<uint8_t const*>(&x), 4, 0);
 }
 
-uint32 hash_uint32(uint64 x) {
-	return newhash(reinterpret_cast<uint8 const*>(&x), 8, 0);
+uint32_t hash_uint32(uint64_t x) {
+	return newhash(reinterpret_cast<uint8_t const*>(&x), 8, 0);
 }
 
-uint32 hash_uint32(std::string const &x) {
-	return newhash(reinterpret_cast<uint8 const*>(x.c_str()), x.size(), 0);
+uint32_t hash_uint32(std::string const &x) {
+	return newhash(reinterpret_cast<uint8_t const*>(x.c_str()), x.size(), 0);
 }
 
-uint32 hash_uint32(const char *buffer, const int len) {
-	return newhash(reinterpret_cast<uint8 const*>(buffer), len, 0);
+uint32_t hash_uint32(const char *buffer, const int len) {
+	return newhash(reinterpret_cast<uint8_t const*>(buffer), len, 0);
 }
 
 

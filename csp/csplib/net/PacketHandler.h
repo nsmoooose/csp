@@ -61,7 +61,7 @@ public:
 	 *  @param payload a buffer containing the payload data.
 	 *  @param payload_length the size of the payload, in bytes.
 	 */
-	virtual void handlePacket(PacketHeader const *header, uint8 *payload, uint32 payload_length)=0;
+	virtual void handlePacket(PacketHeader const *header, uint8_t *payload, uint32_t payload_length)=0;
 };
 
 } // namespace csp

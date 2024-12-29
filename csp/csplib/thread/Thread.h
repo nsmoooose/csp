@@ -50,7 +50,7 @@ typedef ReferencedBase<AtomicCounter> ThreadSafeReferenced;
 class ThreadId {
 public:
 	ThreadId(ost::Thread *thread): m_thread(thread) { }
-	uint64 id() const { return m_thread ? static_cast<uint64>(m_thread->getId()) : 0; }
+	uint64_t id() const { return m_thread ? static_cast<uint64>(m_thread->getId()) : 0; }
 	bool operator==(const ThreadId &other) { return id() == other.id() && m_thread && other.m_thread; }
 private:
 	ost::Thread *m_thread;
@@ -74,7 +74,7 @@ namespace thread {
 
 	/** Return the id of the current thread.
 	 */
-	static inline uint64 id() { return self().id(); }
+	static inline uint64_t id() { return self().id(); }
 
 	/** Suspend execution of the current thread the specified amount of time.
 	 *

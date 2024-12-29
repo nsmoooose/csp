@@ -46,7 +46,7 @@ public:
 
 class RemoteAnimationUpdate: public Referenced {
 	DataChannel<double>::CRefT m_Channel;
-	uint8 m_LastValue;
+	uint8_t m_LastValue;
 	int m_LevelOfDetail;
 	double m_Limit0;
 	double m_Limit1;
@@ -61,8 +61,8 @@ public:
 	void setLimits(double lo, double hi) { m_Limit0 = lo; m_Limit1 = hi; m_Scale = 255.0 / (m_Limit1 - m_Limit0); }
 	void expandLimits(double lo, double hi) { setLimits(std::min(lo, m_Limit0), std::max(hi, m_Limit1)); }
 	inline int lod() const { return m_LevelOfDetail; }
-	inline uint8 value() const { return m_LastValue; }
-	inline static double convert(uint8 value);
+	inline uint8_t value() const { return m_LastValue; }
+	inline static double convert(uint8_t value);
 };
 
 
@@ -81,7 +81,7 @@ public:
 	void lowerRateLimit(double limit) { m_RateLimit = std::min(limit, m_RateLimit); }
 	void expandLimits(double lo, double hi) { setLimits(std::min(lo, m_Limit0), std::max(hi, m_Limit1)); }
 	void bind(DataChannel<double>::RefT const &channel) { m_Channel = channel; }
-	void setTarget(uint8 value);
+	void setTarget(uint8_t value);
 	void update(double dt);
 };
 

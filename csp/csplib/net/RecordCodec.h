@@ -71,11 +71,11 @@ public:
 
 	/** Decode a tagged record from a raw network message.
 	 */
-	Ref<TaggedRecord> decode(int local_id, uint8 const *buffer, const size_t buffer_length);
+	Ref<TaggedRecord> decode(int local_id, uint8_t const *buffer, const size_t buffer_length);
 
 	/** Encode a tagged record to a raw network message.
 	 */
-	size_t encode(Ref<TaggedRecord> record, uint8 *buffer, size_t buffer_length);
+	size_t encode(Ref<TaggedRecord> record, uint8_t *buffer, size_t buffer_length);
 
 	/** Assign a message id to a tagged record.  The new message id must not be
 	 *  in use, and must be above the reserved range (0-63).

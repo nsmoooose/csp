@@ -95,14 +95,14 @@ inline const char *skipWhitespace(const char *str) {
  *  Leading and trailing whitespace is ignored.  Trailing non-numeric data,
  *  even after whitespace, is not allowed.
  */
-bool CSPLIB_EXPORT parseInt(const char *s, int64 &x);
-bool CSPLIB_EXPORT parseInt(const char *s, uint64 &x);
-bool CSPLIB_EXPORT parseInt(const char *s, int32 &x);
-bool CSPLIB_EXPORT parseInt(const char *s, uint32 &x);
-bool CSPLIB_EXPORT parseInt(const char *s, int16 &x);
-bool CSPLIB_EXPORT parseInt(const char *s, uint16 &x);
-bool CSPLIB_EXPORT parseInt(const char *s, int8 &x);
-bool CSPLIB_EXPORT parseInt(const char *s, uint8 &x);
+bool CSPLIB_EXPORT parseInt(const char *s, int64_t &x);
+bool CSPLIB_EXPORT parseInt(const char *s, uint64_t &x);
+bool CSPLIB_EXPORT parseInt(const char *s, int32_t &x);
+bool CSPLIB_EXPORT parseInt(const char *s, uint32_t &x);
+bool CSPLIB_EXPORT parseInt(const char *s, int16_t &x);
+bool CSPLIB_EXPORT parseInt(const char *s, uint16_t &x);
+bool CSPLIB_EXPORT parseInt(const char *s, int8_t &x);
+bool CSPLIB_EXPORT parseInt(const char *s, uint8_t &x);
 
 /** Parse a double value from a c-string. Doesn't handle exponent string. */
 bool CSPLIB_EXPORT parseDouble(const char *s, double &x);
@@ -117,8 +117,9 @@ public:
 
 	FormatArg(int x): x_type(TYPE_INT) { x_val.i = x; }
 	FormatArg(unsigned x): x_type(TYPE_UINT) { x_val.ui = x; }
-	FormatArg(int64 x): x_type(TYPE_INT64) { x_val.i64 = x; }
-	FormatArg(uint64 x): x_type(TYPE_UINT64) { x_val.ui64 = x; }
+	FormatArg(int64_t x): x_type(TYPE_INT64) { x_val.i64 = x; }
+	FormatArg(uint64_t x): x_type(TYPE_UINT64) { x_val.ui64 = x; }
+	FormatArg(unsigned long long int x): x_type(TYPE_UINT64) { x_val.ui64 = x; }
 	FormatArg(char x): x_type(TYPE_CHAR) { x_val.c = x; }
 	FormatArg(double x): x_type(TYPE_DOUBLE) { x_val.d = x; }
 	FormatArg(const char *x): x_type(TYPE_STRING), x_len(-1) { x_val.s = x; }
@@ -135,7 +136,7 @@ private:
 	bool formatString(stringbuf &out, formatspec const &spec, const char *s, int len) const;
 	bool formatFloat(stringbuf &out, formatspec const &spec, double value, char style) const;
 	enum {TYPE_INT, TYPE_UINT, TYPE_INT64, TYPE_UINT64, TYPE_CHAR, TYPE_DOUBLE, TYPE_CHARSTAR, TYPE_STRING, TYPE_PTR} x_type;
-	union { int i; unsigned ui; int64 i64; uint64 ui64; char c; double d; const char *s; const void *p; } x_val;
+	union { int i; unsigned ui; int64_t i64; uint64_t ui64; char c; double d; const char *s; const void *p; } x_val;
 	int x_len;
 };
 

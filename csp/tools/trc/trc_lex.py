@@ -60,7 +60,7 @@ reserved = (
 # simple and compound types
 type_categories = {
     'BOOL_TYPE': ('bool',),
-    'INT_TYPE': ('int8', 'int16', 'int32', 'int64', 'uint8', 'uint16', 'uint32'),
+    'INT_TYPE': ('int8_t', 'int16_t', 'int32_t', 'int64_t', 'uint8_t', 'uint16_t', 'uint32_t'),
     'FLOAT_TYPE': ('float', 'double'),
     'STRING_TYPE': ('std::string',),
     'CSP_TYPE': (

@@ -55,22 +55,22 @@ class GlobalPosition {
 	float x;
 	float y;
 	float z;
-	uint8 x0;
-	uint8 y0;
+	uint8_t x0;
+	uint8_t y0;
 
 	friend Reader & operator >> (Reader &r, GlobalPosition &p);
 	friend Writer & operator << (Writer &w, GlobalPosition const &p);
 public:
 
 	GlobalPosition(): x(0), y(0), z(0), x0(0), y0(0) {}
-	
+
 	explicit GlobalPosition(Vector3 const &v) {
 		*this = v;
 	}
 
 	inline GlobalPosition const &operator=(Vector3 const &v) {
-		x0 = static_cast<uint8>(floor(v.x() / 32000.0) + 128);
-		y0 = static_cast<uint8>(floor(v.y() / 32000.0) + 128);
+		x0 = static_cast<uint8_t>(floor(v.x() / 32000.0) + 128);
+		y0 = static_cast<uint8_t>(floor(v.y() / 32000.0) + 128);
 		x = static_cast<float>(v.x() - (static_cast<int>(x0)-128) * 32000.0);
 		y = static_cast<float>(v.y() - (static_cast<int>(y0)-128) * 32000.0);
 		z = static_cast<float>(v.z());

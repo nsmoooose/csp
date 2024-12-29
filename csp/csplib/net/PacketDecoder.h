@@ -58,7 +58,7 @@ public:
 	 *  @param payload a buffer containing the payload data.
 	 *  @param payload_length the size of the payload, in bytes.
 	 */
-	virtual void handlePacket(PacketHeader const *header, uint8 *payload, uint32 payload_length) {
+	virtual void handlePacket(PacketHeader const *header, uint8_t *payload, uint32_t payload_length) {
 		Ref<NetworkMessage> msg = m_Codec.decode(header->messageId(), payload, payload_length);
 		if (!msg) return;
 		msg->setSource(header->source());

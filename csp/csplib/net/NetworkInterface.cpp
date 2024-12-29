@@ -70,18 +70,18 @@ namespace csp {
 
 #pragma pack(push, 1)
 struct PingPayload {
-	uint32 transmit_time; // ms
-	int32 last_latency; // ms
+	uint32_t transmit_time; // ms
+	int32_t last_latency; // ms
 };
 #pragma pack(pop)
 
 
-const uint32 NetworkInterface::HeaderSize = sizeof(PacketHeader);
-const uint32 NetworkInterface::ReceiptHeaderSize = sizeof(PacketReceiptHeader);
+const uint32_t NetworkInterface::HeaderSize = sizeof(PacketHeader);
+const uint32_t NetworkInterface::ReceiptHeaderSize = sizeof(PacketReceiptHeader);
 
-CSP_STATIC_CONST_DEF(uint16 NetworkInterface::PingID);
-CSP_STATIC_CONST_DEF(uint32 NetworkInterface::PeerIndexSize);
-CSP_STATIC_CONST_DEF(uint32 NetworkInterface::MaxPayloadLength);
+CSP_STATIC_CONST_DEF(uint16_t NetworkInterface::PingID);
+CSP_STATIC_CONST_DEF(uint32_t NetworkInterface::PeerIndexSize);
+CSP_STATIC_CONST_DEF(uint32_t NetworkInterface::MaxPayloadLength);
 CSP_STATIC_CONST_DEF(PeerId NetworkInterface::InitialClientId);
 CSP_STATIC_CONST_DEF(PeerId NetworkInterface::ServerId);
 
@@ -90,14 +90,14 @@ CSP_STATIC_CONST_DEF(PeerId NetworkInterface::ServerId);
  */
 class PacketHandlerCallback {
 	PacketHeader *m_header;
-	uint8 *m_payload;
-	uint32 m_payload_length;
+	uint8_t *m_payload;
+	uint32_t m_payload_length;
 
 public:
 	/** Construct a new callback, storing information about the packet to be
 	 *  handled.
 	 */
-	PacketHandlerCallback(PacketHeader *header, uint8 *payload, uint32 payload_length):
+	PacketHandlerCallback(PacketHeader *header, uint8_t *payload, uint32_t payload_length):
 		m_header(header), m_payload(payload), m_payload_length(payload_length) { }
 
 	/** Callback function that calls handler->handlePacket with the current
@@ -111,9 +111,9 @@ public:
 
 void NetworkInterface::sendPackets(double timeout) {
 	static StopWatch::Data swd(0.00001f);
-	uint8 *ptr;
+	uint8_t *ptr;
 	ost::InetHostAddress addr;
-	uint32 size;
+	uint32_t size;
 
 	int queue_idx = 3;
 	int process_count[] = {4, 6, 10, 20};
@@ -221,8 +221,8 @@ void NetworkInterface::sendPackets(double timeout) {
 void NetworkInterface::resend(Ref<ReliablePacket> &packet) {
 	const int queue_idx = 3;
 	PacketQueue *queue = m_TxQueues[queue_idx];
-	uint32 packet_size = packet->size();
-	uint8 *ptr = queue->getWriteBuffer(packet_size);
+	uint32_t packet_size = packet->size();
+	uint8_t *ptr = queue->getWriteBuffer(packet_size);
 	packet->copy(ptr);
 	queue->commitWriteBuffer(packet_size);
 }
@@ -234,7 +234,7 @@ bool NetworkInterface::pingPeer(PeerInfo *peer) {
 	const bool confirm = peer->hasPendingConfirmations();
 	const unsigned int header_size = (confirm ? ReceiptHeaderSize : HeaderSize);
 	const unsigned int packet_size = header_size + sizeof(PingPayload);
-	uint8 *ptr = queue->getWriteBuffer(packet_size);
+	uint8_t *ptr = queue->getWriteBuffer(packet_size);
 	if (!ptr) return false;
 	PacketHeader *header = reinterpret_cast<PacketHeader*>(ptr);
 	header->setReliable(false);
@@ -248,7 +248,7 @@ bool NetworkInterface::pingPeer(PeerInfo *peer) {
 		peer->setReceipt(receipt, false /*reliable*/, sizeof(PingPayload));
 	}
 	PingPayload *payload = reinterpret_cast<PingPayload*>(ptr + header_size);
-	uint32 transmit_time = static_cast<uint32>(getCalibratedRealTime() * 1000.0);
+	uint32_t transmit_time = static_cast<uint32>(getCalibratedRealTime() * 1000.0);
 	payload->transmit_time = CSP_UINT32_TO_LE(transmit_time);
 	payload->last_latency = CSP_INT32_TO_LE(peer->getLastPingLatency());
 	//std::cout << "PING " << peer->getId() << " .......\n";
@@ -291,9 +291,9 @@ void NetworkInterface::processOutgoing(double timeout) {
 	watch.start();
 	double t0 = get_realtime();
 
-	const uint32 allocation_size = MaxPayloadLength + HeaderSize;
+	const uint32_t allocation_size = MaxPayloadLength + HeaderSize;
 
-	uint32 payload_length;
+	uint32_t payload_length;
 	int queue_idx;
 	PeerId destination;
 
@@ -313,7 +313,7 @@ void NetworkInterface::processOutgoing(double timeout) {
 
 		PacketQueue *queue = m_TxQueues[queue_idx];
 
-		uint8 *ptr = queue->getWriteBuffer(allocation_size);
+		uint8_t *ptr = queue->getWriteBuffer(allocation_size);
 		if (!ptr) {
 			DEBUG_exitcode = 1;
 			break;
@@ -335,7 +335,7 @@ void NetworkInterface::processOutgoing(double timeout) {
 		header->setPriority(queue_idx);
 		header->setSource(m_LocalId);
 
-		uint8 *payload = ptr + header_size;
+		uint8_t *payload = ptr + header_size;
 		payload_length = allocation_size - header_size;
 		m_PacketSource->getPacket(header, payload, payload_length);
 
@@ -392,7 +392,7 @@ int NetworkInterface::receivePackets(double timeout) {
 	static StopWatch::Data swd(0.000001f);
 	assert(m_Initialized);
 
-	uint8 *ptr;
+	uint8_t *ptr;
 	PacketReceiptHeader *header;
 
 	char buffer[MaxPayloadLength + ReceiptHeaderSize];
@@ -418,7 +418,7 @@ int NetworkInterface::receivePackets(double timeout) {
 		// retrieved before the packet data is read.
 		ost::InetHostAddress sender_addr = m_Socket->getSender(0);
 
-		uint32 packet_length = m_Socket->receive((void*)buffer, sizeof(buffer));
+		uint32_t packet_length = m_Socket->receive((void*)buffer, sizeof(buffer));
 
 		if (packet_length < HeaderSize) {
 			m_BadPackets++;
@@ -433,7 +433,7 @@ int NetworkInterface::receivePackets(double timeout) {
 
 		PeerInfo *peer = 0;
 
-		uint16 source = header->source();
+		uint16_t source = header->source();
 
 		// for initial connection to the index server, source id will be zero.
 		// we need to create a new id on the fly and translate the source id until
@@ -441,7 +441,7 @@ int NetworkInterface::receivePackets(double timeout) {
 		// note: whenever source id is zero, routing_data will be set to the receive
 		// port number, and routing type will be zero
 		if (source == 0 && m_AllowUnknownPeers && header->routingType() == 0) {
-			uint32 ip = sender_addr.getAddress().s_addr;
+			uint32_t ip = sender_addr.getAddress().s_addr;
 			ConnectionPoint point(ip, static_cast<Port>(header->routingData()));
 			source = getSourceId(point);
 		}
@@ -493,11 +493,11 @@ int NetworkInterface::receivePackets(double timeout) {
 		if (header->messageId() == PingID) {
 			if (packet_length == header_size + sizeof(PingPayload)) {
 				PingPayload *payload = reinterpret_cast<PingPayload*>(buffer + header_size);
-				int32 last_ping_latency = CSP_INT32_FROM_LE(payload->last_latency);
-				uint32 transmit_time = CSP_UINT32_FROM_LE(payload->transmit_time);
-				uint32 receive_time = static_cast<uint32>(getCalibratedRealTime() * 1000.0);
+				int32_t last_ping_latency = CSP_INT32_FROM_LE(payload->last_latency);
+				uint32_t transmit_time = CSP_UINT32_FROM_LE(payload->transmit_time);
+				uint32_t receive_time = static_cast<uint32>(getCalibratedRealTime() * 1000.0);
 				//std::cout << "PING TX=" << transmit_time << " RX=" << receive_time << " OFS=" << last_ping_latency << "\n";
-				int64 t_latency = static_cast<int64>(receive_time) - static_cast<int64>(transmit_time);
+				int64_t t_latency = static_cast<int64>(receive_time) - static_cast<int64>(transmit_time);
 				if (t_latency >= CSP_LL(0x80000000)) {
 					t_latency -= CSP_LL(0x80000000);
 				} else if (t_latency < CSP_LL(-0x80000000)) {
@@ -622,7 +622,7 @@ void NetworkInterface::processIncoming(double timeout) {
 	int process_count[] = {4, 6, 10, 20};
 	int count = process_count[queue_idx];
 	PacketQueue *queue = m_RxQueues[queue_idx];
-	uint32 size;
+	uint32_t size;
 
 	int DEBUG_exitcode = 0;
 
@@ -647,11 +647,11 @@ void NetworkInterface::processIncoming(double timeout) {
 
 		// XXX remove me!
 		CSPLOG(INFO, PACKET) << "reading packet from receive queue";
-		uint8 *ptr = queue->getReadBuffer(size);
+		uint8_t *ptr = queue->getReadBuffer(size);
 		PacketHeader *header = reinterpret_cast<PacketHeader*>(ptr);
-		uint32 header_size = (header->reliable() ? ReceiptHeaderSize : HeaderSize);
-		uint8 *payload = ptr + header_size;
-		uint32 payload_length = size - header_size;
+		uint32_t header_size = (header->reliable() ? ReceiptHeaderSize : HeaderSize);
+		uint8_t *payload = ptr + header_size;
+		uint32_t payload_length = size - header_size;
 		// XXX remove me!
 		CSPLOG(INFO, PACKET) << "found payload " << payload_length << " bytes, " << *header;
 

@@ -45,35 +45,35 @@ namespace csp {
 
 /** UDP/TCP port number.
  */
-typedef uint16 Port;
+typedef uint16_t Port;
 
 /** Peer id, used as an index to the PeerInfo table.
  */
-typedef uint16 PeerId;
+typedef uint16_t PeerId;
 
 /** Network message id, used as an index to the NetworkMessage table
  *  and cached in the custom id field of each NetworkMessage subclass.
  */
-typedef uint16 MessageId;
+typedef uint16_t MessageId;
 
 /** A unique object id.  (24-bits; 16 million ids)
  */
-typedef uint32 ObjectId;
+typedef uint32_t ObjectId;
 
 /** Routing type, which is typically used as the first discriminator
  *  for message dispatch.
  */
-typedef uint8 RoutingType;
+typedef uint8_t RoutingType;
 
 /** An id number assigned to reliable messages and used to confirm
  *  receipt of such messages.  Ids are generated sequentially, per
  *  peer, and roll over at 65535.  Id 0 is reserved for "no id".
  */
-typedef uint16 ConfirmationId;
+typedef uint16_t ConfirmationId;
 
 /** Shorthand for NetworkNode for use as a std::map key type.
  */
-typedef std::pair<uint32, Port> ConnectionPoint;
+typedef std::pair<uint32_t, Port> ConnectionPoint;
 
 /** Header attached to all transmitted network packets.  This is the
  *  short form of the header, used for unreliable transmissions.  If
@@ -99,11 +99,11 @@ class PacketHeader {
 	//                  nominal receiver bandwidth: C * BW / 100
 	//                  if statmode == 1, the fraction of the sender's inbound bandwidth
 	//                  allocated to the receiving peer (0->BW)
-	uint16 _flags;
-	uint16 _source;        // id of the sender
-	uint16 _destination;   // id of the intended receiver
-	uint16 _message_id;    // id of the message
-	uint32 _routing;       // routing type (e.g. object update, server handshake, etc.)
+	uint16_t _flags;
+	uint16_t _source;        // id of the sender
+	uint16_t _destination;   // id of the intended receiver
+	uint16_t _message_id;    // id of the message
+	uint32_t _routing;       // routing type (e.g. object update, server handshake, etc.)
 	                                // is stored in the low 8 bits; routing data (e.g. ObjectId
 	                                // for object update routing) is stored in the high 24 bits.
 
@@ -115,31 +115,31 @@ public:
 	inline int connstat() const { return (CSP_UINT16_FROM_LE(_flags) >> 6); }
 
 	inline void setReliable(bool reliable) {
-		uint16 f = CSP_UINT16_FROM_LE(_flags);
+		uint16_t f = CSP_UINT16_FROM_LE(_flags);
 		if (reliable) f |= 1; else f &= ~1;
 		_flags = CSP_UINT16_TO_LE(f);
 	}
 	inline void setPriority(int priority) {
-		uint16 f = CSP_UINT16_FROM_LE(_flags);
-		f = (f & ~0x06) | static_cast<uint16>((priority & 3) << 1);
+		uint16_t f = CSP_UINT16_FROM_LE(_flags);
+		f = (f & ~0x06) | static_cast<uint16_t>((priority & 3) << 1);
 		_flags = CSP_UINT16_TO_LE(f);
 	}
 	inline void setStatMode(int statmode) {
-		uint16 f = CSP_UINT16_FROM_LE(_flags);
-		f = (f & ~0x20) | static_cast<uint16>((statmode & 1) << 5);
+		uint16_t f = CSP_UINT16_FROM_LE(_flags);
+		f = (f & ~0x20) | static_cast<uint16_t>((statmode & 1) << 5);
 		_flags = CSP_UINT16_TO_LE(f);
 	}
 	inline void setConnStat(int connstat) {
-		uint16 f = CSP_UINT16_FROM_LE(_flags);
-		f = (f & 0x3f) | static_cast<uint16>(connstat << 6);
+		uint16_t f = CSP_UINT16_FROM_LE(_flags);
+		f = (f & 0x3f) | static_cast<uint16_t>(connstat << 6);
 		_flags = CSP_UINT16_TO_LE(f);
 	}
 
-	inline uint16 source() const { return CSP_UINT16_FROM_LE(_source); }
-	inline uint16 destination() const { return CSP_UINT16_FROM_LE(_destination); }
-	inline uint16 messageId() const { return CSP_UINT16_FROM_LE(_message_id); }
-	inline uint32 routingType() const { return CSP_UINT32_FROM_LE(_routing) & 0xff; }
-	inline uint32 routingData() const { return CSP_UINT32_FROM_LE(_routing) >> 8; }
+	inline uint16_t source() const { return CSP_UINT16_FROM_LE(_source); }
+	inline uint16_t destination() const { return CSP_UINT16_FROM_LE(_destination); }
+	inline uint16_t messageId() const { return CSP_UINT16_FROM_LE(_message_id); }
+	inline uint32_t routingType() const { return CSP_UINT32_FROM_LE(_routing) & 0xff; }
+	inline uint32_t routingData() const { return CSP_UINT32_FROM_LE(_routing) >> 8; }
 
 	inline void setSource(PeerId source) {
 		_source = CSP_UINT16_TO_LE(source);
@@ -149,11 +149,11 @@ public:
 		_destination = CSP_UINT16_TO_LE(destination);
 	}
 
-	inline void setMessageId(uint16 message_id) {
+	inline void setMessageId(uint16_t message_id) {
 		_message_id = CSP_UINT16_TO_LE(message_id);
 	}
 
-	inline void setRouting(uint32 routing_type, uint32 routing_data) {
+	inline void setRouting(uint32_t routing_type, uint32_t routing_data) {
 		assert(routing_type < 0x100);
 		assert(routing_data < 0x1000000);
 		routing_data = (routing_data << 8) | routing_type;
@@ -173,10 +173,10 @@ public:
  */
 #pragma pack(push, 1)
 class PacketReceiptHeader: public PacketHeader {
-	uint16 _id0;
-	uint16 _id1;
-	uint16 _id2;
-	uint16 _id3;
+	uint16_t _id0;
+	uint16_t _id1;
+	uint16_t _id2;
+	uint16_t _id3;
 public:
 	inline ConfirmationId id0() const { return CSP_UINT16_FROM_LE(_id0); }
 	inline ConfirmationId id1() const { return CSP_UINT16_FROM_LE(_id1); }

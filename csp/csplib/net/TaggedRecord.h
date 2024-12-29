@@ -59,12 +59,12 @@ namespace csp {
  *  @ingroup net
  */
 class CSPLIB_EXPORT BufferWriter: public Writer {
-	uint8 *_buffer;
-	uint8 *_write;
-	uint8 *_end;
+	uint8_t *_buffer;
+	uint8_t *_write;
+	uint8_t *_end;
 
 protected:
-	virtual void write(void const* data, uint32 bytes) {
+	virtual void write(void const* data, uint32_t bytes) {
 		assert(_write + bytes <= _end);
 		memcpy(_write, data, bytes);
 		_write += bytes;
@@ -72,14 +72,14 @@ protected:
 
 public:
 	BufferWriter(): Writer() { }
-	BufferWriter(uint8 *buffer, uint32 size): Writer() {
+	BufferWriter(uint8_t *buffer, uint32_t size): Writer() {
 		bind(buffer, size);
 	}
-	inline uint32 residual() const { return _end - _write; }
-	inline uint8 *buffer() const { return _buffer; }
+	inline uint32_t residual() const { return _end - _write; }
+	inline uint8_t *buffer() const { return _buffer; }
 	inline bool full() const { return _write == _end; }
-	inline uint32 length() const { return _write - _buffer; }
-	void bind(uint8 *buffer, uint32 size) {
+	inline uint32_t length() const { return _write - _buffer; }
+	void bind(uint8_t *buffer, uint32_t size) {
 		_buffer = buffer;
 		_write = buffer;
 		_end = buffer + size;
@@ -92,8 +92,8 @@ public:
 class CSPLIB_EXPORT BufferReader: public Reader {
 public:
 	BufferReader(): Reader(0, 0) { }
-	BufferReader(uint8 const *buffer, uint32 size): Reader(buffer, size) { }
-	void bind(uint8 const *buffer, uint32 size) { Reader::bind(buffer, size); }
+	BufferReader(uint8_t const *buffer, uint32_t size): Reader(buffer, size) { }
+	void bind(uint8_t const *buffer, uint32_t size) { Reader::bind(buffer, size); }
 };
 
 /** Simple Writer class for serializing to a string buffer.
@@ -102,7 +102,7 @@ public:
 class CSPLIB_EXPORT StringWriter: public Writer {
 	std::string _buffer;
 protected:
-	virtual void write(void const* data, uint32 bytes) {
+	virtual void write(void const* data, uint32_t bytes) {
 		_buffer.append(reinterpret_cast<const char*>(data), bytes);
 	}
 public:
@@ -116,7 +116,7 @@ public:
 class CSPLIB_EXPORT StringReader: public Reader {
 public:
 	StringReader(std::string const &buffer):
-		Reader(reinterpret_cast<uint8 const*>(buffer.data()), buffer.size()) { }
+		Reader(reinterpret_cast<uint8_t const*>(buffer.data()), buffer.size()) { }
 };
 
 
@@ -191,7 +191,7 @@ class CSPLIB_EXPORT TagReader: public TagBase {
 	Reader &reader;
 	explicit TagReader(Reader &reader_): TagBase(), reader(reader_) { }
 	int nextTag() {
-		uint8 ubyte;
+		uint8_t ubyte;
 		reader >> ubyte;
 		if (ubyte == 0) { return 0; }
 		int delta = ubyte & 0x7f;
@@ -278,7 +278,7 @@ inline std::ostream& operator <<(std::ostream& os, const TaggedGroup &group) {
  */
 class CSPLIB_EXPORT TaggedRecord: public TaggedGroup {
 public:
-	typedef uint64 Id;
+	typedef uint64_t Id;
 	virtual Id getId() const=0;
 	virtual int getVersion() const=0;
 	virtual std::string getName() const=0;

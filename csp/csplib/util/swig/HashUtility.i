@@ -31,11 +31,11 @@ namespace csp {
 
 struct HashT {
 	HashT();
-	HashT(uint32 x);
-	HashT(uint32 b_, uint32 a_);
+	HashT(uint32_t x);
+	HashT(uint32_t b_, uint32_t a_);
 	HashT(const HashT &x);
-	bool operator ==(uint32 x) const;
-	bool operator !=(uint32 x) const;
+	bool operator ==(uint32_t x) const;
+	bool operator !=(uint32_t x) const;
 	bool operator ==(HashT const &x) const;
 	bool operator !=(HashT const &x) const;
 	std::string str() const;

@@ -48,7 +48,7 @@ NetworkNode::NetworkNode(const char *hostname, ost::tpport_t port) {
 	m_port = port;
 }
 
-NetworkNode::NetworkNode(uint32 addr, ost::tpport_t port) {
+NetworkNode::NetworkNode(uint32_t addr, ost::tpport_t port) {
 	struct in_addr my_in_addr;
 	my_in_addr.s_addr = addr;
 	m_addr = ost::InetHostAddress(my_in_addr);
@@ -78,7 +78,7 @@ const char * NetworkNode::getHostname() const {
 	return m_addr.getHostname();
 }
 
-std::string NetworkNode::ipToString(uint32 addr) {
+std::string NetworkNode::ipToString(uint32_t addr) {
 	std::ostringstream os;
 	os << (addr & 0xff) << "." << ((addr >> 8) & 0xff) << "." << ((addr >> 16) & 0xff) << "." << (addr >> 24);
 	return os.str();

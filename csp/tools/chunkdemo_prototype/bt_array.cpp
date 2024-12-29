@@ -188,7 +188,7 @@ float	bt_array::get_sample(int x, int z) const
 			}
 			int	fillsize = imin(m_cache_height, m_height - cl->m_v0) * m_sizeof_element;
 			memcpy(cl->m_data,
-			       ((Uint8*)m_data) + BT_HEADER_SIZE + (cl->m_v0 + m_height * x) * m_sizeof_element,
+			       ((Uint8_t*)m_data) + BT_HEADER_SIZE + (cl->m_v0 + m_height * x) * m_sizeof_element,
 			       fillsize);
 		}
 
@@ -208,14 +208,14 @@ float	bt_array::get_sample(int x, int z) const
 			float	f;
 			Uint32	u;
 		} raw;
-		raw.u = SDL_SwapLE32(*(Uint32*) data);
+		raw.u = SDL_SwapLE32(*(Uint32_t*) data);
 
 		return raw.f;
 
 	} else {
 		// Raw data is 16-bit integer.
 		data += index * 2;
-		Uint16	y = SDL_SwapLE16(*(Uint16*) data);
+		Uint16	y = SDL_SwapLE16(*(Uint16_t*) data);
 
 		return y;
 	}

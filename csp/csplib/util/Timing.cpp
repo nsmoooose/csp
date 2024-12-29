@@ -59,24 +59,24 @@ namespace csp {
 	double getSecondsSinceUnixEpoch() {
 		FILETIME filetime;
 		GetSystemTimeAsFileTime(&filetime);
-		uint64 date_time = (static_cast<uint64>(filetime.dwHighDateTime) << 32) | static_cast<uint64>(filetime.dwLowDateTime);
+		uint64_t date_time = (static_cast<uint64>(filetime.dwHighDateTime) << 32) | static_cast<uint64>(filetime.dwLowDateTime);
 		// convert from hectonanoseconds since 1601-01-01T00:00:00Z to milliseconds since 1970-01-01T00:00:00Z
 		return 1e-7 * (date_time - CSP_ULL(116444736000000000));
 	}
 
-	static uint64 first_counter = 0;
-	static uint64 first_time = 0;
+	static uint64_t first_counter = 0;
+	static uint64_t first_time = 0;
 	static double counter_scale = 0.0;
 	static double counter_offset = 0.0;
 	static int calibrations = 0;
-	static uint64 next_calibration = 0;
+	static uint64_t next_calibration = 0;
 	static double calibration_interval = 10.0;
 
-	inline uint64 cvt_filetime(FILETIME const &x) {
+	inline uint64_t cvt_filetime(FILETIME const &x) {
 		return (static_cast<uint64>(x.dwHighDateTime) << 32) | static_cast<uint64>(x.dwLowDateTime);
 	}
 
-	inline uint64 getPerformanceFrequency() {
+	inline uint64_t getPerformanceFrequency() {
 		LARGE_INTEGER frequency;
 		if (!QueryPerformanceFrequency(&frequency)) {
 			throw TimerError("QueryPerformanceFrequency failed");
@@ -84,7 +84,7 @@ namespace csp {
 		return static_cast<uint64>(frequency.QuadPart);
 	}
 
-	inline uint64 getPerformanceCounter() {
+	inline uint64_t getPerformanceCounter() {
 		LARGE_INTEGER counter;
 		if (!QueryPerformanceCounter(&counter)) {
 			throw TimerError("QueryPerformanceCounter failed");
@@ -94,7 +94,7 @@ namespace csp {
 
 	void calibrateRealTime() {
 		int max_tries = 1;
-		uint64 counter = 0;
+		uint64_t counter = 0;
 		if (calibrations == 0) {
 			counter_scale = 1.0 / static_cast<double>(getPerformanceFrequency());
 			max_tries = 10;
@@ -106,7 +106,7 @@ namespace csp {
 		// blocks for up to max_tries * 16 ms on WinXP (assuming 64Hz timer tick)
 		int tries = 0;
 		for (; tries < max_tries; ) {
-			uint64 lock_counter = getPerformanceCounter();
+			uint64_t lock_counter = getPerformanceCounter();
 			GetSystemTimeAsFileTime(&update_time);
 			if (update_time.dwLowDateTime != start_time.dwLowDateTime) {
 				counter = getPerformanceCounter();
@@ -133,8 +133,8 @@ namespace csp {
 				first_time = cvt_filetime(update_time);
 				counter_offset = 1e-7 * static_cast<double>(first_time - CSP_ULL(116444736000000000));
 			} else {
-				uint64 elapsed_count = counter - first_counter;
-				uint64 elapsed_time = cvt_filetime(update_time) - first_time;
+				uint64_t elapsed_count = counter - first_counter;
+				uint64_t elapsed_time = cvt_filetime(update_time) - first_time;
 				double new_scale = static_cast<double>(elapsed_time) * 1e-7 / elapsed_count;
 				// bump the offset to keep the current calibrated time continuous
 				counter_offset += elapsed_count * (counter_scale - new_scale);

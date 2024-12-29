@@ -43,8 +43,8 @@ namespace csp {
 class NetworkMessage: public TaggedRecord {
 	PeerId m_source;
 	PeerId m_destination;
-	uint8 m_routing_type;
-	uint32 m_routing_data;
+	uint8_t m_routing_type;
+	uint32_t m_routing_data;
 	unsigned char m_priority;
 
 public:
@@ -66,7 +66,7 @@ public:
 	/** Set the message routing data.  Interpretation of this value
 	 *  depends on the message routing type.
 	 */
-	inline void setRoutingData(uint32 data) {
+	inline void setRoutingData(uint32_t data) {
 		assert((data & 0xFF00000) == 0);
 		m_routing_data = data;
 	}
@@ -74,7 +74,7 @@ public:
 	/** Get the message routing data.  Interpretation of this value
 	 *  depends on the message routing type.
 	 */
-	inline uint32 getRoutingData() const { return m_routing_data; }
+	inline uint32_t getRoutingData() const { return m_routing_data; }
 
 	/** Store the id of the peer that sent the message.
 	 */

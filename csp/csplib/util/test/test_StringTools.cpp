@@ -125,7 +125,7 @@ CSP_TESTFIXTURE(StringTools) {
 	}
 
 	CSP_TESTCASE(TestParseInt32) {
-		int32 x_int32;
+		int32_t x_int32;
 		CSP_EXPECT(parseInt("0", x_int32));
 		CSP_EXPECT_EQ(x_int32, 0);
 		CSP_EXPECT(parseInt("000", x_int32));
@@ -171,7 +171,7 @@ CSP_TESTFIXTURE(StringTools) {
 	}
 
 	CSP_TESTCASE(TestParseIntU32) {
-		uint32 x_uint32;
+		uint32_t x_uint32;
 		CSP_EXPECT(parseInt("0", x_uint32));
 		CSP_EXPECT_EQ(x_uint32, 0U);
 		CSP_EXPECT(parseInt("000", x_uint32));
@@ -217,14 +217,14 @@ CSP_TESTFIXTURE(StringTools) {
 	}
 
 	CSP_TESTCASE(TestParseIntLimits) {
-		int8 x_int8;
-		uint8 x_uint8;
-		int16 x_int16;
-		uint16 x_uint16;
-		int32 x_int32;
-		uint32 x_uint32;
-		int64 x_int64;
-		uint64 x_uint64;
+		int8_t x_int8;
+		uint8_t x_uint8;
+		int16_t x_int16;
+		uint16_t x_uint16;
+		int32_t x_int32;
+		uint32_t x_uint32;
+		int64_t x_int64;
+		uint64_t x_uint64;
 
 		CSP_EXPECT(!parseInt("-0x81", x_int8));
 		CSP_EXPECT(parseInt("-0x80", x_int8));
@@ -285,9 +285,9 @@ CSP_TESTFIXTURE(StringTools) {
 		CSP_EXPECT_EQ(stringprintf("..%+4d..", -21), ".. -21..");
 		CSP_EXPECT_EQ(stringprintf("..%x..", 26), "..1a..");
 		CSP_EXPECT_EQ(stringprintf("..%X..", 26), "..1A..");
-		CSP_EXPECT_EQ(stringprintf("..0x%llx..", CSP_ULL(0xabcdef0123456789)), "..0xabcdef0123456789..");
-		CSP_EXPECT_EQ(stringprintf("..%llu..", CSP_ULL(0xabcdef0123456789)), "..12379813738877118345..");
-		CSP_EXPECT_EQ(stringprintf("..%llo..", CSP_ULL(0xabcdef0123456789)), "..1257157360044321263611..");
+		CSP_EXPECT_EQ(stringprintf("..0x%llx..", 0xabcdef0123456789ULL), "..0xabcdef0123456789..");
+		CSP_EXPECT_EQ(stringprintf("..%llu..", 0xabcdef0123456789ULL), "..12379813738877118345..");
+		CSP_EXPECT_EQ(stringprintf("..%llo..", 0xabcdef0123456789ULL), "..1257157360044321263611..");
 		CSP_EXPECT_EQ(stringprintf("%0.3f %06.3f %.5e %g", PI, PI, PI, PI), "3.142 03.142 3.14159e+00 3.14159");
 		CSP_EXPECT_EQ(stringprintf("%g %g %g", 0.000015, 1500000.0, 150.0), "1.5e-05 1.5e+06 150");
 
@@ -305,7 +305,7 @@ CSP_TESTFIXTURE(StringTools) {
 
 		CSP_EXPECT_EQ(parseDouble("2", x), true);
 		CSP_EXPECT_EQ(x, 2.0);
-		
+
 		CSP_EXPECT_EQ(parseDouble("3.3", x), true);
 		CSP_EXPECT_EQ(x, 3.3);
 

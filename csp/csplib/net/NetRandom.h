@@ -41,16 +41,16 @@ namespace csp {
  */
 class CSPLIB_EXPORT NetRandom {
 	// internal state for lcg
-	static uint32 RandSeed;
+	static uint32_t RandSeed;
 
 	// not currently used
-	static uint32 NetClock;
+	static uint32_t NetClock;
 
 public:
 
 	/** Get a new random number, from 0 to 4294967295.
 	 */
-	inline static uint32 random() {
+	inline static uint32_t random() {
 		RandSeed = RandSeed * 69069L + 1;
 		return RandSeed ^ NetClock;
 	}
@@ -61,7 +61,7 @@ public:
 	 *  @param entropy an arbitrary 32-bit value, ideally derived from
 	 *    a high entropy source (e.g. /dev/random under Linux).
 	 */
-	inline static void randomize(uint32 entropy) {
+	inline static void randomize(uint32_t entropy) {
 		RandSeed ^= entropy;
 		random();
 	}

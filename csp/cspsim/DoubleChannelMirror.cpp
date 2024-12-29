@@ -67,7 +67,7 @@ public:
 	virtual bool receive(ValueSet const &values, unsigned &idx) {
 		assert(idx < values.size());
 		if (idx >= values.size()) return false;
-		const uint8 value = values[idx++];
+		const uint8_t value = values[idx++];
 		m_Target = m_Limit0 + static_cast<double>(value) * m_Scale;
 		return true;
 	}
@@ -89,7 +89,7 @@ class DoubleChannelMaster: public ChannelMaster {
 	double m_Limit0;
 	double m_RateLimit;
 	double m_Scale;
-	uint8 m_LastValue;
+	uint8_t m_LastValue;
 	bool m_Increasing;
 
 public:
@@ -111,7 +111,7 @@ public:
 
 	virtual bool send(int lod, ValueSet &values, bool force) {
 		if (m_Channel.valid() && lod >= getLod()) {
-			const uint8 value = static_cast<uint8>(clampTo((m_Channel->value() - m_Limit0) * m_Scale, 0.0, 255.0));
+			const uint8_t value = static_cast<uint8_t>(clampTo((m_Channel->value() - m_Limit0) * m_Scale, 0.0, 255.0));
 			bool add = force;
 			if (value != m_LastValue) {
 				// one unit of hysteresis to prevent jittering of the remote animation

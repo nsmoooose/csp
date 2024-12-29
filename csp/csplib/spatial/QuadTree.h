@@ -54,17 +54,17 @@ namespace csp {
 /** Spatial representation and indexing. */
 namespace spatial {
 
-typedef uint32 Coordinate;
+typedef uint32_t Coordinate;
 
 /** A simple 2D point class, using usigned 32-bit integer coordinates.
  */
 class CSPLIB_EXPORT Point {
-	uint32 _x, _y;
+	uint32_t _x, _y;
 public:
 
 	/** Construct a point using unsigned coordinates.
 	 */
-	Point(uint32 x, uint32 y): _x(x), _y(y) { }
+	Point(uint32_t x, uint32_t y): _x(x), _y(y) { }
 
 	/** Copy ctor.
 	 */
@@ -79,21 +79,21 @@ public:
 	}
 
 	// coordinate accessors (unsigned).
-	inline uint32 x() const { return _x; }
-	inline uint32 y() const { return _y; }
+	inline uint32_t x() const { return _x; }
+	inline uint32_t y() const { return _y; }
 
 	/** Helper method for converting to signed coordinates.
 	 */
-	void toSigned(int32 &x, int32 &y) {
-		x = static_cast<int32>(_x ^ 0x80000000ul);
-		y = static_cast<int32>(_y ^ 0x80000000ul);
+	void toSigned(int32_t &x, int32_t &y) {
+		x = static_cast<int32_t>(_x ^ 0x80000000ul);
+		y = static_cast<int32_t>(_y ^ 0x80000000ul);
 	}
 
 	/** Helper function for creating a point from signed coordinates.
 	 */
-	static inline Point fromSigned(int32 x, int32 y) {
-		uint32 ux = static_cast<uint32>(x ^ 0x80000000UL);
-		uint32 uy = static_cast<uint32>(y ^ 0x80000000UL);
+	static inline Point fromSigned(int32_t x, int32_t y) {
+		uint32_t ux = static_cast<uint32_t>(x ^ 0x80000000UL);
+		uint32_t uy = static_cast<uint32_t>(y ^ 0x80000000UL);
 		return Point(ux, uy);
 	}
 };
@@ -103,7 +103,7 @@ public:
  *  coordinates.
  */
 class CSPLIB_EXPORT Region {
-	uint32 _x0, _y0, _x1, _y1;
+	uint32_t _x0, _y0, _x1, _y1;
 public:
 
 	/** Construct a region from the lower left and upper right corners.
@@ -127,7 +127,7 @@ public:
 	 *  @param x1 the rightt edge coordinate.
 	 *  @param y1 the top edge coordinate.
 	 */
-	Region(uint32 x0, uint32 y0, uint32 x1, uint32 y1):
+	Region(uint32_t x0, uint32_t y0, uint32_t x1, uint32_t y1):
 		_x0(x0), _y0(y0), _x1(x1), _y1(y1) { }
 
 	/** Copy ctor.
@@ -146,10 +146,10 @@ public:
 	}
 
 	// coordinate accessors.
-	inline uint32 x0() const { return _x0; }
-	inline uint32 y0() const { return _y0; }
-	inline uint32 x1() const { return _x1; }
-	inline uint32 y1() const { return _y1; }
+	inline uint32_t x0() const { return _x0; }
+	inline uint32_t y0() const { return _y0; }
+	inline uint32_t x1() const { return _x1; }
+	inline uint32_t y1() const { return _y1; }
 
 	/** Test if a region overlaps this region.
 	 *
@@ -164,8 +164,8 @@ public:
 	 *  @returns true if the point is inside or on the border of this region.
 	 */
 	inline bool contains(const Point &point) const {
-		uint32 x = point.x();
-		uint32 y = point.y();
+		uint32_t x = point.x();
+		uint32_t y = point.y();
 		return (x <= _x1) && (y <= _y1) && (x >= _x0) && (y >= _y0);
 	}
 
@@ -205,7 +205,7 @@ public:
 	 *  The coordinates are translated such that (-2**31, -2**31) becomes
 	 *  (0, 0).
 	 */
-	static inline Region fromSigned(int32 x0, int32 y0, int32 x1, int32 y1) {
+	static inline Region fromSigned(int32_t x0, int32_t y0, int32_t x1, int32_t y1) {
 		return Region(Point::fromSigned(x0, y0), Point::fromSigned(x1, y1));
 	}
 };
@@ -227,7 +227,7 @@ public:
 	/** Construct a new child, given an id number and <i>unsigned</i> 32-bit
 	 *  coordinates.
 	 */
-	Child(int id, uint32 x, uint32 y):
+	Child(int id, uint32_t x, uint32_t y):
 		_id(id),
 		_point(x, y) {
 	}
@@ -247,7 +247,7 @@ public:
 	// accessors
 	inline int id() const { return _id; }
 	inline Point const &point() const { return _point; }
-	
+
 	/** Returns a non-const reference to the coordinates of the child.
 	 *  <b>Use this method with extreme care!</b>  The coordinates cannot
 	 *  be modified without updating all quadtrees that contain this child.
@@ -256,12 +256,12 @@ public:
 	 */
 	inline Point &mutablePoint() { return _point; }
 
-	inline uint32 x() const { return _point.x(); }
-	inline uint32 y() const { return _point.y(); }
+	inline uint32_t x() const { return _point.x(); }
+	inline uint32_t y() const { return _point.y(); }
 
 	/** Get the coordinates adjusted for a given quadtree level.
 	 */
-	void getLevelCoordinates(uint32 &rx, uint32 &ry, uint32 level=0) {
+	void getLevelCoordinates(uint32_t &rx, uint32_t &ry, uint32_t level=0) {
 		if (level > 0) {
 			rx = _point.x() << level;
 			ry = _point.y() << level;
@@ -277,8 +277,8 @@ public:
  *  when traversing the tree.
  */
 class CSPLIB_EXPORT TreeConstraint {
-	uint32 _max_depth;
-	uint32 _leaf_limit;
+	uint32_t _max_depth;
+	uint32_t _leaf_limit;
 
 public:
 
@@ -290,18 +290,18 @@ public:
 	 *  @param leaf_limit The maximum number of children per leaf.  Additional
 	 *    children will cause the leaf to branch.
 	 */
-	TreeConstraint(uint32 max_depth, uint32 leaf_limit)
+	TreeConstraint(uint32_t max_depth, uint32_t leaf_limit)
 		: _max_depth(max_depth), _leaf_limit(leaf_limit) {
 		assert(max_depth <= 32);
 	}
 
 	/** Get the maximum tree depth.
 	 */
-	inline uint32 getMaxDepth() const { return _max_depth; }
+	inline uint32_t getMaxDepth() const { return _max_depth; }
 
 	/** Get the maximum number of children per leaf.
 	 */
-	inline uint32 getLeafLimit() const { return _leaf_limit; }
+	inline uint32_t getLeafLimit() const { return _leaf_limit; }
 
 };
 
@@ -316,7 +316,7 @@ class CSPLIB_EXPORT QuadTree {
 	TreeConstraint _constraint;
 
 public:
-	QuadTree(uint32 max_depth, uint32 leaf_limit);
+	QuadTree(uint32_t max_depth, uint32_t leaf_limit);
 	~QuadTree();
 
 	/** Insert a new element.
@@ -346,7 +346,7 @@ public:
 	 *  @param new_y The new y coordinate of the element in the range [0, 2**32).
 	 *  @return true if the element was found and updated.
 	 */
-	bool update(Child &child, uint32 old_x, uint32 old_y);
+	bool update(Child &child, uint32_t old_x, uint32_t old_y);
 #endif
 
 	/** Query the index to find all elements within a region.
@@ -362,7 +362,7 @@ public:
 
 	/** Get the number of child elements stored in the quadtree.
 	 */
-	uint32 childCount() const;
+	uint32_t childCount() const;
 
 	/** Dump the quadtree structure to an output stream (for diagnostics).
 	 */

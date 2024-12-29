@@ -19,13 +19,13 @@ namespace image
 	// 24-bit RGB image.  Packed data, red byte first (RGBRGB...)
 	//
 	// We need this class because SDL_Surface chokes on any image
-	// that has more than 64KB per row, due to a Uint16 pitch
+	// that has more than 64KB per row, due to a Uint16_t pitch
 	// member.
 	struct rgb {
 		rgb(int width, int height);
 		~rgb();
 
-		Uint8*	m_data;
+		Uint8_t*	m_data;
 		int	m_width;
 		int	m_height;
 		int	m_pitch;	// byte offset from one row to the next
@@ -36,11 +36,11 @@ namespace image
 	// data, red byte first.
 	rgb*	create_rgb(int width, int height);
 	
-	inline Uint8*	scanline(rgb* surf, int y)
+	inline Uint8_t*	scanline(rgb* surf, int y)
 	{
 		assert(surf);
 		assert(y < surf->m_height);
-		return ((Uint8*) surf->m_data) + surf->m_pitch * y;
+		return ((Uint8_t*) surf->m_data) + surf->m_pitch * y;
 	}
 
 	void	resample(rgb* out, int out_x0, int out_y0, int out_x1, int out_y1,

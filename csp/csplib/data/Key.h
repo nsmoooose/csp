@@ -39,7 +39,7 @@ namespace csp {
  * @ingroup BaseTypes
  */
 class CSPLIB_EXPORT Key {
-	uint32 _key;
+	uint32_t _key;
 
 public: // BaseType
 

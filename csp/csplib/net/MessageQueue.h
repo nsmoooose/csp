@@ -63,7 +63,7 @@ class CSPLIB_EXPORT MessageQueue: public PacketSource {
 	 *  broadcast messages.
 	 */
 	char m_PayloadCache[4096];
-	uint32 m_PayloadCacheLength;
+	uint32_t m_PayloadCacheLength;
 
 public:
 
@@ -103,7 +103,7 @@ public:
 
 	/** Encode the next message in the queue.
 	 */
-	virtual bool getPacket(PacketHeader *header, uint8 *payload, uint32 &payload_length) {
+	virtual bool getPacket(PacketHeader *header, uint8_t *payload, uint32_t &payload_length) {
 		if (m_Queue.empty()) return false;
 		assert(payload_length > 0);
 		Ref<NetworkMessage> message = m_Queue.front().message;
@@ -111,7 +111,7 @@ public:
 		m_Queue.pop_front();
 		CSPLOG(DEBUG, MESSAGE) << "SENDING MESSAGE " << message->getCustomId() << " " << message->getName();
 		header->setDestination(destination);
-		header->setMessageId(static_cast<uint16>(message->getCustomId()));
+		header->setMessageId(static_cast<uint16_t>(message->getCustomId()));
 		header->setRouting(message->getRoutingType(), message->getRoutingData());
 
 		// if the cache isn't empty it will already contain the payload for this

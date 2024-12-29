@@ -115,18 +115,18 @@ class LocalBattlefield::UnitUpdateProxy: public UpdateTarget {
 
 	struct PeerUpdateRecord {
 		inline PeerUpdateRecord() {}
-		PeerUpdateRecord(PeerId id_, uint16 interval_, uint16 detail_): id(id_), interval(interval_), next_update(0), detail(detail_) { }
+		PeerUpdateRecord(PeerId id_, uint16_t interval_, uint16_t detail_): id(id_), interval(interval_), next_update(0), detail(detail_) { }
 		PeerId id;  // host id to update
-		uint16 interval;  // time between updates, ms
-		uint32 next_update; // ms resolution, 46 day limit
-		uint16 detail; // detail level (not yet used, but important for reducing bandwidth)
+		uint16_t interval;  // time between updates, ms
+		uint32_t next_update; // ms resolution, 46 day limit
+		uint16_t detail; // detail level (not yet used, but important for reducing bandwidth)
 		// order of priority
 		bool operator < (PeerUpdateRecord const &other) const { return next_update > other.next_update; }
 	};
 
 	struct PeerUpdateCache {
 		Ref<NetworkMessage> msg;
-		uint32 last_refresh;
+		uint32_t last_refresh;
 	};
 
 	static const int DETAIL_LEVELS = 10;
@@ -143,7 +143,7 @@ class LocalBattlefield::UnitUpdateProxy: public UpdateTarget {
 	 * milliseconds of elapsed time.  it is currently assumed that this will not
 	 * rollover during the simulation time (limit ~50 days)
 	 */
-	uint32 m_UpdateTime;
+	uint32_t m_UpdateTime;
 
 	/**
 	 * a heap, ordered by next update time (first element is the earliest update)
@@ -181,7 +181,7 @@ public:
 	 *  @param interval The interval between updates, in seconds.
 	 *  @param detail The level of detail for updates sent to this peer (0-9).
 	 */
-	void setUpdateParameters(PeerId id, double interval, uint16 detail);
+	void setUpdateParameters(PeerId id, double interval, uint16_t detail);
 };
 
 
@@ -248,7 +248,7 @@ void LocalBattlefield::scanUnit(LocalUnitWrapper *wrapper) {
 		unit->m_ContactList.resize(0);
 		peer_contacts.reserve(n_contacts);
 		Vector3 unit_position = unit->getGlobalPosition();
-		uint32 signature = 0;
+		uint32_t signature = 0;
 		for (unsigned i=0; i < n_contacts; ++i) {
 			LocalUnitWrapper *contact = static_cast<LocalUnitWrapper*>(contacts[i]);
 			if (contact->id() == wrapper->id()) continue;
@@ -791,7 +791,7 @@ double LocalBattlefield::UnitUpdateProxy::onUpdate(double dt) {
 		return 1.0;  /** wait 1 sec before checking again */
 	}
 
-	uint32 dt_ms = static_cast<uint32>(dt * 1000.0);
+	uint32_t dt_ms = static_cast<uint32>(dt * 1000.0);
 	m_UpdateTime += dt_ms;
 	/** @bug this can get choppy when the frame rate and update rates are comparable */
 	if (m_UpdateTime < m_PeerUpdates[0].next_update) {
@@ -813,7 +813,7 @@ double LocalBattlefield::UnitUpdateProxy::onUpdate(double dt) {
 	 */
 	while ((m_PeerUpdates[0].next_update <= m_UpdateTime) && (target_count < 128)) {
 		std::pop_heap(m_PeerUpdates.begin(), m_PeerUpdates.end());
-		const uint32 interval = m_PeerUpdates[n_updates - 1].interval;
+		const uint32_t interval = m_PeerUpdates[n_updates - 1].interval;
 		m_PeerUpdates[n_updates - 1].next_update = m_UpdateTime + interval;
 
 		const int detail = m_PeerUpdates[n_updates - 1].detail;
@@ -869,9 +869,9 @@ double LocalBattlefield::UnitUpdateProxy::onUpdate(double dt) {
 	return (m_PeerUpdates[0].next_update - m_UpdateTime) * 1e-3;
 }
 
-void LocalBattlefield::UnitUpdateProxy::setUpdateParameters(PeerId id, double interval, uint16 detail) {
+void LocalBattlefield::UnitUpdateProxy::setUpdateParameters(PeerId id, double interval, uint16_t detail) {
 	assert(detail < DETAIL_LEVELS);
-	uint16 interval_ms = static_cast<uint16>(interval * 1000.0);
+	uint16_t interval_ms = static_cast<uint16>(interval * 1000.0);
 	const unsigned n = m_PeerUpdates.size();
 	for (unsigned i = 0; i < n; ++i) {
 		if (m_PeerUpdates[i].id == id) {
@@ -924,7 +924,7 @@ void LocalBattlefield::LocalUnitWrapper::setUpdateDistance(PeerId id, double dis
 	 * 1 = 6.4-12.8 km
 	 * 0 = >12.8 km
 	 */
-	uint16 detail = static_cast<uint16>(std::max(0, 9 - static_cast<int>(1.4427 * ::log(std::max(1.0, distance / 25.0)))));
+	uint16_t detail = static_cast<uint16>(std::max(0, 9 - static_cast<int>(1.4427 * ::log(std::max(1.0, distance / 25.0)))));
 	m_UpdateProxy->setUpdateParameters(id, interval, detail);
 }
 

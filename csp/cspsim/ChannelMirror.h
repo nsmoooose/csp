@@ -69,7 +69,7 @@ class ChannelLink: public Referenced {
 	int m_Lod;
 	bool m_Master;
 public:
-	typedef std::vector<uint8> ValueSet;
+	typedef std::vector<uint8_t> ValueSet;
 	ChannelLink(std::string const &channel_name, int lod, bool master): m_ChannelName(channel_name), m_Lod(lod), m_Master(master) { }
 	virtual ~ChannelLink() {}
 	virtual void bind(Bus*) = 0;

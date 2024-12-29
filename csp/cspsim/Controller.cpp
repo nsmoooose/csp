@@ -89,7 +89,7 @@ bool RemoteAnimationUpdate::update(int lod) {
 			//static int XXX = 0; if ((++XXX % 1000) == 1) std::cout << m_Channel->getName() << " " << m_Channel->value() << " " << m_Limit0 << " " << m_Scale << "\n";
 		}
 		double value = clampTo((m_Channel->value() - m_Limit0) * m_Scale, 0.0, 255.0);
-		uint8 x = static_cast<uint8>(value);
+		uint8_t x = static_cast<uint8_t>(value);
 		if (x != m_LastValue) {
 			// one unit of hysteresis to prevent jittering of the remote animation
 			if ((x > m_LastValue) && (m_Increasing || (x > m_LastValue + 1))) {
@@ -106,7 +106,7 @@ bool RemoteAnimationUpdate::update(int lod) {
 	return false;
 }
 
-void LocalAnimationUpdate::setTarget(uint8 value) {
+void LocalAnimationUpdate::setTarget(uint8_t value) {
 	m_Target = m_Limit0 + (static_cast<double>(value) * m_Scale);
 }
 
@@ -175,8 +175,8 @@ Ref<NetworkMessage> RemoteController::getUpdate(TimeStamp current_timestamp, Sim
 
 	Ref<ObjectUpdate> update = new ObjectUpdate();
 
-	std::vector<uint8> &flags = update->set_animation_flags();
-	std::vector<uint8> &values = update->set_animation_values();
+	std::vector<uint8_t> &flags = update->set_animation_flags();
+	std::vector<uint8_t> &values = update->set_animation_values();
 	bool has_animation_updates = false;
 	for (unsigned i = 0; i < m_ChannelMasters.size(); ++i) {
 		if (m_ChannelMasters[i]->send(detail, values, force)) {
@@ -318,12 +318,12 @@ void LocalController::onUpdate(Ref<NetworkMessage> const &msg, TimeStamp now) {
 		setTargetPosition(update->position().asVector3() + m_TargetVelocity * dt);
 
 		if (update->has_animation_flags()) {
-			std::vector<uint8> const &flags = update->animation_flags();
-			std::vector<uint8> const &values = update->animation_values();
+			std::vector<uint8_t> const &flags = update->animation_flags();
+			std::vector<uint8_t> const &values = update->animation_values();
 			const unsigned n = std::min(flags.size() * 8, m_ChannelSlaves.size());
 			unsigned idx = 0;
 			for (unsigned i = 0; i < n; ++i) {
-				const uint8 flag = flags[i>>3];
+				const uint8_t flag = flags[i>>3];
 				if ((flag & (1<<(i&7))) != 0) {
 					m_ChannelSlaves[i]->receive(values, idx);
 				}

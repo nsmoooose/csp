@@ -43,13 +43,13 @@ namespace csp {
  */
 class CSPLIB_EXPORT DispatchCache: public Referenced {
 
-	typedef uint64 CacheKey;
+	typedef uint64_t CacheKey;
 	typedef MostRecentlyUsedCache<CacheKey, Ref<BaseCallback> > MRUCache;
 
 	/** Construct a cache key by XORing the target and message ids.  Message
 	 *  ids are sparse 64-bit hashes, while target ids are dense 24-bit values.
 	 */
-	static inline uint64 makeCacheKey(uint64 target_id, uint64 message_id) {
+	static inline uint64_t makeCacheKey(uint64_t target_id, uint64_t message_id) {
 		return (target_id ^ message_id);
 	}
 

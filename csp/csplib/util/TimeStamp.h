@@ -32,7 +32,7 @@
 namespace csp {
 
 /// Network event time, which is a rolling counter with 1us granularity
-typedef int32 TimeStamp;
+typedef int32_t TimeStamp;
 
 
 /** Get the time difference between two timestamps.

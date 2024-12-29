@@ -47,21 +47,21 @@ extern void CSPLIB_EXPORT fatal(std::string const &msg);
 
 struct HashT;
 
-extern CSPLIB_EXPORT uint32 newhash4_cstring(std::string const &);
+extern CSPLIB_EXPORT uint32_t newhash4_cstring(std::string const &);
 extern CSPLIB_EXPORT HashT newhasht_cstring(std::string const &);
 
 /** CSP standard 32-bit hash functions.
  */
-extern CSPLIB_EXPORT uint32 hash_uint32(uint32);
-extern CSPLIB_EXPORT uint32 hash_uint32(uint64);
-extern CSPLIB_EXPORT uint32 hash_uint32(std::string const &);
-extern CSPLIB_EXPORT uint32 hash_uint32(const char *buffer, const int len);
+extern CSPLIB_EXPORT uint32_t hash_uint32(uint32_t);
+extern CSPLIB_EXPORT uint32_t hash_uint32(uint64_t);
+extern CSPLIB_EXPORT uint32_t hash_uint32(std::string const &);
+extern CSPLIB_EXPORT uint32_t hash_uint32(const char *buffer, const int len);
 
 
 /** A 64-bit hash value.
  */
 struct CSPLIB_EXPORT HashT {
-	uint32 a, b;
+	uint32_t a, b;
 
 	/** Construct a default hash value (0).
 	 */
@@ -75,7 +75,7 @@ struct CSPLIB_EXPORT HashT {
 	 *
 	 *  @param x The low 32-bits of the hash value.
 	 */
-	HashT(uint32 x) {
+	HashT(uint32_t x) {
 		a = x; b = 0;
 	}
 
@@ -84,7 +84,7 @@ struct CSPLIB_EXPORT HashT {
 	 *  @param b_ The high 32-bits of the hash value.
 	 *  @param a_ The low 32-bits of the hash value.
 	 */
-	HashT(uint32 b_, uint32 a_) {
+	HashT(uint32_t b_, uint32_t a_) {
 		a = a_; b = b_;
 	}
 
@@ -105,7 +105,7 @@ struct CSPLIB_EXPORT HashT {
 	 *  @param x The low 32-bits of the hash value to compare to.  The
 	 *           high 32-bits are zero.
 	 */
-	bool operator ==(uint32 x) const {
+	bool operator ==(uint32_t x) const {
 		return (b == 0 && a == x);
 	}
 
@@ -114,7 +114,7 @@ struct CSPLIB_EXPORT HashT {
 	 *  @param x The low 32-bits of the hash value to compare to.  The
 	 *           high 32-bits are zero.
 	 */
-	bool operator !=(uint32 x) const {
+	bool operator !=(uint32_t x) const {
 		return (b != 0 || a != x);
 	}
 
@@ -148,7 +148,7 @@ struct CSPLIB_EXPORT HashT {
 	 *  @param x The low 32-bits to assign.  The high 32-bits are
 	 *           zeroed.
 	 */
-	HashT & operator =(uint32 x) {
+	HashT & operator =(uint32_t x) {
 		a = x; b = 0;
 		return *this;
 	}
@@ -162,8 +162,8 @@ struct CSPLIB_EXPORT HashT {
 
 	/** Convert to an unsigned 64-bit integer.
 	 */
-	uint64 u64() const {
-		return (static_cast<uint64>(a) << 32) | b;
+	uint64_t u64() const {
+		return (static_cast<uint64_t>(a) << 32) | b;
 	}
 
 	/** Get a string representation of this hash.
@@ -199,12 +199,12 @@ template <class C> struct Hash {
 	std::size_t operator()(const C& __x) const { return std::hash<C>()(__x); }
 };
 
-template <> struct Hash<int64> {
-	std::size_t operator()(const int64& __x) const { return static_cast<std::size_t>(__x); }
+template <> struct Hash<int64_t> {
+	std::size_t operator()(const int64_t& __x) const { return static_cast<std::size_t>(__x); }
 };
 
-template <> struct Hash<uint64> {
-	std::size_t operator()(const uint64& __x) const { return static_cast<std::size_t>(__x); }
+template <> struct Hash<uint64_t> {
+	std::size_t operator()(const uint64_t& __x) const { return static_cast<std::size_t>(__x); }
 };
 
 template <> struct Hash<hasht> {
@@ -246,9 +246,9 @@ extern CSPLIB_EXPORT std::ostream & operator<<(std::ostream &o, const hasht &x);
 
 
 // 32-bit fingerprint functions.
-typedef uint32 fprint32;
-inline fprint32 fingerprint(uint32 x) { return hash_uint32(x); }
-inline fprint32 fingerprint(uint64 x) { return hash_uint32(x); }
+typedef uint32_t fprint32;
+inline fprint32 fingerprint(uint32_t x) { return hash_uint32(x); }
+inline fprint32 fingerprint(uint64_t x) { return hash_uint32(x); }
 inline fprint32 fingerprint(std::string const &x) { return hash_uint32(x); }
 inline fprint32 fingerprint(const char *buffer, const int len) { return hash_uint32(buffer, len); }
 

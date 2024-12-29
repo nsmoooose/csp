@@ -224,7 +224,7 @@ int	main(int argc, char* argv[])
 }
 
 
-void	ReadPixel(SDL_Surface *s, int x, int y, Uint8* R, Uint8* G, Uint8* B, Uint8* A)
+void	ReadPixel(SDL_Surface *s, int x, int y, Uint8_t* R, Uint8_t* G, Uint8_t* B, Uint8_t* A)
 // Utility function to read a pixel from an SDL surface.
 // TODO: Should go in the engine utilities somewhere.
 {
@@ -237,20 +237,20 @@ void	ReadPixel(SDL_Surface *s, int x, int y, Uint8* R, Uint8* G, Uint8* B, Uint8
 
 	switch (s->format->BytesPerPixel) {
 	case 1: { /* Assuming 8-bpp */
-		Uint8 *bufp;
-		bufp = (Uint8*) s->pixels + y * s->pitch + x;
+		Uint8_t *bufp;
+		bufp = (Uint8_t*) s->pixels + y * s->pitch + x;
 		color = *bufp;
 	}
 	break;
 	case 2: { /* Probably 15-bpp or 16-bpp */
-		Uint16 *bufp;
-		bufp = (Uint16 *)s->pixels + y*s->pitch/2 + x;
+		Uint16_t *bufp;
+		bufp = (Uint16_t *)s->pixels + y*s->pitch/2 + x;
 		color = *bufp;
 	}
 	break;
 	case 3: { /* Slow 24-bpp mode, usually not used */
-		Uint8 *bufp;
-		bufp = (Uint8 *)s->pixels + y*s->pitch + x * 3;
+		Uint8_t *bufp;
+		bufp = (Uint8_t *)s->pixels + y*s->pitch + x * 3;
 		if (SDL_BYTEORDER == SDL_LIL_ENDIAN) {
 			color = bufp[0];
 			color |= bufp[1] <<  8;
@@ -263,8 +263,8 @@ void	ReadPixel(SDL_Surface *s, int x, int y, Uint8* R, Uint8* G, Uint8* B, Uint8
 	}
 	break;
 	case 4: { /* Probably 32-bpp */
-		Uint32 *bufp;
-		bufp = (Uint32 *)s->pixels + y*s->pitch/4 + x;
+		Uint32_t *bufp;
+		bufp = (Uint32_t *)s->pixels + y*s->pitch/4 + x;
 		color = *bufp;
 	}
 	break;
@@ -478,8 +478,8 @@ void	heightfield_shader(const char* infile,
 	
 	// create a buffer to hold a 1-pixel high RGB buffer.  We're
 	// going to create our texture one scanline at a time.
-	Uint8*	texture_pixels = new Uint8[width * 3];
-	Uint8*	diffuse_pixels = new Uint8[width * 3];
+	Uint8_t*	texture_pixels = new Uint8[width * 3];
+	Uint8_t*	diffuse_pixels = new Uint8[width * 3];
 
 	// Create our JPEG compression object, and initialize compression settings.
 	struct jpeg_compress_struct cinfo;
@@ -498,7 +498,7 @@ void	heightfield_shader(const char* infile,
 
 	{for (int j = 0; j < height; j++) {
 
-		Uint8*	p = texture_pixels;
+		Uint8_t*	p = texture_pixels;
 
 		if (diffuse_jpeg)
 		{

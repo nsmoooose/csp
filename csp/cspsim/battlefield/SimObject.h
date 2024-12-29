@@ -74,7 +74,7 @@ private:
 	int m_GroundBubble;
 
 	std::vector<ObjectId> m_ContactList;
-	uint32 m_ContactSignature;
+	uint32_t m_ContactSignature;
 
 	inline void setFlags(unsigned flag, bool on) {
 		if (on) m_Flags |= flag; else m_Flags &= ~flag;

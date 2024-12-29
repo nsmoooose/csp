@@ -100,9 +100,9 @@ private:
 		/// the class identifier hash
 		ObjectID classhash;
 		/// the file offset of the serialized object
-		uint32 offset;
+		uint32_t offset;
 		/// the size of the serialized object data (in bytes)
-		uint32 length;
+		uint32_t length;
 	};
 
 	enum {
@@ -152,7 +152,7 @@ private:
 	
 	FILE *_f;
 	bool _is_read;
-	uint32 _table_offset;
+	uint32_t _table_offset;
 	bool _finalized;
 	std::string _fn;
 	bool _chain;

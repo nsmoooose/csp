@@ -75,17 +75,17 @@ class CSPLIB_EXPORT NetworkInterface: public Referenced {
 	friend class ActivePeerList;
 
 	// reserved message ids
-	static const uint16 PingID = 65535;
+	static const uint16_t PingID = 65535;
 
 	// max number of peers
-	static const uint32 PeerIndexSize = 4096;
+	static const uint32_t PeerIndexSize = 4096;
 
 	// this is a somewhat arbitrary limit, which probably should be configurable.
-	static const uint32 MaxPayloadLength = 1024;
+	static const uint32_t MaxPayloadLength = 1024;
 
 	// shorthand notation
-	static const uint32 HeaderSize;
-	static const uint32 ReceiptHeaderSize;
+	static const uint32_t HeaderSize;
+	static const uint32_t ReceiptHeaderSize;
 
 	// The receive and transmit queues for raw packets.  The four queues
 	// are (roughly speaking):
@@ -161,13 +161,13 @@ class CSPLIB_EXPORT NetworkInterface: public Referenced {
 	Ref<PacketSource> m_PacketSource;
 
 	// Stats for diagnostics and bandwidth throttling.
-	uint32 m_OutputStalls;
-	uint32 m_SentPackets;
-	uint32 m_ReceivedPackets;
-	uint32 m_BadPackets;
-	uint32 m_DuplicatePackets;
-	uint32 m_DroppedPackets;
-	uint32 m_ThrottledPackets;
+	uint32_t m_OutputStalls;
+	uint32_t m_SentPackets;
+	uint32_t m_ReceivedPackets;
+	uint32_t m_BadPackets;
+	uint32_t m_DuplicatePackets;
+	uint32_t m_DroppedPackets;
+	uint32_t m_ThrottledPackets;
 
 	// tracks time between calls to processIncoming (used to queue reliable
 	// packet retransmissions).

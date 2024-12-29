@@ -49,7 +49,7 @@ private:
 
 		cache_line() : m_data(NULL), m_v0(0) {}
 		~cache_line() {
-			if (m_data) delete [] (Uint8*) m_data;
+			if (m_data) delete [] (Uint8_t*) m_data;
 			m_data = 0;
 		}
 	};

@@ -38,7 +38,7 @@ inline double lowpass(const double dt, const double x, const double y) {
 	return x * (1.0 - f) + y * f;
 }
 
-CSP_STATIC_CONST_DEF(uint32 PeerInfo::UDP_OVERHEAD);
+CSP_STATIC_CONST_DEF(uint32_t PeerInfo::UDP_OVERHEAD);
 static int DEBUG_connection_display_loop = 0;
 
 PeerInfo::PeerInfo():
@@ -115,8 +115,8 @@ void PeerInfo::update(double dt, double scale_desired_rate_to_self) {
 	}
 
 	// update the desired bandwidth from self to peer
-	const uint32 attempted_packets = m_packets_self_to_peer + m_packets_throttled;
-	const uint32 attempted_bytes = static_cast<uint32>(attempted_packets * m_average_outgoing_packet_size);
+	const uint32_t attempted_packets = m_packets_self_to_peer + m_packets_throttled;
+	const uint32_t attempted_bytes = static_cast<uint32>(attempted_packets * m_average_outgoing_packet_size);
 	const double desired_bandwidth = double(attempted_bytes) / dt;
 	m_desired_bandwidth_self_to_peer = lowpass<2000>(dt, m_desired_bandwidth_self_to_peer, desired_bandwidth);
 	const double desired_rate = 100.0 * m_desired_bandwidth_self_to_peer / m_total_peer_incoming_bandwidth;
@@ -213,7 +213,7 @@ void PeerInfo::setNode(NetworkNode const &node, double incoming, double outgoing
 }
 
 
-void PeerInfo::registerConfirmation(PacketReceiptHeader *receipt, const uint32 payload_length) {
+void PeerInfo::registerConfirmation(PacketReceiptHeader *receipt, const uint32_t payload_length) {
 	ConfirmationId id = m_next_confirmation_id;
 	receipt->setId0(id);
 	if (++m_next_confirmation_id == 0) m_next_confirmation_id = 1;  // 0 reserved for 'no id'
@@ -226,7 +226,7 @@ void PeerInfo::registerConfirmation(PacketReceiptHeader *receipt, const uint32 p
 	}
 
 	// save the packet data in case we need to resend it
-	const uint32 packet_length = payload_length + sizeof(PacketReceiptHeader);
+	const uint32_t packet_length = payload_length + sizeof(PacketReceiptHeader);
 	Ref<ReliablePacket> rpacket = new ReliablePacket();
 	rpacket->assign(id, receipt, packet_length);
 	m_reliable_packet_map[id] = rpacket;
@@ -234,7 +234,7 @@ void PeerInfo::registerConfirmation(PacketReceiptHeader *receipt, const uint32 p
 }
 
 
-void PeerInfo::setReceipt(PacketReceiptHeader *receipt, bool reliable, uint32 payload_length) {
+void PeerInfo::setReceipt(PacketReceiptHeader *receipt, bool reliable, uint32_t payload_length) {
 	// clear all the extra ids first (important!)
 	receipt->setId1(0);
 	receipt->setId2(0);
@@ -270,9 +270,9 @@ void PeerInfo::setReceipt(PacketReceiptHeader *receipt, bool reliable, uint32 pa
 }
 
 bool PeerInfo::isDuplicate(const ConfirmationId id) {
-	const uint32 mask = 1 << (id & 31);
+	const uint32_t mask = 1 << (id & 31);
 	const int index = id/32;
-	const uint32 value = m_duplicate_filter[index];
+	const uint32_t value = m_duplicate_filter[index];
 	const bool duplicate = ((value & mask) != 0);
 	m_duplicate_filter[index] = value | mask;
 	if (m_duplicate_filter_low && (id >= 65536/32*3/4)) {
@@ -329,7 +329,7 @@ void ActivePeerList::update(double dt, NetworkInterface *ni) {
 	m_ElapsedTime += dt;
 	if (m_ElapsedTime < 0.1) return;
 	double now = get_realtime();
-	uint32 desired_rate_to_self = 0;
+	uint32_t desired_rate_to_self = 0;
 	double scale_desired_peer_to_self = 1024.0 / std::max(1U, m_DesiredRateToSelf);
 	std::vector<PeerInfo*> remove_peers;
 	for (PeerList::iterator iter = m_ActivePeers.begin(); iter != m_ActivePeers.end(); ++iter) {

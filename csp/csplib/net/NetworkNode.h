@@ -67,7 +67,7 @@ public:
 	 *  @param addr the binary address of the host.
 	 *  @param port the port number used by the host for receiving data.
 	 */
-	NetworkNode(uint32 addr, ost::tpport_t port);
+	NetworkNode(uint32_t addr, ost::tpport_t port);
 
 	/** Construct a new node from a ConnectionPoint.
 	 *
@@ -112,7 +112,7 @@ public:
 
 	/** Get the ip address as a 32-bit int, in network byte-order.
 	 */
-	inline uint32 getIp() const {
+	inline uint32_t getIp() const {
 		return m_addr.getAddress().s_addr;
 	}
 
@@ -135,7 +135,7 @@ public:
 	/** Test if an ip address is routable (ie, not 127.0.0.0/8, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16).
 	 *  @param addr 32-bit ipv4 address in network byte-order.
 	 */
-	static bool isRoutable(uint32 addr) {
+	static bool isRoutable(uint32_t addr) {
 		return ((addr & 0xffff) != 43200) &&  // 192.168.  0.  0 - 192.168.255.255
 		       ((addr & 0x00ff) !=    10) &&  //  10.  0.  0.  0 -  10.255.255.255
 		       ((addr & 0x00ff) !=   127) &&  // 127.  0.  0.  0 - 127.255.255.255
@@ -145,7 +145,7 @@ public:
 	/** Convert an ip address to a dotted-quad string.
 	 *  @param addr 32-bit ipv4 address in network byte-order.
 	 */
-	static std::string ipToString(uint32 addr);
+	static std::string ipToString(uint32_t addr);
 };
 
 

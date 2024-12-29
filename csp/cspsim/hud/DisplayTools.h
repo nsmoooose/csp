@@ -148,7 +148,7 @@ public:
 	 *  segment while unset bits mask line segments.  The stipple spacing is
 	 *  independent of the viewing angle.
 	 */
-	virtual void setLineStipple(uint8 scale, uint16 pattern);
+	virtual void setLineStipple(uint8_t scale, uint16_t pattern);
 
 	/** Add a new text item to the geode and return a pointer to it.
 	 */

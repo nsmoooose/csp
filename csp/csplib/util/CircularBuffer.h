@@ -46,10 +46,10 @@ class RingQueue: public NonCopyable {
 	static const int SIZE = sizeof(TYPE);
 
 	TYPE* m_buffer;
-	volatile uint32 m_read;
-	volatile uint32 m_write;
-	uint32 m_count;
-	uint32 m_mask;
+	volatile uint32_t m_read;
+	volatile uint32_t m_write;
+	uint32_t m_count;
+	uint32_t m_mask;
 
 public:
 
@@ -57,7 +57,7 @@ public:
 	 *
 	 *  @param count the maximum number of elements in the queue; must be a power of 2.
 	 */
-	RingQueue(uint32 count) {
+	RingQueue(uint32_t count) {
 		m_mask = count - 1;
 		m_count = count;
 		assert((m_count & m_mask) == 0);
@@ -66,7 +66,7 @@ public:
 		m_buffer = new TYPE[count];
 	}
 
-	uint32 getCount() const { return m_count; }
+	uint32_t getCount() const { return m_count; }
 
 	~RingQueue() {
 		delete[] m_buffer;
@@ -147,11 +147,11 @@ public:
  *  // reads messages from an external source, puts them into a
  *  // circular buffer shared with thread2
  *  void thread1_run(CircularBuffer &buffer) {
- *    const uint32 timeout = 100; // milliseconds
+ *    const uint32_t timeout = 100; // milliseconds
  *    while (true) {
  *      if (messagePending(timeout)) {
- *        uint32 size = getMessageSize();
- *        uint8 *block = 0;
+ *        uint32_t size = getMessageSize();
+ *        uint8_t *block = 0;
  *        while (!block) {
  *          block = buffer.getWriteBuffer(size);
  *          // if the buffer is full, yield to allow thread2 to free
@@ -171,8 +171,8 @@ public:
  *        // wait for new messages by yielding (important!)
  *        thread::yield();
  *      }
- *      uint32 size;
- *      uint8 *block = buffer.getReadBuffer(size);
+ *      uint32_t size;
+ *      uint8_t *block = buffer.getReadBuffer(size);
  *      processMessage(block, size);
  *      buffer.releaseReadBuffer();
  *  }
@@ -180,18 +180,18 @@ public:
  */
 class CircularBuffer: public NonCopyable {
 
-	uint8* m_buffer;
-	uint32 m_size;
-	volatile uint32 m_read;
-	volatile uint32 m_write;
-	volatile uint32 m_limit;
-	uint32 m_allocated;
-	uint32 m_next_read;
-	uint32 m_next_write;
-	uint32 *m_start_write;
+	uint8_t* m_buffer;
+	uint32_t m_size;
+	volatile uint32_t m_read;
+	volatile uint32_t m_write;
+	volatile uint32_t m_limit;
+	uint32_t m_allocated;
+	uint32_t m_next_read;
+	uint32_t m_next_write;
+	uint32_t *m_start_write;
 
 	// space for caching the block size at the start of each block
-	static const uint32 RESERVE = 4;
+	static const uint32_t RESERVE = 4;
 
 public:
 
@@ -199,7 +199,7 @@ public:
 	 *
 	 *  @param size the maximum capacity of the buffer (in bytes)
 	 */
-	CircularBuffer(uint32 size) {
+	CircularBuffer(uint32_t size) {
 		m_size = size + RESERVE;
 		m_read = 0;
 		m_write = 0;
@@ -213,7 +213,7 @@ public:
 
 	/** Get the maximum capacity of the buffer when completely empty (in bytes).
 	 */
-	inline uint32 capacity() const { return m_size - RESERVE; }
+	inline uint32_t capacity() const { return m_size - RESERVE; }
 
 	/** Destroy the buffer, freeing the internal memory pool.
 	 */
@@ -239,11 +239,11 @@ public:
 	 *    on success, or NULL if there is insufficient space to
 	 *    allocate the requested block.
 	 */
-	inline uint8 *getWriteBuffer(const uint32 size) {
+	inline uint8_t *getWriteBuffer(const uint32_t size) {
 		// check that there aren't any allocated but uncommitted blocks
 		assert(m_write == m_next_write);
 		if (size == 0 || getMaximumAllocation() < size) return 0;
-		uint32 offset = m_write;
+		uint32_t offset = m_write;
 		// if no room at the end of the buffer; allocate from the start
 		if (m_size - m_write < size + RESERVE) {
 			offset = 0;
@@ -251,7 +251,7 @@ public:
 		}
 		m_allocated = size;
 		// cache the buffer size at the start of the block
-		m_start_write = reinterpret_cast<uint32*>(&(m_buffer[offset]));
+		m_start_write = reinterpret_cast<uint32_t*>(&(m_buffer[offset]));
 		*m_start_write = size;
 		// bump the next_write offset to the end of the block.
 		m_next_write = offset + RESERVE + size;
@@ -267,13 +267,13 @@ public:
 	 *  an upper bound (additional space may be consumed by the writer
 	 *  thread at any time).
 	 */
-	inline uint32 getMaximumAllocation() const {
-		uint32 read = m_read;
+	inline uint32_t getMaximumAllocation() const {
+		uint32_t read = m_read;
 		if (read > m_write) {
 			if (read - m_write <= RESERVE) return 0;
 			return read - m_write - RESERVE - 1;
 		}
-		uint32 space = std::max<uint32>(read, m_size - m_write);
+		uint32_t space = std::max<uint32>(read, m_size - m_write);
 		if (space > RESERVE) return space - RESERVE - 1;
 		return 0;
 	}
@@ -283,10 +283,10 @@ public:
 	 *  will generally be less than capacity due to wasted space at the
 	 *  end of the buffer.
 	 */
-	inline uint32 getAllocatedSpace() const {
-		uint32 read = m_read;
-		uint32 write = m_write;
-		uint32 space;
+	inline uint32_t getAllocatedSpace() const {
+		uint32_t read = m_read;
+		uint32_t write = m_write;
+		uint32_t space;
 		if (read > write) {
 			space = (m_size + write) - read;
 		} else {
@@ -332,7 +332,7 @@ public:
 	 *  @param size The new size of the committed block; must be less than
 	 *    or equal to the original size.  If zero, the block is abandoned.
 	 */
-	inline void commitWriteBuffer(uint32 size) {
+	inline void commitWriteBuffer(uint32_t size) {
 		if (size == 0) { abandonWriteBuffer(); return; }
 		if (m_write == m_next_write) return;
 		assert(size <= m_allocated);
@@ -369,7 +369,7 @@ public:
 	 *  @return A pointer to the next block, or NULL if the buffer
 	 *    is empty.
 	 */
-	inline uint8* getReadBuffer(uint32 &size) {
+	inline uint8_t* getReadBuffer(uint32_t &size) {
 		assert(m_read == m_next_read);
 		if (isEmpty()) {
 			size = 0;
@@ -380,7 +380,7 @@ public:
 			m_read = 0;
 			m_limit = m_size;
 		}
-		size = *(reinterpret_cast<uint32*>(m_buffer + m_read));
+		size = *(reinterpret_cast<uint32_t*>(m_buffer + m_read));
 		m_next_read = m_read + size + RESERVE;
 		return (m_buffer + m_read + RESERVE);
 	}

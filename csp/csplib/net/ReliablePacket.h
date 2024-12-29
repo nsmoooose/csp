@@ -65,7 +65,7 @@ public:
 	 *  @param receipt a pointer to the packet header (and payload data).
 	 *  @param packet_size the full packet size in bytes (header + payload).
 	 */
-	void assign(ConfirmationId id, PacketReceiptHeader* receipt, uint32 packet_size) {
+	void assign(ConfirmationId id, PacketReceiptHeader* receipt, uint32_t packet_size) {
 		CSPLOG(DEBUG, PACKET) << "creating reliable packet " << id;
 		m_Id = id;
 		m_Confirmed = false;
@@ -93,13 +93,13 @@ public:
 	 *
 	 *  @param ptr the buffer to receive the packet data.
 	 */
-	inline void copy(uint8 *ptr) {
+	inline void copy(uint8_t *ptr) {
 		memcpy(ptr, m_PacketData.data(), m_PacketData.size());
 	}
 	
 	/** Get the size of the packet data in bytes (header + payload)
 	 */
-	inline uint32 size() const { return m_PacketData.size(); }
+	inline uint32_t size() const { return m_PacketData.size(); }
 
 	/** Get the reliable packet confirmation id.
 	 */

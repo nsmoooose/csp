@@ -160,8 +160,8 @@ void	decimate(SDL_RWops* out, SDL_RWops* in, int factor)
 	const char*	spinner = "-\\|/";
 
 	// Create scanline buffers.
-	Uint8*	input_pixels = new Uint8[in_width * 3];
-	Uint8*	output_pixels = new Uint8[width * 3];
+	Uint8_t*	input_pixels = new Uint8[in_width * 3];
+	Uint8_t*	output_pixels = new Uint8[width * 3];
 
 	// Create our JPEG compression object, and initialize compression settings.
 	struct jpeg_compress_struct cinfo;
@@ -182,7 +182,7 @@ void	decimate(SDL_RWops* out, SDL_RWops* in, int factor)
 
 		input_jpeg->read_scanline(input_pixels);
 
-		Uint8*	p = output_pixels;
+		Uint8_t*	p = output_pixels;
 
 		{for (int i = 0; i < width; i++) {
 			Uint8	r, g, b, a;

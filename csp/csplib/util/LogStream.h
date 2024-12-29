@@ -102,7 +102,7 @@ public:
 	void lock();
 	void unlock();
 
-	uint64 initialThread() const { return m_initial_thread; }
+	uint64_t initialThread() const { return m_initial_thread; }
 
 	/** Test whether FATAL log messages generate exceptions or cause an immediate abort.
 	 */
@@ -167,7 +167,7 @@ private:
 
 	Mutex *m_mutex;
 	bool m_threadsafe;
-	uint64 m_initial_thread;
+	uint64_t m_initial_thread;
 	bool m_throw_on_fatal;
 
 	bool m_autoflush;

@@ -20,10 +20,10 @@ type csp::Vector4f;
 
 message ObjectUpdate : csp::NetworkMessage { @id=1025;
 
-	REQUIRED int32 timestamp;
+	REQUIRED int32_t timestamp;
 	REQUIRED csp::GlobalPosition position;
 	REQUIRED csp::Vector3f velocity;
 	csp::Vector4f attitude;
-	uint8[] animation_flags;
-	uint8[] animation_values;
+	uint8_t[] animation_flags;
+	uint8_t[] animation_values;
 }

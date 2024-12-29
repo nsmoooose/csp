@@ -29,7 +29,7 @@ namespace csp {
  */
 class tribool {
 	typedef enum { UNSET=0, FALSE=1, TRUE=2 } State;
-	uint8 _state;
+	uint8_t _state;
 	tribool(State state): _state(state) {}
 
 public:

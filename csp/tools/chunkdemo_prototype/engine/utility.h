@@ -100,12 +100,12 @@ inline int frnd(float f) { return fchop(f + 0.5f); }	// replace with inline asm 
 //
 
 
-inline void	WriteByte(SDL_RWops* dst, Uint8 b) {
+inline void	WriteByte(SDL_RWops* dst, Uint8_t b) {
 	dst->write(dst, &b, sizeof(b), 1);
 }
 
 
-inline Uint8 ReadByte(SDL_RWops* src) {
+inline Uint8_t ReadByte(SDL_RWops* src) {
 	Uint8	b;
 	src->read(src, &b, sizeof(b), 1);	// @@ check for error
 	return b;

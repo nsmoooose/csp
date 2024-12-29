@@ -60,33 +60,33 @@
 
 /* Basic bit swapping functions
  */
-#define CSP_UINT16_SWAP_LE_BE_CONSTANT(val) (static_cast<CSP(uint16)>( \
-	static_cast<CSP(uint16)>(static_cast<CSP(uint16)>(val) >> 8) | \
-	static_cast<CSP(uint16)>(static_cast<CSP(uint16)>(val) << 8)))
+#define CSP_UINT16_SWAP_LE_BE_CONSTANT(val) (static_cast<uint16_t>( \
+	static_cast<uint16_t>(static_cast<uint16_t>(val) >> 8) | \
+	static_cast<uint16_t>(static_cast<uint16_t>(val) << 8)))
 
-#define CSP_UINT32_SWAP_LE_BE_CONSTANT(val) (static_cast<CSP(uint32)>( \
-	(static_cast<CSP(uint32)>(val) & static_cast<CSP(uint32)>(0x000000ffU) << 24) | \
-	(static_cast<CSP(uint32)>(val) & static_cast<CSP(uint32)>(0x0000ff00U) <<  8) | \
-	(static_cast<CSP(uint32)>(val) & static_cast<CSP(uint32)>(0x00ff0000U) >>  8) | \
-	(static_cast<CSP(uint32)>(val) & static_cast<CSP(uint32)>(0xff000000U) >> 24)))
+#define CSP_UINT32_SWAP_LE_BE_CONSTANT(val) (static_cast<uint32_t>( \
+	(static_cast<uint32_t>(val) & static_cast<uint32_t>(0x000000ffU) << 24) | \
+	(static_cast<uint32_t>(val) & static_cast<uint32_t>(0x0000ff00U) <<  8) | \
+	(static_cast<uint32_t>(val) & static_cast<uint32_t>(0x00ff0000U) >>  8) | \
+	(static_cast<uint32_t>(val) & static_cast<uint32_t>(0xff000000U) >> 24)))
 
-#define CSP_UINT64_SWAP_LE_BE_CONSTANT(val) (static_cast<CSP(uint64)>( \
-	(static_cast<CSP(uint64)>(val) & \
-		static_cast<CSP(uint64)>(CSP_ULL(0x00000000000000ff)) << 56) | \
-	(static_cast<CSP(uint64)>(val) & \
-		static_cast<CSP(uint64)>(CSP_ULL(0x000000000000ff00)) << 40) | \
-	(static_cast<CSP(uint64)>(val) & \
-		static_cast<CSP(uint64)>(CSP_ULL(0x0000000000ff0000)) << 24) | \
-	(static_cast<CSP(uint64)>(val) & \
-		static_cast<CSP(uint64)>(CSP_ULL(0x00000000ff000000)) <<  8) | \
-	(static_cast<CSP(uint64)>(val) & \
-		static_cast<CSP(uint64)>(CSP_ULL(0x000000ff00000000)) >>  8) | \
-	(static_cast<CSP(uint64)>(val) & \
-		static_cast<CSP(uint64)>(CSP_ULL(0x0000ff0000000000)) >> 24) | \
-	(static_cast<CSP(uint64)>(val) & \
-		static_cast<CSP(uint64)>(CSP_ULL(0x00ff000000000000)) >> 40) | \
-	(static_cast<CSP(uint64)>(val) & \
-		static_cast<CSP(uint64)>(CSP_ULL(0xff00000000000000)) >> 56)))
+#define CSP_UINT64_SWAP_LE_BE_CONSTANT(val) (static_cast<uint64_t>( \
+	(static_cast<uint64_t>(val) & \
+		static_cast<uint64_t>(CSP_ULL(0x00000000000000ff)) << 56) | \
+	(static_cast<uint64_t>(val) & \
+		static_cast<uint64_t>(CSP_ULL(0x000000000000ff00)) << 40) | \
+	(static_cast<uint64_t>(val) & \
+		static_cast<uint64_t>(CSP_ULL(0x0000000000ff0000)) << 24) | \
+	(static_cast<uint64_t>(val) & \
+		static_cast<uint64_t>(CSP_ULL(0x00000000ff000000)) <<  8) | \
+	(static_cast<uint64_t>(val) & \
+		static_cast<uint64_t>(CSP_ULL(0x000000ff00000000)) >>  8) | \
+	(static_cast<uint64_t>(val) & \
+		static_cast<uint64_t>(CSP_ULL(0x0000ff0000000000)) >> 24) | \
+	(static_cast<uint64_t>(val) & \
+		static_cast<uint64_t>(CSP_ULL(0x00ff000000000000)) >> 40) | \
+	(static_cast<uint64_t>(val) & \
+		static_cast<uint64_t>(CSP_ULL(0xff00000000000000)) >> 56)))
 
 /* Arch specific stuff for speed
  */
@@ -94,7 +94,7 @@
 #  if defined (__i386__)
 #    define CSP_UINT16_SWAP_LE_BE_IA32(val) \
        (__extension__ \
-        ({ register CSP(uint16) __v, __x = (static_cast<CSP(uint16)> (val)); \
+        ({ register uint16_t __v, __x = (static_cast<uint16_t> (val)); \
            if (__builtin_constant_p (__x)) \
              __v = CSP_UINT16_SWAP_LE_BE_CONSTANT (__x); \
            else \
@@ -108,7 +108,7 @@
         && !defined (__pentiumpro__) && !defined (__pentium4__)
 #       define CSP_UINT32_SWAP_LE_BE_IA32(val) \
           (__extension__ \
-           ({ register CSP(uint32) __v, __x = (static_cast<CSP(uint32)> (val)); \
+           ({ register uint32_t __v, __x = (static_cast<uint32_t> (val)); \
               if (__builtin_constant_p (__x)) \
                 __v = CSP_UINT32_SWAP_LE_BE_CONSTANT (__x); \
               else \
@@ -122,7 +122,7 @@
 #    else /* 486 and higher has bswap */
 #       define CSP_UINT32_SWAP_LE_BE_IA32(val) \
           (__extension__ \
-           ({ register CSP(uint32) __v, __x = (static_cast<CSP(uint32)> (val)); \
+           ({ register uint32_t __v, __x = (static_cast<uint32_t> (val)); \
               if (__builtin_constant_p (__x)) \
                 __v = CSP_UINT32_SWAP_LE_BE_CONSTANT (__x); \
               else \
@@ -133,9 +133,9 @@
 #    endif /* processor specific 32-bit stuff */
 #    define CSP_UINT64_SWAP_LE_BE_IA32(val) \
        (__extension__ \
-        ({ union { CSP(uint64) __ll; \
-                   CSP(uint32) __l[2]; } __w, __r; \
-           __w.__ll = (static_cast<CSP(uint64)> (val)); \
+        ({ union { uint64_t __ll; \
+                   uint32_t __l[2]; } __w, __r; \
+           __w.__ll = (static_cast<uint64_t> (val)); \
            if (__builtin_constant_p (__w.__ll)) \
              __r.__ll = CSP_UINT64_SWAP_LE_BE_CONSTANT (__w.__ll); \
            else \
@@ -151,7 +151,7 @@
 #  elif defined (__ia64__)
 #    define CSP_UINT16_SWAP_LE_BE_IA64(val) \
        (__extension__ \
-        ({ register CSP(uint16) __v, __x = (static_cast<CSP(uint16)> (val)); \
+        ({ register uint16_t __v, __x = (static_cast<uint16_t> (val)); \
            if (__builtin_constant_p (__x)) \
              __v = CSP_UINT16_SWAP_LE_BE_CONSTANT (__x); \
            else \
@@ -162,7 +162,7 @@
             __v; }))
 #    define CSP_UINT32_SWAP_LE_BE_IA64(val) \
        (__extension__ \
-         ({ register CSP(uint32) __v, __x = (static_cast<CSP(uint32)> (val)); \
+         ({ register uint32_t __v, __x = (static_cast<uint32_t> (val)); \
             if (__builtin_constant_p (__x)) \
               __v = CSP_UINT32_SWAP_LE_BE_CONSTANT (__x); \
             else \
@@ -173,7 +173,7 @@
             __v; }))
 #    define CSP_UINT64_SWAP_LE_BE_IA64(val) \
        (__extension__ \
-        ({ register CSP(uint64) __v, __x = (static_cast<CSP(uint64)> (val)); \
+        ({ register uint64_t __v, __x = (static_cast<uint64_t> (val)); \
            if (__builtin_constant_p (__x)) \
              __v = CSP_UINT64_SWAP_LE_BE_CONSTANT (__x); \
            else \
@@ -187,7 +187,7 @@
 #  elif defined (__x86_64__)
 #    define CSP_UINT32_SWAP_LE_BE_X86_64(val) \
        (__extension__ \
-         ({ register CSP(uint32) __v, __x = (static_cast<CSP(uint32)> (val)); \
+         ({ register uint32_t __v, __x = (static_cast<uint32_t> (val)); \
             if (__builtin_constant_p (__x)) \
               __v = CSP_UINT32_SWAP_LE_BE_CONSTANT (__x); \
             else \
@@ -197,7 +197,7 @@
             __v; }))
 #    define CSP_UINT64_SWAP_LE_BE_X86_64(val) \
        (__extension__ \
-        ({ register CSP(uint64) __v, __x = (static_cast<CSP(uint64)> (val)); \
+        ({ register uint64_t __v, __x = (static_cast<uint64_t> (val)); \
            if (__builtin_constant_p (__x)) \
              __v = CSP_UINT64_SWAP_LE_BE_CONSTANT (__x); \
            else \
@@ -222,31 +222,31 @@
 
 
 #if (CSP_BYTE_ORDER == CSP_LE)
-#  define CSP_INT16_TO_LE(val) (static_cast<CSP(int16)> (val))
-#  define CSP_UINT16_TO_LE(val) (static_cast<CSP(uint16)> (val))
-#  define CSP_INT16_TO_BE(val) (static_cast<CSP(int16)>(CSP_UINT16_SWAP_LE_BE (val)))
-#  define CSP_UINT16_TO_BE(val) (static_cast<CSP(uint16)>(CSP_UINT16_SWAP_LE_BE (val)))
-#  define CSP_INT32_TO_LE(val) (static_cast<CSP(int32)> (val))
-#  define CSP_UINT32_TO_LE(val) (static_cast<CSP(uint32)> (val))
-#  define CSP_INT32_TO_BE(val) (static_cast<CSP(int32)>(CSP_UINT32_SWAP_LE_BE (val)))
-#  define CSP_UINT32_TO_BE(val) (static_cast<CSP(uint32)>(CSP_UINT32_SWAP_LE_BE (val)))
-#  define CSP_INT64_TO_LE(val) (static_cast<CSP(int64)> (val))
-#  define CSP_UINT64_TO_LE(val) (static_cast<CSP(uint64)> (val))
-#  define CSP_INT64_TO_BE(val) (static_cast<CSP(int64)>(CSP_UINT64_SWAP_LE_BE (val)))
-#  define CSP_UINT64_TO_BE(val) (static_cast<CSP(uint64)>(CSP_UINT64_SWAP_LE_BE (val)))
+#  define CSP_INT16_TO_LE(val) (static_cast<int16_t> (val))
+#  define CSP_UINT16_TO_LE(val) (static_cast<uint16_t> (val))
+#  define CSP_INT16_TO_BE(val) (static_cast<int16_t>(CSP_UINT16_SWAP_LE_BE (val)))
+#  define CSP_UINT16_TO_BE(val) (static_cast<uint16_t>(CSP_UINT16_SWAP_LE_BE (val)))
+#  define CSP_INT32_TO_LE(val) (static_cast<int32_t> (val))
+#  define CSP_UINT32_TO_LE(val) (static_cast<uint32_t> (val))
+#  define CSP_INT32_TO_BE(val) (static_cast<int32_t>(CSP_UINT32_SWAP_LE_BE (val)))
+#  define CSP_UINT32_TO_BE(val) (static_cast<uint32_t>(CSP_UINT32_SWAP_LE_BE (val)))
+#  define CSP_INT64_TO_LE(val) (static_cast<int64_t> (val))
+#  define CSP_UINT64_TO_LE(val) (static_cast<uint64_t> (val))
+#  define CSP_INT64_TO_BE(val) (static_cast<int64_t>(CSP_UINT64_SWAP_LE_BE (val)))
+#  define CSP_UINT64_TO_BE(val) (static_cast<uint64_t>(CSP_UINT64_SWAP_LE_BE (val)))
 #else
-#  define CSP_INT16_TO_LE(val) (static_cast<CSP(int16)>(CSP_UINT16_SWAP_LE_BE (val)))
-#  define CSP_UINT16_TO_LE(val) (static_cast<CSP(uint16)>(CSP_UINT16_SWAP_LE_BE (val)))
-#  define CSP_INT16_TO_BE(val) (static_cast<CSP(int16)> (val))
-#  define CSP_UINT16_TO_BE(val) (static_cast<CSP(uint16)> (val))
-#  define CSP_INT32_TO_LE(val) (static_cast<CSP(int32)>(CSP_UINT32_SWAP_LE_BE (val)))
-#  define CSP_UINT32_TO_LE(val) (static_cast<CSP(uint32)>(CSP_UINT32_SWAP_LE_BE (val)))
-#  define CSP_INT32_TO_BE(val) (static_cast<CSP(int32)> (val))
-#  define CSP_UINT32_TO_BE(val) (static_cast<CSP(uint32)> (val))
-#  define CSP_INT64_TO_LE(val) (static_cast<CSP(int64)>(CSP_UINT64_SWAP_LE_BE (val)))
-#  define CSP_UINT64_TO_LE(val) (static_cast<CSP(uint64)>(CSP_UINT64_SWAP_LE_BE (val)))
-#  define CSP_INT64_TO_BE(val) (static_cast<CSP(int64)> (val))
-#  define CSP_UINT64_TO_BE(val) (static_cast<CSP(uint64)> (val))
+#  define CSP_INT16_TO_LE(val) (static_cast<int16_t>(CSP_UINT16_SWAP_LE_BE (val)))
+#  define CSP_UINT16_TO_LE(val) (static_cast<uint16_t>(CSP_UINT16_SWAP_LE_BE (val)))
+#  define CSP_INT16_TO_BE(val) (static_cast<int16_t> (val))
+#  define CSP_UINT16_TO_BE(val) (static_cast<uint16_t> (val))
+#  define CSP_INT32_TO_LE(val) (static_cast<int32_t>(CSP_UINT32_SWAP_LE_BE (val)))
+#  define CSP_UINT32_TO_LE(val) (static_cast<uint32_t>(CSP_UINT32_SWAP_LE_BE (val)))
+#  define CSP_INT32_TO_BE(val) (static_cast<int32_t> (val))
+#  define CSP_UINT32_TO_BE(val) (static_cast<uint32_t> (val))
+#  define CSP_INT64_TO_LE(val) (static_cast<int64_t>(CSP_UINT64_SWAP_LE_BE (val)))
+#  define CSP_UINT64_TO_LE(val) (static_cast<uint64_t>(CSP_UINT64_SWAP_LE_BE (val)))
+#  define CSP_INT64_TO_BE(val) (static_cast<int64_t> (val))
+#  define CSP_UINT64_TO_BE(val) (static_cast<uint64_t> (val))
 #endif
 
 /* The transformation is symmetric, so the FROM just maps to the TO.
@@ -279,13 +279,13 @@ namespace csp {
 /** Template wrappers for endian macros.
  */
 template<typename T> struct endian { };
-template<> struct endian<uint8> {
-	inline static uint8 to_le(uint8 x) { return x; }
-	inline static uint8 from_le(uint8 x) { return x; }
+template<> struct endian<uint8_t> {
+	inline static uint8_t to_le(uint8_t x) { return x; }
+	inline static uint8_t from_le(uint8_t x) { return x; }
 };
-template<> struct endian<int8> {
-	inline static int8 to_le(int8 x) { return x; }
-	inline static int8 from_le(int8 x) { return x; }
+template<> struct endian<int8_t> {
+	inline static int8_t to_le(int8_t x) { return x; }
+	inline static int8_t from_le(int8_t x) { return x; }
 };
 template<> struct endian<char> {
 	inline static char to_le(char x) { return x; }
@@ -296,12 +296,12 @@ template<> struct endian<char> {
 		inline static TYPE to_le(TYPE x) { return static_cast<TYPE>(CSP_##CAPTYPE##_TO_LE(x)); } \
 		inline static TYPE from_le(TYPE x) { return static_cast<TYPE>(CSP_##CAPTYPE##_FROM_LE(x)); } \
 	};
-CSP_ENDIAN_TEMPLATE(int16, INT16)
-CSP_ENDIAN_TEMPLATE(int32, INT32)
-CSP_ENDIAN_TEMPLATE(int64, INT64)
-CSP_ENDIAN_TEMPLATE(uint16, UINT16)
-CSP_ENDIAN_TEMPLATE(uint32, UINT32)
-CSP_ENDIAN_TEMPLATE(uint64, UINT64)
+CSP_ENDIAN_TEMPLATE(int16_t, INT16)
+CSP_ENDIAN_TEMPLATE(int32_t, INT32)
+CSP_ENDIAN_TEMPLATE(int64_t, INT64)
+CSP_ENDIAN_TEMPLATE(uint16_t, UINT16)
+CSP_ENDIAN_TEMPLATE(uint32_t, UINT32)
+CSP_ENDIAN_TEMPLATE(uint64_t, UINT64)
 CSP_ENDIAN_TEMPLATE(float, UINT32)
 CSP_ENDIAN_TEMPLATE(double, UINT64)
 #undef CSP_ENDIAN_TEMPLATE

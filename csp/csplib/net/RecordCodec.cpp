@@ -43,7 +43,7 @@ RecordCodec::RecordCodec(): m_TagWriter(m_Writer), m_TagReader(m_Reader) {
 	}
 }
 
-size_t RecordCodec::encode(Ref<TaggedRecord> record, uint8 *buffer, size_t buffer_length) {
+size_t RecordCodec::encode(Ref<TaggedRecord> record, uint8_t *buffer, size_t buffer_length) {
 	assert(record.valid());
 	assert(buffer != 0);
 	m_Writer.bind(buffer, buffer_length);
@@ -52,7 +52,7 @@ size_t RecordCodec::encode(Ref<TaggedRecord> record, uint8 *buffer, size_t buffe
 	return m_Writer.length();
 }
 
-Ref<TaggedRecord> RecordCodec::decode(int local_id, uint8 const *buffer, const size_t buffer_length) {
+Ref<TaggedRecord> RecordCodec::decode(int local_id, uint8_t const *buffer, const size_t buffer_length) {
 	if (buffer == 0 || buffer_length == 0) {
 		CSPLOG(ERROR, MESSAGE) << "no buffer";
 		return 0;
@@ -93,7 +93,7 @@ bool RecordCodec::registerMessageId(TaggedRecord::Id id, int local_id) {
 	TaggedRecordRegistry const &registry = TaggedRecordRegistry::getInstance();
 	TaggedRecordFactoryBase const *factory = registry.getFactory(id);
 	if (!factory) return false;
-	uint16 current_id = static_cast<uint16>(factory->getCustomId());
+	uint16_t current_id = static_cast<uint16_t>(factory->getCustomId());
 	if (current_id == local_id) {
 		CSP_VERIFY(m_Factories[current_id] == factory);
 		return true;

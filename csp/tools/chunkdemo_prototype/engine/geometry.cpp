@@ -597,7 +597,7 @@ void	bitmap32::ProcessForColorKeyZero()
 // so they don't get knocked out when blitting.
 {
 	uint32	Key32 = 0;
-	uint32*	p = GetData();
+	uint32_t*	p = GetData();
 	int	pixels = GetHeight() * GetWidth();
 	for (int i = 0; i < pixels; i++, p++) {
 		if ((*p >> 24) >= 128) {

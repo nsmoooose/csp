@@ -366,7 +366,7 @@ class Compound(Element):
             idx = has_count % 32
             if (idx == 0):
                 has_var = 'm_has%d' % (has_count / 32)
-                output('csp::uint32 %s;' % has_var)
+                output('uint32_t %s;' % has_var)
             child.setHasFlag(BitFlag(has_var, idx))
             has_count += 1
         output('')
@@ -809,11 +809,11 @@ class Bitset(Compound):
 
     def getType(self):
         if len(self.children) <= 8:
-            return 'csp::uint8'
+            return 'uint8_t'
         if len(self.children) <= 16:
-            return 'csp::uint16'
+            return 'uint16_t'
         assert(len(self.children) <= 32)
-        return 'csp::uint32'
+        return 'uint32_t'
 
     def signature(self):
         return 'bits'
@@ -937,8 +937,6 @@ class Type:
 
     def __init__(self, category, name):
         self.category = category
-        if name in ('int8', 'int16', 'int32', 'int64', 'uint8', 'uint16', 'uint32', 'uint64'):
-            name = 'csp::%s' % name
         self.name = name
 
     def __str__(self):

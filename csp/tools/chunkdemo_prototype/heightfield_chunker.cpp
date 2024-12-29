@@ -294,7 +294,7 @@ static int	lowest_one(int x)
 }
 
 
-void	ReadPixel(SDL_Surface *s, int x, int y, Uint8* R, Uint8* G, Uint8* B, Uint8* A)
+void	ReadPixel(SDL_Surface *s, int x, int y, Uint8_t* R, Uint8_t* G, Uint8_t* B, Uint8_t* A)
 // Utility function to read a pixel from an SDL surface.
 // TODO: Should go in the engine utilities somewhere.
 {
@@ -304,20 +304,20 @@ void	ReadPixel(SDL_Surface *s, int x, int y, Uint8* R, Uint8* G, Uint8* B, Uint8
 
     switch (s->format->BytesPerPixel) {
 	case 1: { /* Assuming 8-bpp */
-		Uint8 *bufp;
-		bufp = (Uint8*) s->pixels + y * s->pitch + x;
+		Uint8_t *bufp;
+		bufp = (Uint8_t*) s->pixels + y * s->pitch + x;
 		color = *bufp;
 	}
 	break;
 	case 2: { /* Probably 15-bpp or 16-bpp */
-		Uint16 *bufp;
-		bufp = (Uint16 *)s->pixels + y*s->pitch/2 + x;
+		Uint16_t *bufp;
+		bufp = (Uint16_t *)s->pixels + y*s->pitch/2 + x;
 		color = *bufp;
 	}
 	break;
 	case 3: { /* Slow 24-bpp mode, usually not used */
-		Uint8 *bufp;
-		bufp = (Uint8 *)s->pixels + y*s->pitch + x * 3;
+		Uint8_t *bufp;
+		bufp = (Uint8_t *)s->pixels + y*s->pitch + x * 3;
 		if (SDL_BYTEORDER == SDL_LIL_ENDIAN) {
 			color = bufp[0];
 			color |= bufp[1] <<  8;
@@ -330,8 +330,8 @@ void	ReadPixel(SDL_Surface *s, int x, int y, Uint8* R, Uint8* G, Uint8* B, Uint8
 	}
 	break;
 	case 4: { /* Probably 32-bpp */
-		Uint32 *bufp;
-		bufp = (Uint32 *)s->pixels + y*s->pitch/4 + x;
+		Uint32_t *bufp;
+		bufp = (Uint32_t *)s->pixels + y*s->pitch/4 + x;
 		color = *bufp;
 	}
 	break;
@@ -347,7 +347,7 @@ struct heightfield {
 	int	m_log_size;	// size == (1 << log_size) + 1
 	int	root_level;	// level of the root chunk (TODO: reverse the meaning of 'level' to be more intuitive).
 	float	sample_spacing;
-	float	vertical_scale;	// scales the units stored in heightfield_elem's.  meters == stored_Sint16 * vertical_scale
+	float	vertical_scale;	// scales the units stored in heightfield_elem's.  meters == stored_Sint16_t * vertical_scale
 	float	input_vertical_scale;	// scale factor to apply to input data.
 //	mmap_array<Sint16>*	m_height;
 	bt_array*	m_bt;
@@ -988,7 +988,7 @@ namespace mesh {
 
 	// used for edge "skirt" vertices, which (can be) displaced below
 	// the corresponding heightfield verts.
-	void	emit_special_vertex(heightfield& hf, int ax, Sint16 y, int az);
+	void	emit_special_vertex(heightfield& hf, int ax, Sint16_t y, int az);
 
 	int	lookup_index(int x, int z);
 
@@ -1445,7 +1445,7 @@ namespace mesh {
 	}
 
 	
-	int	special_vertex_index(int x, Sint16 y, int z)
+	int	special_vertex_index(int x, Sint16_t y, int z)
 	// Add a "special" vertex; i.e. a vert that is not on the
 	// heightfield.
 	{
@@ -1621,7 +1621,7 @@ namespace mesh {
 	}
 
 
-	void	update_bounds(heightfield& hf, const vec3& v, Sint16 y)
+	void	update_bounds(heightfield& hf, const vec3& v, Sint16_t y)
 	// Update our bounding box given the specified newly added vertex.
 	{
 		for (int i = 0; i < 3; i++) {
@@ -1666,7 +1666,7 @@ namespace mesh {
 	}
 
 
-	void	emit_special_vertex(heightfield& hf, int x, Sint16 y, int z)
+	void	emit_special_vertex(heightfield& hf, int x, Sint16_t y, int z)
 	// Emit a vertex that's not on the heightfield (and doesn't have vertex sharing).
 	{
 		int	index = special_vertex_index(x, y, z);

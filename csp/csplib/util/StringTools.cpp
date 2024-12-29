@@ -83,7 +83,7 @@ std::vector<std::string> SplitString(const std::string& s) {
  *  This is essentially scanf("%{hh,h,,ll}i") with support for unsigned types
  *  and better portability.
  */
-bool _parseInt(const char *str, uint64 &value, int &sign) {
+bool _parseInt(const char *str, uint64_t &value, int &sign) {
 	value = 0;
 	sign = 1;
 	int base = 10;
@@ -122,7 +122,7 @@ bool _parseInt(const char *str, uint64 &value, int &sign) {
 			if (c > '7') return false;
 			v = c - '0';
 		}
-		uint64 next = value * base + v;
+		uint64_t next = value * base + v;
 		if (next < value) return false;
 		value = next;
 		c = *str++;
@@ -138,8 +138,8 @@ bool _parseInt(const char *str, uint64 &value, int &sign) {
  */
 template <typename T>
 bool _parseSignedInt(const char *s, T &x) {
-	const uint64 limit = static_cast<uint64>(std::numeric_limits<T>::max());
-	uint64 value;
+	const uint64_t limit = static_cast<uint64_t>(std::numeric_limits<T>::max());
+	uint64_t value;
 	int sign;
 	if (!_parseInt(s, value, sign)) return false;
 	if (value <= limit) {
@@ -154,8 +154,8 @@ bool _parseSignedInt(const char *s, T &x) {
 
 template <typename T>
 bool _parseUnsignedInt(const char *s, T &x) {
-	const uint64 limit = static_cast<uint64>(std::numeric_limits<T>::max());
-	uint64 value;
+	const uint64_t limit = static_cast<uint64_t>(std::numeric_limits<T>::max());
+	uint64_t value;
 	int sign;
 	if (!_parseInt(s, value, sign)) return false;
 	if (sign < 0) return false;
@@ -166,14 +166,14 @@ bool _parseUnsignedInt(const char *s, T &x) {
 	return false;
 }
 
-bool parseInt(const char *s, int64 &x) { return _parseSignedInt(s, x); }
-bool parseInt(const char *s, uint64 &x) { return _parseUnsignedInt(s, x); }
-bool parseInt(const char *s, int32 &x) { return _parseSignedInt(s, x); }
-bool parseInt(const char *s, uint32 &x) { return _parseUnsignedInt(s, x); }
-bool parseInt(const char *s, int16 &x) { return _parseSignedInt(s, x); }
-bool parseInt(const char *s, uint16 &x) { return _parseUnsignedInt(s, x); }
-bool parseInt(const char *s, int8 &x) { return _parseSignedInt(s, x); }
-bool parseInt(const char *s, uint8 &x) { return _parseUnsignedInt(s, x); }
+bool parseInt(const char *s, int64_t &x) { return _parseSignedInt(s, x); }
+bool parseInt(const char *s, uint64_t &x) { return _parseUnsignedInt(s, x); }
+bool parseInt(const char *s, int32_t &x) { return _parseSignedInt(s, x); }
+bool parseInt(const char *s, uint32_t &x) { return _parseUnsignedInt(s, x); }
+bool parseInt(const char *s, int16_t &x) { return _parseSignedInt(s, x); }
+bool parseInt(const char *s, uint16_t &x) { return _parseUnsignedInt(s, x); }
+bool parseInt(const char *s, int8_t &x) { return _parseSignedInt(s, x); }
+bool parseInt(const char *s, uint8_t &x) { return _parseUnsignedInt(s, x); }
 bool parseDouble(const char *s, double &x) {
 	size_t len = strlen(s);
 
@@ -369,15 +369,15 @@ bool FormatArg::formatInt(stringbuf &out, formatspec const &spec, int base, bool
 		}
 		case TYPE_INT64: {
 			bool neg = x_val.i64 < 0;
-			int64 x = (neg ? -x_val.i64 : x_val.i64);
+			int64_t x = (neg ? -x_val.i64 : x_val.i64);
 			if (neg && base != 10) {
-				return formatIntegerType<uint64>(out, spec, static_cast<uint64>(-x), false, base, lower);
+				return formatIntegerType<uint64_t>(out, spec, static_cast<uint64_t>(-x), false, base, lower);
 			} else {
-				return formatIntegerType<int64>(out, spec, x, neg, base, lower);
+				return formatIntegerType<int64_t>(out, spec, x, neg, base, lower);
 			}
 		}
 		case TYPE_UINT64: {
-			return formatIntegerType<uint64>(out, spec, x_val.ui64, false, base, lower);
+			return formatIntegerType<uint64_t>(out, spec, x_val.ui64, false, base, lower);
 		}
 		case TYPE_PTR: {
 			uintptr_t val = alias_cast<uintptr_t>(x_val.p);

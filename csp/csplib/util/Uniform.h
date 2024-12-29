@@ -28,43 +28,11 @@
 #include <csp/csplib/util/Namespace.h>
 
 #include <cstring>  // for memcpy
+#include <cstdint>
 
 namespace csp {
 
-
-//@{
-/** Size specific integer types.
- *
- *  Note that these are currently hard-coded, assuming
- *  that almost all modern compilers and architectures
- *  will use these quasi-standard sizes.  If this is
- *  not true, these typedefs make it easy to adjust
- *  the mapping by hand (or by autoconf).
- *
- *  @name Integer Types
- */
-typedef signed char int8;
-typedef unsigned char uint8;
-
-#ifdef CSP_I16
-typedef signed CSP_I16 int16;
-typedef unsigned CSP_I16 uint16;
-#else
-typedef signed short int16;
-typedef unsigned short uint16;
-#endif
-
-#ifdef CSP_I32
-typedef signed CSP_I32 int32;
-typedef unsigned CSP_I32 uint32;
-#else
-typedef signed int int32;
-typedef unsigned int uint32;
-#endif
-
 #if defined(_MSC_VER) && (_MSC_VER >= 1310)
-typedef __int64 int64;
-typedef unsigned __int64 uint64;
 # define CSP_ULL(x) x##ull
 # define CSP_LL(x) x##ll
 #else
@@ -72,11 +40,9 @@ typedef unsigned __int64 uint64;
 #ifndef SWIG
 __extension__
 #endif // SWIG
-typedef long long int64;
 #ifndef SWIG
 __extension__
 #endif // SWIG
-typedef unsigned long long uint64;
 # define CSP_ULL(x) x##ULL
 # define CSP_LL(x) x##LL
 #endif

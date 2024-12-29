@@ -220,10 +220,10 @@ int	main(int argc, char* argv[])
 		for (unsigned int j = 0; j < height; j++) {
 			Uint16	data = 0;
 			if (bit_depth == 8) {
-				data = ((Uint8*) (row_pointers[height - 1 - j]))[i];
+				data = ((Uint8_t*) (row_pointers[height - 1 - j]))[i];
 			}
 			else {
-				data = SDL_SwapBE16(((Uint16*) (row_pointers[height - 1 - j]))[i]);
+				data = SDL_SwapBE16(((Uint16_t*) (row_pointers[height - 1 - j]))[i]);
 			}
 			data = iclamp((int) ((data - min_threshold) * thresh_scale * v_scale), 0, 0x0FFFF);
 

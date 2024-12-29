@@ -61,7 +61,7 @@ public:
 	 *    on return the implementation must return the actual number of bytes used.
 	 *  @return true if a packet was returned, false otherwise.
 	 */
-	virtual bool getPacket(PacketHeader *header, uint8 *payload, uint32 &payload_length)=0;
+	virtual bool getPacket(PacketHeader *header, uint8_t *payload, uint32_t &payload_length)=0;
 
 	/** Test if the source has packets available.
 	 */

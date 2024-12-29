@@ -26,8 +26,8 @@
 
 namespace csp {
 
-uint32 NetRandom::RandSeed = 152L;
-uint32 NetRandom::NetClock = 0L;
+uint32_t NetRandom::RandSeed = 152L;
+uint32_t NetRandom::NetClock = 0L;
 
 } // namespace csp
 

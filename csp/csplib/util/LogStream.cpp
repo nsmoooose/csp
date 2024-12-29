@@ -76,16 +76,16 @@ namespace {
 	// available on win32.  This implementation should also be faster.
 	void logTime(const time_t t, char *buffer, bool time, bool date) {
 		if (date) {
-			const uint32 days = static_cast<uint32>(t / 86400);
+			const uint32_t days = static_cast<uint32>(t / 86400);
 
 			// Taken from glib; originally from the Calendar FAQ.  Offset adjusted for
 			// the unix epoch (rather than the Julian Period starting 1 Jan 4713 BC).
-			const uint32 A = days + 2440588 + 32045;
-			const uint32 B = (4 *(A + 36524)) / 146097 - 1;
-			const uint32 C = A - (146097*B) / 4;
-			const uint32 D = (4 * (C + 365)) / 1461 - 1;
-			const uint32 E = C - ((1461 * D) / 4);
-			const uint32 M = (5 * (E - 1) + 2) / 153;
+			const uint32_t A = days + 2440588 + 32045;
+			const uint32_t B = (4 *(A + 36524)) / 146097 - 1;
+			const uint32_t C = A - (146097*B) / 4;
+			const uint32_t D = (4 * (C + 365)) / 1461 - 1;
+			const uint32_t E = C - ((1461 * D) / 4);
+			const uint32_t M = (5 * (E - 1) + 2) / 153;
 
 			int year = static_cast<int>(100 * B + D - 4800 + (M/10));
 			int month = static_cast<int>(M + 3 - 12 * (M/10));
@@ -197,7 +197,7 @@ void LogStream::LogEntry::prefix(const char *filename, int linenum) {
 	}
 #ifndef CSP_NOTHREADS
 	if (flags & LogStream::cThread) {
-		uint64 thread_id = thread::id();
+		uint64_t thread_id = thread::id();
 		if (thread_id != m_stream.initialThread()) {
 			// compress the low 32 or 36 bits of thread id into 6 characters.  note that this is *not*
 			// the standard base64 encoding.  the numbers are in front to make it more likely that the

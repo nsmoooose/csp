@@ -28,7 +28,7 @@ namespace image
 		assert(m_pitch >= m_width * 3);
 		assert((m_pitch & 3) == 0);
 
-		m_data = (Uint8*) dlmalloc(m_pitch * m_height);
+		m_data = (Uint8_t*) dlmalloc(m_pitch * m_height);
 	}
 
 	rgb::~rgb()
@@ -87,8 +87,8 @@ namespace image
 				x = fclamp(x, 0.f, float(src->w - 1));
 				y = fclamp(y, 0.f, float(src->h - 1));
 
-				Uint8*	p = scanline(src, frnd(y)) + 3 * frnd(x);
-				Uint8*	q = scanline(dest, out_y0 + j) + 3 * (out_x0 + i);
+				Uint8_t*	p = scanline(src, frnd(y)) + 3 * frnd(x);
+				Uint8_t*	q = scanline(dest, out_y0 + j) + 3 * (out_x0 + i);
 
 				*q++ = *p++;	// red
 				*q++ = *p++;	// green
@@ -150,7 +150,7 @@ namespace image
 	//
 	// DELETES image!!!
 	{
-		assert(image->m_pitch < 65536);	// SDL_Surface only uses Uint16 for pitch!!!
+		assert(image->m_pitch < 65536);	// SDL_Surface only uses Uint16_t for pitch!!!
 
 		SDL_Surface*	s = SDL_CreateRGBSurfaceFrom(image->m_data,
 							     image->m_width, image->m_height, 24, image->m_pitch,
@@ -203,8 +203,8 @@ namespace image
 			// Resample.  Simple average 2x2 --> 1, in-place.
 			int	pitch = image->m_pitch;
 			for (int j = 0; j < new_h; j++) {
-				Uint8*	out = ((Uint8*) image->m_data) + j * new_pitch;
-				Uint8*	in = ((Uint8*) image->m_data) + (j << 1) * pitch;
+				Uint8_t*	out = ((Uint8_t*) image->m_data) + j * new_pitch;
+				Uint8_t*	in = ((Uint8_t*) image->m_data) + (j << 1) * pitch;
 				for (int i = 0; i < new_w; i++) {
 					int	r, g, b;
 					r = (*(in + 0) + *(in + 3) + *(in + 0 + pitch) + *(in + 3 + pitch));

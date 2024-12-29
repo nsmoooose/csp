@@ -32,21 +32,6 @@
 
 namespace csp {
 
-#if defined(_MSC_VER) && (_MSC_VER >= 1310)
-# define CSP_ULL(x) x##ull
-# define CSP_LL(x) x##ll
-#else
-// use __extension__ to avoid G++ errors with -pedantic
-#ifndef SWIG
-__extension__
-#endif // SWIG
-#ifndef SWIG
-__extension__
-#endif // SWIG
-# define CSP_ULL(x) x##ULL
-# define CSP_LL(x) x##LL
-#endif
-
 #if defined(__GNUC__)
 # define CSP_STATIC_CONST_DEF(x) const x
 # define CSP_PACKED __attribute__ ((packed))

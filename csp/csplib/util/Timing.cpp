@@ -61,7 +61,7 @@ namespace csp {
 		GetSystemTimeAsFileTime(&filetime);
 		uint64_t date_time = (static_cast<uint64>(filetime.dwHighDateTime) << 32) | static_cast<uint64>(filetime.dwLowDateTime);
 		// convert from hectonanoseconds since 1601-01-01T00:00:00Z to milliseconds since 1970-01-01T00:00:00Z
-		return 1e-7 * (date_time - CSP_ULL(116444736000000000));
+		return 1e-7 * (date_time - 116444736000000000ULL);
 	}
 
 	static uint64_t first_counter = 0;
@@ -117,7 +117,7 @@ namespace csp {
 				// not much to do about that, except to hope that the return of control to
 				// this thread corresponded to a timer tick event so that we are at the start
 				// of the tick window.
-				if ((cvt_filetime(update_time) - cvt_filetime(start_time)) < CSP_ULL(200000) /* 20 ms */) break;
+				if ((cvt_filetime(update_time) - cvt_filetime(start_time)) < 200000ULL /* 20 ms */) break;
 				// we were probably interrupted (>100us between GSTAFT and QPC), so try again
 				++tries;
 			}
@@ -131,7 +131,7 @@ namespace csp {
 			if (calibrations++ == 0) {
 				first_counter = counter;
 				first_time = cvt_filetime(update_time);
-				counter_offset = 1e-7 * static_cast<double>(first_time - CSP_ULL(116444736000000000));
+				counter_offset = 1e-7 * static_cast<double>(first_time - 116444736000000000ULL);
 			} else {
 				uint64_t elapsed_count = counter - first_counter;
 				uint64_t elapsed_time = cvt_filetime(update_time) - first_time;

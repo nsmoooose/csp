@@ -72,21 +72,21 @@
 
 #define CSP_UINT64_SWAP_LE_BE_CONSTANT(val) (static_cast<uint64_t>( \
 	(static_cast<uint64_t>(val) & \
-		static_cast<uint64_t>(CSP_ULL(0x00000000000000ff)) << 56) | \
+		static_cast<uint64_t>(0x00000000000000ffULL) << 56) | \
 	(static_cast<uint64_t>(val) & \
-		static_cast<uint64_t>(CSP_ULL(0x000000000000ff00)) << 40) | \
+		static_cast<uint64_t>(0x000000000000ff00ULL) << 40) | \
 	(static_cast<uint64_t>(val) & \
-		static_cast<uint64_t>(CSP_ULL(0x0000000000ff0000)) << 24) | \
+		static_cast<uint64_t>(0x0000000000ff0000ULL) << 24) | \
 	(static_cast<uint64_t>(val) & \
-		static_cast<uint64_t>(CSP_ULL(0x00000000ff000000)) <<  8) | \
+		static_cast<uint64_t>(0x00000000ff000000ULL) <<  8) | \
 	(static_cast<uint64_t>(val) & \
-		static_cast<uint64_t>(CSP_ULL(0x000000ff00000000)) >>  8) | \
+		static_cast<uint64_t>(0x000000ff00000000ULL) >>  8) | \
 	(static_cast<uint64_t>(val) & \
-		static_cast<uint64_t>(CSP_ULL(0x0000ff0000000000)) >> 24) | \
+		static_cast<uint64_t>(0x0000ff0000000000ULL) >> 24) | \
 	(static_cast<uint64_t>(val) & \
-		static_cast<uint64_t>(CSP_ULL(0x00ff000000000000)) >> 40) | \
+		static_cast<uint64_t>(0x00ff000000000000ULL)) >> 40) | \
 	(static_cast<uint64_t>(val) & \
-		static_cast<uint64_t>(CSP_ULL(0xff00000000000000)) >> 56)))
+		static_cast<uint64_t>(0xff00000000000000ULL) >> 56)))
 
 /* Arch specific stuff for speed
  */

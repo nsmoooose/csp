@@ -498,10 +498,10 @@ int NetworkInterface::receivePackets(double timeout) {
 				uint32_t receive_time = static_cast<uint32>(getCalibratedRealTime() * 1000.0);
 				//std::cout << "PING TX=" << transmit_time << " RX=" << receive_time << " OFS=" << last_ping_latency << "\n";
 				int64_t t_latency = static_cast<int64>(receive_time) - static_cast<int64>(transmit_time);
-				if (t_latency >= CSP_LL(0x80000000)) {
-					t_latency -= CSP_LL(0x80000000);
-				} else if (t_latency < CSP_LL(-0x80000000)) {
-					t_latency += CSP_LL(0x80000000);
+				if (t_latency >= 0x80000000LL) {
+					t_latency -= 0x80000000LL;
+				} else if (t_latency < -0x80000000LL) {
+					t_latency += 0x80000000LL;
 				}
 				int latency = static_cast<int>(t_latency);
 				assert(latency == t_latency);

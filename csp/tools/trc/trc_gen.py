@@ -842,7 +842,7 @@ class Message(Toplevel, Compound):
         version = int(self.options.get('@version', 0))
         id64 = trc_util.md5hash64('%s_%d' % (self.name, version))
         output('virtual Id getId() const { return _getId(); }')
-        output('static const Id _Id = CSP_ULL(%d);' % id64)
+        output('static const Id _Id = %dULL;' % id64)
         output('static inline Id _getId() { return _Id; }')
         output('virtual int getCustomId() const { return _getCustomId(); }')
         output('static inline int _getCustomId() { return m_CustomId; }')

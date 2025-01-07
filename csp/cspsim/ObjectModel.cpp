@@ -181,9 +181,9 @@ class ModelProcessor: public osg::NodeVisitor {
 		}
 	}
 
-	struct KeyToCompare: std::unary_function<Key,bool> {
+	struct KeyToCompare {
 		const Key m_KeyToCompare;
-	public:
+
 		KeyToCompare(const Key& key): m_KeyToCompare(key) {}
 		bool operator()(const std::pair<Key,Link<Animation> >& e) const {
 			return m_KeyToCompare == e.first;

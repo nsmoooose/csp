@@ -133,10 +133,23 @@ bool SDLEventHandler::handleMouseMotion(const osgGA::GUIEventAdapter& ea)
 	return onEvent(mouseMotionEvent);
 }
 
+bool SDLEventHandler::handleResize(int width, int height) {
+	// osgViewer::View* view = dynamic_cast<osgViewer::View*>(&aa);
+	return true;
+}
+
 bool SDLEventHandler::handle(const SDL_Event& sdlEvent)
 {
 	switch (sdlEvent.type)
 	{
+		case SDL_WINDOWEVENT:
+			switch(sdlEvent.window.event) {
+				case SDL_WINDOWEVENT_RESIZED:
+					return handleResize(sdlEvent.window.data1, sdlEvent.window.data2);
+				default:
+					return false;
+			}
+
 		case SDL_MOUSEMOTION:
 		{
 			unsigned int modifierMask = SDL_GetModState();

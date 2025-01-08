@@ -54,3 +54,4 @@ class Referenced {
 %include <csp/cspsim/swig/CSPSim.i>
 %include <csp/cspsim/RegisterObjectInterfaces.h>
 %include <csp/cspsim/swig/CSPViewer.i>
+%include <csp/cspsim/indexserver.i>

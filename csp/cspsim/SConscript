@@ -308,6 +308,9 @@ build.SourceGroup(expenv,
 		'hud/Text.cpp',
 		'hud/Text.h',
 
+		'IndexServer.h',
+		'IndexServer.cpp',
+
 		'input/EventMapIndex.cpp',
 		'input/EventMapIndex.h',
 		'input/EventMapping.cpp',
@@ -439,18 +442,6 @@ build.PythonSharedLibrary(env,
 	aliases = ['all', 'cspsim'],
 	doxygen = 'cspsim.dox')
 
-
-build.PythonSharedLibrary(expenv,
-	name = 'indexserver',
-	sources = [
-		'indexserver.i',
-		'IndexServer.h',
-		'IndexServer.cpp',
-		'@cspsim/battlefield',
-		'@cspsim/config',
-	],
-	deps = ['csplib', 'sdl'],
-	aliases = 'all')
 
 build.Program(env,
 	name = 'skydemo',

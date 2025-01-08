@@ -70,6 +70,7 @@ protected:
 	Ref<input::HID> getActiveObjectInterface();
 
 	bool handleMouseMotion(const osgGA::GUIEventAdapter& ea);
+	bool handleResize(int width, int height);
 
 	bool m_drag;
 	bool m_lastMousePositionUnknown;

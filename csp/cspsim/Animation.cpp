@@ -1510,7 +1510,7 @@ public:
 			for (unsigned i = 0; i < channel_names.size(); ++i) {
 				input::InputEventChannel::RefT channel = bus->getSharedChannel(channel_names[i], false);
 				if (channel.valid()) {
-					channel->connect(sigc::bind(sigc::mem_fun(this, &Callback::onEvent), i));
+					channel->connect(sigc::bind(sigc::mem_fun(*this, &Callback::onEvent), i));
 				} else {
 					CSPLOG(WARNING, OBJECT) << "InputEventChannel " << channel_names[i] << " not found; ignoring.";
 				}

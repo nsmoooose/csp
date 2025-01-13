@@ -105,12 +105,12 @@ struct MouseButtonEventArgs : MouseEventArgs {
 	int button;
 };
 
-typedef sigc::signal<void, ClickEventArgs&> ClickSignal;
-typedef sigc::signal<void, HoverEventArgs&> HoverSignal;
+typedef sigc::signal<void(ClickEventArgs&)> ClickSignal;
+typedef sigc::signal<void(HoverEventArgs&)> HoverSignal;
 
-typedef sigc::signal<void, MouseEventArgs&> MouseMoveSignal;
-typedef sigc::signal<void, MouseButtonEventArgs&> MouseDownSignal;
-typedef sigc::signal<void, MouseButtonEventArgs&> MouseUpSignal;
+typedef sigc::signal<void(MouseEventArgs&)> MouseMoveSignal;
+typedef sigc::signal<void(MouseButtonEventArgs&)> MouseDownSignal;
+typedef sigc::signal<void(MouseButtonEventArgs&)> MouseUpSignal;
 
 /** The base class for all controls that exists.
  *

@@ -77,7 +77,7 @@ public:
 	 *  callback in one step.  Useful when the System creating and registering the
 	 *  channel does not need to retain a private reference.
 	 */
-	InputEventChannel(std::string const &name, InputInterface *input_interface, sigc::slot<void> const &functor): ChannelBase(name, ACCESS_SHARED) {
+	InputEventChannel(std::string const &name, InputInterface *input_interface, sigc::slot<void()> const &functor): ChannelBase(name, ACCESS_SHARED) {
 		connect(functor);
 		input_interface->bindActionEvent(name, sigc::mem_fun(*this, &InputEventChannel::onInputEvent));
 	}
@@ -95,7 +95,7 @@ public:
 	 *  whenever the corresponding input event is received, and when the signal()
 	 *  method is called.
 	 */
-	sigc::connection connect(sigc::slot<void> const &functor) const {
+	sigc::connection connect(sigc::slot<void()> const &functor) const {
 		return m_Signal.connect(functor);
 	}
 
@@ -108,7 +108,7 @@ protected:
 
 private:
 	void onInputEvent() { signal(); }
-	mutable sigc::signal<void> m_Signal;
+	mutable sigc::signal<void()> m_Signal;
 };
 
 } // namespace input

@@ -25,7 +25,7 @@
 
 namespace {
 const std::string EmtpyString;
-typedef sigc::slot<void> Callback;
+typedef sigc::slot<void()> Callback;
 }
 
 namespace csp {
@@ -57,7 +57,7 @@ StateMachine::~StateMachine() {
 	delete m_Impl;
 }
 
-void StateMachine::addHandler(int state, const slot<void> &handler, std::string const &name) {
+void StateMachine::addHandler(int state, const sigc::slot<void()> &handler, std::string const &name) {
 	m_Impl->handlers[state] = new Handler(name, handler);
 }
 

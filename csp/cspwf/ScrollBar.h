@@ -37,7 +37,7 @@ struct ScrollEventArgs : EventArgs {
 	ScrollEventArgs(float oldV, float newV) : oldValue(oldV), newValue(newV) {}
 };
 
-typedef sigc::signal<void, ScrollEventArgs&> ScrollSignal;
+typedef sigc::signal<void(ScrollEventArgs&)> ScrollSignal;
 
 /** Base class for all scroll buttons. Make sure that the
  * layout logic is called for all buttons.

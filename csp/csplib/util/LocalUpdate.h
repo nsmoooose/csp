@@ -104,7 +104,7 @@ public:
 	}
 
 private:
-	typedef sigc::slot<double, double> Callback;
+	typedef sigc::slot<double(double)> Callback;
 	class PriorityHandler;
 
 	double m_Time;  // internal time (not absolute)

@@ -18,7 +18,6 @@
 
 #include <csp/cspsim/ai/DiveRecovery.h>
 #include <csp/cspsim/ai/AircraftControl.h>
-#include <csp/cspsim/ai/Task.inl>
 #include <csp/csplib/util/Math.h>
 #include <iostream> // XXX
 
@@ -26,7 +25,7 @@ namespace csp {
 namespace ai {
 
 DiveRecovery::DiveRecovery(): AircraftTask("DiveRecovery") {
-	addHandler(DIVE_RECOVERY, &DiveRecovery::onDiveRecovery, "DIVE_RECOVERY");
+	addHandler(DIVE_RECOVERY, sigc::mem_fun(*this, &DiveRecovery::onDiveRecovery), "DIVE_RECOVERY");
 	next(DIVE_RECOVERY);
 }
 

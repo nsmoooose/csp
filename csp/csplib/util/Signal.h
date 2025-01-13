@@ -24,6 +24,7 @@
 
 namespace csp {
 
+#if 0
 template <class ret>
 class signal<ret, sigc::nil, sigc::nil, sigc::nil, sigc::nil, sigc::nil, sigc::nil, sigc::nil>: public sigc::signal<ret> { };
 
@@ -104,5 +105,7 @@ public:
 	slot() {}
 	template <class functor> slot(const functor &f): sigc::slot<ret>(f) {}
 };
+
+#endif
 
 } // namespace csp

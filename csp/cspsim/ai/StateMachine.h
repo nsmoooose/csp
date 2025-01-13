@@ -17,6 +17,8 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
+#include <sigc++/sigc++.h>
+
 #include <csp/csplib/util/Properties.h>
 #include <csp/csplib/util/SignalFwd.h>
 
@@ -30,7 +32,7 @@ public:
 	StateMachine();
 	~StateMachine();
 
-	void addHandler(int state, const slot<void> &handler, std::string const &name);
+	void addHandler(int state, const sigc::slot<void()> &handler, std::string const &name);
 
 	void setState(int state);
 	bool update();

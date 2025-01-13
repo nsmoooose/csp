@@ -18,7 +18,6 @@
 
 
 #include <csp/cspsim/ai/Task.h>
-#include <csp/cspsim/ai/Task.inl>
 #include <csp/cspsim/ai/StateMachine.h>
 #include <sigc++/functors/slot.h>
 
@@ -29,7 +28,7 @@ Task::Task(const char *name):
 		m_Name(name),
 		m_Status(RUNNING),
 		m_StateMachine(new StateMachine),
-		m_OverrideDoneHandler(new slot<void, Status>),
+		m_OverrideDoneHandler(new sigc::slot<void(Status)>),
 		m_FirstUpdate(true) {
 }
 
@@ -87,11 +86,11 @@ std::string Task::stateName() const {
 	return m_OverrideTask->stateName();
 }
 
-void Task::addHandler(int state, const slot<void> &handler, std::string const &name) {
+void Task::addHandler(int state, const sigc::slot<void()> &handler, std::string const &name) {
 	m_StateMachine->addHandler(state, handler, name);
 }
 
-void Task::setOverrideHandler(const slot<void, Status> &handler) {
+void Task::setOverrideHandler(const sigc::slot<void(Status)> &handler) {
 	*m_OverrideDoneHandler = handler;
 }
 

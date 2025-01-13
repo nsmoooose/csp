@@ -21,16 +21,15 @@
 #include <csp/cspsim/ai/AircraftControl.h>
 #include <csp/cspsim/ai/LandingTask.h>
 #include <csp/cspsim/ai/TakeoffTask.h>
-#include <csp/cspsim/ai/Task.inl>
 #include <csp/cspsim/ai/Waypoint.h>
 
 namespace csp {
 namespace ai {
 
 AircraftMission::AircraftMission(): AircraftTask("Mission") {
-	addHandler(TAKEOFF, &AircraftMission::onTakeoff, "TAKEOFF");
-	addHandler(WAYPOINTS, &AircraftMission::onWaypoints, "WAYPOINTS");
-	addHandler(LAND, &AircraftMission::onLand, "LAND");
+	addHandler(TAKEOFF, sigc::mem_fun(*this, &AircraftMission::onTakeoff), "TAKEOFF");
+	addHandler(WAYPOINTS, sigc::mem_fun(*this, &AircraftMission::onWaypoints), "WAYPOINTS");
+	addHandler(LAND, sigc::mem_fun(*this, &AircraftMission::onLand), "LAND");
 	next(TAKEOFF);
 }
 

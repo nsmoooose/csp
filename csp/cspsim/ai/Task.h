@@ -17,6 +17,7 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
+#include <sigc++/sigc++.h>
 #include <csp/csplib/util/Ref.h>
 #include <csp/csplib/util/ScopedPointer.h>
 #include <csp/csplib/util/SignalFwd.h>
@@ -74,8 +75,7 @@ protected:
 	Task(const char *name);
 	virtual ~Task();
 
-	template <class TASK>
-	void addHandler(int state, void (TASK::*method)(), std::string const &name);
+	void addHandler(int state, sigc::slot<void()> &&method, std::string const &name);
 
 	double dt() const { return m_dt; }
 	double elapsed() const { return m_ElapsedTime; }
@@ -107,8 +107,8 @@ protected:
 
 private:
 	bool advance();
-	void addHandler(int state, const slot<void> &handler, std::string const &name);
-	void setOverrideHandler(const slot<void, Status> &handler);
+	void addHandler(int state, const sigc::slot<void()> &handler, std::string const &name);
+	void setOverrideHandler(const sigc::slot<void(Status)> &handler);
 
 	const char *m_Name;
 
@@ -117,7 +117,7 @@ private:
 
 	Ref<Task> m_OverrideTask;
 
-	typedef slot<void, Status> OverrideDoneHandler;
+	typedef sigc::slot<void(Status)> OverrideDoneHandler;
 	ScopedPointer<OverrideDoneHandler> m_OverrideDoneHandler;
 
 	double m_dt;

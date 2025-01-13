@@ -21,7 +21,6 @@
 #include <csp/cspsim/ai/AircraftControl.h>
 #include <csp/cspsim/ai/DiveRecovery.h>
 #include <csp/cspsim/ai/Runway.h>
-#include <csp/cspsim/ai/Task.inl>
 
 namespace csp {
 namespace ai {

@@ -1,3 +1,4 @@
+
 #pragma once
 // Combat Simulator Project
 // Copyright (C) 2004 The Combat Simulator Project
@@ -71,7 +72,7 @@
 
 namespace csp {
 
-
+#if 0
 // callbacks --------------------------------------------------------------------------
 
 
@@ -91,7 +92,7 @@ struct callback0: public callbackbase, public sigc::slot<ret> {
 	callback0() { }
 	template <class F> callback0(F const &functor): sigc::slot<ret>(functor) { }
 	template <class Obj> void init(Obj *o, ret (Obj::*m)()) { sigc::slot<ret>::operator=( sigc::mem_fun(*o, m) ); }
-	sigc::connection bind(sigc::signal0<ret> &signal) { return capture(signal.connect(*this)); }
+  sigc::connection bind(sigc::signal<ret()> &signal) { return capture(signal.connect(*this)); }
 };
 
 /** Raw callback class for handling signals with one argument.  Use callback<> instead.
@@ -101,7 +102,7 @@ struct callback1: public callbackbase, public sigc::slot<ret, arg1> {
 	callback1() { }
 	template <class F> callback1(F const &functor): sigc::slot<ret, arg1>(functor) { }
 	template <class Obj> void init(Obj *o, ret (Obj::*m)(arg1)) { sigc::slot<ret, arg1>::operator=( sigc::mem_fun(*o, m) ); }
-	sigc::connection bind(sigc::signal1<ret, arg1> &signal) { return capture(signal.connect(*this)); }
+	sigc::connection bind(sigc::signal<ret(arg1)> &signal) { return capture(signal.connect(*this)); }
 };
 
 /** Raw callback class for handling signals with two arguments.  Use callback<> instead.
@@ -111,7 +112,7 @@ struct callback2: public callbackbase, public sigc::slot<ret, arg1, arg2> {
 	callback2() { }
 	template <class F> callback2(F const &functor): sigc::slot<ret, arg1, arg2>(functor) { }
 	template <class Obj> void init(Obj *o, ret (Obj::*m)(arg1, arg2)) { sigc::slot<ret, arg1, arg2>::operator=( sigc::mem_fun(*o, m) ); }
-	sigc::connection bind(sigc::signal2<ret, arg1, arg2> &signal) { return capture(signal.connect(*this)); }
+	sigc::connection bind(sigc::signal<ret(arg1, arg2)> &signal) { return capture(signal.connect(*this)); }
 };
 
 /** Raw callback class for handling signals with three arguments.  Use callback<> instead.
@@ -121,7 +122,7 @@ struct callback3: public callbackbase, public sigc::slot<ret, arg1, arg2, arg3> 
 	callback3() { }
 	template <class F> callback3(F const &functor): sigc::slot<ret, arg1, arg2, arg3>(functor) { }
 	template <class Obj> void init(Obj *o, ret (Obj::*m)(arg1, arg2, arg3)) { sigc::slot<ret, arg1, arg2, arg3>::operator=( sigc::mem_fun(*o, m) ); }
-	sigc::connection bind(sigc::signal3<ret, arg1, arg2, arg3> &signal) { return capture(signal.connect(*this)); }
+	sigc::connection bind(sigc::signal<ret(arg1, arg2, arg3)> &signal) { return capture(signal.connect(*this)); }
 };
 
 /** Raw callback class for handling signals with four arguments.  Use callback<> instead.
@@ -131,7 +132,7 @@ struct callback4: public callbackbase, public sigc::slot<ret, arg1, arg2, arg3, 
 	callback4() { }
 	template <class F> callback4(F const &functor): sigc::slot<ret, arg1, arg2, arg3, arg4>(functor) { }
 	template <class Obj> void init(Obj *o, ret (Obj::*m)(arg1, arg2, arg3, arg4)) { sigc::slot<ret, arg1, arg2, arg3, arg4>::operator=( sigc::mem_fun(*o, m) ); }
-	sigc::connection bind(sigc::signal3<ret, arg1, arg2, arg3, arg4> &signal) { return capture(signal.connect(*this)); }
+	sigc::connection bind(sigc::signal<ret(arg1, arg2, arg3, arg4)> &signal) { return capture(signal.connect(*this)); }
 };
 
 
@@ -182,4 +183,6 @@ struct callback<ret, arg1, arg2, arg3, arg4>: public callback4<ret, arg1, arg2, 
 	template <class F> callback(F const &functor): callback4<ret, arg1, arg2, arg3, arg4>(functor) { }
 };
 
+#endif
+  
 } // namespace csp

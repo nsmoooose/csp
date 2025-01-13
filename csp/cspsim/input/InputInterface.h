@@ -55,13 +55,13 @@ namespace input {
 // forward declaration
 class InputInterface;
 
-typedef sigc::slot<void> ActionEventSlot;
-typedef sigc::slot<void, MapEvent::ClickEvent const &> ClickEventSlot;
-typedef sigc::signal<void, MapEvent::CommandEvent const &> CommandEventSignal;
-typedef sigc::slot<void, MapEvent::MotionEvent const &> MotionEventSlot;
-typedef sigc::signal<void, MapEvent::MotionEvent const &> MotionEventSignal;
-typedef sigc::slot<void, MapEvent::AxisEvent const &> AxisEventSlot;
-typedef sigc::signal<void, MapEvent::AxisEvent const &> AxisEventSignal;
+typedef sigc::slot<void()> ActionEventSlot;
+typedef sigc::slot<void(MapEvent::ClickEvent const &)> ClickEventSlot;
+typedef sigc::signal<void(MapEvent::CommandEvent const &)> CommandEventSignal;
+typedef sigc::slot<void(MapEvent::MotionEvent const &)> MotionEventSlot;
+typedef sigc::signal<void(MapEvent::MotionEvent const &)> MotionEventSignal;
+typedef sigc::slot<void(MapEvent::AxisEvent const &)> AxisEventSlot;
+typedef sigc::signal<void(MapEvent::AxisEvent const &)> AxisEventSignal;
 
 
 /** Abstract adapter for input event handlers (internal)

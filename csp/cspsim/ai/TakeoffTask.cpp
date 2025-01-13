@@ -20,17 +20,16 @@
 #include <csp/cspsim/ai/TakeoffTask.h>
 #include <csp/cspsim/ai/AircraftControl.h>
 #include <csp/cspsim/ai/Runway.h>
-#include <csp/cspsim/ai/Task.inl>
 
 namespace csp {
 namespace ai {
 
 TakeoffTask::TakeoffTask(): AircraftTask("Takeoff") {
-	addHandler(READY, &TakeoffTask::onReady, "READY");
-	addHandler(THROTTLE_UP, &TakeoffTask::onThrottleUp, "THROTTLE_UP");
-	addHandler(RELEASE, &TakeoffTask::onRelease, "RELEASE");
-	addHandler(ROLL, &TakeoffTask::onRoll, "ROLL");
-	addHandler(CLIMB, &TakeoffTask::onClimb, "CLIMB");
+	addHandler(READY, sigc::mem_fun(*this, &TakeoffTask::onReady), "READY");
+	addHandler(THROTTLE_UP, sigc::mem_fun(*this, &TakeoffTask::onThrottleUp), "THROTTLE_UP");
+	addHandler(RELEASE, sigc::mem_fun(*this, &TakeoffTask::onRelease), "RELEASE");
+	addHandler(ROLL, sigc::mem_fun(*this, &TakeoffTask::onRoll), "ROLL");
+	addHandler(CLIMB, sigc::mem_fun(*this, &TakeoffTask::onClimb), "CLIMB");
 	next(READY);
 }
 

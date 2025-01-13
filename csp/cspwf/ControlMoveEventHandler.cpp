@@ -4,9 +4,9 @@
 csp::wf::ControlMoveEventHandler::ControlMoveEventHandler(Control* control) : m_MouseDown(false), m_Drag(false) {
 	m_Control = control;
 	if(m_Control.valid()) {
-		control->MouseDown.connect(sigc::mem_fun(this, &ControlMoveEventHandler::handleMouseDown));
-		control->MouseMove.connect(sigc::mem_fun(this, &ControlMoveEventHandler::handleMouseMove));
-		control->MouseUp.connect(sigc::mem_fun(this, &ControlMoveEventHandler::handleMouseUp));
+		control->MouseDown.connect(sigc::mem_fun(*this, &ControlMoveEventHandler::handleMouseDown));
+		control->MouseMove.connect(sigc::mem_fun(*this, &ControlMoveEventHandler::handleMouseMove));
+		control->MouseUp.connect(sigc::mem_fun(*this, &ControlMoveEventHandler::handleMouseUp));
 	}
 }
 

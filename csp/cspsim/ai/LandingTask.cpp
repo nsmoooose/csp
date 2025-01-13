@@ -20,8 +20,7 @@
 #include <csp/cspsim/ai/LandingTask.h>
 #include <csp/cspsim/ai/AircraftControl.h>
 #include <csp/cspsim/ai/Runway.h>
-#include <csp/cspsim/ai/Task.inl>
-#include <iostream> // XXX
+#include <iostream>
 
 namespace csp {
 namespace ai {
@@ -34,12 +33,12 @@ inline double slope(Vector3 const &v) {
 
 
 LandingTask::LandingTask(): AircraftTask("Landing") {
-	addHandler(LINEUP, &LandingTask::onLineup, "LINEUP");
-	addHandler(APPROACH, &LandingTask::onApproach, "APPROACH");
-	addHandler(FINAL_APPROACH, &LandingTask::onFinalApproach, "FINAL_APPROACH");
-	addHandler(AEROBRAKE, &LandingTask::onAeroBrake, "AEROBRAKE");
-	addHandler(BRAKE, &LandingTask::onBrake, "BRAKE");
-	addHandler(ABORT, &LandingTask::onAbort, "ABORT");
+	addHandler(LINEUP, sigc::mem_fun(*this, &LandingTask::onLineup), "LINEUP");
+	addHandler(APPROACH, sigc::mem_fun(*this, &LandingTask::onApproach), "APPROACH");
+	addHandler(FINAL_APPROACH, sigc::mem_fun(*this, &LandingTask::onFinalApproach), "FINAL_APPROACH");
+	addHandler(AEROBRAKE, sigc::mem_fun(*this, &LandingTask::onAeroBrake), "AEROBRAKE");
+	addHandler(BRAKE, sigc::mem_fun(*this, &LandingTask::onBrake), "BRAKE");
+	addHandler(ABORT, sigc::mem_fun(*this, &LandingTask::onAbort), "ABORT");
 	next(LINEUP);
 }
 

@@ -138,8 +138,8 @@ HorizontalScrollBar::HorizontalScrollBar() :
 	m_ScrollLeftButton->setParent(this);
 	m_ScrollRightButton->setParent(this);
 
-	m_ScrollLeftButton->Click.connect(sigc::mem_fun(this, &HorizontalScrollBar::handleClickToMin));
-	m_ScrollRightButton->Click.connect(sigc::mem_fun(this, &HorizontalScrollBar::handleClickToMax));
+	m_ScrollLeftButton->Click.connect(sigc::mem_fun(*this, &HorizontalScrollBar::handleClickToMin));
+	m_ScrollRightButton->Click.connect(sigc::mem_fun(*this, &HorizontalScrollBar::handleClickToMax));
 }
 
 void HorizontalScrollBar::layoutChildControls() {
@@ -161,8 +161,8 @@ VerticalScrollBar::VerticalScrollBar() :
 	m_ScrollUpButton->setParent(this);
 	m_ScrollDownButton->setParent(this);
 
-	m_ScrollUpButton->Click.connect(sigc::mem_fun(this, &VerticalScrollBar::handleClickToMin));
-	m_ScrollDownButton->Click.connect(sigc::mem_fun(this, &VerticalScrollBar::handleClickToMax));
+	m_ScrollUpButton->Click.connect(sigc::mem_fun(*this, &VerticalScrollBar::handleClickToMin));
+	m_ScrollDownButton->Click.connect(sigc::mem_fun(*this, &VerticalScrollBar::handleClickToMax));
 }
 
 void VerticalScrollBar::layoutChildControls() {

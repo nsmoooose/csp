@@ -24,7 +24,6 @@
  *
  **/
 
-#include <csp/csplib/util/Namespace.h>
 #include <csp/csplib/util/Export.h>
 #include <csp/csplib/util/LogStream.h>
 #include <csp/csplib/util/LogConstants.h>
@@ -48,22 +47,21 @@ inline LogStream &log() {
 	return *log;
 }
 
-#define CSPLOG_PRIORITY(P) CSP(cLogPriority_##P)
-#define CSPLOG_CATEGORY(C) CSP(cLogCategory_##C)
+#define CSPLOG_PRIORITY(P) csp::cLogPriority_##P
+#define CSPLOG_CATEGORY(C) csp::cLogCategory_##C
 
 // The static_cast helps gcc determine that log() is a function that returns
 // a LogStream& when used in the LogEntry contstructor.
-#define CSPLOG_ static_cast<CSP(LogStream&)>(CSP(log()))
+#define CSPLOG_ static_cast<csp::LogStream&>(csp::log())
 
 #ifdef CSP_NDEBUG
 # define CSPLOG_NOTEWORTHY(P, C) false
 #else
-# define CSPLOG_NOTEWORTHY(P, C) CSP(log()).isNoteworthy(CSPLOG_PRIORITY(P), CSPLOG_CATEGORY(C))
+# define CSPLOG_NOTEWORTHY(P, C) csp::log().isNoteworthy(CSPLOG_PRIORITY(P), CSPLOG_CATEGORY(C))
 #endif
 
 #define CSPLOG(P, C) \
 	if (!CSPLOG_NOTEWORTHY(P, C)); \
-	else CSP(LogStream::LogEntry)(CSPLOG_, CSPLOG_PRIORITY(P), __FILE__, __LINE__)
-
+	else csp::LogStream::LogEntry(CSPLOG_, CSPLOG_PRIORITY(P), __FILE__, __LINE__)
 
 } // namespace csp

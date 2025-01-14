@@ -29,8 +29,6 @@
  *
  **/
 
-#include <csp/csplib/util/Namespace.h>
-
 #include <osgText/Font>
 #include <string>
 

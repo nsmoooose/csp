@@ -27,7 +27,6 @@
 #include <osg/Vec4>
 #include <string>
 #include <vector>
-#include <csp/csplib/util/Namespace.h>
 
 namespace osg {
 	class Group;

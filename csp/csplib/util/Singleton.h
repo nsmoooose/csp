@@ -23,7 +23,6 @@
  * @brief Pattern for creating single global instances.
  */
 
-#include <csp/csplib/util/Namespace.h>
 #include <csp/csplib/util/Properties.h>
 
 namespace csp {

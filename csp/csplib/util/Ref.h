@@ -27,7 +27,6 @@
 #include <list>
 #include <vector>
 
-#include <csp/csplib/util/Namespace.h>
 #include <csp/csplib/util/Export.h>
 #include <csp/csplib/util/Exception.h>
 #include <csp/csplib/util/Referenced.h>

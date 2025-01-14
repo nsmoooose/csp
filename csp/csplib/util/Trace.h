@@ -27,10 +27,8 @@
  */
 
 #include <csp/csplib/util/Export.h>
-#include <csp/csplib/util/Namespace.h>
 #include <csp/csplib/util/Properties.h>
 #include <iosfwd>
-
 
 namespace csp {
 

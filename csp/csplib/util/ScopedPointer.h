@@ -23,10 +23,8 @@
  * @brief A pointer wrapper with scope-based auto deletion.
  */
 
-#include <csp/csplib/util/Namespace.h>
 #include <csp/csplib/util/Properties.h>
 #include <csp/csplib/util/Verify.h>
-
 
 namespace csp {
 

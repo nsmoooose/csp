@@ -24,7 +24,6 @@
  **/
 
 #include <csp/cspsim/Export.h>
-#include <csp/csplib/util/Namespace.h>
 #include <osg/Vec3>
 
 namespace csp {

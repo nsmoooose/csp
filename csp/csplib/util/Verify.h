@@ -126,24 +126,24 @@ inline void verify_floateq(const char *type, A const &lhs, A const &rhs, const c
 	if (std::abs(lhs - rhs) > 2 * std::numeric_limits<A>::epsilon())  __diagnose_op_failure(lhs, rhs, lhs_s, rhs_s, file, line, type, " ~= ");
 }
 
-#define CSP_VERIFY(A) CSP(verify)("VERIFY", A, #A, __FILE__, __LINE__)
-#define CSP_VERIFY_EQ(A, B) CSP(verify_eq)("VERIFY_EQ", A, B, #A, #B, __FILE__, __LINE__)  //< VERIFY equal
-#define CSP_VERIFY_NE(A, B) CSP(verify_ne)("VERIFY_NE", A, B, #A, #B, __FILE__, __LINE__)  //< VERIFY not equal
-#define CSP_VERIFY_GT(A, B) CSP(verify_gt)("VERIFY_GT", A, B, #A, #B, __FILE__, __LINE__)  //< VERIFY greater than
-#define CSP_VERIFY_LT(A, B) CSP(verify_lt)("VERIFY_LT", A, B, #A, #B, __FILE__, __LINE__)  //< VERIFY less than
-#define CSP_VERIFY_LE(A, B) CSP(verify_le)("VERIFY_LE", A, B, #A, #B, __FILE__, __LINE__)  //< VERIFY less than or equal
-#define CSP_VERIFY_GE(A, B) CSP(verify_ge)("VERIFY_GE", A, B, #A, #B, __FILE__, __LINE__)  //< VERIFY greater than or equal
-#define CSP_VERIFY_FLOATEQ(A, B) CSP(verify_floateq)("VERIFY_FLOATEQ", A, B, #A, #B, __FILE__, __LINE__)  //< VERIFY floating point values equal
+#define CSP_VERIFY(A) csp::verify("VERIFY", A, #A, __FILE__, __LINE__)
+#define CSP_VERIFY_EQ(A, B) csp::verify_eq("VERIFY_EQ", A, B, #A, #B, __FILE__, __LINE__)  //< VERIFY equal
+#define CSP_VERIFY_NE(A, B) csp::verify_ne("VERIFY_NE", A, B, #A, #B, __FILE__, __LINE__)  //< VERIFY not equal
+#define CSP_VERIFY_GT(A, B) csp::verify_gt("VERIFY_GT", A, B, #A, #B, __FILE__, __LINE__)  //< VERIFY greater than
+#define CSP_VERIFY_LT(A, B) csp::verify_lt("VERIFY_LT", A, B, #A, #B, __FILE__, __LINE__)  //< VERIFY less than
+#define CSP_VERIFY_LE(A, B) csp::verify_le("VERIFY_LE", A, B, #A, #B, __FILE__, __LINE__)  //< VERIFY less than or equal
+#define CSP_VERIFY_GE(A, B) csp::verify_ge("VERIFY_GE", A, B, #A, #B, __FILE__, __LINE__)  //< VERIFY greater than or equal
+#define CSP_VERIFY_FLOATEQ(A, B) csp::verify_floateq("VERIFY_FLOATEQ", A, B, #A, #B, __FILE__, __LINE__)  //< VERIFY floating point values equal
 
 #ifndef NDEBUG
-#	define CSP_ASSERT(A) CSP(verify)("ASSERT", A, #A, __FILE__, __LINE__)
-#	define CSP_ASSERT_EQ(A, B) CSP(verify_eq)("ASSERT_EQ", A, B, #A, #B, __FILE__, __LINE__)  //< ASSERT equal
-#	define CSP_ASSERT_NE(A, B) CSP(verify_ne)("ASSERT_NE", A, B, #A, #B, __FILE__, __LINE__)  //< ASSERT not equal
-#	define CSP_ASSERT_GT(A, B) CSP(verify_gt)("ASSERT_GT", A, B, #A, #B, __FILE__, __LINE__)  //< ASSERT greater than
-#	define CSP_ASSERT_LT(A, B) CSP(verify_lt)("ASSERT_LT", A, B, #A, #B, __FILE__, __LINE__)  //< ASSERT less than
-#	define CSP_ASSERT_LE(A, B) CSP(verify_le)("ASSERT_LE", A, B, #A, #B, __FILE__, __LINE__)  //< ASSERT less than or equal
-#	define CSP_ASSERT_GE(A, B) CSP(verify_ge)("ASSERT_GE", A, B, #A, #B, __FILE__, __LINE__)  //< ASSERT greater than or equal
-#	define CSP_ASSERT_FLOATEQ(A, B) CSP(verify_floateq)("VERIFY_FLOATEQ", A, B, #A, #B, __FILE__, __LINE__)  //< ASSERT floating point values equal
+#	define CSP_ASSERT(A) csp::verify("ASSERT", A, #A, __FILE__, __LINE__)
+#	define CSP_ASSERT_EQ(A, B) csp::verify_eq("ASSERT_EQ", A, B, #A, #B, __FILE__, __LINE__)  //< ASSERT equal
+#	define CSP_ASSERT_NE(A, B) csp::verify_ne("ASSERT_NE", A, B, #A, #B, __FILE__, __LINE__)  //< ASSERT not equal
+#	define CSP_ASSERT_GT(A, B) csp::verify_gt("ASSERT_GT", A, B, #A, #B, __FILE__, __LINE__)  //< ASSERT greater than
+#	define CSP_ASSERT_LT(A, B) csp::verify_lt("ASSERT_LT", A, B, #A, #B, __FILE__, __LINE__)  //< ASSERT less than
+#	define CSP_ASSERT_LE(A, B) csp::verify_le("ASSERT_LE", A, B, #A, #B, __FILE__, __LINE__)  //< ASSERT less than or equal
+#	define CSP_ASSERT_GE(A, B) csp::verify_ge("ASSERT_GE", A, B, #A, #B, __FILE__, __LINE__)  //< ASSERT greater than or equal
+#	define CSP_ASSERT_FLOATEQ(A, B) csp::verify_floateq("VERIFY_FLOATEQ", A, B, #A, #B, __FILE__, __LINE__)  //< ASSERT floating point values equal
 #else
 #	define CSP_ASSERT(A)
 #	define CSP_ASSERT_EQ(A, B)  //< ASSERT equal

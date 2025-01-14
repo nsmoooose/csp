@@ -27,7 +27,6 @@
  *
  */
 
-#include <csp/csplib/util/Namespace.h>
 #include <iosfwd>
 
 namespace csp {

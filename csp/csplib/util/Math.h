@@ -30,8 +30,6 @@
  * 2 (clause 3).
  */
 
-#include <csp/csplib/util/Namespace.h>
-
 #include <cmath>
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1300)

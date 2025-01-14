@@ -21,9 +21,7 @@
 #include <csp/csplib/util/HashUtility.h>
 %}
 
-#include <csp/csplib/util/Namespace.h>
-
-%rename(hash_string) CSP(newhasht_cstring)(const char*);
+%rename(hash_string) csp::newhasht_cstring(const char*);
 
 namespace csp {
 

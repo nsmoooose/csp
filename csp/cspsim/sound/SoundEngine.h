@@ -23,7 +23,6 @@
  *
  **/
 
-#include <csp/csplib/util/Namespace.h>
 #include <osg/ref_ptr>
 
 namespace osgAL { class SoundManager; }

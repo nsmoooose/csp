@@ -23,8 +23,6 @@
 // including portions adapted from OpenSceneGraph, is licensed under
 // the GNU General Public License.
 
-#include <csp/csplib/util/Namespace.h>
-
 #include <osg/StateAttribute>
 #include <osg/StateSet>
 

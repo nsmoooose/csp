@@ -23,8 +23,6 @@
  *
  **/
 
-#include <csp/csplib/util/Namespace.h>
-
 namespace csp {
 
 namespace bus {

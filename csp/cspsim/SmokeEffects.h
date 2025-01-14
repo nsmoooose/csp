@@ -28,7 +28,6 @@
  * @brief 3D special effects.
  */
 
-#include <csp/csplib/util/Namespace.h>
 #include <csp/csplib/data/Quat.h>
 #include <csp/csplib/data/Vector3.h>
 

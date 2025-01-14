@@ -21,16 +21,15 @@
 %}
 
 %include "csp/csplib/util/Export.h"
-%include "csp/csplib/util/Namespace.h"
 %include "csp/csplib/data/BaseType.h"
 
 %exception {
 	try {
 		$action
-	} catch (CSP(TypeMismatch) &e) {
+	} catch (csp::TypeMismatch &e) {
 		e.clear();
 		SWIG_exception(SWIG_TypeError, e.getMessage().c_str());
-	} catch (CSP(Exception) &e) {
+	} catch (csp::Exception &e) {
 		e.clear();
 		SWIG_exception(SWIG_RuntimeError, e.getMessage().c_str());
 	}
@@ -40,7 +39,7 @@
 %exception {
 	try {
 		$action
-	} catch (CSP(PythonException) &e) {
+	} catch (csp::PythonException &e) {
 		e.details();
 		printf("passing it back\n");
 		return NULL;

@@ -17,7 +17,6 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-#include <csp/csplib/util/Namespace.h>
 #include <csp/csplib/util/Uniform.h>
 
 namespace csp {

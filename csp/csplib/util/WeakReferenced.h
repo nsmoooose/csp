@@ -23,8 +23,7 @@
  * Provides a base class for reference counted objects.  See Ref.h for
  * more details.
  */
- 
-#include <csp/csplib/util/Namespace.h>
+
 #include <csp/csplib/util/Export.h>
 
 namespace csp {

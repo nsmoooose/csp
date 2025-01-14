@@ -21,10 +21,10 @@
 #include <csp/csplib/data/Key.h>
 %}
 
-%rename(__repr__) CSP(Key)::asString() const;
-%rename(__eq__) CSP(Key)::operator==(CSP(Key) const &) const;
-%rename(__eq__) CSP(Key)::operator==(std::string const &) const;
-%rename(__ne__) CSP(Key)::operator!=(CSP(Key) const &) const;
-%rename(__ne__) CSP(Key)::operator!=(std::string const &) const;
+%rename(__repr__) csp::Key::asString() const;
+%rename(__eq__) csp::Key::operator==(csp::Key const &) const;
+%rename(__eq__) csp::Key::operator==(std::string const &) const;
+%rename(__ne__) csp::Key::operator!=(csp::Key const &) const;
+%rename(__ne__) csp::Key::operator!=(std::string const &) const;
 
 %include <csp/csplib/data/Key.h>

@@ -23,8 +23,6 @@
  *
  */
 
-#include <csp/csplib/util/Namespace.h>
-
 namespace csp {
 
 /** A optional class inspired by boost::optional.

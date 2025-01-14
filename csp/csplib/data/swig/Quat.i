@@ -28,11 +28,8 @@
 #include <csp/csplib/data/Quat.h>
 %}
 
-%include "csp/csplib/util/Namespace.h"
-
-%rename(__repr__) CSP(Quat)::asString() const;
-//%rename(__eq__) CSP(Quat)::operator==(CSP(Quat) const &) const;
-//%rename(__ne__) CSP(Quat)::operator!=(CSP(Quat) const &) const;
+%rename(__repr__) csp::Quat::asString() const;
+//%rename(__eq__) csp::Quat::operator==(csp::Quat const &) const;
+//%rename(__ne__) csp::Quat::operator!=(csp::Quat const &) const;
 
 %include "csp/csplib/data/Quat.h"
-

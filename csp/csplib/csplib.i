@@ -56,17 +56,15 @@ PyObject *cspPyException;
 %include "std_vector.i"
 %include "exception.i"
 
-%include "csp/csplib/util/Namespace.h"
-
 // vector templates
 %import "csp/csplib/swig/vector.i"
 new_vector(double, double);
 new_vector(float, float);
 new_vector(int, int);
 new_vector(string, std::string);
-new_vector(Real, CSP(Real));
-new_vector(Path, CSP(Path));
-new_vector(Key, CSP(Key));
+new_vector(Real, csp::Real);
+new_vector(Path, csp::Path);
+new_vector(Key, csp::Key);
 
 %include "csp/csplib/util/Export.h"
 %include "csp/csplib/util/swig/Log.i"
@@ -74,12 +72,12 @@ new_vector(Key, CSP(Key));
 %include "csp/csplib/util/Version.h"
 
 // not currently used (will be directors).
-//%feature("polymorphic") CSP(InterfaceProxy);
-//%feature("polymorphic") CSP(Object);
+//%feature("polymorphic") csp::InterfaceProxy;
+//%feature("polymorphic") csp::Object;
 //%feature("polymorphic:except") {
 //    if ($error != NULL) {
 //        printf("got a python exception\n");
-//        throw CSP(PythonException)();
+//        throw csp::PythonException();
 //    }
 //}
 
@@ -93,8 +91,8 @@ new_vector(Key, CSP(Key));
 %include "csp/csplib/data/swig/Types.i"
 
 %{
-PyObject *csp_swig_exception(CSP(ExceptionBase) &e) {
-	CSP(ExceptionBase) *pyexc = new CSP(ExceptionBase)(e);
+PyObject *csp_swig_exception(csp::ExceptionBase &e) {
+	csp::ExceptionBase *pyexc = new csp::ExceptionBase(e);
 	e.clear();
 	return SWIG_NewPointerObj((void*)(pyexc), SWIGTYPE_p_csp__ExceptionBase, 1);
 }
@@ -103,11 +101,11 @@ PyObject *csp_swig_exception(CSP(ExceptionBase) &e) {
 %exception {
 	try {
 		$action
-	} catch (CSP(PythonException) &e) {
+	} catch (csp::PythonException &e) {
 		printf("SWIG: passing Python exception back\n");
 		e.details();
 		return NULL;
-	} catch (CSP(Exception) &e) {
+	} catch (csp::Exception &e) {
 		//printf("SWIG: caught a SimData Exception\n");
 		//PyErr_SetObject(PyExc_RuntimeError, simdata_swig_exception(e));
 		PyErr_SetObject(cspPyException, csp_swig_exception(e));

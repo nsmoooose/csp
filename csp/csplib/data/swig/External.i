@@ -21,11 +21,10 @@
 #include <csp/csplib/data/External.h>
 %}
 
-%rename(__repr__) CSP(External)::asString() const;
-%rename(__eq__) CSP(External)::operator==(CSP(External) const &) const;
-%rename(__eq__) CSP(External)::operator==(std::string const &) const;
-%rename(__ne__) CSP(External)::operator!=(CSP(External) const &) const;
-%rename(__ne__) CSP(External)::operator!=(std::string const &) const;
+%rename(__repr__) csp::External::asString() const;
+%rename(__eq__) csp::External::operator==(csp::External const &) const;
+%rename(__eq__) csp::External::operator==(std::string const &) const;
+%rename(__ne__) csp::External::operator!=(csp::External const &) const;
+%rename(__ne__) csp::External::operator!=(std::string const &) const;
 
 %include <csp/csplib/data/External.h>
-

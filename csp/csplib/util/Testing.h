@@ -92,7 +92,6 @@
 
 #include <csp/csplib/util/Exception.h>
 #include <csp/csplib/util/Export.h>
-#include <csp/csplib/util/Namespace.h>
 #include <csp/csplib/util/Properties.h>
 #include <csp/csplib/util/Ref.h>
 #include <csp/csplib/util/Verify.h>
@@ -121,8 +120,8 @@ CSP_EXCEPTION(FailTest)
  */
 #define CSP_TESTFIXTURE(NAME) \
 	class csp_testfixture_##NAME; \
-	static CSP(test::TypedTestRunner)<csp_testfixture_##NAME> csp_runner_##NAME(#NAME, __FILE__); \
-	class csp_testfixture_##NAME : public CSP(test::TypedTestFixture)<csp_testfixture_##NAME>
+	static csp::test::TypedTestRunner<csp_testfixture_##NAME> csp_runner_##NAME(#NAME, __FILE__); \
+	class csp_testfixture_##NAME : public csp::test::TypedTestFixture<csp_testfixture_##NAME>
 
 /** Begin the declaration of a testcase.  The NAME argument is an arbitrary
  *  identifier for the test case.  It must be unique within the enclosing
@@ -131,8 +130,8 @@ CSP_EXCEPTION(FailTest)
  *  reference member variables and methods of the enclosing test fixture.
  */
 #define CSP_TESTCASE(NAME) \
-	struct csp_testcase_##NAME: public CSP(test::TestCaseT)<TestFixtureClass> { \
-		csp_testcase_##NAME(): CSP(test::TestCaseT)<TestFixtureClass>(#NAME, &TestFixtureClass::NAME) {} \
+	struct csp_testcase_##NAME: public csp::test::TestCaseT<TestFixtureClass> { \
+		csp_testcase_##NAME(): csp::test::TestCaseT<TestFixtureClass>(#NAME, &TestFixtureClass::NAME) {} \
 	} csp_testcase_##NAME##_member; \
 	void NAME()
 
@@ -145,8 +144,7 @@ CSP_EXCEPTION(FailTest)
  *  return true from the test case method, but this macro has the advantage of
  *  working from within helper methods as well.
  */
-#define CSP_PASSTEST throw CSP(test::PassTest());
-
+#define CSP_PASSTEST throw csp::test::PassTest();
 
 /// Single precision floating point comparison operations.  The nearness criterion for equality
 /// tests is chosen to be roughly half the precision of the representation.  For comparison
@@ -272,9 +270,9 @@ private:
 };
 
 #define CSP_TEST__(A, B, OP, MODE) \
-	if (CSP(test::TestResult) result = CSP(test::TestResult)(A, B, OP, #A, #B)); \
+	if (csp::test::TestResult result = csp::test::TestResult(A, B, OP, #A, #B)); \
 	else { \
-		auto entry = CSP(test::TestLogEntry)(__FILE__, __LINE__, CSP(test::TestLogEntry)::MODE); \
+		auto entry = csp::test::TestLogEntry(__FILE__, __LINE__, csp::test::TestLogEntry::MODE); \
 		entry << result.msg() << " "; \
 		entry.check(); \
 	}
@@ -282,7 +280,7 @@ private:
 #define CSP_TEST_U__(A, MODE) \
 	if (A); \
 	else { \
-		auto entry = CSP(test::TestLogEntry)(__FILE__, __LINE__, CSP(test::TestLogEntry)::MODE); \
+		auto entry = csp::test::TestLogEntry(__FILE__, __LINE__, csp::test::TestLogEntry::MODE); \
 		entry << "TEST FAILED (" #A ") "; \
 		entry.check(); \
 	}
@@ -290,42 +288,42 @@ private:
 #define CSP_ENSURE(A) CSP_TEST_U__(A, FAIL)
 #define CSP_ENSURE_TRUE(A) CSP_TEST_U__(A, FAIL)
 #define CSP_ENSURE_FALSE(A) CSP_TEST_U__(!(A), FAIL)
-#define CSP_ENSURE_EQ(A, B)  CSP_TEST__(A, B, CSP(test::EqualTo()), FAIL)
-#define CSP_ENSURE_NE(A, B)  CSP_TEST__(A, B, CSP(test::NotEqualTo()), FAIL)
-#define CSP_ENSURE_LT(A, B)  CSP_TEST__(A, B, CSP(test::LessThan()), FAIL)
-#define CSP_ENSURE_GT(A, B)  CSP_TEST__(A, B, CSP(test::GreaterThan()), FAIL)
-#define CSP_ENSURE_LE(A, B)  CSP_TEST__(A, B, CSP(test::LessEqual()), FAIL)
-#define CSP_ENSURE_GE(A, B)  CSP_TEST__(A, B, CSP(test::GreaterEqual()), FAIL)
+#define CSP_ENSURE_EQ(A, B)  CSP_TEST__(A, B, csp::test::EqualTo(), FAIL)
+#define CSP_ENSURE_NE(A, B)  CSP_TEST__(A, B, csp::test::NotEqualTo(), FAIL)
+#define CSP_ENSURE_LT(A, B)  CSP_TEST__(A, B, csp::test::LessThan(), FAIL)
+#define CSP_ENSURE_GT(A, B)  CSP_TEST__(A, B, csp::test::GreaterThan(), FAIL)
+#define CSP_ENSURE_LE(A, B)  CSP_TEST__(A, B, csp::test::LessEqual(), FAIL)
+#define CSP_ENSURE_GE(A, B)  CSP_TEST__(A, B, csp::test::GreaterEqual(), FAIL)
 #define CSP_ENSURE_NULL(A) CSP_TEST_U__((A) == (void*)(NULL), FAIL)
 #define CSP_ENSURE_NOTNULL(A) CSP_TEST_U__((A) != (void*)(NULL), FAIL)
-#define CSP_ENSURE_FEQ(A, B)  CSP_TEST__(A, B, CSP(test::FloatEqualTo()), FAIL)
-#define CSP_ENSURE_FNE(A, B)  CSP_TEST__(A, B, CSP(test::FloatNotEqualTo()), FAIL)
-#define CSP_ENSURE_FLE(A, B)  CSP_TEST__(A, B, CSP(test::FloatLessEqual()), FAIL)
-#define CSP_ENSURE_FGE(A, B)  CSP_TEST__(A, B, CSP(test::FloatGreaterEqual()), FAIL)
-#define CSP_ENSURE_DEQ(A, B)  CSP_TEST__(A, B, CSP(test::DoubleEqualTo()), FAIL)
-#define CSP_ENSURE_DNE(A, B)  CSP_TEST__(A, B, CSP(test::DoubleNotEqualTo()), FAIL)
-#define CSP_ENSURE_DLE(A, B)  CSP_TEST__(A, B, CSP(test::DoubleLessEqual()), FAIL)
-#define CSP_ENSURE_DGE(A, B)  CSP_TEST__(A, B, CSP(test::DoubleGreaterEqual()), FAIL)
+#define CSP_ENSURE_FEQ(A, B)  CSP_TEST__(A, B, csp::test::FloatEqualTo(), FAIL)
+#define CSP_ENSURE_FNE(A, B)  CSP_TEST__(A, B, csp::test::FloatNotEqualTo(), FAIL)
+#define CSP_ENSURE_FLE(A, B)  CSP_TEST__(A, B, csp::test::FloatLessEqual(), FAIL)
+#define CSP_ENSURE_FGE(A, B)  CSP_TEST__(A, B, csp::test::FloatGreaterEqual(), FAIL)
+#define CSP_ENSURE_DEQ(A, B)  CSP_TEST__(A, B, csp::test::DoubleEqualTo(), FAIL)
+#define CSP_ENSURE_DNE(A, B)  CSP_TEST__(A, B, csp::test::DoubleNotEqualTo(), FAIL)
+#define CSP_ENSURE_DLE(A, B)  CSP_TEST__(A, B, csp::test::DoubleLessEqual(), FAIL)
+#define CSP_ENSURE_DGE(A, B)  CSP_TEST__(A, B, csp::test::DoubleGreaterEqual(), FAIL)
 
 #define CSP_EXPECT(A) CSP_TEST_U__(A, SOFTFAIL)
 #define CSP_EXPECT_TRUE(A) CSP_TEST_U__(A, SOFTFAIL)
 #define CSP_EXPECT_FALSE(A) CSP_TEST_U__(!(A), SOFTFAIL)
-#define CSP_EXPECT_EQ(A, B)  CSP_TEST__(A, B, CSP(test::EqualTo()), SOFTFAIL)
-#define CSP_EXPECT_NE(A, B)  CSP_TEST__(A, B, CSP(test::NotEqualTo()), SOFTFAIL)
-#define CSP_EXPECT_LT(A, B)  CSP_TEST__(A, B, CSP(test::LessThan()), SOFTFAIL)
-#define CSP_EXPECT_GT(A, B)  CSP_TEST__(A, B, CSP(test::GreaterThan()), SOFTFAIL)
-#define CSP_EXPECT_LE(A, B)  CSP_TEST__(A, B, CSP(test::LessEqual()), SOFTFAIL)
-#define CSP_EXPECT_GE(A, B)  CSP_TEST__(A, B, CSP(test::GreaterEqual()), SOFTFAIL)
+#define CSP_EXPECT_EQ(A, B)  CSP_TEST__(A, B, csp::test::EqualTo(), SOFTFAIL)
+#define CSP_EXPECT_NE(A, B)  CSP_TEST__(A, B, csp::test::NotEqualTo(), SOFTFAIL)
+#define CSP_EXPECT_LT(A, B)  CSP_TEST__(A, B, csp::test::LessThan(), SOFTFAIL)
+#define CSP_EXPECT_GT(A, B)  CSP_TEST__(A, B, csp::test::GreaterThan(), SOFTFAIL)
+#define CSP_EXPECT_LE(A, B)  CSP_TEST__(A, B, csp::test::LessEqual(), SOFTFAIL)
+#define CSP_EXPECT_GE(A, B)  CSP_TEST__(A, B, csp::test::GreaterEqual(), SOFTFAIL)
 #define CSP_EXPECT_NULL(A) CSP_TEST_U__((A) == (void*)NULL, SOFTFAIL)
 #define CSP_EXPECT_NOTNULL(A) CSP_TEST_U__((A) != (void*)NULL, SOFTFAIL)
-#define CSP_EXPECT_FEQ(A, B)  CSP_TEST__(A, B, CSP(test::FloatEqualTo()), SOFTFAIL)
-#define CSP_EXPECT_FNE(A, B)  CSP_TEST__(A, B, CSP(test::FloatNotEqualTo()), SOFTFAIL)
-#define CSP_EXPECT_FLE(A, B)  CSP_TEST__(A, B, CSP(test::FloatLessEqual()), SOFTFAIL)
-#define CSP_EXPECT_FGE(A, B)  CSP_TEST__(A, B, CSP(test::FloatGreaterEqual()), SOFTFAIL)
-#define CSP_EXPECT_DEQ(A, B)  CSP_TEST__(A, B, CSP(test::DoubleEqualTo()), SOFTFAIL)
-#define CSP_EXPECT_DNE(A, B)  CSP_TEST__(A, B, CSP(test::DoubleNotEqualTo()), SOFTFAIL)
-#define CSP_EXPECT_DLE(A, B)  CSP_TEST__(A, B, CSP(test::DoubleLessEqual()), SOFTFAIL)
-#define CSP_EXPECT_DGE(A, B)  CSP_TEST__(A, B, CSP(test::DoubleGreaterEqual()), SOFTFAIL)
+#define CSP_EXPECT_FEQ(A, B)  CSP_TEST__(A, B, csp::test::FloatEqualTo(), SOFTFAIL)
+#define CSP_EXPECT_FNE(A, B)  CSP_TEST__(A, B, csp::test::FloatNotEqualTo(), SOFTFAIL)
+#define CSP_EXPECT_FLE(A, B)  CSP_TEST__(A, B, csp::test::FloatLessEqual(), SOFTFAIL)
+#define CSP_EXPECT_FGE(A, B)  CSP_TEST__(A, B, csp::test::FloatGreaterEqual(), SOFTFAIL)
+#define CSP_EXPECT_DEQ(A, B)  CSP_TEST__(A, B, csp::test::DoubleEqualTo(), SOFTFAIL)
+#define CSP_EXPECT_DNE(A, B)  CSP_TEST__(A, B, csp::test::DoubleNotEqualTo(), SOFTFAIL)
+#define CSP_EXPECT_DLE(A, B)  CSP_TEST__(A, B, csp::test::DoubleLessEqual(), SOFTFAIL)
+#define CSP_EXPECT_DGE(A, B)  CSP_TEST__(A, B, csp::test::DoubleGreaterEqual(), SOFTFAIL)
 
 
 /** Base class for all test fixtures.

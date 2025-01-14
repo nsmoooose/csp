@@ -37,12 +37,12 @@
 
 #define PROF0(id) \
 	static int id##_c = 0; \
-	static CSP(SimTime) id##_t = 0.0; \
-	CSP(SimTime) id##_t0; \
-	id##_t0 = CSP(SimDate)::getSystemTime();
+	static csp::SimTime id##_t = 0.0;			\
+	csp::SimTime id##_t0;						\
+	id##_t0 = csp::SimDate::getSystemTime();
 
 #define PROF1(id, n) \
-	id##_t += CSP(SimDate)::getSystemTime() - id##_t0; \
+	id##_t += csp::SimDate::getSystemTime() - id##_t0;	\
 	if (++id##_c >= n) { \
 		CSPLOG(DEBUG, TIMING) << "PROF " << #id << ": " << (1000.0*id##_t/id##_c) << " ms"; \
 		id##_t = 0; \

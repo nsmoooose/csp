@@ -24,7 +24,6 @@
  **/
 
 #include <csp/csplib/util/Math.h>
-#include <csp/csplib/util/Namespace.h>
 #include <csp/csplib/data/Key.h>
 #include <csp/csplib/data/Object.h>
 #include <map>

@@ -71,7 +71,6 @@
 
 #include <csp/csplib/data/BaseType.h>
 #include <csp/csplib/util/Exception.h>
-#include <csp/csplib/util/Namespace.h>
 #include <csp/csplib/util/Ref.h>
 
 #include <string>

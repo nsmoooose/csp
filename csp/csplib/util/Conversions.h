@@ -30,9 +30,6 @@
 	#define CSP_CVT(a)
 #endif
 
-
-#include <csp/csplib/util/Namespace.h>
-
 namespace csp {
 
 /**

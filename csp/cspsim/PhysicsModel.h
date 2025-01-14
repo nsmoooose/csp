@@ -27,7 +27,6 @@
 #include <csp/csplib/data/Vector3.h>
 #include <csp/csplib/data/Quat.h>
 #include <csp/csplib/numeric/VectorField.h>
-#include <csp/csplib/util/Namespace.h>
 #include <csp/csplib/util/Ref.h>
 
 #include <csp/cspsim/System.h>

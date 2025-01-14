@@ -25,8 +25,6 @@
  *
  **/
 
-#include <csp/csplib/util/Namespace.h>
-
 namespace csp {
 
 // H(s) = c * (s + a) / (s + b)

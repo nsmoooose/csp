@@ -29,7 +29,6 @@
 
 #include <csp/csplib/util/Export.h>
 #include <csp/csplib/util/HashUtility.h>
-#include <csp/csplib/util/Namespace.h>
 
 
 namespace csp {
@@ -446,31 +445,31 @@ inline hasht classhash_helper(std::string const &class_name, const fprint32 sign
 #define __CSP_CLASS_DEFINE(_M_classname, _M_static, _M_abstract) \
 	static const char *_getClassName() { return #_M_classname; } \
 	virtual const char *getClassName() const { return _getClassName(); } \
-	static CSP(hasht) _getClassHash(); \
-	virtual CSP(hasht) getClassHash() const { return _getClassHash(); } \
+	static csp::hasht _getClassHash();								\
+	virtual csp::hasht getClassHash() const { return _getClassHash(); } \
 	static bool _isClassStatic() { return _M_static; } \
 	virtual bool isClassStatic() const { return _isClassStatic(); } \
 	static bool _isClassAbstract() { return _M_abstract; } \
 	typedef __csp_object_class __csp_object_baseclass; \
 	typedef _M_classname __csp_object_class; \
-	virtual CSP(Object) *_new() const { return CSP(__csp_object_factory)<_M_classname, _M_abstract>::create(); } \
+	virtual csp::Object *_new() const { return csp::__csp_object_factory<_M_classname, _M_abstract>::create(); } \
 	friend class __csp_interface_proxy__M_classname; \
 	class __csp_interface_proxy__M_classname: public __csp_object_baseclass::__csp_interface_proxy { \
-		static CSP(ObjectInterface)<_M_classname> *_interface; \
+		static csp::ObjectInterface<_M_classname> *_interface;		\
 	public: \
-		static CSP(fprint32) signature(); \
-		static void serialize(_M_classname *object, CSP(Reader) &reader); \
-		static void serialize(_M_classname const *object, CSP(Writer) &writer); \
-		virtual CSP(Object)* createObject() const { return CSP(__csp_object_factory)<_M_classname, _M_abstract>::create(); } \
+		static csp::fprint32 signature();								\
+		static void serialize(_M_classname *object, csp::Reader &reader); \
+		static void serialize(_M_classname const *object, csp::Writer &writer); \
+		virtual csp::Object* createObject() const { return csp::__csp_object_factory<_M_classname, _M_abstract>::create(); } \
 		virtual bool isAbstract() const { return _M_abstract; } \
 		virtual bool isStatic() const { return _M_static; } \
-		virtual CSP(hasht) getClassHash() const { return _M_classname::_getClassHash(); } \
+		virtual csp::hasht getClassHash() const { return _M_classname::_getClassHash(); } \
 		virtual const char * getClassName() const { return _M_classname::_getClassName(); } \
 		__csp_interface_proxy__M_classname(bool=true); \
 	}; \
 	typedef __csp_interface_proxy__M_classname __csp_interface_proxy; \
-	virtual void _serialize(CSP(Writer) &writer) const; \
-	virtual void _serialize(CSP(Reader) &reader);
+	virtual void _serialize(csp::Writer &writer) const;		  \
+	virtual void _serialize(csp::Reader &reader);
 
 #define CSP_EXPORT_OBJECT(_M_export_spec) \
 	class _M_export_spec __csp_interface_proxy__M_classname;
@@ -486,28 +485,28 @@ inline hasht classhash_helper(std::string const &class_name, const fprint32 sign
 
 
 #define CSP_XML_BEGIN(_M_classname) \
-	void _M_classname::_serialize(CSP(Writer) &writer) const { \
+	void _M_classname::_serialize(csp::Writer &writer) const {	\
 		__csp_object_baseclass::_serialize(writer); \
 		__csp_interface_proxy::serialize(this, writer); \
 	} \
-	void _M_classname::_serialize(CSP(Reader) &reader) { \
+	void _M_classname::_serialize(csp::Reader &reader) {	\
 		__csp_object_baseclass::_serialize(reader); \
 		__csp_interface_proxy::serialize(this, reader); \
 	} \
-	CSP(hasht) _M_classname::_getClassHash() { \
-		static CSP(hasht) hash = 0; /*defer evaluation*/\
-		if (hash == 0) hash = CSP(classhash_helper)(_getClassName(), __csp_interface_proxy::signature()); \
+	csp::hasht _M_classname::_getClassHash() {				\
+		static csp::hasht hash = 0; /*defer evaluation*/				\
+		if (hash == 0) hash = csp::classhash_helper(_getClassName(), __csp_interface_proxy::signature()); \
 		return hash; \
 	} \
-	CSP(ObjectInterface)<_M_classname> *_M_classname::__csp_interface_proxy__M_classname::_interface = 0; \
-	CSP(fprint32) _M_classname::__csp_interface_proxy__M_classname::signature() { return _interface->signature(); } \
-	void _M_classname::__csp_interface_proxy__M_classname::serialize(_M_classname *object, CSP(Reader) &reader) { _interface->serialize(object, reader); } \
-	void _M_classname::__csp_interface_proxy__M_classname::serialize(_M_classname const *object, CSP(Writer) &writer) { _interface->serialize(object, writer); } \
+	csp::ObjectInterface<_M_classname> *_M_classname::__csp_interface_proxy__M_classname::_interface = 0; \
+	csp::fprint32 _M_classname::__csp_interface_proxy__M_classname::signature() { return _interface->signature(); } \
+	void _M_classname::__csp_interface_proxy__M_classname::serialize(_M_classname *object, csp::Reader &reader) { _interface->serialize(object, reader); } \
+	void _M_classname::__csp_interface_proxy__M_classname::serialize(_M_classname const *object, csp::Writer &writer) { _interface->serialize(object, writer); } \
 	_M_classname::__csp_interface_proxy__M_classname::__csp_interface_proxy__M_classname(const bool reg) \
 		: _M_classname::__csp_object_baseclass::__csp_interface_proxy(false) { \
 		typedef _M_classname _class; \
 		if (!_interface) { \
-			_interface = new CSP(ObjectInterface)<_class>; \
+			_interface = new csp::ObjectInterface<_class>;	\
 			(*_interface)
 
 #define CSP_DEF(id, var, req)  .def(id, &_class::var, req)

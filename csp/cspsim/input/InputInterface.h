@@ -38,8 +38,6 @@
 #include <csp/cspsim/Export.h>
 #include <csp/cspsim/input/RawEvent.h>
 #include <csp/cspsim/input/MapEvent.h>
-
-#include <csp/csplib/util/Namespace.h>
 #include <csp/csplib/util/HashUtility.h>
 
 #include <sigc++/sigc++.h>

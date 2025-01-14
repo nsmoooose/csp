@@ -23,7 +23,6 @@
  * @brief PosixThreads wrapper and utility classes.
  */
 
-#include <csp/csplib/util/Namespace.h>
 #include <csp/csplib/util/Properties.h>
 #include <csp/csplib/util/Ref.h>
 #include <csp/csplib/util/Log.h>

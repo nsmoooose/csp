@@ -23,7 +23,6 @@
  * @brief Thread utility classes.
  */
 
-#include <csp/csplib/util/Namespace.h>
 #include <csp/csplib/util/Properties.h>
 #include <csp/csplib/util/Exception.h>
 

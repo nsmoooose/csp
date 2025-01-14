@@ -24,7 +24,6 @@
 
 #include <csp/csplib/util/Export.h>
 #include <csp/csplib/util/HashUtility.h>
-#include <csp/csplib/util/Namespace.h>
 #include <csp/csplib/util/Ref.h>
 #include <csp/csplib/data/Path.h>
 

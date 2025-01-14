@@ -23,8 +23,8 @@
 
 %include <csp/csplib/swig/filemap.i>
 
-%ignore CSP(Reader)::operator>>;
-%ignore CSP(Writer)::operator<<;
+%ignore csp::Reader::operator>>;
+%ignore csp::Writer::operator<<;
 
 %typemap(in) (const char* data, int n) {
 	$1 = PyString_AsString($input);
@@ -34,4 +34,3 @@
 %include <csp/csplib/data/Archive.h>
 
 %exception;
-

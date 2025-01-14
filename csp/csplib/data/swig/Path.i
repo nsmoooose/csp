@@ -21,12 +21,8 @@
 #include <csp/csplib/data/Path.h>
 %}
 
-%include <csp/csplib/util/Namespace.h>
-
-%rename(__repr__) CSP(Path)::asString() const;
+%rename(__repr__) csp::Path::asString() const;
 
 %warnfilter(508, 509) Path;
 
 %include <csp/csplib/data/Path.h>
-
-

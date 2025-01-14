@@ -31,7 +31,6 @@
 #include <csp/csplib/data/BaseType.h>
 #include <csp/csplib/util/Export.h>
 #include <csp/csplib/util/Exception.h>
-#include <csp/csplib/util/Namespace.h>
 
 #include <cassert>
 #include <iosfwd>
@@ -80,7 +79,7 @@ public:
 
 #ifdef SWIG
 #  define BASETYPE_ADAPTER(BASETYPE) \
-	explicit TypeAdapter(CSP(BASETYPE) const &x): type(TYPE_##BASETYPE) { var.o = reinterpret_cast<void const*>(&x); }
+	explicit TypeAdapter(csp::BASETYPE const &x): type(TYPE_##BASETYPE) { var.o = reinterpret_cast<void const*>(&x); }
 #else
 #  define BASETYPE_ADAPTER(BASETYPE) \
 	explicit TypeAdapter(BASETYPE const *x): type(TYPE_##BASETYPE) { var.o = reinterpret_cast<void const*>(x); } \

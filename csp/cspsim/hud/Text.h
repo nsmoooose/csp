@@ -24,8 +24,6 @@
  * TODO Rename DisplayText.h
  **/
 
-#include <csp/csplib/util/Namespace.h>
-
 #include <osg/ref_ptr>
 #include <osg/Referenced>
 

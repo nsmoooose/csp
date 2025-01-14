@@ -42,10 +42,10 @@ template<class V>
 class Visitable;
 
 #define CSP_VISITOR(__visitor) \
-	using CSP(Visitor)<__visitor>::apply
+	using csp::Visitor<__visitor>::apply
 
 #define CSP_VISITABLE(__visitor) \
-	virtual CSP(Ref)<__visitor> accept(CSP(Ref)<__visitor> v) { \
+	virtual csp::Ref<__visitor> accept(csp::Ref<__visitor> v) {	\
 		v->apply(*this); \
 		return v; \
 	}

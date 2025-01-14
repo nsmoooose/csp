@@ -23,7 +23,6 @@
  *
  **/
 
-#include <csp/csplib/util/Namespace.h>
 #include <csp/cspsim/BaseDynamics.h>
 #include <csp/cspsim/Filters.h>
 #include <csp/cspsim/stores/StoresDynamics.h>

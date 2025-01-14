@@ -23,7 +23,6 @@
  *
  **/
 
-#include <csp/csplib/util/Namespace.h>
 #include <csp/csplib/util/Math.h>
 #include <csp/csplib/data/LUT.h>
 #include <csp/csplib/data/Object.h>

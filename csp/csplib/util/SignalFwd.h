@@ -63,8 +63,6 @@
 // but we don't need other declarations in that header.
 namespace sigc { struct nil; }
 
-#include <csp/csplib/util/Namespace.h>
-
 namespace csp {
 
 // signals

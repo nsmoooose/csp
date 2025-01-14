@@ -218,7 +218,7 @@ void AutoTrace::__sigterm(int /*sig_n*/) {
 }
 
 LogStream *AutoTrace::log() {
-	return _log ? _log : &CSP(log());
+	return _log ? _log : &csp::log();
 }
 
 void AutoTrace::setLog(LogStream &log) {

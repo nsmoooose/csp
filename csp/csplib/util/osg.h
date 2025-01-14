@@ -26,7 +26,6 @@
  * See http://www.openscenegraph.org
  */
 
-#include <csp/csplib/util/Namespace.h>
 #include <csp/csplib/data/Vector3.h>
 #include <csp/csplib/data/Matrix3.h>
 #include <csp/csplib/data/Quat.h>

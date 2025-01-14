@@ -22,14 +22,12 @@
  *
  */
 
-#include <csp/csplib/util/Namespace.h>
 #include <csp/csplib/data/Quat.h>
 #include <csp/csplib/data/Vector3.h>
 
 #include <csp/cspsim/System.h>
 
 namespace csp {
-
 
 /**
  * Abstract base class for all object dynamics (physics) modelling.

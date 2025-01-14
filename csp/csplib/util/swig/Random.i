@@ -22,15 +22,12 @@
 #include <csp/csplib/util/Random.h>
 %}
 
-%include <csp/csplib/util/Namespace.h>
-
 namespace csp {
-
 
 class RandomInterface {
 protected:
 public:
-	typedef csp::Ref<CSP(RandomStateWrapper)> State;
+	typedef csp::Ref<csp::RandomStateWrapper> State;
 	typedef unsigned long int SeedType;
 	virtual ~RandomInterface();
 	virtual void setSeed(SeedType seed)=0;

@@ -23,9 +23,7 @@
  * @brief Inheritable class properties.
  */
 
-#include <csp/csplib/util/Namespace.h>
 #include <csp/csplib/util/Export.h>
-
 
 namespace csp {
 

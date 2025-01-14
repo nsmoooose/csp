@@ -21,11 +21,9 @@
 #include <csp/csplib/data/ObjectInterface.h>
 #include <csp/csplib/data/InterfaceProxy.h>
 #include <csp/csplib/data/InterfaceRegistry.h>
-#include <csp/csplib/util/Namespace.h>
 %}
 
 %import <csp/csplib/swig/vector.i>
-%include <csp/csplib/util/Namespace.h>
 
 namespace csp {
 
@@ -43,16 +41,16 @@ template <class T> class Singleton;
 %exception {
 	try {
 		$action
-	} catch (CSP(TypeMismatch) &e) {
+	} catch (csp::TypeMismatch &e) {
 		e.clear();
 		SWIG_exception(SWIG_TypeError, e.getMessage().c_str());
-	} catch (CSP(InterfaceError) &e) {
+	} catch (csp::InterfaceError &e) {
 		e.clear();
 		SWIG_exception(SWIG_SyntaxError, e.getMessage().c_str());
 	}
 }
 
-new_vector(pInterfaceProxy, CSP(InterfaceProxy)*)
+new_vector(pInterfaceProxy, csp::InterfaceProxy*)
 
 %include <csp/csplib/data/InterfaceProxy.h>
 %include <csp/csplib/data/InterfaceRegistry.h>

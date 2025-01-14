@@ -38,8 +38,6 @@
  */
 
 #include <csp/cspsim/input/EventMapping.h>
-
-#include <csp/csplib/util/Namespace.h>
 #include <csp/csplib/util/Ref.h>
 
 #include <string>

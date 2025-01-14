@@ -25,7 +25,6 @@
 
 // generated using Source/Config.cpp during the build.
 #include <csp/csplib/util/Config.h>
-#include <csp/csplib/util/Namespace.h>
 
 #include <cstring>  // for memcpy
 #include <cstdint>

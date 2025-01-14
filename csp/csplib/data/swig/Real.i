@@ -21,9 +21,7 @@
 #include <csp/csplib/data/Real.h>
 %}
 
-%include <csp/csplib/util/Namespace.h>
-
-%rename(__repr__) CSP(Real)::asString() const;
+%rename(__repr__) csp::Real::asString() const;
 
 %include <csp/csplib/data/Real.h>
 

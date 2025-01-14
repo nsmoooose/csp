@@ -21,7 +21,5 @@
 #include <csp/cspsim/IndexServer.h>
 %}
 
-%import <csp/csplib/util/Namespace.h>
 %include <csp/cspsim/Export.h>
 %include <csp/cspsim/IndexServer.h>
-

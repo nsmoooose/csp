@@ -22,8 +22,6 @@
  * @brief Constants writing to the csp log.
  */
 
-#include <csp/csplib/util/Namespace.h>
-
 namespace csp {
 
 /** Log message priorities

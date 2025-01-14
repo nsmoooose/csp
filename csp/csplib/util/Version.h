@@ -23,7 +23,6 @@
  */
 
 #include <csp/csplib/util/Export.h>
-#include <csp/csplib/util/Namespace.h>
 
 #define CSPLIB_API_VERSION 4
 

@@ -23,8 +23,6 @@
 
 #ifndef __NO_LUT__
 
-%include <csp/csplib/util/Namespace.h>
-
 %typemap(in) std::vector<std::vector<float> > const & (std::vector<std::vector<float> > temp) {
 	if (PyTuple_Check($input) || PyList_Check($input)) {
 		unsigned int size = (PyTuple_Check($input) ?  PyTuple_Size($input) : PyList_Size($input));

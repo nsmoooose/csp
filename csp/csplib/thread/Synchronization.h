@@ -23,7 +23,6 @@
  * @brief PosixThreads synchronization and utility classes.
  */
 
-#include <csp/csplib/util/Namespace.h>
 #include <csp/csplib/util/Properties.h>
 
 #include <cc++/thread.h>

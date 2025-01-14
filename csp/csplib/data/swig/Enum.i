@@ -25,22 +25,22 @@
 
 namespace csp {
 
-%template(RefEnumerationCore) Ref<CSP(EnumerationCore) const>;
+%template(RefEnumerationCore) Ref<csp::EnumerationCore const>;
 
 } // namespace csp
 
-%typemap(out) std::vector<CSP(EnumLink)>
+%typemap(out) std::vector<csp::EnumLink>
        "{
             $result = PyTuple_New($1.size());
             for (unsigned int i=0; i<$1.size(); i++) {
-                CSP(EnumLink)* ptr = new CSP(EnumLink)((($1_type &)$1)[i]);
+				csp::EnumLink* ptr = new csp::EnumLink((($1_type &)$1)[i]);
                 PyTuple_SetItem($result, i,
                                 SWIG_NewPointerObj((void *) ptr,
                                 $descriptor(csp::EnumLink *), 1));
             }
        }"
 
-%typemap(out) std::vector<std::string> CSP(Enumeration)::eachString()
+%typemap(out) std::vector<std::string> csp::Enumeration::eachString()
        "{
             $result = PyTuple_New($1.size());
             for (unsigned int i=0; i<$1.size(); i++) {
@@ -57,9 +57,9 @@ namespace csp {
 
 %exception  {
 	TRY
-	CATCH(CSP(EnumTypeError), SWIG_TypeError)
-	CATCH(CSP(EnumIndexError), SWIG_IndexError)
-	CATCH(CSP(EnumError), SWIG_RuntimeError)
+	CATCH(csp::EnumTypeError, SWIG_TypeError)
+	CATCH(csp::EnumIndexError, SWIG_IndexError)
+	CATCH(csp::EnumError, SWIG_RuntimeError)
 }
 
 #undef TRY
@@ -70,7 +70,7 @@ namespace csp {
 
 
 #define CSP_ENUM_WRAP1(T) \
-%typemap(in) CSP(Enum)<T> * (int __index, std::string __string, CSP(EnumLink) *__enumlink) \
+%typemap(in) csp::Enum<T> * (int __index, std::string __string, csp::EnumLink *__enumlink) \
 	"{ \
 		__index = -1; \
 		__string = \"\"; \
@@ -89,7 +89,7 @@ namespace csp {
 	}"; \
 
 #define CSP_ENUM_WRAP2(T) \
-%typemap(memberin) CSP(Enum)<T> \
+%typemap(memberin) csp::Enum<T>		\
 	"{ \
 		if ($input) { \
 			$1 = *$input; \
@@ -110,4 +110,3 @@ namespace csp {
 	CSP_ENUM_WRAP2(T)
 
 %exception;
-

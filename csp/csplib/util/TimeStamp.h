@@ -23,7 +23,6 @@
  * @brief Utilities functions for working with network event timestamps.
  **/
 
-#include <csp/csplib/util/Namespace.h>
 #include <csp/csplib/util/Uniform.h>
 #include <csp/csplib/data/Date.h>
 #include <cmath>

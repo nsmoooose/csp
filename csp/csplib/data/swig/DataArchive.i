@@ -26,9 +26,8 @@
 %import <csp/csplib/util/swig/Exception.i>
 
 namespace std {
-    %template(vector_hasht) vector<CSP(hasht)>;
+    %template(vector_hasht) vector<csp::hasht>;
 }
-
 
 %import <csp/csplib/data/swig/Object.i>
 

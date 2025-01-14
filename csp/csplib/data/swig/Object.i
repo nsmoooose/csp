@@ -21,12 +21,11 @@
 #include <csp/csplib/data/Object.h>
 %}
 
-%include <csp/csplib/util/Namespace.h>
 %include <csp/csplib/util/Export.h>
 
-%feature("polymorphic") CSP(Object);
+%feature("polymorphic") csp::Object;
 
-%rename(__repr__) CSP(Object)::asString() const;
+%rename(__repr__) csp::Object::asString() const;
 
 namespace csp {
 	%ignore Referenced;
@@ -34,4 +33,3 @@ namespace csp {
 } // namespace csp
 
 %include <csp/csplib/data/Object.h>
-

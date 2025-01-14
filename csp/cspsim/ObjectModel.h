@@ -31,8 +31,6 @@
 #include <csp/csplib/data/Object.h>
 #include <csp/csplib/data/Vector3.h>
 
-#include <csp/csplib/util/Namespace.h>
-
 #include <osg/ref_ptr>
 #include <vector>
 

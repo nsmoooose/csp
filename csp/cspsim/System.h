@@ -81,11 +81,8 @@
 #include <csp/cspsim/Bus.h>  /** @todo header file csp/cspsim/Bus.h could be forward declared, but most Bus users will need it in the header anyway. */
 #include <csp/cspsim/input/InputInterface.h>
 #include <csp/cspsim/sound/SoundEffect.h>  // for SoundEffect::Mode
-
-#include <csp/csplib/util/Namespace.h>
 #include <csp/csplib/util/Composite.h>
 #include <csp/csplib/util/SynchronousUpdate.h>
-
 #include <csp/csplib/data/Object.h>
 #include <csp/csplib/data/Link.h>
 

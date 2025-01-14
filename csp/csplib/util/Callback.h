@@ -66,7 +66,6 @@
  *
  **/
 
-#include <csp/csplib/util/Namespace.h>
 #include <sigc++/sigc++.h>
 
 namespace csp {

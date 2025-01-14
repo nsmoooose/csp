@@ -21,8 +21,6 @@
 #include <csp/csplib/data/Vector2.h>
 %}
 
-%include <csp/csplib/util/Namespace.h>
-
-%rename(__repr__) CSP(Vector2)::asString() const;
+%rename(__repr__) csp::Vector2::asString() const;
 
 %include <csp/csplib/data/Vector2.h>

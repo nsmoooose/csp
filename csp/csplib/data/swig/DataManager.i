@@ -25,19 +25,19 @@
 
 %import <csp/csplib/util/swig/Exception.i>
 
-%exception CSP(DataManager) {
+%exception csp::DataManager {
     try {
         $function
-    } catch (CSP(IndexError) e) {
+	} catch (csp::IndexError e) {
         e.details();
         SWIG_exception(SWIG_IndexError, "Path not found");
-    } catch (CSP(ObjectMismatch) e) {
+    } catch (csp::ObjectMismatch e) {
         e.details();
         SWIG_exception(SWIG_TypeError, "Object Mismatch");
-    } catch (CSP(BadMagic) e) {
+    } catch (csp::BadMagic e) {
         e.details();
         SWIG_exception(SWIG_IOError, "Bad Magic");
-    } catch (CSP(BadByteOrder) e) {
+    } catch (csp::BadByteOrder e) {
         e.details();
         SWIG_exception(SWIG_IOError, "Incorrect Byte Order");
     }

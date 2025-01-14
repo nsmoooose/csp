@@ -34,7 +34,7 @@ namespace csp {
 %exception {
 	try {
 		$function
-	} catch (CSP(InvalidDate) e) {
+	} catch (csp::InvalidDate e) {
 		e.clear();
 		SWIG_exception(SWIG_RuntimeError, e.getError().c_str());
 	}

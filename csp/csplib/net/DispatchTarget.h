@@ -35,7 +35,7 @@
  *  @param PARENT the base class that is a subclass of DispatchTarget.
  */
 #define CSPNET_DECLARE_DISPATCH(CLASS, PARENT) \
-	virtual bool dispatch(CSP(DispatchManager) *helper) { \
+	virtual bool dispatch(csp::DispatchManager *helper) {	\
 		typedef CLASS Class; \
 		typedef PARENT Parent; \
 		switch (helper->id()) {

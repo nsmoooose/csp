@@ -23,8 +23,6 @@
  *
  **/
 
-#include <csp/csplib/util/Namespace.h>
-
 #include <vector>
 #include <string>
 

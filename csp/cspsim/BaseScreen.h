@@ -30,7 +30,6 @@
 
 #include <csp/cspsim/input/InputInterface.h>
 #include <csp/cspsim/input/HID.h>
-#include <csp/csplib/util/Namespace.h>
 
 namespace csp {
 

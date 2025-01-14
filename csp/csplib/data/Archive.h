@@ -26,7 +26,6 @@
 #include <csp/csplib/util/Endian.h>
 #include <csp/csplib/util/Exception.h>
 #include <csp/csplib/util/HashUtility.h>
-#include <csp/csplib/util/Namespace.h>
 
 #include <string>
 #include <vector>
@@ -137,21 +136,21 @@ public:
 	__CSP_ARCHIVE(uint32_t, _uint32)
 	__CSP_ARCHIVE(uint16_t, _uint16)
 	__CSP_ARCHIVE(uint8_t, _uint8)
-	__CSP_ARCHIVE(CSP(hasht), _hasht)
-	__CSP_ARCHIVE(CSP(SimDate), _SimDate);
-	__CSP_ARCHIVE(CSP(Matrix3), _Matrix3);
-	__CSP_ARCHIVE(CSP(Vector2), _Vector2);
-	__CSP_ARCHIVE(CSP(Vector3), _Vector3);
-	__CSP_ARCHIVE(CSP(Quat), _Quat);
-	__CSP_ARCHIVE(CSP(Real), _Real);
-	__CSP_ARCHIVE(CSP(Table1), _Table1);
-	__CSP_ARCHIVE(CSP(Table2), _Table2);
-	__CSP_ARCHIVE(CSP(Table3), _Table3);
-	__CSP_ARCHIVE(CSP(LLA), _LLA);
-	__CSP_ARCHIVE(CSP(UTM), _UTM);
-	__CSP_ARCHIVE(CSP(ECEF), _ECEF);
-	__CSP_ARCHIVE(CSP(Path), _Path);
-	__CSP_ARCHIVE(CSP(Key), _Key);
+	__CSP_ARCHIVE(csp::hasht, _hasht)
+	__CSP_ARCHIVE(csp::SimDate, _SimDate);
+	__CSP_ARCHIVE(csp::Matrix3, _Matrix3);
+	__CSP_ARCHIVE(csp::Vector2, _Vector2);
+	__CSP_ARCHIVE(csp::Vector3, _Vector3);
+	__CSP_ARCHIVE(csp::Quat, _Quat);
+	__CSP_ARCHIVE(csp::Real, _Real);
+	__CSP_ARCHIVE(csp::Table1, _Table1);
+	__CSP_ARCHIVE(csp::Table2, _Table2);
+	__CSP_ARCHIVE(csp::Table3, _Table3);
+	__CSP_ARCHIVE(csp::LLA, _LLA);
+	__CSP_ARCHIVE(csp::UTM, _UTM);
+	__CSP_ARCHIVE(csp::ECEF, _ECEF);
+	__CSP_ARCHIVE(csp::Path, _Path);
+	__CSP_ARCHIVE(csp::Key, _Key);
 
 	// TODO List;
 	// TODO Enum

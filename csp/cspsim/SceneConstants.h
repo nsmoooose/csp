@@ -23,8 +23,6 @@
  *
  **/
 
-#include <csp/csplib/util/Namespace.h>
-
 namespace csp {
 
 /** NodeVisitor traversal mask bits that are set when rendering the scene.

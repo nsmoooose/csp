@@ -24,7 +24,6 @@
  *   between threads.
  */
 
-#include <csp/csplib/util/Namespace.h>
 #include <csp/csplib/util/Properties.h>
 #include <csp/csplib/thread/Synchronization.h>
 

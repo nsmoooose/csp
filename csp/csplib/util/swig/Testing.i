@@ -21,8 +21,6 @@
 #include <csp/csplib/util/Testing.h>
 %}
 
-%include "csp/csplib/util/Namespace.h"
-
 namespace csp {
 
 namespace test {
@@ -39,4 +37,3 @@ public:
 }
 
 } // namespace csp
-

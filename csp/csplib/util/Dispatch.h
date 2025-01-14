@@ -63,7 +63,6 @@
  **/
 
 #include <csp/csplib/util/Export.h>
-#include <csp/csplib/util/Namespace.h>
 // TODO move to net (util/* shouldn't depend on net/*)
 #include <csp/csplib/net/TaggedRecord.h>
 
@@ -71,10 +70,10 @@ namespace csp {
 
 // classname is not used currently, but it may be handy to have in the future.
 #define MESSAGE_DISPATCH(classname, superclass) \
-	inline bool _parentDispatch(CSP(Ref)<CSP(TaggedRecord)> const &record) { \
+	inline bool _parentDispatch(csp::Ref<csp::TaggedRecord> const &record) { \
 		return superclass::dispatchMessage(record); \
 	} \
-	virtual bool dispatchMessage(CSP(Ref)<CSP(TaggedRecord)> const &record) { \
+	virtual bool dispatchMessage(csp::Ref<csp::TaggedRecord> const &record) { \
 		switch (record->getId()) { \
 
 #define DISPATCH(message, handler) \

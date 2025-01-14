@@ -24,7 +24,6 @@
 #include <csp/csplib/data/Path.h>
 #include <csp/csplib/data/Archive.h>
 #include <csp/csplib/data/DataArchive.h>
-#include <csp/csplib/util/Namespace.h>
 #include <csp/csplib/util/Log.h>
 
 #include <sstream>

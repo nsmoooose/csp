@@ -26,8 +26,6 @@
 #include <string>
 
 #include <csp/csplib/util/Export.h>
-#include <csp/csplib/util/Namespace.h>
-
 
 namespace csp {
 
@@ -141,7 +139,7 @@ public: \
 		b(type, msg) { } \
 };
 
-#define CSP_EXCEPTION(a)	CSP_SUBEXCEPTION(a, CSP(Exception))
+#define CSP_EXCEPTION(a)	CSP_SUBEXCEPTION(a, csp::Exception)
 
 
 /** Exception for marshalling python exceptions through SWIG wrapers.

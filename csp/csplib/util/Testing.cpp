@@ -119,10 +119,30 @@ private:
 };
 
 
+std::map<std::string, TestInstance> &TestRegistry2::tests() {
+	static std::map<std::string, TestInstance> tests;
+	return tests;
+}
+
+void TestRegistry2::addTest(TestInstance&& test) {
+	tests()[test.name] = test;
+}
+
+void TestRegistry2::runTest(const TestInstance& test) {
+	std::cout << "Running all tests2" << std::endl;
+}
+
+void TestRegistry2::runAllTests() {
+	for(auto &test : tests()) {
+		runTest(test.second);
+	}
+}
+
 struct TestRegistry::TestData {
 	std::vector<TestRunner*> tests;
 	std::map<std::string, TestRunner*> tests_by_name;
 	std::map<std::string, std::vector<TestRunner*> > tests_by_file;
+	std::map<std::string, TestInstance> tests2;
 };
 
 TestRegistry::TestData& TestRegistry::data() {
@@ -146,8 +166,7 @@ bool TestRegistry::_runTests(std::vector<TestRunner*> const &tests) {
 	StandardReporter reporter;
 	bool success = true;
 	reporter.begin();
-	for (std::vector<TestRunner*>::const_iterator iter = tests.begin(); iter != tests.end(); ++iter) {
-		TestRunner* runner = *iter;
+	for (auto runner : tests) {
 		success = runner->runTests(reporter) && success;
 	}
 	reporter.end();
@@ -156,16 +175,15 @@ bool TestRegistry::_runTests(std::vector<TestRunner*> const &tests) {
 }
 
 bool TestRegistry::runAll() {
+	TestRegistry2::runAllTests();
 	return _runTests(data().tests);
 }
 
 bool TestRegistry::runOnePath(const char *path) {
-	std::map<std::string, std::vector<TestRunner*> >::const_iterator iter = data().tests_by_file.begin();
-	std::map<std::string, std::vector<TestRunner*> >::const_iterator end = data().tests_by_file.end();
 	std::vector<TestRunner*> tests;
-	for (; iter != end; ++iter) {
-		if (iter->first.find(path) == 0) {
-			tests.insert(tests.end(), iter->second.begin(), iter->second.end());
+	for (auto &pair : data().tests_by_file) {
+		if (pair.first.find(path) == 0) {
+			tests.insert(tests.end(), pair.second.begin(), pair.second.end());
 		}
 	}
 	return _runTests(tests);
@@ -264,4 +282,3 @@ void TestReporter::Log::clear() {
 } // namespace test
 
 } // namespace csp
-

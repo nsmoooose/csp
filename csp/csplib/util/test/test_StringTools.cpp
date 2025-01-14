@@ -29,6 +29,23 @@
 
 namespace csp {
 
+void TestConvertStringToUpper() {
+	std::string s;
+
+	s = "";
+	ConvertStringToUpper(s);
+	CSP_EXPECT_EQ(s, "");
+
+	s = "hello WorLd";
+	ConvertStringToUpper(s);
+	CSP_EXPECT_EQ(s, "HELLO WORLD");
+}
+
+__attribute__((constructor)) void RegisterTests() {
+	test::TestRegistry2::addTest(test::TestInstance{"TestConvertStringToUpper", &TestConvertStringToUpper});
+}
+
+
 CSP_TESTFIXTURE(StringTools) {
 
 	CSP_TESTCASE(TestConvertStringToUpper) {
@@ -325,5 +342,3 @@ CSP_TESTFIXTURE(StringTools) {
 };
 
 } // namespace csp
-
-

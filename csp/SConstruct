@@ -139,6 +139,7 @@ class Environment(build.Environment):
 	  scons tests            build all unittests
 	  scons runtests         build and run all unittests
 	  scons csplib.runtests  build and run all unittests in csplib
+	  scons cspsim/test_PhysicsModel.run
 
 	  scons examples         build all examples
 	"""

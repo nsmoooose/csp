@@ -26,55 +26,57 @@
 #include <csp/csplib/util/FileUtility.h>
 #include <csp/csplib/util/Testing.h>
 
+using namespace csp;
 using namespace csp::ospath;
+using namespace csp::test;
 
-CSP_TESTFIXTURE(FileUtility) {
+void PathManipulation() {
+	// test directory (minimal!)
+	DirectoryContents dc = getDirectoryContents(".");
+	assert(dc.size() > 0);
 
-	CSP_TESTCASE(PathManipulation) {
-		// test directory (minimal!)
-		DirectoryContents dc = getDirectoryContents(".");
-		assert(dc.size() > 0);
+	// test file extension
+	CSP_VERIFY_EQ(getFileExtension("/foo/bar.baz"), "baz");
+	CSP_VERIFY_EQ(getFileExtension("\\foo\\bar.baz"), "baz");
+	CSP_VERIFY_EQ(getFileExtension("/foo/bar.baz.bif"), "bif");
+	CSP_VERIFY_EQ(getFileExtension("\\foo\\bar.baz.bif"), "bif");
+	CSP_VERIFY_EQ(getFileExtension("/foo.dir/bar"), "");
+	CSP_VERIFY_EQ(getFileExtension("\\foo.dir\\bar"), "");
+	CSP_VERIFY_EQ(getFileExtension("/foo.dir/bar.x"), "x");
+	CSP_VERIFY_EQ(getFileExtension("\\foo.dir\\bar.x"), "x");
+	CSP_VERIFY_EQ(getFileExtension("bar.x"), "x");
+	CSP_VERIFY_EQ(getFileExtension("/bar.x"), "x");
+	CSP_VERIFY_EQ(getFileExtension("\\bar.x"), "x");
+	CSP_VERIFY_EQ(getFileExtension("bar"), "");
+	CSP_VERIFY_EQ(getFileExtension("/bar"), "");
+	CSP_VERIFY_EQ(getFileExtension("\\bar"), "");
+	CSP_VERIFY_EQ(getFileExtension(""), "");
 
-		// test file extension
-		CSP_VERIFY_EQ(getFileExtension("/foo/bar.baz"), "baz");
-		CSP_VERIFY_EQ(getFileExtension("\\foo\\bar.baz"), "baz");
-		CSP_VERIFY_EQ(getFileExtension("/foo/bar.baz.bif"), "bif");
-		CSP_VERIFY_EQ(getFileExtension("\\foo\\bar.baz.bif"), "bif");
-		CSP_VERIFY_EQ(getFileExtension("/foo.dir/bar"), "");
-		CSP_VERIFY_EQ(getFileExtension("\\foo.dir\\bar"), "");
-		CSP_VERIFY_EQ(getFileExtension("/foo.dir/bar.x"), "x");
-		CSP_VERIFY_EQ(getFileExtension("\\foo.dir\\bar.x"), "x");
-		CSP_VERIFY_EQ(getFileExtension("bar.x"), "x");
-		CSP_VERIFY_EQ(getFileExtension("/bar.x"), "x");
-		CSP_VERIFY_EQ(getFileExtension("\\bar.x"), "x");
-		CSP_VERIFY_EQ(getFileExtension("bar"), "");
-		CSP_VERIFY_EQ(getFileExtension("/bar"), "");
-		CSP_VERIFY_EQ(getFileExtension("\\bar"), "");
-		CSP_VERIFY_EQ(getFileExtension(""), "");
+	// test file extension stripping
+	std::string path;
+	path = "/foo/bar.baz";
+	CSP_VERIFY_EQ(stripFileExtension(path), "baz");
+	CSP_VERIFY_EQ(path, "/foo/bar");
+	path = "\\foo\\bar.baz";
+	CSP_VERIFY_EQ(stripFileExtension(path), "baz");
+	CSP_VERIFY_EQ(path, "\\foo\\bar");
+	path = "/foo/bar.baz.bif";
+	CSP_VERIFY_EQ(stripFileExtension(path), "bif");
+	CSP_VERIFY_EQ(path, "/foo/bar.baz");
+	path = "foo.bif";
+	CSP_VERIFY_EQ(stripFileExtension(path), "bif");
+	CSP_VERIFY_EQ(path, "foo");
+	path = "foobar";
+	CSP_VERIFY_EQ(stripFileExtension(path), "");
+	CSP_VERIFY_EQ(path, "foobar");
+	path = ".foobar";
+	CSP_VERIFY_EQ(stripFileExtension(path), "foobar");
+	CSP_VERIFY_EQ(path, "");
+	path = "";
+	CSP_VERIFY_EQ(stripFileExtension(path), "");
+	CSP_VERIFY_EQ(path, "");
+}
 
-		// test file extension stripping
-		std::string path;
-		path = "/foo/bar.baz";
-		CSP_VERIFY_EQ(stripFileExtension(path), "baz");
-		CSP_VERIFY_EQ(path, "/foo/bar");
-		path = "\\foo\\bar.baz";
-		CSP_VERIFY_EQ(stripFileExtension(path), "baz");
-		CSP_VERIFY_EQ(path, "\\foo\\bar");
-		path = "/foo/bar.baz.bif";
-		CSP_VERIFY_EQ(stripFileExtension(path), "bif");
-		CSP_VERIFY_EQ(path, "/foo/bar.baz");
-		path = "foo.bif";
-		CSP_VERIFY_EQ(stripFileExtension(path), "bif");
-		CSP_VERIFY_EQ(path, "foo");
-		path = "foobar";
-		CSP_VERIFY_EQ(stripFileExtension(path), "");
-		CSP_VERIFY_EQ(path, "foobar");
-		path = ".foobar";
-		CSP_VERIFY_EQ(stripFileExtension(path), "foobar");
-		CSP_VERIFY_EQ(path, "");
-		path = "";
-		CSP_VERIFY_EQ(stripFileExtension(path), "");
-		CSP_VERIFY_EQ(path, "");
-	}
-};
-
+__attribute__((constructor)) static void RegisterTests() {
+	TestRegistry2::addTest(TestInstance{"PathManipulation", &PathManipulation});
+}

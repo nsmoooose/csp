@@ -321,7 +321,7 @@ void TestSplitString() {
 	CSP_EXPECT_EQ(SplitString("123 456")[1], std::string("456"));
 }
 
-__attribute__((constructor)) void RegisterTests() {
+__attribute__((constructor)) static void RegisterTests() {
 	TestRegistry2::addTest(TestInstance{"TestConvertStringToUpper", &TestConvertStringToUpper});
 	TestRegistry2::addTest(TestInstance{"TestConvertStringToLower", &TestConvertStringToLower});
 	TestRegistry2::addTest(TestInstance{"TestTokenize", &TestTokenize});

@@ -27,38 +27,40 @@
 #include <csp/csplib/util/Testing.h>
 
 
-CSP_TESTFIXTURE(Ref) {
+using namespace csp;
+using namespace csp::test;
 
-	struct R: public csp::Referenced {
-		int &m_count;
-		R(int &count): m_count(count) { ++m_count; }
-		~R() { --m_count; }
-	};
-
-	typedef csp::Ref<R> Ref;
-
-	CSP_TESTCASE(Count) {
-		int count = 0;
-		CSP_VERIFY_EQ(count, 0);
-		Ref x = new R(count);
-		CSP_VERIFY_EQ(count, 1);
-		{
-			Ref y = x;
-			CSP_VERIFY_EQ(count, 1);
-		}
-		CSP_VERIFY_EQ(count, 1);
-		{
-			Ref y = new R(count);
-			CSP_VERIFY_EQ(count, 2);
-			y = x;
-			CSP_VERIFY_EQ(count, 1);
-			y = new R(count);
-			CSP_VERIFY_EQ(count, 2);
-		}
-		CSP_VERIFY_EQ(count, 1);
-		x = 0;
-		CSP_VERIFY_EQ(count, 0);
-	}
+struct R: public csp::Referenced {
+	int &m_count;
+	R(int &count): m_count(count) { ++m_count; }
+	~R() { --m_count; }
 };
 
+typedef csp::Ref<R> RefR;
 
+static void Count() {
+	int count = 0;
+	CSP_VERIFY_EQ(count, 0);
+	RefR x = new R(count);
+	CSP_VERIFY_EQ(count, 1);
+	{
+		RefR y = x;
+		CSP_VERIFY_EQ(count, 1);
+	}
+	CSP_VERIFY_EQ(count, 1);
+	{
+		RefR y = new R(count);
+		CSP_VERIFY_EQ(count, 2);
+		y = x;
+		CSP_VERIFY_EQ(count, 1);
+		y = new R(count);
+		CSP_VERIFY_EQ(count, 2);
+	}
+	CSP_VERIFY_EQ(count, 1);
+	x = 0;
+	CSP_VERIFY_EQ(count, 0);
+}
+
+__attribute__((constructor)) static void RegisterTests() {
+	TestRegistry2::addTest(TestInstance{"Ref_Count", &Count});
+}

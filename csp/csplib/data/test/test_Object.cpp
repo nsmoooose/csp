@@ -34,6 +34,8 @@
 
 #include <cstdlib>
 
+using namespace csp;
+using namespace csp::test;
 
 class TestObject: public csp::Object
 {
@@ -185,3 +187,5 @@ public:
 	}
 };
 
+__attribute__((constructor)) static void RegisterTests() {
+}

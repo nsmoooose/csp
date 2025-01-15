@@ -30,7 +30,7 @@
 using namespace csp;
 using namespace csp::test;
 
-void TestConvertStringToUpper() {
+static void TestConvertStringToUpper() {
 	std::string s;
 
 	s = "";
@@ -42,7 +42,7 @@ void TestConvertStringToUpper() {
 	CSP_EXPECT_EQ(s, "HELLO WORLD");
 }
 
-void TestConvertStringToLower() {
+static void TestConvertStringToLower() {
 	std::string s;
 
 	s = "";
@@ -54,7 +54,7 @@ void TestConvertStringToLower() {
 	CSP_EXPECT_EQ(s, "hello world");
 }
 
-void TestTokenize() {
+static void TestTokenize() {
 	std::vector<std::string> words;
 	Tokenize("59 Temple Place - Suite 330, Boston.", words);
 	CSP_EXPECT_EQ(words.size(), 7U);
@@ -78,7 +78,7 @@ void TestTokenize() {
 	CSP_EXPECT_EQ(words.size(), 0U);
 }
 
-void TestTokenQueue() {
+static void TestTokenQueue() {
 	TokenQueue tq("59 Temple Place - Suite 330, Boston.");
 	CSP_EXPECT_EQ(tq.size(), 7U);
 	CSP_EXPECT_EQ(tq[0], "59");
@@ -90,25 +90,25 @@ void TestTokenQueue() {
 	CSP_EXPECT_EQ(tq[6], "Boston.");
 }
 
-void TestTrimString() {
+static void TestTrimString() {
 	CSP_EXPECT_EQ(TrimString(" HELLO world  "), "HELLO world");
 	CSP_EXPECT_EQ(TrimString(" HELLO world\n  "), "HELLO world");
 	CSP_EXPECT_EQ(TrimString("\t\tHELLO\tworld\n\n"), "HELLO\tworld");
 }
 
-void TestLeftTrimString() {
+static void TestLeftTrimString() {
 	CSP_EXPECT_EQ(LeftTrimString(" HELLO world  "), "HELLO world  ");
 	CSP_EXPECT_EQ(LeftTrimString(" HELLO world\n  "), "HELLO world\n  ");
 	CSP_EXPECT_EQ(LeftTrimString("\t\tHELLO\tworld\n\n"), "HELLO\tworld\n\n");
 }
 
-void TestRightTrimString() {
+static void TestRightTrimString() {
 	CSP_EXPECT_EQ(RightTrimString(" HELLO world  "), " HELLO world");
 	CSP_EXPECT_EQ(RightTrimString(" HELLO world\n  "), " HELLO world");
 	CSP_EXPECT_EQ(RightTrimString("\t\tHELLO\tworld\n\n"), "\t\tHELLO\tworld");
 }
 
-void TestSkipWhitespace() {
+static void TestSkipWhitespace() {
 	const char *s;
 	s = "abcd";
 	CSP_EXPECT(skipWhitespace(s) == s);
@@ -122,7 +122,7 @@ void TestSkipWhitespace() {
 	CSP_EXPECT(skipWhitespace(s) == s);
 }
 
-void TestParseInt32() {
+static void TestParseInt32() {
 	int32_t x_int32;
 	CSP_EXPECT(parseInt("0", x_int32));
 	CSP_EXPECT_EQ(x_int32, 0);
@@ -168,7 +168,7 @@ void TestParseInt32() {
 	CSP_EXPECT(!parseInt("", x_int32));
 }
 
-void TestParseIntU32() {
+static void TestParseIntU32() {
 	uint32_t x_uint32;
 	CSP_EXPECT(parseInt("0", x_uint32));
 	CSP_EXPECT_EQ(x_uint32, 0U);
@@ -214,7 +214,7 @@ void TestParseIntU32() {
 	CSP_EXPECT(!parseInt("", x_uint32));
 }
 
-void TestParseIntLimits() {
+static void TestParseIntLimits() {
 	int8_t x_int8;
 	uint8_t x_uint8;
 	int16_t x_int16;
@@ -269,7 +269,7 @@ void TestParseIntLimits() {
 	CSP_EXPECT(!parseInt("0x10000000000000000", x_uint64));
 }
 
-void TestStringPrintf() {
+static void TestStringPrintf() {
 	CSP_EXPECT_EQ(stringprintf("hello world"), "hello world");
 	CSP_EXPECT_EQ(stringprintf("hello %d world", 42), "hello 42 world");
 	CSP_EXPECT_EQ(stringprintf("hello %d w%crld", 42, 'O'), "hello 42 wOrld");
@@ -297,7 +297,7 @@ void TestStringPrintf() {
 	CSP_EXPECT_EQ(stringprintf("%10000d", 1), "");  // limit is 4096
 }
 
-void TestParseDouble() {
+static void TestParseDouble() {
 	double x;
 	CSP_EXPECT_EQ(parseDouble("abc", x), false);
 
@@ -313,7 +313,7 @@ void TestParseDouble() {
 	CSP_EXPECT_EQ(parseDouble("3,3", x), false);
 }
 
-void TestSplitString() {
+static void TestSplitString() {
 	CSP_EXPECT_EQ(SplitString("123 456").size(), std::vector<std::string>::size_type(2));
 	CSP_EXPECT_EQ(SplitString("abc def").size(), std::vector<std::string>::size_type(2));
 	CSP_EXPECT_EQ(SplitString("").size(), std::vector<std::string>::size_type(0));
@@ -322,18 +322,18 @@ void TestSplitString() {
 }
 
 __attribute__((constructor)) static void RegisterTests() {
-	TestRegistry2::addTest(TestInstance{"TestConvertStringToUpper", &TestConvertStringToUpper});
-	TestRegistry2::addTest(TestInstance{"TestConvertStringToLower", &TestConvertStringToLower});
-	TestRegistry2::addTest(TestInstance{"TestTokenize", &TestTokenize});
-	TestRegistry2::addTest(TestInstance{"TestTokenQueue", &TestTokenQueue});
-	TestRegistry2::addTest(TestInstance{"TestTrimString", &TestTrimString});
-	TestRegistry2::addTest(TestInstance{"TestLeftTrimString", &TestLeftTrimString});
-	TestRegistry2::addTest(TestInstance{"TestRightTrimString", &TestRightTrimString});
-	TestRegistry2::addTest(TestInstance{"TestSkipWhitespace", &TestSkipWhitespace});
-	TestRegistry2::addTest(TestInstance{"TestParseInt32", &TestParseInt32});
-	TestRegistry2::addTest(TestInstance{"TestParseIntU32", &TestParseIntU32});
-	TestRegistry2::addTest(TestInstance{"TestParseIntLimits", &TestParseIntLimits});
-	TestRegistry2::addTest(TestInstance{"TestStringPrintf", &TestStringPrintf});
-	TestRegistry2::addTest(TestInstance{"TestParseDouble", &TestParseDouble});
-	TestRegistry2::addTest(TestInstance{"TestSplitString", &TestSplitString});
+	TestRegistry2::addTest(TestInstance{"StringTools_TestConvertStringToUpper", &TestConvertStringToUpper});
+	TestRegistry2::addTest(TestInstance{"StringTools_TestConvertStringToLower", &TestConvertStringToLower});
+	TestRegistry2::addTest(TestInstance{"StringTools_TestTokenize", &TestTokenize});
+	TestRegistry2::addTest(TestInstance{"StringTools_TestTokenQueue", &TestTokenQueue});
+	TestRegistry2::addTest(TestInstance{"StringTools_TestTrimString", &TestTrimString});
+	TestRegistry2::addTest(TestInstance{"StringTools_TestLeftTrimString", &TestLeftTrimString});
+	TestRegistry2::addTest(TestInstance{"StringTools_TestRightTrimString", &TestRightTrimString});
+	TestRegistry2::addTest(TestInstance{"StringTools_TestSkipWhitespace", &TestSkipWhitespace});
+	TestRegistry2::addTest(TestInstance{"StringTools_TestParseInt32", &TestParseInt32});
+	TestRegistry2::addTest(TestInstance{"StringTools_TestParseIntU32", &TestParseIntU32});
+	TestRegistry2::addTest(TestInstance{"StringTools_TestParseIntLimits", &TestParseIntLimits});
+	TestRegistry2::addTest(TestInstance{"StringTools_TestStringPrintf", &TestStringPrintf});
+	TestRegistry2::addTest(TestInstance{"StringTools_TestParseDouble", &TestParseDouble});
+	TestRegistry2::addTest(TestInstance{"StringTools_TestSplitString", &TestSplitString});
 }

@@ -19,6 +19,7 @@
 #include <csp/csplib/util/Testing.h>
 
 using namespace csp;
+using namespace csp::test;
 
 /*
 CSP_TESTFIXTURE(GeoPos_UTM) {
@@ -66,3 +67,6 @@ CSP_TESTFIXTURE(GeoPos_LLA) {
 		CSP_EXPECT_EQ(5.5, lla.altitude());
 	}
 };
+
+__attribute__((constructor)) static void RegisterTests() {
+}

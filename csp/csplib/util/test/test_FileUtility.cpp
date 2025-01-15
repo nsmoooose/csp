@@ -30,7 +30,7 @@ using namespace csp;
 using namespace csp::ospath;
 using namespace csp::test;
 
-void PathManipulation() {
+static void PathManipulation() {
 	// test directory (minimal!)
 	DirectoryContents dc = getDirectoryContents(".");
 	assert(dc.size() > 0);
@@ -78,5 +78,5 @@ void PathManipulation() {
 }
 
 __attribute__((constructor)) static void RegisterTests() {
-	TestRegistry2::addTest(TestInstance{"PathManipulation", &PathManipulation});
+	TestRegistry2::addTest(TestInstance{"FileUtility_PathManipulation", &PathManipulation});
 }

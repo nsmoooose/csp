@@ -28,6 +28,7 @@
 #include <csp/csplib/util/Testing.h>
 
 using namespace csp;
+using namespace csp::test;
 
 CSP_TESTFIXTURE(Quaternion) {
 
@@ -436,3 +437,5 @@ CSP_TESTFIXTURE(Quaternion) {
 	}
 };
 
+__attribute__((constructor)) static void RegisterTests() {
+}

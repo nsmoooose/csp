@@ -28,6 +28,7 @@
 #include <csp/csplib/util/Testing.h>
 
 using namespace csp;
+using namespace csp::test;
 
 CSP_TESTFIXTURE(Vector3) {
 
@@ -218,3 +219,5 @@ CSP_TESTFIXTURE(Vector3) {
 	}
 };
 
+__attribute__((constructor)) static void RegisterTests() {
+}

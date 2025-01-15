@@ -25,6 +25,7 @@
 #include <csp/csplib/util/Testing.h>
 
 using namespace csp;
+using namespace csp::test;
 
 CSP_TESTFIXTURE(Real) {
 	CSP_TESTCASE(ParseXMLWithOneValue) {
@@ -58,3 +59,6 @@ CSP_TESTFIXTURE(Real) {
 		CSP_EXPECT_EQ(static_cast<float>(1.3), r.sigma());
 	}
 };
+
+__attribute__((constructor)) static void RegisterTests() {
+}

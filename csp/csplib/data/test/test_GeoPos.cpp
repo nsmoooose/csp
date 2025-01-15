@@ -22,51 +22,48 @@ using namespace csp;
 using namespace csp::test;
 
 /*
-CSP_TESTFIXTURE(GeoPos_UTM) {
+  static void ParseXML() {
+      Quat I(Quat::IDENTITY);
 
-	CSP_TESTCASE(ParseXML) {
-		Quat I(Quat::IDENTITY);
-
-		CSP_EXPECT_EQ(I, I.inverse());
-	}
-}
+	  CSP_EXPECT_EQ(I, I.inverse());
+  }
 */
 
-CSP_TESTFIXTURE(GeoPos_LLA) {
-	CSP_TESTCASE(ParseXML) {
-		// Arrange
-		// XML is using . as standard for decimals. Check if the parseXML
-		// method is independent of locale.
-		std::locale old = std::locale::global(std::locale("sv_SE"));
-		LLA lla;
+static void ParseXML() {
+	// Arrange
+	// XML is using . as standard for decimals. Check if the parseXML
+	// method is independent of locale.
+	std::locale old = std::locale::global(std::locale("sv_SE"));
+	LLA lla;
 
-		// Act
-		lla.parseXML("1.1 1.2 1.3");
+	// Act
+	lla.parseXML("1.1 1.2 1.3");
 
-		// Assert
-		std::locale::global(old);
-		LLA lla_expected;
-		lla_expected.setDegrees(1.1, 1.2, 1.3);
-		CSP_EXPECT_EQ(lla_expected.latitude(), lla.latitude());
-		CSP_EXPECT_EQ(lla_expected.longitude(), lla.longitude());
-		CSP_EXPECT_EQ(1.3, lla.altitude());
-	}
+	// Assert
+	std::locale::global(old);
+	LLA lla_expected;
+	lla_expected.setDegrees(1.1, 1.2, 1.3);
+	CSP_EXPECT_EQ(lla_expected.latitude(), lla.latitude());
+	CSP_EXPECT_EQ(lla_expected.longitude(), lla.longitude());
+	CSP_EXPECT_EQ(1.3, lla.altitude());
+}
 
-	CSP_TESTCASE(ParseXMLWithMinSec) {
-		// Arrange
-		LLA lla;
-		std::locale old = std::locale::global(std::locale("sv_SE"));
+static void ParseXMLWithMinSec() {
+	// Arrange
+	LLA lla;
+	std::locale old = std::locale::global(std::locale("sv_SE"));
 
-		// Act
-		lla.parseXML("1'2\"3.4 2'3\"4.4 5.5");
-		
-		// Assert
-		std::locale::global(old);
-		CSP_EXPECT_EQ(toRadians(1.0 + 2.0 / 60.0 + 3.4 / 3600.0), lla.latitude());
-		CSP_EXPECT_EQ(toRadians(2.0 + 3.0 / 60.0 + 4.4 / 3600.0), lla.longitude());
-		CSP_EXPECT_EQ(5.5, lla.altitude());
-	}
-};
+	// Act
+	lla.parseXML("1'2\"3.4 2'3\"4.4 5.5");
+
+	// Assert
+	std::locale::global(old);
+	CSP_EXPECT_EQ(toRadians(1.0 + 2.0 / 60.0 + 3.4 / 3600.0), lla.latitude());
+	CSP_EXPECT_EQ(toRadians(2.0 + 3.0 / 60.0 + 4.4 / 3600.0), lla.longitude());
+	CSP_EXPECT_EQ(5.5, lla.altitude());
+}
 
 __attribute__((constructor)) static void RegisterTests() {
+	TestRegistry2::addTest(TestInstance{"ParseXML", &ParseXML});
+	TestRegistry2::addTest(TestInstance{"ParseXMLWithMinSec", &ParseXMLWithMinSec});
 }

@@ -128,14 +128,52 @@ void TestRegistry2::addTest(TestInstance&& test) {
 	tests()[test.name] = test;
 }
 
-void TestRegistry2::runTest(const TestInstance& test) {
-	std::cout << "Running all tests2" << std::endl;
+bool TestRegistry2::runTest(const TestInstance& test) {
+	std::cout << "========================================" << std::endl;
+	std::cout << "  " << test.name << std::endl;
+	std::cout << "----------------------------------------" << std::endl;
+	bool result = true;
+	try {
+		test.test();
+	}
+	catch(const FatalException &e) {
+		std::cout << e.getError() << std::endl;
+		result = false;
+	}
+	catch(PassTest &e) {
+		result = true;
+	}
+	catch(FailTest &e) {
+		result = false;
+	}
+	catch(...) {
+		result = false;
+	}
+
+	std::cout << "Finished test " << test.name << ":" << (result ? "PASS" : "FAIL") << std::endl;
+	std::cout << "----------------------------------------" << std::endl << std::endl;
+	return result;
 }
 
 void TestRegistry2::runAllTests() {
+	std::cout << "Running all tests2" << std::endl;
+	bool success = true;
+
+	std::vector<std::string> all_results;
+	int pass_count = 0;
+	int fail_count = 0;
+
 	for(auto &test : tests()) {
-		runTest(test.second);
+		bool atest = runTest(test.second);
+		pass_count += atest ? 1 : 0;
+		fail_count += atest ? 0 : 1;
+		success = runTest(test.second) && success;;
 	}
+
+	std::cout << "Summary" << std::endl;
+	std::cout << " " << pass_count << " tests are passing" << std::endl;
+	std::cout << " " << fail_count << " tests are FAILING" << std::endl;
+	std::cout << " " << pass_count + fail_count << " total number of tests" << std::endl;
 }
 
 struct TestRegistry::TestData {

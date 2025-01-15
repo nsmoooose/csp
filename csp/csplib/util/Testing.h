@@ -120,7 +120,7 @@ public:
 	static std::map<std::string, TestInstance> &tests();
 
 	static void addTest(TestInstance&& test);
-	static void runTest(const TestInstance& test);
+	static bool runTest(const TestInstance& test);
 	static void runAllTests();
 };
 

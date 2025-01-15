@@ -435,26 +435,26 @@ static void ParseXMLWith9Values() {
 }
 
 __attribute__((constructor)) static void RegisterTests() {
-	TestRegistry2::addTest(TestInstance{"Basics", &Basics});
-	TestRegistry2::addTest(TestInstance{"Arithmetic", &Arithmetic});
-	TestRegistry2::addTest(TestInstance{"Comparison", &Comparison});
-	TestRegistry2::addTest(TestInstance{"Conjugation", &Conjugation});
-	TestRegistry2::addTest(TestInstance{"Components", &Components});
-	TestRegistry2::addTest(TestInstance{"Assignment", &Assignment});
-	TestRegistry2::addTest(TestInstance{"Set", &Set});
-	TestRegistry2::addTest(TestInstance{"AsVector3", &AsVector3});
-	TestRegistry2::addTest(TestInstance{"Conjugate", &Conjugate});
-	TestRegistry2::addTest(TestInstance{"Length", &Length});
-	TestRegistry2::addTest(TestInstance{"VecToVec", &VecToVec});
-	TestRegistry2::addTest(TestInstance{"AngleAxis", &AngleAxis});
-	TestRegistry2::addTest(TestInstance{"Rotate", &Rotate});
-	TestRegistry2::addTest(TestInstance{"InvRotate", &InvRotate});
-	TestRegistry2::addTest(TestInstance{"EulerAngles", &EulerAngles});
-	TestRegistry2::addTest(TestInstance{"Matrix", &Matrix});
-	TestRegistry2::addTest(TestInstance{"Normalize", &Normalize});
-	TestRegistry2::addTest(TestInstance{"Invert", &Invert});
-	TestRegistry2::addTest(TestInstance{"Slerp", &Slerp});
-	TestRegistry2::addTest(TestInstance{"Nlerp", &Nlerp});
-	TestRegistry2::addTest(TestInstance{"ParseXMLWith4Values", &ParseXMLWith4Values});
-	TestRegistry2::addTest(TestInstance{"ParseXMLWith9Values", &ParseXMLWith9Values});
+	TestRegistry2::addTest(TestInstance{"Quat_Basics", &Basics});
+	TestRegistry2::addTest(TestInstance{"Quat_Arithmetic", &Arithmetic});
+	TestRegistry2::addTest(TestInstance{"Quat_Comparison", &Comparison});
+	TestRegistry2::addTest(TestInstance{"Quat_Conjugation", &Conjugation});
+	TestRegistry2::addTest(TestInstance{"Quat_Components", &Components});
+	TestRegistry2::addTest(TestInstance{"Quat_Assignment", &Assignment});
+	TestRegistry2::addTest(TestInstance{"Quat_Set", &Set});
+	TestRegistry2::addTest(TestInstance{"Quat_AsVector3", &AsVector3});
+	TestRegistry2::addTest(TestInstance{"Quat_Conjugate", &Conjugate});
+	TestRegistry2::addTest(TestInstance{"Quat_Length", &Length});
+	TestRegistry2::addTest(TestInstance{"Quat_VecToVec", &VecToVec});
+	TestRegistry2::addTest(TestInstance{"Quat_AngleAxis", &AngleAxis});
+	TestRegistry2::addTest(TestInstance{"Quat_Rotate", &Rotate});
+	TestRegistry2::addTest(TestInstance{"Quat_InvRotate", &InvRotate});
+	TestRegistry2::addTest(TestInstance{"Quat_EulerAngles", &EulerAngles});
+	TestRegistry2::addTest(TestInstance{"Quat_Matrix", &Matrix});
+	TestRegistry2::addTest(TestInstance{"Quat_Normalize", &Normalize});
+	TestRegistry2::addTest(TestInstance{"Quat_Invert", &Invert});
+	TestRegistry2::addTest(TestInstance{"Quat_Slerp", &Slerp});
+	TestRegistry2::addTest(TestInstance{"Quat_Nlerp", &Nlerp});
+	TestRegistry2::addTest(TestInstance{"Quat_ParseXMLWith4Values", &ParseXMLWith4Values});
+	TestRegistry2::addTest(TestInstance{"Quat_ParseXMLWith9Values", &ParseXMLWith9Values});
 }

@@ -27,38 +27,38 @@
 using namespace csp;
 using namespace csp::test;
 
-CSP_TESTFIXTURE(Real) {
-	CSP_TESTCASE(ParseXMLWithOneValue) {
-		// Arrange
-		// XML is using . as standard for decimals. Check if the parseXML
-		// method is independent of locale.
-		std::locale old = std::locale::global(std::locale("sv_SE"));
+static void ParseXMLWithOneValue() {
+	// Arrange
+	// XML is using . as standard for decimals. Check if the parseXML
+	// method is independent of locale.
+	std::locale old = std::locale::global(std::locale("sv_SE"));
 
-		// Act
-		Real r;
-		r.parseXML("1.2");
+	// Act
+	Real r;
+	r.parseXML("1.2");
 
-		// Assert
-		std::locale::global(old);
-		CSP_EXPECT_EQ(static_cast<float>(1.2), r.mean());
-	}
+	// Assert
+	std::locale::global(old);
+	CSP_EXPECT_EQ(static_cast<float>(1.2), r.mean());
+}
 
-	CSP_TESTCASE(ParseXMLWithTwoValues) {
-		// Arrange
-		// XML is using . as standard for decimals. Check if the parseXML
-		// method is independent of locale.
-		std::locale old = std::locale::global(std::locale("sv_SE"));
+static void ParseXMLWithTwoValues() {
+	// Arrange
+	// XML is using . as standard for decimals. Check if the parseXML
+	// method is independent of locale.
+	std::locale old = std::locale::global(std::locale("sv_SE"));
 
-		// Act
-		Real r;
-		r.parseXML("1.2:1.3");
+	// Act
+	Real r;
+	r.parseXML("1.2:1.3");
 
-		// Assert
-		std::locale::global(old);
-		CSP_EXPECT_EQ(static_cast<float>(1.2), r.mean());
-		CSP_EXPECT_EQ(static_cast<float>(1.3), r.sigma());
-	}
-};
+	// Assert
+	std::locale::global(old);
+	CSP_EXPECT_EQ(static_cast<float>(1.2), r.mean());
+	CSP_EXPECT_EQ(static_cast<float>(1.3), r.sigma());
+}
 
 __attribute__((constructor)) static void RegisterTests() {
+	TestRegistry2::addTest(TestInstance{"ParseXMLWithOneValue", &ParseXMLWithOneValue});
+	TestRegistry2::addTest(TestInstance{"ParseXMLWithTwoValues", &ParseXMLWithTwoValues});
 }

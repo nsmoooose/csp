@@ -24,6 +24,7 @@
 
 using namespace csp;
 using namespace csp::bus;
+using namespace csp::test;
 
 // A simplified version of DynamicObject that register kinematic
 // channels on the system bus.

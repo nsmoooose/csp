@@ -118,13 +118,16 @@ private:
 	Log m_log;
 };
 
+TestInstance::TestInstance(const std::string &_name, test_cb _test, test_cb _setup, test_cb _teardown) :
+	name(_name), test(_test), setup(_setup), teardown(_teardown) {
+}
 
 std::map<std::string, TestInstance> &TestRegistry2::tests() {
 	static std::map<std::string, TestInstance> tests;
 	return tests;
 }
 
-void TestRegistry2::addTest(TestInstance&& test) {
+void TestRegistry2::addTest(const TestInstance& test) {
 	tests()[test.name] = test;
 }
 
@@ -134,7 +137,13 @@ bool TestRegistry2::runTest(const TestInstance& test) {
 	std::cout << "----------------------------------------" << std::endl;
 	bool result = true;
 	try {
+		if(test.setup) {
+			test.setup();
+		}
 		test.test();
+		if(test.teardown) {
+			test.teardown();
+		}
 	}
 	catch(const FatalException &e) {
 		std::cout << e.getError() << std::endl;

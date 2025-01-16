@@ -93,99 +93,99 @@ CSP_XML_BEGIN(SubObject2)
 	CSP_DEF("value", _value, false)
 CSP_XML_END
 
-CSP_TESTFIXTURE(Object) {
-public:
+static void setup() {
+	static TestObject::__csp_interface_proxy instance1;
+	static SubObject1::__csp_interface_proxy instance2;
+	static SubObject2::__csp_interface_proxy instance3;
+}
 
-	virtual void setupFixture() {
-		static TestObject::__csp_interface_proxy instance1;
-		static SubObject1::__csp_interface_proxy instance2;
-		static SubObject2::__csp_interface_proxy instance3;
-	}
+static void testObjectInterface(csp::InterfaceProxy *proxy) {
+	CSP_VERIFY(proxy != 0);
+	CSP_VERIFY(proxy->variableExists("vector"));
+	CSP_VERIFY(proxy->variableExists("link"));
+	CSP_VERIFY(proxy->variableExists("bool"));
+	CSP_VERIFY(proxy->variableRequired("vector"));
+	CSP_VERIFY(!proxy->variableRequired("link"));
+	CSP_VERIFY(!proxy->variableRequired("bool"));
+	CSP_VERIFY_EQ(proxy->variableType("vector"), "type::Vector3");
+	CSP_VERIFY_EQ(proxy->variableType("bool"),"builtin::bool");
+}
 
-	void testObjectInterface(csp::InterfaceProxy *proxy) {
-		CSP_VERIFY(proxy != 0);
-		CSP_VERIFY(proxy->variableExists("vector"));
-		CSP_VERIFY(proxy->variableExists("link"));
-		CSP_VERIFY(proxy->variableExists("bool"));
-		CSP_VERIFY(proxy->variableRequired("vector"));
-		CSP_VERIFY(!proxy->variableRequired("link"));
-		CSP_VERIFY(!proxy->variableRequired("bool"));
-		CSP_VERIFY_EQ(proxy->variableType("vector"), "type::Vector3");
-		CSP_VERIFY_EQ(proxy->variableType("bool"),"builtin::bool");
-	}
+static void Basics() {
+	// TODO
+	// * set and retrieve values
+	// * split Object class declarations into a header?
+	csp::InterfaceRegistry &reg = csp::InterfaceRegistry::getInterfaceRegistry();
+	CSP_VERIFY(reg.hasInterface("TestObject"));
+	CSP_VERIFY(reg.hasInterface("SubObject1"));
+	CSP_VERIFY(reg.hasInterface(TestObject::_getClassHash()));
+	CSP_VERIFY(reg.hasInterface(SubObject1::_getClassHash()));
+	CSP_VERIFY(reg.hasInterface(TestObject::_getClassName()));
+	CSP_VERIFY(reg.hasInterface(SubObject1::_getClassName()));
+	csp::InterfaceProxy *i;
+	i = reg.getInterface("TestObject");
+	CSP_VERIFY_EQ(i->getClassHash(), TestObject::_getClassHash());
+	CSP_VERIFY_EQ(i->getClassName(), TestObject::_getClassName());
+	CSP_VERIFY(!i->isStatic());
+	i = reg.getInterface("SubObject1");
+	CSP_VERIFY_EQ(i->getClassHash(), SubObject1::_getClassHash());
+	CSP_VERIFY_EQ(i->getClassName(), SubObject1::_getClassName());
+	CSP_VERIFY(i->isStatic());
+}
 
-	CSP_TESTCASE(Basics) {
-		// TODO
-		// * set and retrieve values
-		// * split Object class declarations into a header?
-		csp::InterfaceRegistry &reg = csp::InterfaceRegistry::getInterfaceRegistry();
-		CSP_VERIFY(reg.hasInterface("TestObject"));
-		CSP_VERIFY(reg.hasInterface("SubObject1"));
-		CSP_VERIFY(reg.hasInterface(TestObject::_getClassHash()));
-		CSP_VERIFY(reg.hasInterface(SubObject1::_getClassHash()));
-		CSP_VERIFY(reg.hasInterface(TestObject::_getClassName()));
-		CSP_VERIFY(reg.hasInterface(SubObject1::_getClassName()));
-		csp::InterfaceProxy *i;
-		i = reg.getInterface("TestObject");
-		CSP_VERIFY_EQ(i->getClassHash(), TestObject::_getClassHash());
-		CSP_VERIFY_EQ(i->getClassName(), TestObject::_getClassName());
-		CSP_VERIFY(!i->isStatic());
-		i = reg.getInterface("SubObject1");
-		CSP_VERIFY_EQ(i->getClassHash(), SubObject1::_getClassHash());
-		CSP_VERIFY_EQ(i->getClassName(), SubObject1::_getClassName());
-		CSP_VERIFY(i->isStatic());
-	}
+static void AnObjectInterface() {
+	csp::InterfaceRegistry &reg = csp::InterfaceRegistry::getInterfaceRegistry();
+	csp::InterfaceProxy *proxy = reg.getInterface("TestObject");
+	testObjectInterface(proxy);
+}
 
-	CSP_TESTCASE(ObjectInterface) {
-		csp::InterfaceRegistry &reg = csp::InterfaceRegistry::getInterfaceRegistry();
-		csp::InterfaceProxy *proxy = reg.getInterface("TestObject");
-		testObjectInterface(proxy);
-	}
+static void SubObjectInterface() {
+	csp::InterfaceRegistry &reg = csp::InterfaceRegistry::getInterfaceRegistry();
+	csp::InterfaceProxy *proxy = reg.getInterface("SubObject1");
+	CSP_VERIFY(proxy != 0);
+	CSP_VERIFY(proxy->variableExists("link1"));
+	CSP_VERIFY(proxy->variableExists("link2"));
+	CSP_VERIFY(!proxy->variableRequired("link1"));
+	CSP_VERIFY(proxy->variableRequired("link2"));
+	CSP_VERIFY(proxy->isSubclass(TestObject::_getClassName()));
+	CSP_VERIFY(proxy->isSubclass(TestObject::_getClassHash()));
+	testObjectInterface(proxy);
+}
 
-	CSP_TESTCASE(SubObjectInterface) {
-		csp::InterfaceRegistry &reg = csp::InterfaceRegistry::getInterfaceRegistry();
-		csp::InterfaceProxy *proxy = reg.getInterface("SubObject1");
-		CSP_VERIFY(proxy != 0);
-		CSP_VERIFY(proxy->variableExists("link1"));
-		CSP_VERIFY(proxy->variableExists("link2"));
-		CSP_VERIFY(!proxy->variableRequired("link1"));
-		CSP_VERIFY(proxy->variableRequired("link2"));
-		CSP_VERIFY(proxy->isSubclass(TestObject::_getClassName()));
-		CSP_VERIFY(proxy->isSubclass(TestObject::_getClassHash()));
-		testObjectInterface(proxy);
+static void Serialize() {
+	// FIXME using tmpfile would be much better but DataArchive doesn't accept open
+	// stream descriptors.
+	const std::string tmpfile("/tmp/csplib.tmptest.dar");
+	{
+		TestObject obj1;
+		SubObject2 obj2;
+		obj1._vector.y() = 2.17;
+		obj1._link = "obj2";
+		obj2._vector.x() = 42.0;
+		obj2._value = 3.14;
+		csp::DataArchive ar(tmpfile, /*read=*/false);
+		ar.addObject(obj1, "obj1");
+		ar.addObject(obj2, "obj2");
+		ar.finalize();
 	}
-
-	CSP_TESTCASE(Serialize) {
-		// FIXME using tmpfile would be much better but DataArchive doesn't accept open
-		// stream descriptors.
-		const std::string tmpfile("/tmp/csplib.tmptest.dar");
-		{
-			TestObject obj1;
-			SubObject2 obj2;
-			obj1._vector.y() = 2.17;
-			obj1._link = "obj2";
-			obj2._vector.x() = 42.0;
-			obj2._value = 3.14;
-			csp::DataArchive ar(tmpfile, /*read=*/false);
-			ar.addObject(obj1, "obj1");
-			ar.addObject(obj2, "obj2");
-			ar.finalize();
-		}
-		{
-			csp::DataArchive ar(tmpfile, /*read=*/true);
-			csp::Ref<TestObject> obj = ar.getObject("obj1");
-			CSP_VERIFY(obj.valid());
-			CSP_VERIFY_LT(std::abs(obj->_vector.y() - 2.17), 1e-8);
-			CSP_VERIFY(obj->_link.valid());
-			csp::Path p = obj->_link;
-			CSP_VERIFY(p == csp::Path("obj2"));
-			CSP_VERIFY_LT(std::abs(obj->_link->_vector.x() - 42.0), 1e-8);
-			csp::Ref<SubObject2> sub2 = obj->_link;
-			CSP_VERIFY(sub2.valid());
-			CSP_VERIFY_LT(std::abs(sub2->_value - 3.14), 1e-8);
-		}
+	{
+		csp::DataArchive ar(tmpfile, /*read=*/true);
+		csp::Ref<TestObject> obj = ar.getObject("obj1");
+		CSP_VERIFY(obj.valid());
+		CSP_VERIFY_LT(std::abs(obj->_vector.y() - 2.17), 1e-8);
+		CSP_VERIFY(obj->_link.valid());
+		csp::Path p = obj->_link;
+		CSP_VERIFY(p == csp::Path("obj2"));
+		CSP_VERIFY_LT(std::abs(obj->_link->_vector.x() - 42.0), 1e-8);
+		csp::Ref<SubObject2> sub2 = obj->_link;
+		CSP_VERIFY(sub2.valid());
+		CSP_VERIFY_LT(std::abs(sub2->_value - 3.14), 1e-8);
 	}
-};
+}
 
 __attribute__((constructor)) static void RegisterTests() {
+	TestRegistry2::addTest(TestInstance{"Object_Basics", &Basics, &setup});
+	TestRegistry2::addTest(TestInstance{"Object_ObjectInterface", &AnObjectInterface, &setup});
+	TestRegistry2::addTest(TestInstance{"Object_SubObjectInterface", &SubObjectInterface, &setup});
+	TestRegistry2::addTest(TestInstance{"Object_Serialize", &Serialize, &setup});
 }

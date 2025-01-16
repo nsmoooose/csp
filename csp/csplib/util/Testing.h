@@ -110,16 +110,23 @@ namespace test {
 CSP_EXCEPTION(PassTest)
 CSP_EXCEPTION(FailTest)
 
+typedef void (*test_cb)();
+
 struct TestInstance {
 	std::string name;
-	void (*test)();
+	test_cb test;
+	test_cb setup;
+	test_cb teardown;
+
+	TestInstance(){}
+	TestInstance(const std::string &name, test_cb test, test_cb setup=NULL, test_cb teardown=NULL);
 };
 
 class CSPLIB_EXPORT TestRegistry2 {
 public:
 	static std::map<std::string, TestInstance> &tests();
 
-	static void addTest(TestInstance&& test);
+	static void addTest(const TestInstance& test);
 	static bool runTest(const TestInstance& test);
 	static void runAllTests();
 };

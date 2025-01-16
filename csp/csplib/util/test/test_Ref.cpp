@@ -62,5 +62,5 @@ static void Count() {
 }
 
 __attribute__((constructor)) static void RegisterTests() {
-	TestRegistry2::addTest(TestInstance{"Ref_Count", &Count});
+	TestRegistry::addTest(TestInstance{"Ref_Count", &Count});
 }

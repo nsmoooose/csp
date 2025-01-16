@@ -64,6 +64,6 @@ static void ParseXMLWithMinSec() {
 }
 
 __attribute__((constructor)) static void RegisterTests() {
-	TestRegistry2::addTest(TestInstance{"ParseXML", &ParseXML});
-	TestRegistry2::addTest(TestInstance{"ParseXMLWithMinSec", &ParseXMLWithMinSec});
+	TestRegistry::addTest(TestInstance{"ParseXML", &ParseXML});
+	TestRegistry::addTest(TestInstance{"ParseXMLWithMinSec", &ParseXMLWithMinSec});
 }

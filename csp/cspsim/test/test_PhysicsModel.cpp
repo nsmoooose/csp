@@ -373,14 +373,14 @@ static void ScratchSpin() {
 }
 
 __attribute__((constructor)) static void RegisterTests() {
-	TestRegistry2::addTest(TestInstance{"PhysicsModel_SkewRotation", &SkewRotation, &setup});
-	TestRegistry2::addTest(TestInstance{"PhysicsModel_SimpleRotation", &SimpleRotation, &setup});
-	TestRegistry2::addTest(TestInstance{"PhysicsModel_DumbellRotation", &DumbellRotation, &setup});
-	TestRegistry2::addTest(TestInstance{"PhysicsModel_DumbellForcedRotation", &DumbellForcedRotation, &setup});
-	TestRegistry2::addTest(TestInstance{"PhysicsModel_LinearAcceleration", &LinearAcceleration, &setup});
-	TestRegistry2::addTest(TestInstance{"PhysicsModel_RotatingForce", &RotatingForce, &setup});
-	TestRegistry2::addTest(TestInstance{"PhysicsModel_SpinningPlate", &SpinningPlate, &setup});
-	TestRegistry2::addTest(TestInstance{"PhysicsModel_Gravity", &Gravity, &setup});
-	TestRegistry2::addTest(TestInstance{"PhysicsModel_ForceFreeTop", &ForceFreeTop, &setup});
-	TestRegistry2::addTest(TestInstance{"PhysicsModel_ScratchSpin", &ScratchSpin, &setup});
+	TestRegistry::addTest(TestInstance{"PhysicsModel_SkewRotation", &SkewRotation, &setup});
+	TestRegistry::addTest(TestInstance{"PhysicsModel_SimpleRotation", &SimpleRotation, &setup});
+	TestRegistry::addTest(TestInstance{"PhysicsModel_DumbellRotation", &DumbellRotation, &setup});
+	TestRegistry::addTest(TestInstance{"PhysicsModel_DumbellForcedRotation", &DumbellForcedRotation, &setup});
+	TestRegistry::addTest(TestInstance{"PhysicsModel_LinearAcceleration", &LinearAcceleration, &setup});
+	TestRegistry::addTest(TestInstance{"PhysicsModel_RotatingForce", &RotatingForce, &setup});
+	TestRegistry::addTest(TestInstance{"PhysicsModel_SpinningPlate", &SpinningPlate, &setup});
+	TestRegistry::addTest(TestInstance{"PhysicsModel_Gravity", &Gravity, &setup});
+	TestRegistry::addTest(TestInstance{"PhysicsModel_ForceFreeTop", &ForceFreeTop, &setup});
+	TestRegistry::addTest(TestInstance{"PhysicsModel_ScratchSpin", &ScratchSpin, &setup});
 }

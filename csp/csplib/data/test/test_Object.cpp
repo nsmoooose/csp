@@ -184,8 +184,8 @@ static void Serialize() {
 }
 
 __attribute__((constructor)) static void RegisterTests() {
-	TestRegistry2::addTest(TestInstance{"Object_Basics", &Basics, &setup});
-	TestRegistry2::addTest(TestInstance{"Object_ObjectInterface", &AnObjectInterface, &setup});
-	TestRegistry2::addTest(TestInstance{"Object_SubObjectInterface", &SubObjectInterface, &setup});
-	TestRegistry2::addTest(TestInstance{"Object_Serialize", &Serialize, &setup});
+	TestRegistry::addTest(TestInstance{"Object_Basics", &Basics, &setup});
+	TestRegistry::addTest(TestInstance{"Object_ObjectInterface", &AnObjectInterface, &setup});
+	TestRegistry::addTest(TestInstance{"Object_SubObjectInterface", &SubObjectInterface, &setup});
+	TestRegistry::addTest(TestInstance{"Object_Serialize", &Serialize, &setup});
 }

@@ -106,11 +106,11 @@ static void TestComplement() {
 }
 
 __attribute__((constructor)) static void RegisterTests() {
-	TestRegistry2::addTest(TestInstance{"Boolean_TestCasts", &TestCasts});
-	TestRegistry2::addTest(TestInstance{"Boolean_TestNegation", &TestNegation});
-	TestRegistry2::addTest(TestInstance{"Boolean_TestEquality", &TestEquality});
-	TestRegistry2::addTest(TestInstance{"Boolean_TestInequality", &TestInequality});
-	TestRegistry2::addTest(TestInstance{"Boolean_TestAnd", &TestAnd});
-	TestRegistry2::addTest(TestInstance{"Boolean_TestOr", &TestOr});
-	TestRegistry2::addTest(TestInstance{"Boolean_TestComplement", &TestComplement});
+	TestRegistry::addTest(TestInstance{"Boolean_TestCasts", &TestCasts});
+	TestRegistry::addTest(TestInstance{"Boolean_TestNegation", &TestNegation});
+	TestRegistry::addTest(TestInstance{"Boolean_TestEquality", &TestEquality});
+	TestRegistry::addTest(TestInstance{"Boolean_TestInequality", &TestInequality});
+	TestRegistry::addTest(TestInstance{"Boolean_TestAnd", &TestAnd});
+	TestRegistry::addTest(TestInstance{"Boolean_TestOr", &TestOr});
+	TestRegistry::addTest(TestInstance{"Boolean_TestComplement", &TestComplement});
 }

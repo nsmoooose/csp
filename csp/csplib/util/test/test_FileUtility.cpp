@@ -78,5 +78,5 @@ static void PathManipulation() {
 }
 
 __attribute__((constructor)) static void RegisterTests() {
-	TestRegistry2::addTest(TestInstance{"FileUtility_PathManipulation", &PathManipulation});
+	TestRegistry::addTest(TestInstance{"FileUtility_PathManipulation", &PathManipulation});
 }

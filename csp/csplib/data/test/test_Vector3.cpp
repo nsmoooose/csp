@@ -218,18 +218,18 @@ static void ParseXML() {
 
 
 __attribute__((constructor)) static void RegisterTests() {
-	TestRegistry2::addTest(TestInstance{"Vector_Basics", &Basics});
-	TestRegistry2::addTest(TestInstance{"Vector_Axes", &Axes});
-	TestRegistry2::addTest(TestInstance{"Vector_Arithmetic", &Arithmetic});
-	TestRegistry2::addTest(TestInstance{"Vector_Comparison", &Comparison});
-	TestRegistry2::addTest(TestInstance{"Vector_Components", &Components});
-	TestRegistry2::addTest(TestInstance{"Vector_Assignment", &Assignment});
-	TestRegistry2::addTest(TestInstance{"Vector_Set", &Set});
-	TestRegistry2::addTest(TestInstance{"Vector_DotProduct", &DotProduct});
-	TestRegistry2::addTest(TestInstance{"Vector_CrossProduct", &CrossProduct});
-	TestRegistry2::addTest(TestInstance{"Vector_Length", &Length});
-	TestRegistry2::addTest(TestInstance{"Vector_Normalize", &Normalize});
-	TestRegistry2::addTest(TestInstance{"Vector_Bound", &Bound});
-	TestRegistry2::addTest(TestInstance{"Vector_StarMatrix", &StarMatrix});
-	TestRegistry2::addTest(TestInstance{"Vector_ParseXML", &ParseXML});
+	TestRegistry::addTest(TestInstance{"Vector_Basics", &Basics});
+	TestRegistry::addTest(TestInstance{"Vector_Axes", &Axes});
+	TestRegistry::addTest(TestInstance{"Vector_Arithmetic", &Arithmetic});
+	TestRegistry::addTest(TestInstance{"Vector_Comparison", &Comparison});
+	TestRegistry::addTest(TestInstance{"Vector_Components", &Components});
+	TestRegistry::addTest(TestInstance{"Vector_Assignment", &Assignment});
+	TestRegistry::addTest(TestInstance{"Vector_Set", &Set});
+	TestRegistry::addTest(TestInstance{"Vector_DotProduct", &DotProduct});
+	TestRegistry::addTest(TestInstance{"Vector_CrossProduct", &CrossProduct});
+	TestRegistry::addTest(TestInstance{"Vector_Length", &Length});
+	TestRegistry::addTest(TestInstance{"Vector_Normalize", &Normalize});
+	TestRegistry::addTest(TestInstance{"Vector_Bound", &Bound});
+	TestRegistry::addTest(TestInstance{"Vector_StarMatrix", &StarMatrix});
+	TestRegistry::addTest(TestInstance{"Vector_ParseXML", &ParseXML});
 }

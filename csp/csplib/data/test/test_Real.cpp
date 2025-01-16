@@ -59,6 +59,6 @@ static void ParseXMLWithTwoValues() {
 }
 
 __attribute__((constructor)) static void RegisterTests() {
-	TestRegistry2::addTest(TestInstance{"ParseXMLWithOneValue", &ParseXMLWithOneValue});
-	TestRegistry2::addTest(TestInstance{"ParseXMLWithTwoValues", &ParseXMLWithTwoValues});
+	TestRegistry::addTest(TestInstance{"ParseXMLWithOneValue", &ParseXMLWithOneValue});
+	TestRegistry::addTest(TestInstance{"ParseXMLWithTwoValues", &ParseXMLWithTwoValues});
 }

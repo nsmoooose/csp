@@ -322,18 +322,18 @@ static void TestSplitString() {
 }
 
 __attribute__((constructor)) static void RegisterTests() {
-	TestRegistry2::addTest(TestInstance{"StringTools_TestConvertStringToUpper", &TestConvertStringToUpper});
-	TestRegistry2::addTest(TestInstance{"StringTools_TestConvertStringToLower", &TestConvertStringToLower});
-	TestRegistry2::addTest(TestInstance{"StringTools_TestTokenize", &TestTokenize});
-	TestRegistry2::addTest(TestInstance{"StringTools_TestTokenQueue", &TestTokenQueue});
-	TestRegistry2::addTest(TestInstance{"StringTools_TestTrimString", &TestTrimString});
-	TestRegistry2::addTest(TestInstance{"StringTools_TestLeftTrimString", &TestLeftTrimString});
-	TestRegistry2::addTest(TestInstance{"StringTools_TestRightTrimString", &TestRightTrimString});
-	TestRegistry2::addTest(TestInstance{"StringTools_TestSkipWhitespace", &TestSkipWhitespace});
-	TestRegistry2::addTest(TestInstance{"StringTools_TestParseInt32", &TestParseInt32});
-	TestRegistry2::addTest(TestInstance{"StringTools_TestParseIntU32", &TestParseIntU32});
-	TestRegistry2::addTest(TestInstance{"StringTools_TestParseIntLimits", &TestParseIntLimits});
-	TestRegistry2::addTest(TestInstance{"StringTools_TestStringPrintf", &TestStringPrintf});
-	TestRegistry2::addTest(TestInstance{"StringTools_TestParseDouble", &TestParseDouble});
-	TestRegistry2::addTest(TestInstance{"StringTools_TestSplitString", &TestSplitString});
+	TestRegistry::addTest(TestInstance{"StringTools_TestConvertStringToUpper", &TestConvertStringToUpper});
+	TestRegistry::addTest(TestInstance{"StringTools_TestConvertStringToLower", &TestConvertStringToLower});
+	TestRegistry::addTest(TestInstance{"StringTools_TestTokenize", &TestTokenize});
+	TestRegistry::addTest(TestInstance{"StringTools_TestTokenQueue", &TestTokenQueue});
+	TestRegistry::addTest(TestInstance{"StringTools_TestTrimString", &TestTrimString});
+	TestRegistry::addTest(TestInstance{"StringTools_TestLeftTrimString", &TestLeftTrimString});
+	TestRegistry::addTest(TestInstance{"StringTools_TestRightTrimString", &TestRightTrimString});
+	TestRegistry::addTest(TestInstance{"StringTools_TestSkipWhitespace", &TestSkipWhitespace});
+	TestRegistry::addTest(TestInstance{"StringTools_TestParseInt32", &TestParseInt32});
+	TestRegistry::addTest(TestInstance{"StringTools_TestParseIntU32", &TestParseIntU32});
+	TestRegistry::addTest(TestInstance{"StringTools_TestParseIntLimits", &TestParseIntLimits});
+	TestRegistry::addTest(TestInstance{"StringTools_TestStringPrintf", &TestStringPrintf});
+	TestRegistry::addTest(TestInstance{"StringTools_TestParseDouble", &TestParseDouble});
+	TestRegistry::addTest(TestInstance{"StringTools_TestSplitString", &TestSplitString});
 }

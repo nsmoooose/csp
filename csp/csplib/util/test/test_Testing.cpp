@@ -163,6 +163,6 @@ static void TestDoubleEq() {
 }
 
 __attribute__((constructor)) static void RegisterTests() {
-	TestRegistry2::addTest(TestInstance{"Testing_TestFloatEq", &TestFloatEq});
-	TestRegistry2::addTest(TestInstance{"Testing_TestDoubleEq", &TestDoubleEq});
+	TestRegistry::addTest(TestInstance{"Testing_TestFloatEq", &TestFloatEq});
+	TestRegistry::addTest(TestInstance{"Testing_TestDoubleEq", &TestDoubleEq});
 }

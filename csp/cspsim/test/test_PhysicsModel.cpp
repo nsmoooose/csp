@@ -136,244 +136,251 @@ double vdiff(T const &a, T const &b) {
 	return (a - b).length();
 }
 
-CSP_TESTFIXTURE(PhysicsModel) {
-public:
-	void setup() {
-		physics = new PhysicsModel;
-		systems = new SystemsModel;
-		object = new MockObject;
-		object->bind(systems.get());
-		systems->addChild(physics.get());
-		systems->bindSystems();
+static Ref<PhysicsModel> physics;
+static Ref<SystemsModel> systems;
+static Ref<MockObject> object;
 
-		// turn off gravity and pseudoforces by default.  these
-		// are explicitly enabled by specific tests belawe.
-		physics->enableGravity(false);
-		physics->enablePseudoForces(false);
-	}
+static void setup() {
+	physics = new PhysicsModel;
+	systems = new SystemsModel;
+	object = new MockObject;
+	object->bind(systems.get());
+	systems->addChild(physics.get());
+	systems->bindSystems();
 
-protected:
-	CSP_TESTCASE(SkewRotation) {
-		object->setAttitude(Quat(0.0, 0.0, sqrt(0.5), sqrt(0.5)));
-		object->setAngularVelocity(Vector3(1, 0, 0));
+	// turn off gravity and pseudoforces by default.  these
+	// are explicitly enabled by specific tests belawe.
+	physics->enableGravity(false);
+	physics->enablePseudoForces(false);
+}
 
-		CSPLOG(DEBUG, PHYSICS) << "initial: " << *object;
+static void SkewRotation() {
+	object->setAttitude(Quat(0.0, 0.0, sqrt(0.5), sqrt(0.5)));
+	object->setAngularVelocity(Vector3(1, 0, 0));
 
-		// PI seconds
-		for (int i = 0; i < 1000; ++i) {
-			physics->doSimStep(M_PI / 1000.0);
-			if ((i % 10) == 0) {
-				CSPLOG(DEBUG, PHYSICS) << i << "(" << (i * 180.0 / 1000) << "): " << *object;
-			}
-		}
+	CSPLOG(DEBUG, PHYSICS) << "initial: " << *object;
 
-		CSPLOG(DEBUG, PHYSICS) << "final: " << *object;
-
-		CSP_EXPECT_EQ(0.0, vdiff(object->position(), Vector3::ZERO));
-		CSP_EXPECT_EQ(0.0, vdiff(object->velocity(), Vector3::ZERO));
-		CSP_EXPECT_GT(0.0001, vdiff(object->angularVelocity(), Vector3(1.0, 0.0, 0.0)));
-		CSP_EXPECT_GT(0.0001, vdiff(object->xaxis(), -Vector3::YAXIS));
-	}
-
-	CSP_TESTCASE(SimpleRotation) {
-		object->setVelocity(Vector3(1, 0, 0));
-		object->setAngularVelocity(Vector3(0, 0, 1));
-
-		CSPLOG(DEBUG, PHYSICS) << "initial: " << *object;
-
-		// 10 seconds @ 100 Hz
-		for (int i = 0; i < 1000; ++i) {
-			physics->doSimStep(0.01);
-			if ((i % 10) == 0) {
-				CSPLOG(DEBUG, PHYSICS) << i << "(" << (i * 0.01) << "): " << *object;
-			}
-		}
-
-		CSPLOG(DEBUG, PHYSICS) << "final: " << *object;
-
-		CSP_EXPECT_GT(0.0001, vdiff(object->position(), Vector3(10.0, 0.0, 0.0)));
-		CSP_EXPECT_GT(0.0001, vdiff(object->velocity(), Vector3(1.0, 0.0, 0.0)));
-		CSP_EXPECT_GT(0.0001, vdiff(object->angularVelocity(), Vector3(0.0, 0.0, 1.0)));
-		CSP_EXPECT_GT(0.0001, vdiff(object->attitude(), Quat(0, 0, -0.958924, 0.283662)));
-	}
-
-	CSP_TESTCASE(DumbellRotation) {
-		object->setInertia(Matrix3(0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0));
-		object->setAngularVelocity(Vector3(1, 1, 0).normalized());
-
-		CSPLOG(DEBUG, PHYSICS) << "initial: " << *object;
-
-		// PI seconds @ 100 Hz
-		for (int i = 0; i < 1000; ++i) {
-			physics->doSimStep(M_PI / 1000.0);
-			if ((i % 10) == 0) {
-				CSPLOG(DEBUG, PHYSICS) << i << "(" << (i * 180.0 * 0.001) << "): " << *object;
-			}
-		}
-
-		CSPLOG(DEBUG, PHYSICS) << "final: " << *object;
-
-		CSP_EXPECT_GT(0.0001, vdiff(object->position(), Vector3::ZERO));
-		CSP_EXPECT_GT(0.0001, vdiff(object->velocity(), Vector3::ZERO));
-		CSP_EXPECT_GT(0.0001, vdiff(object->angularVelocity(), Vector3(0.0, sqrt(0.5), 0.0)));
-		CSP_EXPECT_GT(0.0001, vdiff(object->attitude(), Quat(0, 0.896019, 0, 0.444016)));
-	}
-
-	CSP_TESTCASE(DumbellForcedRotation) {
-		physics->addDynamics(new FixedTorque(Vector3(0.0, 0.0, 0.45)));
-
-		object->setInertia(Matrix3(0.1, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0));
-		object->setAngularVelocity(Vector3(1, 1, 0).normalized());
-
-		CSPLOG(DEBUG, PHYSICS) << "initial: " << *object;
-
-		// PI seconds @ 100 Hz
-		for (int i = 0; i < 1000; ++i) {
-			physics->doSimStep(M_PI / 1000.0);
-			if ((i % 10) == 0) {
-				CSPLOG(DEBUG, PHYSICS) << i << "(" << (i * 180.0 * 0.001) << "): " << *object;
-			}
-		}
-
-		CSPLOG(DEBUG, PHYSICS) << "final: " << *object;
-
-		CSP_EXPECT_GT(0.0001, vdiff(object->position(), Vector3::ZERO));
-		CSP_EXPECT_GT(0.0001, vdiff(object->velocity(), Vector3::ZERO));
-		CSP_EXPECT_GT(0.0001, vdiff(object->angularVelocity(), Vector3(1.0, 1.0, 0.0).normalized()));
-		CSP_EXPECT_GT(0.0001, vdiff(object->xaxis(), Vector3(0.0, 1.0, 0.0)));
-	}
-
-	CSP_TESTCASE(LinearAcceleration) {
-		physics->addDynamics(new FixedForce(Vector3(0.0, 0.0, 1.0)));
-
-		object->setInertia(Matrix3(0.1, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0));
-		object->setPosition(Vector3(1, 1, 1));
-		object->setVelocity(Vector3(2, 0, 0));
-
-		CSPLOG(DEBUG, PHYSICS) << "initial: " << *object;
-
-		// 10 seconds @ 100 Hz
-		for (int i = 0; i < 1000; ++i) {
-			physics->doSimStep(10.0 / 1000.0);
-			if ((i % 10) == 0) {
-				CSPLOG(DEBUG, PHYSICS) << i << "(" << (i * 10.0 * 0.001) << "): " << *object;
-			}
-		}
-
-		CSPLOG(DEBUG, PHYSICS) << "final: " << *object;
-
-		CSP_EXPECT_GT(0.0001, vdiff(object->position(), Vector3(21.0, 1.0, 51)));
-		CSP_EXPECT_GT(0.0001, vdiff(object->velocity(), Vector3(2, 0, 10)));
-		CSP_EXPECT_GT(0.0001, vdiff(object->angularVelocity(), Vector3::ZERO));
-		CSP_EXPECT_GT(0.0001, vdiff(object->xaxis(), Vector3::XAXIS));
-	}
-
-	CSP_TESTCASE(RotatingForce) {
-		physics->addDynamics(new FixedForce(Vector3(-24.0, 0.0, 0.0)));
-
-		object->setMass(3.0);
-		object->setInertia(Matrix3(0.1, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0));
-		object->setPosition(Vector3(0.5, 0, 0));
-		object->setVelocity(Vector3(0, 2, 0));
-		object->setAngularVelocity(Vector3(0, 0, 4));
-
-		CSPLOG(DEBUG, PHYSICS) << "initial: " << *object;
-
-		// 5/32 PI seconds @ 100 Hz
-		for (int i = 0; i < 1000; ++i) {
-			//physics->doSimStep(5 * M_PI / 32 / 1000.0);
-			physics->doSimStep(5 * M_PI / 16 / 1000.0);
-			if ((i % 10) == 0) {
-				CSPLOG(DEBUG, PHYSICS) << i << "(" << (i * 225.0 * 0.001) << "): " << *object;
-			}
-		}
-
-		CSPLOG(DEBUG, PHYSICS) << "final: " << *object;
-
-		CSP_EXPECT_GT(0.0001, vdiff(object->position(), 0.5 * Vector3(-1, -1, 0).normalized()));
-		CSP_EXPECT_GT(0.0001, vdiff(object->velocity(), 2.0 * Vector3(1, -1, 0).normalized()));
-		CSP_EXPECT_GT(0.0001, vdiff(object->angularVelocity(), Vector3(0, 0, 4)));
-		CSP_EXPECT_GT(0.0001, vdiff(object->xaxis(), Vector3(-1, -1, 0).normalized()));
-	}
-
-	CSP_TESTCASE(SpinningPlate) {
-		// I1 = 1, I2 = 2*I1, I3 = I1 + I2
-		object->setInertia(Matrix3(1.0, 0.0, 0.0, 0.0, 2.0, 0.0, 0.0, 0.0, 3.0));
-		object->setAngularVelocity(Vector3(sqrt(3.0), 0, 1));  // 30 degrees (a) from the plane, |w|=2
-
-		// with no forces and torques, w_body_y(t) should be |w| cos(a) tanh(|w| t sin(a)).
-		// a = 30 degrees, so cos(a) = sqrt(3)/2 and sin(a) = 1/2.  the expected result is
-		// thus sqrt(3) * tanh(t).
-
-		// 5 seconds @ 100 Hz.  Check w_body_y after each step.
-		const double dt = 5.0 / 1000.0;
-		double t = 0.0;
-		for (int i = 0; i < 1000; ++i) {
-			physics->doSimStep(dt); t += dt;
-			CSP_ENSURE_GT(0.0001, fabs(object->angularVelocityBody().y() - sqrt(3.0) * tanh(t)));
+	// PI seconds
+	for (int i = 0; i < 1000; ++i) {
+		physics->doSimStep(M_PI / 1000.0);
+		if ((i % 10) == 0) {
+			CSPLOG(DEBUG, PHYSICS) << i << "(" << (i * 180.0 / 1000) << "): " << *object;
 		}
 	}
 
-	CSP_TESTCASE(Gravity) {
-		physics->enableGravity(true);
-		object->setAngularVelocity(Vector3(1, 2, 3));
-		object->setPosition(Vector3(-10, -20, -30));
-		for (int i = 0; i < 1000; ++i) physics->doSimStep(0.01);
-		CSP_EXPECT_DEQ(-10, object->position().x());
-		CSP_EXPECT_DEQ(-20, object->position().y());
-		CSP_EXPECT_DEQ(-30 - 0.5 * 9.8 * (10*10), object->position().z());
-		CSP_EXPECT_DEQ(0, object->velocity().x());
-		CSP_EXPECT_DEQ(0, object->velocity().y());
-		CSP_EXPECT_DEQ(-9.8 * 10, object->velocity().z());
-		CSP_EXPECT_DEQ(0, vdiff(object->angularVelocity(), Vector3(1, 2, 3)));
-	}
+	CSPLOG(DEBUG, PHYSICS) << "final: " << *object;
 
-	CSP_TESTCASE(ForceFreeTop) {
-		// force free motion of a symmetric top, with I3 / I12 = sqrt(7) / 2.
-		object->setInertia(Matrix3(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.5 * sqrt(7.0)));
-		// w(0) is 30 degrees from z, in the x-z plane.
-		object->setAngularVelocity(Vector3(0.5, 0, 1) * sqrt(5.0));
-		// w should precess about z with angular frequency omega, and |w|
-		// should remain constant.
-		double omega = (0.5 * sqrt(7.0) - 1.0) * sqrt(5.0);
+	CSP_EXPECT_EQ(0.0, vdiff(object->position(), Vector3::ZERO));
+	CSP_EXPECT_EQ(0.0, vdiff(object->velocity(), Vector3::ZERO));
+	CSP_EXPECT_GT(0.0001, vdiff(object->angularVelocity(), Vector3(1.0, 0.0, 0.0)));
+	CSP_EXPECT_GT(0.0001, vdiff(object->xaxis(), -Vector3::YAXIS));
+}
 
-		const double dt = 5.0 / 1000.0;
-		double t = 0.0;
-		for (int i = 0; i < 1000; ++i) {
-			physics->doSimStep(dt); t += dt;
-			Vector3 w = object->angularVelocityBody();
-			double phase = atan2(w.y(), w.x());
-			CSP_ENSURE_GT(0.00001, fabs(fmod(phase - omega * t, 2*PI)));
-			CSP_ENSURE_GT(0.00001, fabs(w.z() - sqrt(5.0)));
+static void SimpleRotation() {
+	object->setVelocity(Vector3(1, 0, 0));
+	object->setAngularVelocity(Vector3(0, 0, 1));
+
+	CSPLOG(DEBUG, PHYSICS) << "initial: " << *object;
+
+	// 10 seconds @ 100 Hz
+	for (int i = 0; i < 1000; ++i) {
+		physics->doSimStep(0.01);
+		if ((i % 10) == 0) {
+			CSPLOG(DEBUG, PHYSICS) << i << "(" << (i * 0.01) << "): " << *object;
 		}
 	}
 
-	CSP_TESTCASE(ScratchSpin) {
-		object->setInertia(Matrix3(1, 0, 0, 0, 1, 0, 0, 0, 1));
-		object->setAngularVelocity(Vector3(0, 0, 1));
+	CSPLOG(DEBUG, PHYSICS) << "final: " << *object;
 
-		// force-free spin, with decreasing moment of inertia.  angular
-		// momentum should decrease as well, since PhysicsModel treats all
-		// inertia changes as external (i.e., as a result of shedding or
-		// gaining mass as opposed to internal reconfigurations of mass).  this
-		// is appropriate, for example, to the release of external stores, but
-		// not correct for mass reconfigurations such as fuel redistribution or
-		// geometry changes.  the latter are effects tend to be small compared
-		// to typical forces, and are thus neglected in the simulation.
+	CSP_EXPECT_GT(0.0001, vdiff(object->position(), Vector3(10.0, 0.0, 0.0)));
+	CSP_EXPECT_GT(0.0001, vdiff(object->velocity(), Vector3(1.0, 0.0, 0.0)));
+	CSP_EXPECT_GT(0.0001, vdiff(object->angularVelocity(), Vector3(0.0, 0.0, 1.0)));
+	CSP_EXPECT_GT(0.0001, vdiff(object->attitude(), Quat(0, 0, -0.958924, 0.283662)));
+}
 
-		const double dt = 5.0 / 1000.0;
-		double t = 0.0;
-		for (int i = 0; i < 1000; ++i) {
-			double Iz = 1.0 / (1.0 + t);  // Iz reduction over time.
-			object->setInertia(Matrix3(1, 0, 0, 0, 1, 0, 0, 0, Iz));
-			physics->doSimStep(dt); t += dt;
-			CSP_ENSURE_GT(0.00001, vdiff(object->angularVelocity(), Vector3(0, 0, 1)));
+static void DumbellRotation() {
+	object->setInertia(Matrix3(0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0));
+	object->setAngularVelocity(Vector3(1, 1, 0).normalized());
+
+	CSPLOG(DEBUG, PHYSICS) << "initial: " << *object;
+
+	// PI seconds @ 100 Hz
+	for (int i = 0; i < 1000; ++i) {
+		physics->doSimStep(M_PI / 1000.0);
+		if ((i % 10) == 0) {
+			CSPLOG(DEBUG, PHYSICS) << i << "(" << (i * 180.0 * 0.001) << "): " << *object;
 		}
 	}
 
-private:
-	Ref<PhysicsModel> physics;
-	Ref<SystemsModel> systems;
-	Ref<MockObject> object;
-};
+	CSPLOG(DEBUG, PHYSICS) << "final: " << *object;
 
+	CSP_EXPECT_GT(0.0001, vdiff(object->position(), Vector3::ZERO));
+	CSP_EXPECT_GT(0.0001, vdiff(object->velocity(), Vector3::ZERO));
+	CSP_EXPECT_GT(0.0001, vdiff(object->angularVelocity(), Vector3(0.0, sqrt(0.5), 0.0)));
+	CSP_EXPECT_GT(0.0001, vdiff(object->attitude(), Quat(0, 0.896019, 0, 0.444016)));
+}
+
+static void DumbellForcedRotation() {
+	physics->addDynamics(new FixedTorque(Vector3(0.0, 0.0, 0.45)));
+
+	object->setInertia(Matrix3(0.1, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0));
+	object->setAngularVelocity(Vector3(1, 1, 0).normalized());
+
+	CSPLOG(DEBUG, PHYSICS) << "initial: " << *object;
+
+	// PI seconds @ 100 Hz
+	for (int i = 0; i < 1000; ++i) {
+		physics->doSimStep(M_PI / 1000.0);
+		if ((i % 10) == 0) {
+			CSPLOG(DEBUG, PHYSICS) << i << "(" << (i * 180.0 * 0.001) << "): " << *object;
+		}
+	}
+
+	CSPLOG(DEBUG, PHYSICS) << "final: " << *object;
+
+	CSP_EXPECT_GT(0.0001, vdiff(object->position(), Vector3::ZERO));
+	CSP_EXPECT_GT(0.0001, vdiff(object->velocity(), Vector3::ZERO));
+	CSP_EXPECT_GT(0.0001, vdiff(object->angularVelocity(), Vector3(1.0, 1.0, 0.0).normalized()));
+	CSP_EXPECT_GT(0.0001, vdiff(object->xaxis(), Vector3(0.0, 1.0, 0.0)));
+}
+
+static void LinearAcceleration() {
+	physics->addDynamics(new FixedForce(Vector3(0.0, 0.0, 1.0)));
+
+	object->setInertia(Matrix3(0.1, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0));
+	object->setPosition(Vector3(1, 1, 1));
+	object->setVelocity(Vector3(2, 0, 0));
+
+	CSPLOG(DEBUG, PHYSICS) << "initial: " << *object;
+
+	// 10 seconds @ 100 Hz
+	for (int i = 0; i < 1000; ++i) {
+		physics->doSimStep(10.0 / 1000.0);
+		if ((i % 10) == 0) {
+			CSPLOG(DEBUG, PHYSICS) << i << "(" << (i * 10.0 * 0.001) << "): " << *object;
+		}
+	}
+
+	CSPLOG(DEBUG, PHYSICS) << "final: " << *object;
+
+	CSP_EXPECT_GT(0.0001, vdiff(object->position(), Vector3(21.0, 1.0, 51)));
+	CSP_EXPECT_GT(0.0001, vdiff(object->velocity(), Vector3(2, 0, 10)));
+	CSP_EXPECT_GT(0.0001, vdiff(object->angularVelocity(), Vector3::ZERO));
+	CSP_EXPECT_GT(0.0001, vdiff(object->xaxis(), Vector3::XAXIS));
+}
+
+static void RotatingForce() {
+	physics->addDynamics(new FixedForce(Vector3(-24.0, 0.0, 0.0)));
+
+	object->setMass(3.0);
+	object->setInertia(Matrix3(0.1, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0));
+	object->setPosition(Vector3(0.5, 0, 0));
+	object->setVelocity(Vector3(0, 2, 0));
+	object->setAngularVelocity(Vector3(0, 0, 4));
+
+	CSPLOG(DEBUG, PHYSICS) << "initial: " << *object;
+
+	// 5/32 PI seconds @ 100 Hz
+	for (int i = 0; i < 1000; ++i) {
+		//physics->doSimStep(5 * M_PI / 32 / 1000.0);
+		physics->doSimStep(5 * M_PI / 16 / 1000.0);
+		if ((i % 10) == 0) {
+			CSPLOG(DEBUG, PHYSICS) << i << "(" << (i * 225.0 * 0.001) << "): " << *object;
+		}
+	}
+
+	CSPLOG(DEBUG, PHYSICS) << "final: " << *object;
+
+	CSP_EXPECT_GT(0.0001, vdiff(object->position(), 0.5 * Vector3(-1, -1, 0).normalized()));
+	CSP_EXPECT_GT(0.0001, vdiff(object->velocity(), 2.0 * Vector3(1, -1, 0).normalized()));
+	CSP_EXPECT_GT(0.0001, vdiff(object->angularVelocity(), Vector3(0, 0, 4)));
+	CSP_EXPECT_GT(0.0001, vdiff(object->xaxis(), Vector3(-1, -1, 0).normalized()));
+}
+
+static void SpinningPlate() {
+	// I1 = 1, I2 = 2*I1, I3 = I1 + I2
+	object->setInertia(Matrix3(1.0, 0.0, 0.0, 0.0, 2.0, 0.0, 0.0, 0.0, 3.0));
+	object->setAngularVelocity(Vector3(sqrt(3.0), 0, 1));  // 30 degrees (a) from the plane, |w|=2
+
+	// with no forces and torques, w_body_y(t) should be |w| cos(a) tanh(|w| t sin(a)).
+	// a = 30 degrees, so cos(a) = sqrt(3)/2 and sin(a) = 1/2.  the expected result is
+	// thus sqrt(3) * tanh(t).
+
+	// 5 seconds @ 100 Hz.  Check w_body_y after each step.
+	const double dt = 5.0 / 1000.0;
+	double t = 0.0;
+	for (int i = 0; i < 1000; ++i) {
+		physics->doSimStep(dt); t += dt;
+		CSP_ENSURE_GT(0.0001, fabs(object->angularVelocityBody().y() - sqrt(3.0) * tanh(t)));
+	}
+}
+
+static void Gravity() {
+	physics->enableGravity(true);
+	object->setAngularVelocity(Vector3(1, 2, 3));
+	object->setPosition(Vector3(-10, -20, -30));
+	for (int i = 0; i < 1000; ++i) physics->doSimStep(0.01);
+	CSP_EXPECT_DEQ(-10, object->position().x());
+	CSP_EXPECT_DEQ(-20, object->position().y());
+	CSP_EXPECT_DEQ(-30 - 0.5 * 9.8 * (10*10), object->position().z());
+	CSP_EXPECT_DEQ(0, object->velocity().x());
+	CSP_EXPECT_DEQ(0, object->velocity().y());
+	CSP_EXPECT_DEQ(-9.8 * 10, object->velocity().z());
+	CSP_EXPECT_DEQ(0, vdiff(object->angularVelocity(), Vector3(1, 2, 3)));
+}
+
+static void ForceFreeTop() {
+	// force free motion of a symmetric top, with I3 / I12 = sqrt(7) / 2.
+	object->setInertia(Matrix3(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.5 * sqrt(7.0)));
+	// w(0) is 30 degrees from z, in the x-z plane.
+	object->setAngularVelocity(Vector3(0.5, 0, 1) * sqrt(5.0));
+	// w should precess about z with angular frequency omega, and |w|
+	// should remain constant.
+	double omega = (0.5 * sqrt(7.0) - 1.0) * sqrt(5.0);
+
+	const double dt = 5.0 / 1000.0;
+	double t = 0.0;
+	for (int i = 0; i < 1000; ++i) {
+		physics->doSimStep(dt); t += dt;
+		Vector3 w = object->angularVelocityBody();
+		double phase = atan2(w.y(), w.x());
+		CSP_ENSURE_GT(0.00001, fabs(fmod(phase - omega * t, 2*PI)));
+		CSP_ENSURE_GT(0.00001, fabs(w.z() - sqrt(5.0)));
+	}
+}
+
+static void ScratchSpin() {
+	object->setInertia(Matrix3(1, 0, 0, 0, 1, 0, 0, 0, 1));
+	object->setAngularVelocity(Vector3(0, 0, 1));
+
+	// force-free spin, with decreasing moment of inertia.  angular
+	// momentum should decrease as well, since PhysicsModel treats all
+	// inertia changes as external (i.e., as a result of shedding or
+	// gaining mass as opposed to internal reconfigurations of mass).  this
+	// is appropriate, for example, to the release of external stores, but
+	// not correct for mass reconfigurations such as fuel redistribution or
+	// geometry changes.  the latter are effects tend to be small compared
+	// to typical forces, and are thus neglected in the simulation.
+
+	const double dt = 5.0 / 1000.0;
+	double t = 0.0;
+	for (int i = 0; i < 1000; ++i) {
+		double Iz = 1.0 / (1.0 + t);  // Iz reduction over time.
+		object->setInertia(Matrix3(1, 0, 0, 0, 1, 0, 0, 0, Iz));
+		physics->doSimStep(dt); t += dt;
+		CSP_ENSURE_GT(0.00001, vdiff(object->angularVelocity(), Vector3(0, 0, 1)));
+	}
+}
+
+__attribute__((constructor)) static void RegisterTests() {
+	TestRegistry2::addTest(TestInstance{"SkewRotation", &SkewRotation, &setup});
+	TestRegistry2::addTest(TestInstance{"SimpleRotation", &SimpleRotation, &setup});
+	TestRegistry2::addTest(TestInstance{"DumbellRotation", &DumbellRotation, &setup});
+	TestRegistry2::addTest(TestInstance{"DumbellForcedRotation", &DumbellForcedRotation, &setup});
+	TestRegistry2::addTest(TestInstance{"LinearAcceleration", &LinearAcceleration, &setup});
+	TestRegistry2::addTest(TestInstance{"RotatingForce", &RotatingForce, &setup});
+	TestRegistry2::addTest(TestInstance{"SpinningPlate", &SpinningPlate, &setup});
+	TestRegistry2::addTest(TestInstance{"Gravity", &Gravity, &setup});
+	TestRegistry2::addTest(TestInstance{"ForceFreeTop", &ForceFreeTop, &setup});
+	TestRegistry2::addTest(TestInstance{"ScratchSpin", &ScratchSpin, &setup});
+}

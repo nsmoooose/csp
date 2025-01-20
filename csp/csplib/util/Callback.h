@@ -1,4 +1,3 @@
-
 #pragma once
 // Combat Simulator Project
 // Copyright (C) 2004 The Combat Simulator Project
@@ -72,10 +71,6 @@
 
 namespace csp {
 
-#if 0
-// callbacks --------------------------------------------------------------------------
-
-
 /** Base class for all callbacks.  Not for public use.
  */
 class callbackbase: public sigc::trackable {
@@ -85,104 +80,26 @@ protected:
 	~callbackbase() { _connection.disconnect(); }
 };
 
-/** Raw callback class for handling signals with no arguments.  Use callback<> instead.
- */
-template <class ret>
-struct callback0: public callbackbase, public sigc::slot<ret> {
-	callback0() { }
-	template <class F> callback0(F const &functor): sigc::slot<ret>(functor) { }
-	template <class Obj> void init(Obj *o, ret (Obj::*m)()) { sigc::slot<ret>::operator=( sigc::mem_fun(*o, m) ); }
-  sigc::connection bind(sigc::signal<ret()> &signal) { return capture(signal.connect(*this)); }
-};
+template <typename T_return, typename... T_arg>
+class callback;
 
-/** Raw callback class for handling signals with one argument.  Use callback<> instead.
- */
-template <class ret, class arg1>
-struct callback1: public callbackbase, public sigc::slot<ret, arg1> {
-	callback1() { }
-	template <class F> callback1(F const &functor): sigc::slot<ret, arg1>(functor) { }
-	template <class Obj> void init(Obj *o, ret (Obj::*m)(arg1)) { sigc::slot<ret, arg1>::operator=( sigc::mem_fun(*o, m) ); }
-	sigc::connection bind(sigc::signal<ret(arg1)> &signal) { return capture(signal.connect(*this)); }
-};
-
-/** Raw callback class for handling signals with two arguments.  Use callback<> instead.
- */
-template <class ret, class arg1, class arg2>
-struct callback2: public callbackbase, public sigc::slot<ret, arg1, arg2> {
-	callback2() { }
-	template <class F> callback2(F const &functor): sigc::slot<ret, arg1, arg2>(functor) { }
-	template <class Obj> void init(Obj *o, ret (Obj::*m)(arg1, arg2)) { sigc::slot<ret, arg1, arg2>::operator=( sigc::mem_fun(*o, m) ); }
-	sigc::connection bind(sigc::signal<ret(arg1, arg2)> &signal) { return capture(signal.connect(*this)); }
-};
-
-/** Raw callback class for handling signals with three arguments.  Use callback<> instead.
- */
-template <class ret, class arg1, class arg2, class arg3>
-struct callback3: public callbackbase, public sigc::slot<ret, arg1, arg2, arg3> {
-	callback3() { }
-	template <class F> callback3(F const &functor): sigc::slot<ret, arg1, arg2, arg3>(functor) { }
-	template <class Obj> void init(Obj *o, ret (Obj::*m)(arg1, arg2, arg3)) { sigc::slot<ret, arg1, arg2, arg3>::operator=( sigc::mem_fun(*o, m) ); }
-	sigc::connection bind(sigc::signal<ret(arg1, arg2, arg3)> &signal) { return capture(signal.connect(*this)); }
-};
-
-/** Raw callback class for handling signals with four arguments.  Use callback<> instead.
- */
-template <class ret, class arg1, class arg2, class arg3, class arg4>
-struct callback4: public callbackbase, public sigc::slot<ret, arg1, arg2, arg3, arg4> {
-	callback4() { }
-	template <class F> callback4(F const &functor): sigc::slot<ret, arg1, arg2, arg3, arg4>(functor) { }
-	template <class Obj> void init(Obj *o, ret (Obj::*m)(arg1, arg2, arg3, arg4)) { sigc::slot<ret, arg1, arg2, arg3, arg4>::operator=( sigc::mem_fun(*o, m) ); }
-	sigc::connection bind(sigc::signal<ret(arg1, arg2, arg3, arg4)> &signal) { return capture(signal.connect(*this)); }
-};
-
-
-/** Convenience class for declaring a callback with arbitrary return value and argument types.
- *  Up to four arguments are supported.
- *  TODO Extend to as many arguments as sigc supports.
- */
-template <class ret, class arg1=sigc::nil, class arg2=sigc::nil, class arg3=sigc::nil, class arg4=sigc::nil, class end=sigc::nil>
-struct callback { };
-
-/** Template specialization for no arguments.
- */
-template <class ret>
-struct callback<ret>: public callback0<ret> {
+template <typename T_return, typename... T_arg>
+class callback<T_return(T_arg...)>: public callbackbase, public sigc::slot<T_return(T_arg...)> {
+public:
 	callback() { }
-	template <class F> callback(F const &functor): callback0<ret>(functor) { }
+
+	template <class F>
+	callback(F const &functor): sigc::slot<T_return(T_arg...)>(functor) {
+	}
+
+	template <class Obj>
+	void init(Obj *o, T_return (Obj::*m)(T_arg...)) {
+		sigc::slot<T_return(T_arg...)>::operator=( sigc::mem_fun(*o, m) );
+	}
+
+	sigc::connection bind(sigc::signal<T_return(T_arg...)> &signal) {
+		return capture(signal.connect(*this));
+	}
 };
 
-/** Template specialization for one argument.
- */
-template <class ret, class arg1>
-struct callback<ret, arg1>: public callback1<ret, arg1> {
-	callback() { }
-	template <class F> callback(F const &functor): callback1<ret, arg1>(functor) { }
-};
-
-/** Template specialization for two arguments.
- */
-template <class ret, class arg1, class arg2>
-struct callback<ret, arg1, arg2>: public callback2<ret, arg1, arg2> {
-	callback() { }
-	template <class F> callback(F const &functor): callback2<ret, arg1, arg2>(functor) { }
-};
-
-/** Template specialization for three arguments.
- */
-template <class ret, class arg1, class arg2, class arg3>
-struct callback<ret, arg1, arg2, arg3>: public callback3<ret, arg1, arg2, arg3> {
-	callback() { }
-	template <class F> callback(F const &functor): callback3<ret, arg1, arg2, arg3>(functor) { }
-};
-
-/** Template specialization for four arguments.
- */
-template <class ret, class arg1, class arg2, class arg3, class arg4>
-struct callback<ret, arg1, arg2, arg3, arg4>: public callback4<ret, arg1, arg2, arg3, arg4> {
-	callback() { }
-	template <class F> callback(F const &functor): callback4<ret, arg1, arg2, arg3, arg4>(functor) { }
-};
-
-#endif
-  
 } // namespace csp

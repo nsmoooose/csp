@@ -74,7 +74,9 @@ public:
 	bool hasDirtyDynamics() const { return m_DirtyDynamics; }
 	void getDynamics(StoresDynamics &dynamics);
 
-	void addConfigurationHandler(sigc::slot<void> const &slot) const { m_ConfigurationSignal.connect(slot); }
+	void addConfigurationHandler(sigc::slot<void()> const &slot) const {
+		m_ConfigurationSignal.connect(slot);
+	}
 
 	bool hasReleasedObjects() const { return !m_ReleasedObjects.empty(); }
 	void getReleasedObjects(std::vector<Ref<DynamicObject> > &objects);
@@ -103,7 +105,7 @@ private:
 	Hardpoints m_Hardpoints;
 	bool m_DirtyDynamics;
 
-	mutable sigc::signal<void> m_ConfigurationSignal;
+	mutable sigc::signal<void()> m_ConfigurationSignal;
 
 	std::vector<Ref<DynamicObject> > m_ReleasedObjects;
 };

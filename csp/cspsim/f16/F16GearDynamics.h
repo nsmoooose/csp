@@ -53,7 +53,7 @@ protected:
 
 private:
 	bool gearHandleRequestHandler(bool const &);
-	callback<bool, bool const &> m_GearHandleRequest;
+	callback<bool(bool const &)> m_GearHandleRequest;
 };
 
 } // namespace csp

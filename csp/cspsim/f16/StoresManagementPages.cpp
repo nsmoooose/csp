@@ -569,8 +569,8 @@ public:
 		setCursor(0);
 	}
 
-	void setCallback(sigc::slot<void> const &callback) {
-		m_Callback.reset(new sigc::slot<void>(callback));
+	void setCallback(sigc::slot<void()> const &callback) {
+		m_Callback.reset(new sigc::slot<void()>(callback));
 	}
 
 	void addEntry(std::string const &unit, double value, unsigned digits=4, unsigned decimal=0, unsigned low=0, unsigned high=9999) {
@@ -669,7 +669,7 @@ private:
 	std::vector<Entry> m_Entries;
 	std::string m_Current;
 	unsigned m_Index;
-	ScopedPointer<sigc::slot<void> > m_Callback;
+	ScopedPointer<sigc::slot<void()> > m_Callback;
 };
 
 
@@ -723,21 +723,21 @@ public:
 			m_NumericEntry->reset("ENTER\nCAT 1 AD1/AD2");
 			m_NumericEntry->addEntry("SEC", profile().cat1_ad1, 4, 2, 0, 9999);
 			m_NumericEntry->addEntry("SEC", profile().cat1_ad2, 4, 2, 0, 9999);
-			m_NumericEntry->setCallback(sigc::mem_fun(this, &AirToGroundControlPage::setC1));
+			m_NumericEntry->setCallback(sigc::mem_fun(*this, &AirToGroundControlPage::setC1));
 			return m_NumericEntry.get();
 		}
 		if (index == 18 && edit) { // C2
 			m_NumericEntry->reset("ENTER\nCAT 2 AD/BA");
 			m_NumericEntry->addEntry("SEC", profile().cat2_ad, 4, 2, 0, 9999);
 			m_NumericEntry->addEntry("FT", profile().cat2_ba, 4, 0, 0, 9999);
-			m_NumericEntry->setCallback(sigc::mem_fun(this, &AirToGroundControlPage::setC2));
+			m_NumericEntry->setCallback(sigc::mem_fun(*this, &AirToGroundControlPage::setC2));
 			return m_NumericEntry.get();
 		}
 		if (index == 17 && edit) { // C3
 			m_NumericEntry->reset("ENTER\nCAT 3 AD/BA");
 			m_NumericEntry->addEntry("SEC", profile().cat3_ad, 4, 2, 0, 9999);
 			m_NumericEntry->addEntry("FT", profile().cat3_ba, 4, 0, 0, 9999);
-			m_NumericEntry->setCallback(sigc::mem_fun(this, &AirToGroundControlPage::setC3));
+			m_NumericEntry->setCallback(sigc::mem_fun(*this, &AirToGroundControlPage::setC3));
 			return m_NumericEntry.get();
 		}
 		if (index == 16 && edit) { // C4
@@ -745,7 +745,7 @@ public:
 			m_NumericEntry->addEntry("SEC", profile().cat4_ad1, 4, 2, 0, 9999);
 			m_NumericEntry->addEntry("SEC", profile().cat4_ad2, 4, 2, 0, 9999);
 			m_NumericEntry->addEntry("FT", profile().cat4_ba, 4, 0, 0, 9999);
-			m_NumericEntry->setCallback(sigc::mem_fun(this, &AirToGroundControlPage::setC4));
+			m_NumericEntry->setCallback(sigc::mem_fun(*this, &AirToGroundControlPage::setC4));
 			return m_NumericEntry.get();
 		}
 		if (index == 5 && edit) { // LADD
@@ -753,13 +753,13 @@ public:
 			m_NumericEntry->addEntry("FT", profile().ladd_pr, 5, 0, 0, 99999);
 			m_NumericEntry->addEntry("SEC", profile().ladd_tof, 4, 2, 0, 9999);
 			m_NumericEntry->addEntry("FT", profile().ladd_mra, 4, 0, 0, 9999);
-			m_NumericEntry->setCallback(sigc::mem_fun(this, &AirToGroundControlPage::setLADD));
+			m_NumericEntry->setCallback(sigc::mem_fun(*this, &AirToGroundControlPage::setLADD));
 			return m_NumericEntry.get();
 		}
 		if (index == 9) {
 			m_NumericEntry->reset("ENTER\nRELEASE ANGLE");
 			m_NumericEntry->addEntry("DEG", profile().release_angle, 2, 0, 0, 45);
-			m_NumericEntry->setCallback(sigc::mem_fun(this, &AirToGroundControlPage::setReleaseAngle));
+			m_NumericEntry->setCallback(sigc::mem_fun(*this, &AirToGroundControlPage::setReleaseAngle));
 			return m_NumericEntry.get();
 		}
 		if ((index >= 16 && index < 20) || index == 5) {
@@ -931,13 +931,13 @@ public:
 		if (index == 8) {
 			m_NumericEntry->reset("ENTER\nIMPACT SPACING");
 			m_NumericEntry->addEntry("FT", profile().impact_spacing, 3, 0, 0, 999);
-			m_NumericEntry->setCallback(sigc::mem_fun(this, &AirToGroundBomb::setImpactSpacing));
+			m_NumericEntry->setCallback(sigc::mem_fun(*this, &AirToGroundBomb::setImpactSpacing));
 			return m_NumericEntry.get();
 		}
 		if (index == 9) {
 			m_NumericEntry->reset("ENTER\nRELEASE PULSES");
 			m_NumericEntry->addEntry("", profile().release_pulses, 2, 0, 1, 12);
-			m_NumericEntry->setCallback(sigc::mem_fun(this, &AirToGroundBomb::setReleasePulses));
+			m_NumericEntry->setCallback(sigc::mem_fun(*this, &AirToGroundBomb::setReleasePulses));
 			return m_NumericEntry.get();
 			//profile().release_pulses = (profile().release_pulses + 1) % 8;
 			//updateDisplay();

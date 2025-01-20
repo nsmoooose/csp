@@ -86,8 +86,8 @@ public:
 		return m_ConnectionState == CONNECTION_ACTIVE;
 	}
 
-	void registerPlayerJoinCallback(callback<void, int, const std::string&> &callback);
-	void registerPlayerQuitCallback(callback<void, int, const std::string&> &callback);
+	void registerPlayerJoinCallback(callback<void(int, const std::string&)> &callback);
+	void registerPlayerQuitCallback(callback<void(int, const std::string&)> &callback);
 
 private:
 
@@ -194,8 +194,8 @@ private:
 	// scanUnit on each.  This method should be called once per time step.
 	void continueUnitScan(double dt);
 
-	ScopedPointer<sigc::signal<void, int, const std::string&> > m_PlayerJoinSignal;
-	ScopedPointer<sigc::signal<void, int, const std::string&> > m_PlayerQuitSignal;
+	ScopedPointer<sigc::signal<void(int, const std::string&)> > m_PlayerJoinSignal;
+	ScopedPointer<sigc::signal<void(int, const std::string&)> > m_PlayerQuitSignal;
 };
 
 } // namespace csp

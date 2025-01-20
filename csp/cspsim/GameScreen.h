@@ -186,16 +186,16 @@ private:
 
 	void onPlayerJoin(int, const std::string&);
 	void onPlayerQuit(int, const std::string&);
-	callback<void, int, const std::string&> m_OnPlayerJoin;
-	callback<void, int, const std::string&> m_OnPlayerQuit;
-	
+	callback<void(int, const std::string&)> m_OnPlayerJoin;
+	callback<void(int, const std::string&)> m_OnPlayerQuit;
+
 	// Handles signals to be emitted to the python gui code. For example player QUIT action.
 	Ref<input::InputInterfaceWfAdapter> m_InputInterfaceWfAdapter;
 
 	bool onMouseButton(input::RawEvent::MouseButton const &);
 
-	// Receives mouse move events from the input interface and sends 
-	// them on to the window framework for processing.  
+	// Receives mouse move events from the input interface and sends
+	// them on to the window framework for processing.
 	bool onMouseMove(input::RawEvent::MouseMotion const &event);
 };
 

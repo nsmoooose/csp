@@ -408,9 +408,10 @@ public:
 	 *  (calling push if necessary) and returning true.  If the request is
 	 *  not honored the handler should return false.
 	 */
-	void connectRequestSetHandler(sigc::slot<bool(T const &)> &callback) {
+	void connectRequestSetHandler(sigc::slot<bool(T const &)> &slot) {
 		assert(!isShared() && !m_HasRequestSetHandler);
-		callback.bind(m_RequestSetSignal);
+		m_RequestSetSignal.connect(slot);
+		// slot.bind(m_RequestSetSignal);
 		m_HasRequestSetHandler = true;
 	}
 

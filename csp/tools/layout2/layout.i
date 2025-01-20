@@ -122,11 +122,11 @@ TYPEMAP_PYSLOT_IN(void)
 %include "csp/tools/layout2/cpp/XmlNode.h"
 
 %extend csp::layout::OsgGraphicsWindow {
-	void connectToSetCurrent(sigc::slot<void> slot) {
+	void connectToSetCurrent(sigc::slot<void()> slot) {
 		$self->SetCurrent.connect(slot);
 	}
 
-	void connectToSwapBuffers(sigc::slot<void> slot) {
+	void connectToSwapBuffers(sigc::slot<void()> slot) {
 		$self->SwapBuffers.connect(slot);
 	}
 }

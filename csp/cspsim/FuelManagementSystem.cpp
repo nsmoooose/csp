@@ -145,7 +145,7 @@ void FuelManagementSystem::registerChannels(Bus *bus) {
 void FuelManagementSystem::importChannels(Bus *) {
 	StoresManagementSystem *sms = getModel()->getStoresManagementSystem().get();
 	if (sms) {
-		sms->addConfigurationHandler(sigc::mem_fun(this, &FuelManagementSystem::rebind));
+		sms->addConfigurationHandler(sigc::mem_fun(*this, &FuelManagementSystem::rebind));
 		rebind();
 	}
 }

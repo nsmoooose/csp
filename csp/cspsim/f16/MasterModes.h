@@ -42,7 +42,7 @@ extern const MasterMode SJ;
 extern const MasterMode EJ;
 
 class MasterModeSelection: public ChannelBase {
-	typedef sigc::signal<void, MasterMode const&> CallbackSignal;
+	typedef sigc::signal<void(MasterMode const&)> CallbackSignal;
 
 public:
 	typedef Ref<MasterModeSelection> RefT;

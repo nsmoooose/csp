@@ -204,8 +204,8 @@ LocalBattlefield::LocalBattlefield(Ref<DataManager> const &data_manager):
 	m_ScanElapsedTime(0),
 	m_ScanRate(0),
 	m_ScanIndex(0),
-	m_PlayerJoinSignal(new sigc::signal<void, int, const std::string&>()),
-	m_PlayerQuitSignal(new sigc::signal<void, int, const std::string&>())
+	m_PlayerJoinSignal(new sigc::signal<void(int, const std::string&)>()),
+	m_PlayerQuitSignal(new sigc::signal<void(int, const std::string&)>())
 {
 	/**
 	 * if no network connection, ids will be assigned sequentially
@@ -413,11 +413,11 @@ void LocalBattlefield::onPlayerQuit(Ref<PlayerQuit> const &msg, Ref<MessageQueue
 	}
 }
 
-void LocalBattlefield::registerPlayerJoinCallback(callback<void, int, const std::string&> &callback) {
+void LocalBattlefield::registerPlayerJoinCallback(callback<void(int, const std::string&)> &callback) {
 	callback.bind(*m_PlayerJoinSignal);
 }
 
-void LocalBattlefield::registerPlayerQuitCallback(callback<void, int, const std::string&> &callback) {
+void LocalBattlefield::registerPlayerQuitCallback(callback<void(int, const std::string&)> &callback) {
 	callback.bind(*m_PlayerQuitSignal);
 }
 

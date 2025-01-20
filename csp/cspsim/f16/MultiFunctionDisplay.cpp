@@ -784,7 +784,7 @@ void MultiFunctionDisplay::importChannels(Bus* bus) {
 	resetConfiguration();
 
 	b_MasterMode = bus->getSharedChannel("MasterMode", true);
-	b_MasterMode->registerCallback(sigc::mem_fun(this, &MultiFunctionDisplay::onMasterModeChange));
+	b_MasterMode->registerCallback(sigc::mem_fun(*this, &MultiFunctionDisplay::onMasterModeChange));
 	onMasterModeChange(b_MasterMode->mode());
 
 	b_AdvanceAltitudeAdvisory = bus->getChannel("F16.GroundAvoidance.AdvanceAdvisory", false);
@@ -830,7 +830,7 @@ DisplayInterface *MultiFunctionDisplay::getInterface() {
 void MultiFunctionDisplay::buildMultiFunctionDisplay(Bus *bus) {
 	for (int i = 0; i < 20; ++i) {
 		std::string label = stringprintf("%sOSB_%02d", m_EventPrefix, i);
-		bus->registerChannel(new input::InputEventChannel(label.c_str(), this, sigc::bind(sigc::mem_fun(this, &MultiFunctionDisplay::onOSB), i)));
+		bus->registerChannel(new input::InputEventChannel(label.c_str(), this, sigc::bind(sigc::mem_fun(*this, &MultiFunctionDisplay::onOSB), i)));
 	}
 
 	osb(14)->setText("SWAP");

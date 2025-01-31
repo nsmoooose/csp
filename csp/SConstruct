@@ -121,6 +121,13 @@ build.ExternalLibrary(
 	])
 
 
+build.ExternalLibrary(
+	name = 'nlohmann',
+	config = [
+		build.PkgConfig(package='nlohmann_json', version='3.11.3', label='json'),
+	])
+
+
 class Environment(build.Environment):
 	"""
 	COMMON TARGETS:

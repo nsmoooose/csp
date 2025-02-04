@@ -30,7 +30,14 @@ Task::Task(const char *name):
 		m_Status(RUNNING),
 		m_StateMachine(new StateMachine),
 		m_OverrideDoneHandler(new slot<void, Status>),
-		m_FirstUpdate(true) {
+		m_dt(0.0f),
+		m_ElapsedTime(0.0f),
+		m_NextState(0),
+		m_NewState(false),
+		m_FirstUpdate(true),
+		m_DebugFlag(false),
+		m_DebugTime(0.0f)
+{
 }
 
 Task::~Task() {

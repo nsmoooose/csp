@@ -487,7 +487,26 @@ public:
 };
 
 
-F16HUD::F16HUD(): m_Color(DefaultHUDColor), m_AlphaFilter(1.0), m_G(-1), m_MaxG(-100), m_Heading(-1), m_Mach(-1), m_ElapsedTime(0.0), m_UpdateTime(0.0), m_LastMasterMode(f16::NAV) {
+F16HUD::F16HUD():
+  m_Color(DefaultHUDColor),
+  m_AlphaFilter(1.0),
+  m_G(-1),
+  m_MaxG(-100),
+  m_Heading(-1),
+  m_Mach(-1),
+  m_LastSlantRange(0),
+  m_LastSteerpointTime(0),
+  m_LastSteerpointDistance(0),
+  m_ElapsedTime(0.0),
+  m_UpdateTime(0.0),
+  m_ShowVerticalVelocity(false),
+  m_ShowScales(false),
+  m_ShowData(false),
+  m_ShowAttitude(false),
+  m_ShowFPM(false),
+  m_LastMasterMode(f16::NAV),
+  m_VelocityUnits(F16HUD::VelocityUnits::CAS)
+{
 	m_HudPanel.addElement(new CockpitSwitch("OFF DATA", "HUD.DataSwitch", "HUD_DATASWITCH", "DATA"));
 	m_HudPanel.addElement(new CockpitSwitch("OFF FPM ATT_FPM", "HUD.FlightPathMarkerSwitch", "HUD_FPM_SWITCH", "ATT_FPM"));
 	m_HudPanel.addElement(new CockpitSwitch("OFF VAH VV_VAH", "HUD.ScalesSwitch", "HUD_SCALES_SWITCH", "VAH"));

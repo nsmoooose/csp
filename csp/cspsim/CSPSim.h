@@ -136,7 +136,7 @@ public:
 
 	DataManager & getDataManager() { return *m_DataManager; }
 
-	weather::Atmosphere const * getAtmosphere() const { return m_Atmosphere.get(); }
+	weather::Atmosphere *getAtmosphere() const { return m_Atmosphere.get(); }
 	
 protected:
 
@@ -191,7 +191,7 @@ private:
 	Ref<Theater> m_Theater;
 	Ref<TerrainObject> m_Terrain;
 	Ref<DataManager> m_DataManager;
-	ScopedPointer<weather::Atmosphere> m_Atmosphere;
+	Ref<weather::Atmosphere> m_Atmosphere;
 };
 
 } // namespace csp

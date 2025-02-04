@@ -55,7 +55,7 @@ namespace weather {
  * described above.  Turbulence combines altitude dependent noise functions
  * that morph over time with a 1D noise function indexed by distance travelled.
  */
-class Atmosphere { //: public Object {
+class Atmosphere : public Object {
 
 public:
 	Atmosphere();

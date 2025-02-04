@@ -111,9 +111,11 @@ void SDLViewer::updateAtmosphere()
 
 	if ( low_priority > 0.66 )
 	{
-		const weather::Atmosphere * atmosphere = CSPSim::theSim->getAtmosphere();
-		const_cast<weather::Atmosphere *>(atmosphere)->update(low_priority);
-		low_priority = 0.0;
+		auto atmosphere = CSPSim::theSim->getAtmosphere();
+		if(atmosphere) {
+			atmosphere->update(low_priority);
+			low_priority = 0.0;
+		}
 	}
 }
 

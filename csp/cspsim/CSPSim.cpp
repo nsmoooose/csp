@@ -117,8 +117,7 @@ bool g_DisableRender = false;
 CSPSim *CSPSim::theSim = 0;
 
 CSPSim::CSPSim():
-	m_ConfigurationChanged(new wf::Signal),
-	m_Atmosphere(new weather::Atmosphere)
+	m_ConfigurationChanged(new wf::Signal)
 {
 	if (theSim == 0) {
 		theSim = this;
@@ -431,7 +430,7 @@ BaseScreen* CSPSim::getCurrentScreen() {
 }
 
 void CSPSim::loadSimulation() {
-	
+	m_Atmosphere = new weather::Atmosphere();
 	m_DataManager = new DataManager();
 
 	// open the primary data archive
@@ -493,7 +492,7 @@ void CSPSim::loadSimulation() {
 	double lat = m_Terrain->getCenter().latitude();
 	double lon = m_Terrain->getCenter().longitude();
 	m_Atmosphere->setPosition(lat, lon);
-	
+
 	StoresDatabase::getInstance().load(*m_DataManager, "sim:stores");
 
 	if(m_CurrentScreen.valid()) {
@@ -618,6 +617,7 @@ void CSPSim::unloadSimulationNow() {
 	m_Scene = NULL;
 	m_NetworkClient = NULL;
 	m_Theater = NULL;
+	m_Atmosphere = NULL;
 
 	StoresDatabase::getInstance().reset();
 

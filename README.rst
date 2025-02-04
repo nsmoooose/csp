@@ -66,8 +66,7 @@ is in your /etc/ld.so.conf.d/ with the following steps::
 
 **Compiling**
 
-Execute the following commands (note that you run scons in
-python 2)::
+Execute the following commands::
 
   cd csp
 
@@ -79,16 +78,18 @@ python 2)::
 
   # This is needed the first time in order to check all
   # dependencies.
-  python2 /usr/bin/scons config
+  scons config
 
   # Build the simulator.
-  python2 /usr/bin/scons all
+  scons all
 
 **Running**
 
 Execute the following::
 
-  cd csp/csp/bin
+  cd csp
+  export PYTHONPATH=$(pwd)
+  cd csp/bin
   ./sim.py
 
 

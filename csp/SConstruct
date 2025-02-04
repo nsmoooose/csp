@@ -127,7 +127,7 @@ class Environment(build.Environment):
 
 	  scons config           check for necessary headers and libraries
 	  scons all              build everything
-	  scons all debug=1      build everything in debug mode (windows)
+	  scons all debug=1      build everything in debug mode (windows, linux)
 	  scons all debug=2      build everything in full debug mode (windows)
 	  scons cspsim           build the main flight simulator client
 	  scons layout           build the theater layout tool version 1
@@ -185,10 +185,31 @@ class Environment(build.Environment):
 			env.CopyEnvironment(Split('PATH INCLUDE LIB'))
 
 	def customize_linux(self, env):
-		gcc = build.GetGCCVersion()
-		env.Replace(CXXFLAGS=Split('-O2 -g -W -Wall -pedantic -fno-strict-aliasing -fvisibility=hidden -Wno-unused-local-typedefs'))
-		env.Replace(SWIGCXXFLAGS=Split('-O2 -g'))
-		env.Replace(ARFLAGS=Split('cr'))
+		debug = ARGUMENTS.get('debug', 0)
+		if int(debug) == 0:
+			print('Building release configuration')
+			gcc = build.GetGCCVersion()
+			env.Replace(CXXFLAGS=Split('-O2 -W -Wall -pedantic -fno-strict-aliasing -fvisibility=hidden -Wno-unused-local-typedefs'))
+			env.Replace(SWIGCXXFLAGS=Split('-O2 -g'))
+			env.Replace(ARFLAGS=Split('cr'))
+		elif int(debug) == 1:
+			print('Building debug configuration (no optimizations)')
+			gcc = build.GetGCCVersion()
+			env.Replace(CXXFLAGS=Split('-O0 -g -W -Wall -pedantic -fno-strict-aliasing -fvisibility=hidden -Wno-unused-local-typedefs'))
+			env.Replace(SWIGCXXFLAGS=Split('-O2 -g'))
+			env.Replace(ARFLAGS=Split('cr'))
+
+			# Disable inlining to prevent valgrind to be confused.
+			env.AppendUnique(CXXFLAGS=Split('-fno-inline'))
+			env.AppendUnique(CXXFLAGS=Split('-fno-builtin'))
+
+			# Some stack protection mechanisms can initialize stack variables,
+			# hiding uninitialized memory issues from Valgrind.
+			env.AppendUnique(CXXFLAGS=Split('-fno-stack-protector'))
+
+			# LTO can inline functions across translation units, making
+			# Valgrind’s checks less effective.
+			env.AppendUnique(CXXFLAGS=Split('-fno-lto'))
 
 	def customize_darwin(self, env):
 		print('WARNING: Darwin is not yet a fully supported platform.')

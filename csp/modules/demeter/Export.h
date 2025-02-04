@@ -36,7 +36,7 @@
 #    define DEMETER_EXPORT   __declspec(dllimport)
 #  endif // DEMETER_EXPORTS
 #else
-#  if defined(__GNUC__) &&  __GNUC__ == 4 && __GNUC_MINOR__ >= 2
+#  if defined(__GNUC__)
 #    define DEMETER_EXPORT __attribute__ ((visibility("default")))
 #  else
 #    define DEMETER_EXPORT

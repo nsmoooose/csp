@@ -34,7 +34,7 @@
 #    define CSPWF_EXPORT   __declspec(dllimport)
 #  endif // CSPWF_EXPORTS
 #else
-#  if defined(__GNUC__) &&  __GNUC__ == 4 && __GNUC_MINOR__ >= 2
+#  if defined(__GNUC__)
 #    define CSPWF_EXPORT __attribute__ ((visibility("default")))
 #  else
 #    define CSPWF_EXPORT

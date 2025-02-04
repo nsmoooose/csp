@@ -256,7 +256,7 @@ namespace Demeter
         void                    FlipVertical();
     private:
         Texture*                m_pTexture;
-		std::vector<DEMETER_EXPORT DetailTexture*>  m_DetailTextures;
+		std::vector<DetailTexture*>  m_DetailTextures;
 		//vpDetailTexture         m_DetailTextures;
 
     };

@@ -40,7 +40,7 @@ namespace csp {
  *  TODO This class is currently specialized to display a fixed set of images
  *  during startup, but should be generalized.
  */
-class LogoScreen : public BaseScreen {
+class CSPSIM_EXPORT LogoScreen : public BaseScreen {
 public:
 	LogoScreen();
 	virtual ~LogoScreen();

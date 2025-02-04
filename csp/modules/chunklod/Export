@@ -18,8 +18,11 @@
 	#    define OSGCHUNKLOD_EXPORT   __declspec(dllimport)
 	#endif /* OSGCHUNKLOD_LIBRARY */
 #else
-	#define OSGCHUNKLOD_EXPORT 
-#endif 
-
+#  if defined(__GNUC__)
+#    define OSGCHUNKLOD_EXPORT __attribute__ ((visibility("default")))
+#  else
+#    define OSGCHUNKLOD_EXPORT
+#  endif
 #endif
 
+#endif

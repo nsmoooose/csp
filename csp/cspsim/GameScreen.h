@@ -47,7 +47,7 @@ namespace wf {
 	class WindowManager;
 }
 
-class GameScreen : public BaseScreen {
+class CSPSIM_EXPORT GameScreen : public BaseScreen {
 public:
 	GameScreen(int screenWidth, int screenHeight);
 	virtual ~GameScreen();

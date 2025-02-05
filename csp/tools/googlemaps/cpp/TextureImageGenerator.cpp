@@ -196,7 +196,6 @@ TextureImageGenerator::~TextureImageGenerator() {
 std::string TextureImageGenerator::generate(csp::Vector3 const & bottomLeft) {
     int oversampling2 = oversampling_ * oversampling_;
     
-    int const nbColorPlane = 3;
     Image image( textureTileSizeInPixels_, textureTileSizeInPixels_ );
     
     GoogleImages googleImages(*this);

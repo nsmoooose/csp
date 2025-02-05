@@ -219,6 +219,13 @@ class Environment(build.Environment):
 
 env = Environment.Initialize()
 
+# Make it possible for clang to set its tools. This makes it possible to use
+# scan-build tool to analyze the code. Instructions to set this up:
+# https://stackoverflow.com/a/9305378
+env["CC"] = os.getenv("CC") or env["CC"]
+env["CXX"] = os.getenv("CXX") or env["CXX"]
+env["ENV"].update(x for x in os.environ.items() if x[0].startswith("CCC_"))
+
 env.ReadPackages(PACKAGES)
 env.FinalizePackages()
 

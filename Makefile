@@ -11,4 +11,10 @@ clean:
 tests:
 	cd csp;scons -j$(CPU_COUNT) runtests
 
-.PHONY: all clean tests
+format:
+	clang-format -i $(shell find -name "*.cpp" -or -name "*.h")
+
+scan: clean
+	scan-build make all
+
+.PHONY: all clean tests format scan

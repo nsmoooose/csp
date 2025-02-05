@@ -16,31 +16,30 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-
 /**
  * @file Atmosphere.cpp
  *
  **/
 
+#include <cstdio>
 #include <csp/csplib/util/Noise.h>
 #include <csp/csplib/util/Random.h>
+#include <csp/cspsim/Config.h>
 #include <csp/cspsim/weather/Atmosphere.h>
-
-// temporary, for testing.
-#include <cstdio>
-namespace {
-	void DumpNoise(std::vector<float> const &noise, std::string const &filename) {
-		FILE *fp = fopen(filename.c_str(), "wt");
-		for (unsigned i = 0; i < noise.size(); ++i) {
-			fprintf(fp, "%d\t%f\n", i, noise[i]);
-		}
-	}
-}
-
 
 namespace csp {
 
 namespace weather {
+
+static void DumpNoise(std::vector<float> const &noise, std::string const &filename) {
+	FILE *fp = fopen(filename.c_str(), "wt");
+	if(fp) {
+		for (unsigned i = 0; i < noise.size(); ++i) {
+			fprintf(fp, "%d\t%f\n", i, noise[i]);
+		}
+		fclose(fp);
+	}
+}
 
 Atmosphere::Atmosphere() {
 	generateWinds();
@@ -67,11 +66,15 @@ void Atmosphere::generateWinds() {
 	Perlin1D noise;
 	int i;
 
+	bool dump = g_Config.getBool("Debug", "DumpAtmosphereData", false, false);
+
 	// pressure variation (10 days)
 	noise.setParameters(0.3, 5);
 	noise.randomize();
 	m_PressureTime = noise.generate(1000, true, 10.0, 15000.0, 0.0);
-	DumpNoise(m_PressureTime, "atmosphere.pressure-time.dat");
+	if(dump) {
+		DumpNoise(m_PressureTime, "atmosphere.pressure-time.dat");
+	}
 
 	// turbulence (10000 m)
 	noise.setParameters(0.9, 6);
@@ -90,9 +93,11 @@ void Atmosphere::generateWinds() {
 		a = m_TurbulenceZ[i];
 		m_TurbulenceZ[i] *= 10.0f * a * fabsf(a);
 	}
-	DumpNoise(m_TurbulenceX, "atmosphere.turbulence-x.dat");
-	DumpNoise(m_TurbulenceY, "atmosphere.turbulence-y.dat");
-	DumpNoise(m_TurbulenceZ, "atmosphere.turbulence-z.dat");
+	if(dump) {
+		DumpNoise(m_TurbulenceX, "atmosphere.turbulence-x.dat");
+		DumpNoise(m_TurbulenceY, "atmosphere.turbulence-y.dat");
+		DumpNoise(m_TurbulenceZ, "atmosphere.turbulence-z.dat");
+	}
 
 	// turbulence altitude buffers (15000 m)
 	noise.setParameters(0.9, 6);
@@ -106,9 +111,11 @@ void Atmosphere::generateWinds() {
 		m_TurbulenceAltA[i] *= f;
 		m_TurbulenceAltB[i] *= f;
 	}
-	DumpNoise(m_TurbulenceAltA, "atmosphere.turbulence-alt-a.dat");
-	DumpNoise(m_TurbulenceAltB, "atmosphere.turbulence-alt-b.dat");
-	
+	if(dump) {
+		DumpNoise(m_TurbulenceAltA, "atmosphere.turbulence-alt-a.dat");
+		DumpNoise(m_TurbulenceAltB, "atmosphere.turbulence-alt-b.dat");
+	}
+
 	// wind direction variation (30000 m)
 	noise.setParameters(0.8, 4);
 	noise.randomize();
@@ -120,8 +127,10 @@ void Atmosphere::generateWinds() {
 		m_WindAltX[i] *= alt_scale;
 		m_WindAltY[i] *= alt_scale;
 	}
-	DumpNoise(m_WindAltX, "atmosphere.wind-alt-x.dat");
-	DumpNoise(m_WindAltY, "atmosphere.wind-alt-y.dat");
+	if(dump) {
+		DumpNoise(m_WindAltX, "atmosphere.wind-alt-x.dat");
+		DumpNoise(m_WindAltY, "atmosphere.wind-alt-y.dat");
+	}
 
 	// wind direction variation (10 days)
 	noise.setParameters(0.6, 5);
@@ -129,14 +138,18 @@ void Atmosphere::generateWinds() {
 	m_WindTimeX = noise.generate(1000, true, 10.0);
 	noise.randomize();
 	m_WindTimeY = noise.generate(1000, true, 10.0);
-	DumpNoise(m_WindTimeX, "atmosphere.wind-time-x.dat");
-	DumpNoise(m_WindTimeY, "atmosphere.wind-time-y.dat");
+	if(dump) {
+		DumpNoise(m_WindTimeX, "atmosphere.wind-time-x.dat");
+		DumpNoise(m_WindTimeY, "atmosphere.wind-time-y.dat");
+	}
 
 	// wind gust variation (300 s)
 	noise.setParameters(0.9, 5);
 	noise.randomize();
 	m_GustTime = noise.generate(1000, true, 60.0, 1.5);
-	DumpNoise(m_GustTime, "atmosphere.gust-time.dat");
+	if(dump) {
+		DumpNoise(m_GustTime, "atmosphere.gust-time.dat");
+	}
 }
 
 Vector3 Atmosphere::getWind(Vector3 const &p) const {

@@ -16,7 +16,6 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-
 /**
  * @file Random.cpp
  *
@@ -26,12 +25,8 @@
 
 #include <csp/csplib/util/Random.h>
 
-
 namespace csp {
-
-
 namespace rng { // random number generators
-
 
 void MT19937::update() {
 	int kk;
@@ -79,8 +74,6 @@ void MT19937::setState(State const &state) {
 	_mti = state._mti;
 }
 
-
-
 void Taus2::setSeed(unsigned long int s) {
 	if (s == 0) {
 		s = 1;	// default seed is 1
@@ -99,13 +92,11 @@ void Taus2::setSeed(unsigned long int s) {
 	}
 }
 
-
 void Taus2::getState(State &state) const {
 	state._s1 = _s1;
 	state._s2 = _s2;
 	state._s3 = _s3;
 }
-
 
 void Taus2::setState(State const &state) {
 	_s1 = state._s1;
@@ -113,17 +104,12 @@ void Taus2::setState(State const &state) {
 	_s3 = state._s3;
 }
 
-
 } // namespace rng
-
 
 RandomInterface::~RandomInterface() {
 }
 
-
-
 namespace rd { // random distributions
-
 
 double Gauss::sample() {
 	_odd = !_odd;
@@ -175,13 +161,6 @@ double BoxMueller(RandomNumberGeneratorInterface &_gen, double _mean, double _si
 
 } // namespace rd
 
-
 random::Taus2 g_Random;
 
-// Force template instantiation.
-template class CSPLIB_EXPORT RandomDistribution<rd::Gauss>;
-template class CSPLIB_EXPORT RandomNumberGenerator<rng::MT19937>;
-template class CSPLIB_EXPORT RandomNumberGenerator<rng::Taus2>;
-
 } // namespace csp
-

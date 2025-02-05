@@ -26,7 +26,6 @@
 #include <csp/csplib/util/Export.h>
 #include <cmath>
 
-
 namespace csp {
 
 ///////////////////////////////////////////////////////////////////////////////////
@@ -184,9 +183,6 @@ public:
 	 */
 	void setState(State const &state);
 };
-
-
-
 
 /**
  * @brief Maximally Equidistributed Combined Tausworthe generator.
@@ -714,7 +710,6 @@ namespace random { // generators and distributions
 	typedef Taus2 Standard;
 }
 
-
 /** Global random number generator.
  *
  *  WARNING: it is obviously not safe to use this generator from more than one
@@ -722,6 +717,5 @@ namespace random { // generators and distributions
  *  a thread-specific generator, or explicitly lock a shared generator.
  */
 extern CSPLIB_EXPORT random::Taus2 g_Random;
-
 
 } // namespace csp

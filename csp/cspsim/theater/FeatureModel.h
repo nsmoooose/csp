@@ -26,6 +26,7 @@
 #include <csp/csplib/data/Path.h>
 #include <csp/csplib/data/Object.h>
 #include <csp/csplib/data/ObjectInterface.h>
+#include <csp/cspsim/Export.h>
 
 namespace csp {
 
@@ -44,7 +45,7 @@ class FeatureSceneGroup;
  * of FeatureGroups out both primitive and complex components.
  *
  */
-class FeatureModel: public Object {
+class CSPSIM_EXPORT FeatureModel: public Object {
 public:
 	CSP_DECLARE_ABSTRACT_OBJECT(FeatureModel)
 
@@ -56,7 +57,7 @@ public:
 	 * @param correction A helper for adjusting the Z-coordinate of 3D objects to match the local terrain elevation.
 	 */
 	virtual void addSceneModel(FeatureSceneGroup *group, LayoutTransform const &transform, ElevationCorrection const &correction);
-	
+
 	/**
 	 * Return the number of features in this model.
 	 */

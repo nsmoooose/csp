@@ -292,12 +292,8 @@ void SkyDome::updateLighting(double azimuth, double elevation) {
 	double specular_scale = 1.0;
 	double diffuse_scale = 1.0;
 	double ambient_scale = 0.3;
-	double ambient = m_AverageIntensity;
 	double clamped_elevation = std::max(0.0, elevation);
 	float intensity = 0.0f;
-
-	if (ambient > 0.1) ambient = 0.1;
-	ambient = 0.0; // XXX
 
 	Color color = m_SkyShader->SkyColor(clamped_elevation, 0.0, intensity);
 	double x = cos(clamped_elevation) * cos(azimuth);

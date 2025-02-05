@@ -59,7 +59,7 @@ public:
 	PackFile(FILE* f): _f(f), _open(false) {
 		_open = (_f != 0);
 	}
-#endif
+#endif // SWIG
 
 	/** Open a new file (fopen interface)
 	 */
@@ -114,11 +114,12 @@ public:
 	// explicit methods for use from Python
 
 #ifdef SWIG
+// clang-format off
 %extend {
 
 	// more explicit methods for python that instantiate,
 	// unpack, and return BaseType data objects.
-	
+
 #define __CSP_ARCHIVE(T, NAME) T NAME() { \
 		T x; (*self) >> x; return x; \
 	}
@@ -168,6 +169,7 @@ public:
 	def __call__(self, *args):
 		raise "Use explicit _* methods from Python"
 %}
+// clang-format on
 #endif // SWIG
 
 };
@@ -222,6 +224,7 @@ public:
 	// explicit packing (use from python)
 
 #ifdef SWIG
+// clang-format off
 %extend {
 	inline void _double(double x) { (*self) << x; }
 	inline void _float(float x) { (*self) << x; }
@@ -253,6 +256,7 @@ public:
 	inline void _Vector2(Vector2 const &x) { (*self) << x; }
 	inline void _Vector3(Vector3 const &x) { (*self) << x; }
 }
+// clang-format on
 #endif // SWIG
 
 };

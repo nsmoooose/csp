@@ -394,6 +394,7 @@ public:
 	/// accessor for lookup by token
 	inline EnumLink operator[](std::string const &token) const;
 #else
+// clang-format off
 %extend {
 	/// value accessor for SWIG/Python (mapped to __getitem__)
 	EnumLink get(int idx) { return (*self)[idx]; }
@@ -411,7 +412,8 @@ public:
 			return self.get(attr)
 		return self.__dict__[attr]
 %}
-#endif
+// clang-format on
+#endif // SWIG
 };
 
 

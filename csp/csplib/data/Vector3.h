@@ -317,6 +317,7 @@ public:
 	}
 
 #ifdef SWIG
+// clang-format off
 	// setup accessors for x, y, and z (ugly hack)
 %extend {
 	void set_x(double x) { self->x()=x; }
@@ -326,6 +327,7 @@ public:
 	double get_y() { return self->y(); }
 	double get_z() { return self->z(); }
 }
+// clang-format on
 #endif // SWIG
 
 }; // end of class Vector3

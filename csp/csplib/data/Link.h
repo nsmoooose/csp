@@ -352,7 +352,9 @@ private:
 };
 
 #ifdef SWIG
+// clang-format off
 %template(LinkObj) Link<Object>;
+// clang-format on
 #endif
 
 /** A Link<Object> subclass that can be used to refer to any Object subclass.

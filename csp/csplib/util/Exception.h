@@ -110,10 +110,12 @@ public:
 	 */
 	friend CSPLIB_EXPORT std::ostream& operator<< (std::ostream&, const ExceptionBase&);
 #else
+// clang-format off
 	%insert(shadow) %{
 		def __str__(self): return self.getError()
 		def __repr__(self): return self.getError()
 	%}
+// clang-format on
 #endif // SWIG
 
 private:

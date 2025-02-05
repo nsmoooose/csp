@@ -25,7 +25,9 @@
 
 // SWIG template instantiations
 #ifdef SWIG
+// clang-format off
 	#define CSP_CVT(a) %template(convert_##a) a<double>;
+// clang-format on
 #else
 	#define CSP_CVT(a)
 #endif

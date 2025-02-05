@@ -131,7 +131,7 @@ public:
 	/** Allow implicit coersion to a floating point value.
 	 */
 	inline operator float() const { return _value; }
-#endif
+#endif // SWIG
 
 // insert Python shadow class code to emulate "operator float()"
 #ifdef SWIG______NONO
@@ -146,6 +146,7 @@ public:
 };
 
 #ifdef SWIG
+// clang-format off
 %extend Real {
 	float __neg__() { return -(*self); }
 	float __pos__() { return (*self); }
@@ -165,8 +166,8 @@ public:
 	float __float__() { return (*self); }
 	int __nonzero__() { return (*self) != 0.0; }
 }
+// clang-format on
 #endif // SWIG
-
 
 CSPLIB_EXPORT std::ostream &operator <<(std::ostream &o, Real const &r);
 

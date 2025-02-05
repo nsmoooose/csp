@@ -277,8 +277,8 @@ public:
 	virtual bool isStatic() const { return false; }
 
 
-/////////////////////////////////////////////////////// SWIG
 #ifdef SWIG
+// clang-format off
 public:
 %extend {
 	virtual void _set(Object *p, std::string const &varname, TypeAdapter const &v) {
@@ -294,6 +294,7 @@ public:
 	def push_back(self, obj, name, value):
 		self._push_back(obj, name, TypeAdapter(value))
 %}
+// clang-format on
 #endif // SWIG
 
 };

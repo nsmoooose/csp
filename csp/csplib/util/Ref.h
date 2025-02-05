@@ -33,8 +33,10 @@
 #include <csp/csplib/util/Verify.h>
 
 #ifdef SWIG
+// clang-format off
 // silence SWIG warning about NonCopyable
 %import "csp/csplib/util/Properties.h"
+// clang-format on
 #endif
 
 namespace csp {

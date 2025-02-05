@@ -446,7 +446,8 @@ public:
 #endif // SWIG
 
 #ifdef SWIG
-	// setup accessors for w, x, y, and z (ugly hack)
+// clang-format off
+// setup accessors for w, x, y, and z (ugly hack)
 %extend {
 	void set_w(double w) { self->w()=w; }
 	void set_x(double x) { self->x()=x; }
@@ -457,6 +458,7 @@ public:
 	double get_y() { return self->y(); }
 	double get_z() { return self->z(); }
 }
+// clang-format on
 #endif // SWIG
 
 };

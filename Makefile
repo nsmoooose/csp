@@ -11,6 +11,9 @@ clean:
 tests:
 	cd csp;scons -j$(CPU_COUNT) runtests
 
+run:
+	cd csp/bin; ./sim.py
+
 loc:
 	@echo "Number of lines of C++ code:"
 	@find -type d -name ".bin" -prune -o -type f -name "*.cpp" -or -name "*.h" -print|xargs cat|wc -l

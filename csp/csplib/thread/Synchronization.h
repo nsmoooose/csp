@@ -47,41 +47,6 @@ inline timeout_t makeMilliTimeout(double timeout) {
 }
 
 
-/** Thin wrapper for cc++ Mutex.  Provides a recursive, mutually exclusive lock that
- *  can be used to serializing access to a shared resource, such that only one thread
- *  may use the resource at a time.  A mutex can be relocked by a thread without
- *  causing a deadlock.  The mutex will remain locked until it has been unlocked as
- *  many times as it was locked.
- */
-class CSPLIB_EXPORT Mutex: public NonCopyable {
-public:
-	/** Create a new mutex.
-	 *
-	 *  @param id An optional identifier string for debugging.
-	 */
-	Mutex(const char *id=0): m_mutex(id) { }
-
-	/** Lock the mutex to gain exclusive use of the resources the mutex protects.
-	 *  This method will block if another thread holds the mutex lock.
-	 */
-	void lock() { m_mutex.enterMutex(); }
-
-	/** Try to lock the mutex.  Similar to lock(), but returns false immediately if
-	 *  the mutex is already locked by another thread.
-	 */
-	bool tryLock() { return m_mutex.tryEnterMutex(); }
-
-	/** Unlock the mutex so that other threads may use the resources the mutex
-	 *  protects.  If the mutex has been locked multiple times by the same thread,
-	 *  unlock must be called the same number of times to release the lock.
-	 */
-	void unlock() { m_mutex.leaveMutex(); }
-
-private:
-	ost::Mutex m_mutex;
-};
-
-
 /** Thin wrapper around cc++ ThreadLock, which allows a resource to be safely
  *  shared between threads that modify the resource and those that do not.
  *
@@ -291,11 +256,9 @@ private:
 		~NAME() { m_target.UNLOCK(); } \
 	};
 
-CSP_SCOPEDLOCK(MutexLock, Mutex, lock, unlock)
 CSP_SCOPEDLOCK(ReadLock, ReadWriteLock, lockRead, unlock)
 CSP_SCOPEDLOCK(WriteLock, ReadWriteLock, lockWrite, unlock)
 CSP_SCOPEDLOCK(SemaphoreLock, Semaphore, wait, post)
-CSP_SCOPEDLOCK(MutexUnlock, Mutex, unlock, lock)
 CSP_SCOPEDLOCK(ReadUnlock, ReadWriteLock, unlock, lockRead)
 CSP_SCOPEDLOCK(WriteUnlock, ReadWriteLock, unlock, lockWrite)
 CSP_SCOPEDLOCK(SemaphoreUnlock, Semaphore, post, wait)

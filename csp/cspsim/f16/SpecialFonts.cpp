@@ -36,6 +36,7 @@
 #include <algorithm>
 #include <cassert>
 #include <map>
+#include <mutex>
 
 namespace csp {
 
@@ -49,12 +50,12 @@ namespace {
 class SpecialFontCache {
 public:
 	static void clear() {
-		MutexLock lock(m_Mutex);
+		std::lock_guard<std::mutex> lock(m_Mutex);
 		m_Cache.clear();
 	}
 
 	static osgText::Font* load(std::string const &filename, std::string const &cache_prefix, osgText::Font *prototype) {
-		MutexLock lock(m_Mutex);
+		std::lock_guard<std::mutex> lock(m_Mutex);
 		std::string key(cache_prefix + filename);
 		osgText::Font *font = get(key);
 		if (font) return font;
@@ -98,7 +99,7 @@ public:
 private:
 	typedef std::map<std::string, osg::ref_ptr<osgText::Font> > CacheMap;
 	static CacheMap m_Cache;
-	static Mutex m_Mutex;
+	static std::mutex m_Mutex;
 
 	static osgText::Font *get(std::string const &key) {
 		CacheMap::iterator iter = m_Cache.find(key);
@@ -111,7 +112,7 @@ private:
 };
 
 SpecialFontCache::CacheMap SpecialFontCache::m_Cache;
-Mutex SpecialFontCache::m_Mutex;
+std::mutex SpecialFontCache::m_Mutex;
 
 } // namespace
 

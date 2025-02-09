@@ -31,11 +31,10 @@
 #include <string>
 #include <ostream>
 #include <cassert>
-
+#include <mutex>
 
 namespace csp {
 
-class Mutex;
 class StackTrace;
 
 /** Thrown when logging a message at cFatal priority iff the LogStream has been
@@ -164,7 +163,7 @@ private:
 	std::ostream *m_stream;
 	std::ofstream *m_fstream;
 
-	Mutex *m_mutex;
+	std::mutex *m_mutex;
 	bool m_threadsafe;
 	uint64_t m_initial_thread;
 	bool m_throw_on_fatal;

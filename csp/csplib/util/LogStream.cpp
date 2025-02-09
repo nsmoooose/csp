@@ -36,7 +36,6 @@
 #include <ctime>
 #include <map>
 
-
 namespace csp {
 
 
@@ -120,11 +119,11 @@ class AutoFlushAtExitHelper {
 	// lazy construction to ensure proper initialization during static
 	// construction.
 	static std::vector<LogStream*> *m_streams;
-	static Mutex *m_mutex;
+	static std::mutex *m_mutex;
 public:
 	// warning: this is not thread-safe!
 	static void registerStream(LogStream* stream) {
-		if (!m_mutex) m_mutex = new Mutex;
+		if (!m_mutex) m_mutex = new std::mutex;
 		if (!m_streams) m_streams = new std::vector<LogStream*>;
 		m_mutex->lock();
 		m_streams->push_back(stream);
@@ -133,7 +132,7 @@ public:
 	AutoFlushAtExitHelper() {
 		// force initialization in case no streams are registered during
 		// static construction.
-		if (!m_mutex) m_mutex = new Mutex;
+		if (!m_mutex) m_mutex = new std::mutex;
 		if (!m_streams) m_streams = new std::vector<LogStream*>;
 	}
 	~AutoFlushAtExitHelper() {
@@ -147,7 +146,7 @@ public:
 } AutoFlushAtExit;  // static instance
 
 std::vector<LogStream*> *AutoFlushAtExitHelper::m_streams;
-Mutex *AutoFlushAtExitHelper::m_mutex;
+std::mutex *AutoFlushAtExitHelper::m_mutex;
 
 } // namespace
 
@@ -252,7 +251,7 @@ LogStream *LogStream::getOrCreateNamedLog(const std::string &name, bool *created
 }
 
 void LogStream::init() {
-	m_mutex = new Mutex;
+	m_mutex = new std::mutex;
 	m_threadsafe = true;
 	m_initial_thread = thread::id();
 }

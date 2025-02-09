@@ -243,6 +243,14 @@ build.Test(env,
 	deps = ['csplib'],
 	aliases = ['all'])
 
+build.Test(env,
+	name = 'test_thread',
+	sources = [
+		'thread/test/test_Thread.cpp',
+	],
+	deps = ['csplib'],
+	aliases = ['all'])
+
 #build.Test(env,
 #	name = 'test_numeric',
 #	sources = [

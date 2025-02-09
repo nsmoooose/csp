@@ -24,10 +24,10 @@
  *        used to implement thread-safe reference counters.
  */
 
+#include <atomic>
+
 #include <csp/csplib/util/Export.h>
 #include <csp/csplib/util/Properties.h>
-
-#include <cc++/thread.h>
 #include <csp/csplib/util/undef.h>
 
 
@@ -41,7 +41,7 @@ namespace csp {
  */
 class CSPLIB_EXPORT AtomicCounter: public NonCopyable {
 private:
-	ost::AtomicCounter __count;
+	std::atomic<int> m_ref_count;
 
 public:
 
@@ -53,7 +53,7 @@ public:
 	 *
 	 *  @param count the initial value of the counter.
 	 */
-	AtomicCounter(int count): __count(count) { }
+	AtomicCounter(int count): m_ref_count(count) { }
 
 	/** Increment the counter.
 	 *
@@ -62,18 +62,27 @@ public:
 	 *  will always return true (unless the count overflows or is otherwise
 	 *  decremented past zero).
 	 */
-	inline bool operator++() { return (++__count != 0); }
+	inline bool operator++() {
+		m_ref_count.fetch_add(1, std::memory_order_relaxed);
+		return m_ref_count > 0;
+	}
 
 	/** Decrement the counter.
 	 *
 	 *  @returns true if the pre-decremented count is non-zero,
 	 *  regardless of the actual value; false otherwise.
 	 */
-	inline bool operator--() { return (--__count != 0); }
+	inline bool operator--() {
+        if (m_ref_count.fetch_sub(1, std::memory_order_acquire) == 1) {
+            std::atomic_thread_fence(std::memory_order_release);
+			return false;
+        }
+		return true;
+	}
 
 	/** Return the counter value.
 	 */
-	inline operator int() { return __count; }
+	inline operator int() { return m_ref_count; }
 
 };
 

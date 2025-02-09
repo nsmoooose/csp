@@ -28,7 +28,6 @@
 #include <csp/cspsim/Config.h>
 
 #include <csp/csplib/net/ClientServer.h>
-#include <csp/csplib/thread/Thread.h>
 #include <csp/csplib/util/Log.h>
 #include <csp/csplib/util/SimpleConfig.h>
 #include <csp/csplib/util/Trace.h>

@@ -23,13 +23,14 @@
  * @brief PosixThreads wrapper and utility classes.
  */
 
+#include <optional>
+#include <thread>
+
 #include <csp/csplib/util/Properties.h>
 #include <csp/csplib/util/Ref.h>
 #include <csp/csplib/util/Log.h>
 #include <csp/csplib/thread/AtomicCounter.h>
 #include <csp/csplib/thread/Synchronization.h>
-
-#include <cc++/thread.h>
 #include <csp/csplib/util/undef.h>
 
 namespace csp {
@@ -39,62 +40,6 @@ namespace csp {
  *  internal reference counter.
  */
 typedef ReferencedBase<AtomicCounter> ThreadSafeReferenced;
-
-
-/** Wrapper for ost::Thread that provides a restricted interface to
- *  the thread id (as an integer).  Caution: since this class keeps
- *  a pointer to the thread object, it is not safe to use after the
- *  thread is deleted.
- */
-class ThreadId {
-public:
-	ThreadId(ost::Thread *thread): m_thread(thread) { }
-	uint64_t id() const { return m_thread ? static_cast<uint64>(m_thread->getId()) : 0; }
-	bool operator==(const ThreadId &other) { return id() == other.id() && m_thread && other.m_thread; }
-private:
-	ost::Thread *m_thread;
-};
-
-
-/**
- * Global functions for manipulating threads.
- */
-namespace thread {
-
-	/** Yield control from the current thread to another thread of equal
-	 *  or higher priority.  If no such threads are available, the calling
-	 *  thread continues immediately.
-	 */
-	static inline void yield() { ost::Thread::yield(); }
-
-	/** Return a Thread instance for the currently executing thread.
-	 */
-	static inline ThreadId self() { return ThreadId(ost::getThread()); }
-
-	/** Return the id of the current thread.
-	 */
-	static inline uint64_t id() { return self().id(); }
-
-	/** Suspend execution of the current thread the specified amount of time.
-	 *
-	 *  @param seconds seconds to pause (fractional values ok, but limited by
-	 *    the granularity of the operating system's time slices).
-	 */
-	static inline void sleep(double seconds) {
-		ost::Thread::sleep(static_cast<timeout_t>(seconds * 1000));
-	}
-
-	/** Suspend execution of the current thread the specified amount of time.
-	 *
-	 *  @param milliseconds milliseconds to pause (typically limited by the
-	 *    granularity of the operating system's time slices).
-	 */
-	static inline void millisleep(int milliseconds) {
-		ost::Thread::sleep(static_cast<timeout_t>(milliseconds));
-	}
-
-} // namespace thread
-
 
 class BaseThread;
 
@@ -194,13 +139,19 @@ private:
  *  This class is not used directly. To create a thread, subclass Task and
  *  implement the run() method. @see Thread for details.
  */
-class Thread: public ost::Thread {
+class Thread {
+private:
+	std::optional<std::thread> m_thread;
 public:
 	/** Construct a new thread with a bound task.
 	 *
 	 *  @param task a Task pointer to bind to this thread, or NULL.
 	 */
-	Thread(Task *task = 0): m_task(task), m_started(false), m_cancelled(false) { }
+	Thread(Task *task = 0):
+		m_task(task),
+		m_started(false),
+		m_cancelled(false) {
+	}
 
 	/** Destroy a thread instance and free internal resources.
 	 *
@@ -208,17 +159,25 @@ public:
 	 */
 	virtual ~Thread() {
 		CSPLOG(INFO, THREAD) << "~thread " << this;
-		if (!isDetached()) join();
-		terminate();
+		if (!isDetached()) {
+			join();
+		}
+	}
+
+	bool isDetached() {
+		assert(isStarted());
+		return !m_thread->joinable();
 	}
 
 	/** Get the task bound to this thread, or NULL.
 	 */
 	Ref<Task> const &getTask() const { return m_task; }
 
-	/** Wait (indefinitely) for this thread to finish.
-	 */
-	using ost::Thread::join;
+	void join() {
+		assert(!isDetached());
+		assert(isStarted());
+		m_thread->join();
+	}
 
 	/** Wait for at most a limited amount of time for this thread to finish.
 	 *
@@ -248,7 +207,7 @@ public:
 		assert(!isStarted());
 		if (m_task.valid()) assert(task == 0);
 		if (task) m_task = task;
-		ost::Thread::start();
+		m_thread.emplace(&Thread::run, this);
 		m_started = true;
 	}
 
@@ -256,7 +215,7 @@ public:
 		assert(!isStarted());
 		if (m_task.valid()) assert(task == 0);
 		if (task) m_task = task;
-		ost::Thread::detach();
+		m_thread->detach();
 		m_started = true;
 	}
 
@@ -274,11 +233,11 @@ public:
 
 protected:
 	virtual void final() {
-		CSPLOG(INFO, THREAD) << "thread exit " << ThreadId(this).id();
+		CSPLOG(INFO, THREAD) << "thread exit " << m_thread->get_id();
 	}
 
 	virtual void run() {
-		CSPLOG(INFO, THREAD) << "thread start " << ThreadId(this).id();
+		CSPLOG(INFO, THREAD) << "thread start " << m_thread->get_id();
 		// should we try to catch and translate ost exceptions here?  note that the
 		// ost::Thread constructor can throw, but there's no way to catch the exception
 		// from this subclass.

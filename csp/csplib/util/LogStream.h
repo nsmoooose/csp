@@ -32,6 +32,7 @@
 #include <ostream>
 #include <cassert>
 #include <mutex>
+#include <thread>
 
 namespace csp {
 
@@ -100,7 +101,7 @@ public:
 	void lock();
 	void unlock();
 
-	uint64_t initialThread() const { return m_initial_thread; }
+	std::thread::id initialThread() const { return m_initial_thread; }
 
 	/** Test whether FATAL log messages generate exceptions or cause an immediate abort.
 	 */
@@ -165,7 +166,7 @@ private:
 
 	std::mutex *m_mutex;
 	bool m_threadsafe;
-	uint64_t m_initial_thread;
+	std::thread::id m_initial_thread;
 	bool m_throw_on_fatal;
 
 	bool m_autoflush;

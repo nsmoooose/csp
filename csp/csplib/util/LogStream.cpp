@@ -196,17 +196,9 @@ void LogStream::LogEntry::prefix(const char *filename, int linenum) {
 	}
 #ifndef CSP_NOTHREADS
 	if (flags & LogStream::cThread) {
-		uint64_t thread_id = thread::id();
+		auto thread_id = std::this_thread::get_id();
 		if (thread_id != m_stream.initialThread()) {
-			// compress the low 32 or 36 bits of thread id into 6 characters.  note that this is *not*
-			// the standard base64 encoding.  the numbers are in front to make it more likely that the
-			// final output resembles a numeric value.
-			const char *encode64 = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-_";
-			char id_buffer[8];
-			id_buffer[6] = ' ';
-			id_buffer[7] = 0;
-			for (int i = 5; i >= 0; --i) { id_buffer[i] = encode64[thread_id & 63]; thread_id >>= 6; }
-			m_buffer << id_buffer;
+			m_buffer << thread_id;
 		}
 	}
 #endif
@@ -253,7 +245,7 @@ LogStream *LogStream::getOrCreateNamedLog(const std::string &name, bool *created
 void LogStream::init() {
 	m_mutex = new std::mutex;
 	m_threadsafe = true;
-	m_initial_thread = thread::id();
+	m_initial_thread = std::this_thread::get_id();
 }
 
 LogStream::LogStream():

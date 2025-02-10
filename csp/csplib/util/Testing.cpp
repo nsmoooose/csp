@@ -27,9 +27,9 @@
 #include <csp/csplib/util/Testing.h>
 #include <csp/csplib/util/Timing.h>
 
+#include <iostream>
 #include <vector>
-#include <cc++/file.h>
-#include <csp/csplib/util/undef.h>
+#include <boost/dll.hpp>
 
 namespace csp {
 
@@ -133,7 +133,8 @@ TestRegistry::TestData& TestRegistry::data() {
 
 bool TestRegistry::loadTestModule(const char *module) {
 	try {
-		new ost::DSO(module);  // no unload
+		// Intentionally leak memory in order to let the module stay loaded.
+		new boost::dll::shared_library(module);
 	} catch (...) {
 		return false;
 	}

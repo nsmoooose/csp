@@ -25,8 +25,6 @@
 
 #include <csp/csplib/util/Properties.h>
 
-#include <cc++/thread.h>
-
 #include <algorithm>
 #include <cerrno>
 #include <cmath>
@@ -36,16 +34,9 @@
 
 namespace csp {
 
-
-/** Convert a timeout in seconds to a timeout_t in milliseconds.  The latter
- *  is used by cc++ synchronization classes.  Returns zero if timeout is
- *  less than or equal to zero.  Otherwise returns a value greater than zero
- *  (i.e., minimum one millisecond).
- */
-inline timeout_t makeMilliTimeout(double timeout) {
-	return (timeout <= 0) ? timeout_t(0) : static_cast<timeout_t>(std::max(1.0, 1000.0 * timeout));
-}
-
+// This code is not used. But could be valuable if we need to use this type
+// of code in the future.
+#if 0
 
 /** Thin wrapper around cc++ ThreadLock, which allows a resource to be safely
  *  shared between threads that modify the resource and those that do not.
@@ -108,79 +99,7 @@ private:
 	ost::ThreadLock m_rwlock;
 };
 
-
-// CC++ does not yet implement Conditional on win32, so it has been disabled
-// here.  For more information on the difficulty of implementing condition
-// variables using win32 threading primitives, see
-//   http://www.cs.wustl.edu/~schmidt/win32-cv-1.html and
-//   http://www.cs.wustl.edu/~schmidt/win32-cv-2.html
-
-#if 0
-/** Thin wrapper for cc++ Conditional.  Condition variables provide a signaling
- * mechanism to synchronize multiple threads.  Each condition variable is
- * associated with a mutex.  A thread first locks the mutex, then waits on the
- * condition variable.  If another thread signals the condition variable, one
- * (or all) of the threads waiting on that variable will be activated.
- */
-class CSPLIB_EXPORT Conditional: public NonCopyable {
-public:
-
-	/** Construct a condition variable, using an internal mutex.
-	 *  @param id An optional identifier string for debugging.
-	 */
-	Conditional(const char *id=0): m_cond(id) { }
-
-	/** Signal threads waiting on this condition variable to execute.
-	 *
-	 *  @param n the number of signals to send, with each signal
-	 *         activating at most one thread.
-	 */
-	void signal(int n = 1) {
-		while (--n >= 0) { m_cond.signal(false); }
-	}
-
-	/** Signal to all threads waiting on this condition variable to
-	 *  execute.  Since each thread attempts to lock the associated
-	 *  mutex when awoken, the threads will execute in series.
-	 */
-	void signalAll() { m_cond.signal(true); }
-
-	/** Lock the underlying mutex.  This must be done before calling
-	 *  wait().
-	 */
-	void lock() { m_cond.enterMutex(); }
-
-	/** Try to lock the underlying mutex.
-	 *
-	 *  Similar to lock(), but returns false immediately if the mutex is
-	 *  already locked by another thread.
-	 */
-	bool tryLock() { return m_cond.tryEnterMutex(); }
-
-	/** Unlock the underlying mutex.
-	 */
-	void unlock() { m_cond.leaveMutex(); }
-
-	/** Wait for the condition variable to be signaled.
-	 *
-	 *  @param timeout the maximum time, in seconds, to wait on the condition variable.
-	 *    If zero, the call will wait indefinitely.
-	 *  @param locked If true, the condition variable must be manually locked
-	 *    before calling wait, and unlocked afterward.  If false, the locking
-	 *    is done automatically.
-	 *  @returns true if a signal occured, or false if the wait timed out.
-	 */
-	bool wait(double timeout, bool locked) {
-		return m_cond.wait(makeMilliTimeout(timeout), locked);
-	}
-
-private:
-	ost::Conditional m_cond;
-};
-#else
-class CSPLIB_EXPORT Conditional {};
 #endif
-
 
 /** A thin wrapper around cc++ Event.
  *
@@ -241,7 +160,9 @@ private:
     bool m_signaled;
 };
 
-
+// This code is not used. But could be valuable if we need to use this type
+// of code in the future.
+#if 0
 /** A thin wrapper around cc++ Semaphore.
  *
  * A semaphore can be used to share one or more resources between multiple threads.
@@ -287,5 +208,6 @@ CSP_SCOPEDLOCK(ReadUnlock, ReadWriteLock, unlock, lockRead)
 CSP_SCOPEDLOCK(WriteUnlock, ReadWriteLock, unlock, lockWrite)
 CSP_SCOPEDLOCK(SemaphoreUnlock, Semaphore, post, wait)
 
+#endif
 
 } // namespace csp

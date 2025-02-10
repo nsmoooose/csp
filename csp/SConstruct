@@ -115,6 +115,13 @@ build.ExternalLibrary(
 	])
 
 build.ExternalLibrary(
+	name = 'boost',
+	config = [
+		build.UnixLibConfig(lib='boost_system', label='boost system'),
+		build.UnixLibConfig(lib='boost_filesystem', label='boost filesystem'),
+	])
+
+build.ExternalLibrary(
 	name = 'python',
 	config = [
 		build.UnixLibConfig(lib='python%d.%d' % tuple(sys.version_info[:2]), label='python library'),

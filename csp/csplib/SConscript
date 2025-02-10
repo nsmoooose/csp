@@ -184,7 +184,7 @@ build.SourceGroup(expenv,
 		'xml/XmlParser.cpp',
 		'xml/XmlParser.h',
 	],
-	deps = ['gnucc2', 'sigc', 'windows'])
+	deps = ['boost', 'gnucc2', 'sigc', 'windows'])
 
 
 build.Program(env,

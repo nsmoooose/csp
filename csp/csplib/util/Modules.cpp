@@ -22,57 +22,36 @@
  *
  **/
 
+#include <csp/csplib/util/Log.h>
 #include <csp/csplib/util/Modules.h>
-#include <csp/csplib/util/Ref.h>
-#include <csp/csplib/util/ScopedPointer.h>
 
+#include <functional>
+#include <iostream>
 #include <map>
-#include <cc++/file.h>
-#include <csp/csplib/util/undef.h>
+#include <boost/dll.hpp>
 
-namespace csp {
+typedef std::map<std::string, std::function<void()> > ModuleRegistryMap;
 
-namespace {
-
-typedef void (*INITMODULE_FUNCTION)();
-
-struct ModuleWrapper: public Referenced {
-	inline ModuleWrapper(std::string const &path);
-	inline ~ModuleWrapper() { CSPLOG(INFO, REGISTRY) << "Unloading module " << m_path; }
-	std::string m_path;
-	ScopedPointer<ost::DSO> m_dso;
-	typedef std::map<std::string, Ref<ModuleWrapper> > Map;
-};
-
-ModuleWrapper::Map *getModuleRegistry() {
-	static ModuleWrapper::Map *registry = 0;
-	if (!registry) registry = new ModuleWrapper::Map;
+static ModuleRegistryMap *getModuleRegistry() {
+	static ModuleRegistryMap *registry = 0;
+	if (!registry) {
+		registry = new ModuleRegistryMap();
+	}
 	return registry;
 }
 
-// Force singleton construction at startup to avoid synchronization issues.
-struct ModuleRegistryInitializer { ModuleRegistryInitializer() { getModuleRegistry(); } } InitModuleRegistry;
-
-ModuleWrapper::ModuleWrapper(std::string const &path): m_path(path) {
-	CSPLOG(INFO, REGISTRY) << "Loading module " << path;
-	m_dso.reset(new ost::DSO(path.c_str(), /*bindnow=*/false));
-	getModuleRegistry()->insert(std::make_pair(path, this));
-	
-	INITMODULE_FUNCTION initModule = (INITMODULE_FUNCTION) ((*m_dso)["initModule"]);
-	if(initModule) {
-		initModule();
-	}
-	else {
-		std::cout << "Failed to find initModule function in: " << path.c_str() << std::endl;
-	}
-}
-
-} // namespace
+namespace csp {
 
 bool ModuleLoader::load(std::string const &path) {
+	std::cout << "Loading: " << path << std::endl;
 	try {
-		if (!isLoaded(path)) new ModuleWrapper(path);
-	} catch (...) {
+		if (!isLoaded(path)) {
+			std::function<void()> plugin = boost::dll::import_symbol<void()>(path,	"initModule");
+			plugin();
+			getModuleRegistry()->insert(std::make_pair(path, plugin));
+		}
+	}
+	catch (...) {
 		CSPLOG(ERROR, REGISTRY) << "Failed to load module " << path;
 		return false;
 	}
@@ -80,7 +59,7 @@ bool ModuleLoader::load(std::string const &path) {
 }
 
 bool ModuleLoader::unload(std::string const &path) {
-	ModuleWrapper::Map::iterator iter = getModuleRegistry()->find(path);
+	ModuleRegistryMap::iterator iter = getModuleRegistry()->find(path);
 	if (iter != getModuleRegistry()->end()) {
 		getModuleRegistry()->erase(iter);
 		return true;
@@ -93,7 +72,7 @@ void ModuleLoader::unloadAll() {
 }
 
 bool ModuleLoader::isLoaded(std::string const &path) {
-	return (getModuleRegistry()->find(path) != getModuleRegistry()->end());
+	return getModuleRegistry()->find(path) != getModuleRegistry()->end();
 }
 
 } // namespace csp

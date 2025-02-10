@@ -112,7 +112,7 @@ private:
 	 *  @return true if the task ended, false if the timeout expired.
 	 */
 	bool join(double timeout) {
-		return m_exit.wait(timeout);
+		return m_exit.wait_for(std::chrono::duration<double>(timeout));
 	}
 
 	struct StartAndFinish {

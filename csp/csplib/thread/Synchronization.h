@@ -31,8 +31,9 @@
 #include <algorithm>
 #include <cerrno>
 #include <cmath>
-
-// TODO barrier, unit tests
+#include <mutex>
+#include <condition_variable>
+#include <chrono>
 
 namespace csp {
 
@@ -190,31 +191,55 @@ class CSPLIB_EXPORT Conditional {};
  */
 class Event: public NonCopyable {
 public:
+	Event() : m_signaled(false) {}
+
 	/** Signal all waiting threads to wake up.  The event must be reset
 	 *  after calling signal() before another signal can be sent.
 	 */
-	void signal() { m_event.signal(); }
+	void signal() {
+        std::lock_guard<std::mutex> lock(m_mutex);
+        m_signaled = true;
+        m_condition.notify_all();
+	}
 
 	/** Reset the event (see signal).
 	 */
-	void reset() { m_event.reset(); }
+	void reset() {
+		std::lock_guard<std::mutex> lock(m_mutex);
+        m_signaled = false;
+	}
 
 	/** Wait for the event to be signaled by another thread or for until the
 	 *  specified time elapses.
 	 *
 	 *  @param timeout The maximum time (in seconds) to wait.
 	 *  @returns true if an event occurred, false if the timeout expired.
+	 *
+	 *  Example: myEvent.wait_for(std::chrono::seconds(3))
 	 */
-	bool wait(double timeout) { return m_event.wait(makeMilliTimeout(timeout)); }
+    template <typename Rep, typename Period>
+    bool wait_for(const std::chrono::duration<Rep, Period>& timeout) {
+        std::unique_lock<std::mutex> lock(m_mutex);
+        return m_condition.wait_for(lock, timeout, [this]() {
+			return m_signaled;
+		});
+    }
 
 	/** Wait for the event to be signaled by another thread.
 	 *
 	 *  @returns true if an event occurred..
 	 */
-	bool wait() { return m_event.wait(); }
+	void wait() {
+		std::unique_lock<std::mutex> lock(m_mutex);
+        m_condition.wait(lock, [this]() {
+			return m_signaled;
+		});
+	}
 
 private:
-	ost::Event m_event;
+    std::mutex m_mutex;
+    std::condition_variable m_condition;
+    bool m_signaled;
 };
 
 

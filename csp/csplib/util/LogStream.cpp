@@ -26,7 +26,6 @@
 #include <csp/csplib/util/Log.h>
 #include <csp/csplib/util/FileUtility.h>
 #include <csp/csplib/util/Trace.h>
-#include <csp/csplib/thread/Synchronization.h>
 #include <csp/csplib/thread/Thread.h>
 
 #include <iostream>

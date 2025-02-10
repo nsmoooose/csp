@@ -27,7 +27,6 @@
 #include <csp/csplib/util/FileUtility.h>
 #include <csp/csplib/util/Log.h>
 #include <csp/csplib/util/StringTools.h>
-#include <csp/csplib/thread/Synchronization.h>
 
 #include <osg/Version>
 #include <osgDB/ReaderWriter>

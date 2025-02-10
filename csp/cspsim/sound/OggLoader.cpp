@@ -30,8 +30,6 @@
 #include <openalpp/Sample>
 #include <vorbis/vorbisfile.h>
 
-#include <csp/csplib/util/undef.h>
-
 namespace csp {
 
 class OggLoader: public SoundFileLoader {

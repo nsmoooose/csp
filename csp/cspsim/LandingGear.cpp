@@ -54,7 +54,6 @@
 #include <csp/csplib/util/osg.h>
 
 #include <osgAL/SoundState>
-#include <csp/csplib/util/undef.h>
 
 #include <cstdio>
 #include <iostream>

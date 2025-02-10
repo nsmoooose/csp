@@ -38,7 +38,6 @@
 #include <csp/csplib/data/ObjectInterface.h>
 
 #include <osgAL/SoundState>
-#include <csp/csplib/util/undef.h>
 
 #include <iomanip>
 #include <sstream>

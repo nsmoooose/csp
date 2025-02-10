@@ -43,9 +43,6 @@
 #endif
 
 #include <cc++/network.h>
-#include <cc++/thread.h>
-#include <csp/csplib/util/undef.h>
-
 #include <string.h>
 #include <sys/types.h>
 #include <iostream>

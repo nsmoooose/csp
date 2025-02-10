@@ -1,6 +1,5 @@
 #include <osgDB/ReadFile>
 #include <csp/csplib/util/Log.h>
-#include <csp/csplib/util/undef.h>
 #include <csp/cspsim/weather/clouds/CloudTextureFactory.h>
 
 namespace csp {

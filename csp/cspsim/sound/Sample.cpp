@@ -31,8 +31,6 @@
 
 #include <osgAL/SoundState>
 #include <openalpp/Sample>
-#include <csp/csplib/util/undef.h>
-
 
 namespace csp {
 

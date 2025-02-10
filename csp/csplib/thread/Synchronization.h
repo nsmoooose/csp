@@ -26,7 +26,6 @@
 #include <csp/csplib/util/Properties.h>
 
 #include <cc++/thread.h>
-#include <csp/csplib/util/undef.h>
 
 #include <algorithm>
 #include <cerrno>

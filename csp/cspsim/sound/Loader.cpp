@@ -28,7 +28,6 @@
 
 #include <openalpp/Sample>
 
-#include <csp/csplib/util/undef.h>
 #include <map>
 #include <cassert>
 

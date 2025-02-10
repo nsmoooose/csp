@@ -87,8 +87,6 @@
 #include <osg/Notify>
 #include <osgAL/SoundManager>
 
-#include <csp/csplib/util/undef.h>
-
 namespace csp {
 
 /**

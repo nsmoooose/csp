@@ -28,7 +28,6 @@
 
 #include <osgAL/SoundManager>
 #include <osgAL/SoundRoot>
-#include <csp/csplib/util/undef.h>
 
 #include <cassert>
 

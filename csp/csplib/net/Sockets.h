@@ -31,7 +31,6 @@
 #endif
 
 #include <cc++/network.h>
-#include <csp/csplib/util/undef.h>
 
 #ifdef _WIN32
 #	pragma warning(pop)

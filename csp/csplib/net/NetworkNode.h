@@ -33,7 +33,6 @@
 #endif
 
 #include <cc++/socket.h>
-#include <csp/csplib/util/undef.h>
 
 #ifdef _WIN32
 #	pragma warning(pop)

@@ -31,7 +31,6 @@
 #include <csp/csplib/util/Log.h>
 #include <csp/csplib/thread/AtomicCounter.h>
 #include <csp/csplib/thread/Synchronization.h>
-#include <csp/csplib/util/undef.h>
 
 namespace csp {
 

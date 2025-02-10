@@ -28,8 +28,6 @@
 
 #include <csp/csplib/util/Export.h>
 #include <csp/csplib/util/Properties.h>
-#include <csp/csplib/util/undef.h>
-
 
 namespace csp {
 

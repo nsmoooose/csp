@@ -60,8 +60,8 @@ struct ClientData {
 	std::string user_name;
 	PeerId id;
 	std::set<SimObject::ObjectId> units;
-	uint32_t internal_ip_addr;
-	uint32_t external_ip_addr;
+	boost::asio::ip::address internal_ip_addr;
+	boost::asio::ip::address external_ip_addr;
 };
 
 
@@ -265,11 +265,11 @@ private:
 		PeerId id = msg->getSource();
 		PeerInfo const *peer_info = m_NetworkServer->getPeer(id);
 
-		uint32_t inbound_ip_addr = peer_info->getNode().getIp();
-		uint32_t internal_ip_addr = msg->has_internal_ip_addr() ? msg->internal_ip_addr() : inbound_ip_addr;
+		auto inbound_ip_addr = peer_info->getNode().getAddress();
+		auto internal_ip_addr = msg->has_internal_ip_addr() ? msg->internal_ip_addr() : inbound_ip_addr;
 
 		CSPLOG(INFO, BATTLEFIELD) << "join request from " << peer_info->getNode();
-		CSPLOG(INFO, BATTLEFIELD) << "      internal ip " << NetworkNode::ipToString(internal_ip_addr);
+		CSPLOG(INFO, BATTLEFIELD) << "      internal ip " << internal_ip_addr.to_string();
 
 		/** basic sanity checking on ip addresses */
 		if (NetworkNode::isRoutable(internal_ip_addr) && (internal_ip_addr != inbound_ip_addr)) {
@@ -297,7 +297,7 @@ private:
 		 * since only the server needs to specify an external ip address; the clients can just bind to
 		 * their local interfaces and the server will decide which ip to use when introducing two peers.
 		 */
-		uint32_t external_ip_addr = NetworkNode::isRoutable(inbound_ip_addr) ? inbound_ip_addr : m_NetworkServer->getExternalNode().getIp();
+		auto external_ip_addr = NetworkNode::isRoutable(inbound_ip_addr) ? inbound_ip_addr : m_NetworkServer->getExternalNode().getAddress();
 
 		ClientData &data = m_ClientData[id];
 		response->set_success(true);
@@ -476,7 +476,7 @@ private:
 					Ref<CommandAddUnit> msg = new CommandAddUnit();
 					msg->set_unit_id(from->id());
 					msg->set_unit_class(Path(from->unit()->getObjectPath()));
-					msg->set_unit_type(static_cast<uint8>(from->unit()->type()));
+					msg->set_unit_type(static_cast<uint8_t>(from->unit()->type()));
 					msg->set_owner_id(from->owner());
 					msg->set_grid_x(from->point().x());
 					msg->set_grid_y(from->point().y());

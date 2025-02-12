@@ -208,7 +208,7 @@ public:
 		m_next_write = 0;
 		m_allocated = 0;
 		m_start_write = 0;
-		m_buffer = new uint8[size];
+		m_buffer = new uint8_t[size];
 	}
 
 	/** Get the maximum capacity of the buffer when completely empty (in bytes).
@@ -273,7 +273,7 @@ public:
 			if (read - m_write <= RESERVE) return 0;
 			return read - m_write - RESERVE - 1;
 		}
-		uint32_t space = std::max<uint32>(read, m_size - m_write);
+		uint32_t space = std::max<uint32_t>(read, m_size - m_write);
 		if (space > RESERVE) return space - RESERVE - 1;
 		return 0;
 	}

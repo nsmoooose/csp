@@ -25,6 +25,7 @@
  */
 
 #include <csp/csplib/net/NetworkNode.h>
+#include <csp/csplib/net/Sockets.h>
 #include <sstream>
 
 namespace csp {
@@ -33,56 +34,56 @@ NetworkNode::NetworkNode() {
 	m_port = 0;
 }
 
-NetworkNode::NetworkNode(ost::InetHostAddress addr, ost::tpport_t port) {
+NetworkNode::NetworkNode(boost::asio::ip::address addr, unsigned short port) {
 	m_addr = addr;
 	m_port = port;
 }
 
-NetworkNode::NetworkNode(std::string const &hostname, ost::tpport_t port) {
-	m_addr = ost::InetHostAddress(hostname.c_str());
-	m_port = port;
-}
-
-NetworkNode::NetworkNode(const char *hostname, ost::tpport_t port) {
-	m_addr = ost::InetHostAddress(hostname);
-	m_port = port;
-}
-
-NetworkNode::NetworkNode(uint32_t addr, ost::tpport_t port) {
-	struct in_addr my_in_addr;
-	my_in_addr.s_addr = addr;
-	m_addr = ost::InetHostAddress(my_in_addr);
+NetworkNode::NetworkNode(std::string const &hostname, unsigned short port) {
+	try {
+		boost::asio::ip::tcp::resolver resolver(getIOContext());
+		auto result = resolver.resolve(hostname, std::to_string(port));
+		for (const auto& entry : result) {
+			m_addr = entry.endpoint().address();
+			break;
+		}
+	}
+	catch (const boost::system::system_error& e) {
+		throw NetworkException(e.what());
+	}
 	m_port = port;
 }
 
 NetworkNode::NetworkNode(ConnectionPoint const &point) {
-	struct in_addr my_in_addr;
-	my_in_addr.s_addr = point.first;
-	m_addr = ost::InetHostAddress(my_in_addr);
+	m_addr = point.first;
 	m_port = point.second;
 }
 
-void NetworkNode::setAddress(ost::InetHostAddress addr) {
+void NetworkNode::setAddress(boost::asio::ip::address addr) {
 	m_addr = addr;
 }
 
-void NetworkNode::setPort(ost::tpport_t port) {
+void NetworkNode::setPort(unsigned short port) {
 	m_port = port;
 }
 
-ost::InetHostAddress const &NetworkNode::getAddress() const {
+boost::asio::ip::address const &NetworkNode::getAddress() const {
 	return m_addr;
 }
 
-const char * NetworkNode::getHostname() const {
-	return m_addr.getHostname();
-}
-
-std::string NetworkNode::ipToString(uint32_t addr) {
-	std::ostringstream os;
-	os << (addr & 0xff) << "." << ((addr >> 8) & 0xff) << "." << ((addr >> 16) & 0xff) << "." << (addr >> 24);
-	return os.str();
+std::string NetworkNode::getHostname() const {
+	try {
+		boost::asio::ip::tcp::resolver resolver(getIOContext());
+		auto endpoints = resolver.resolve(boost::asio::ip::tcp::endpoint(m_addr, 0));
+		for (const auto& endpoint : endpoints) {
+			return endpoint.host_name();
+			break;
+		}
+		return "";
+	}
+	catch (const boost::system::system_error& e) {
+		return "";
+	}
 }
 
 } // namespace csp
-

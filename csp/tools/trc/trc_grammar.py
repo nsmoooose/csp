@@ -253,6 +253,7 @@ def p_simple_type(p):
                    | FLOAT_TYPE
                    | STRING_TYPE
                    | CSP_TYPE
+                   | IP_ADDR_TYPE
                    | qualified_type
     '''
     p[0] = trc_gen.Type(state.types[p[1]], p[1])

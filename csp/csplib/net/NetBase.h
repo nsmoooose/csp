@@ -37,6 +37,7 @@
 #include <csp/csplib/util/Endian.h>
 #include <csp/csplib/util/Export.h>
 #include <csp/csplib/util/Uniform.h>
+#include <boost/asio.hpp>
 #include <cassert>
 #include <ostream>
 
@@ -73,7 +74,7 @@ typedef uint16_t ConfirmationId;
 
 /** Shorthand for NetworkNode for use as a std::map key type.
  */
-typedef std::pair<uint32_t, Port> ConnectionPoint;
+typedef std::pair<boost::asio::ip::address, Port> ConnectionPoint;
 
 /** Header attached to all transmitted network packets.  This is the
  *  short form of the header, used for unreliable transmissions.  If

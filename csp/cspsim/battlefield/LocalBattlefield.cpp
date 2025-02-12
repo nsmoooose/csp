@@ -38,6 +38,7 @@
 #include <csp/csplib/util/Verify.h>
 
 #include <cmath>
+#include <iostream>
 
 namespace csp {
 
@@ -256,7 +257,7 @@ void LocalBattlefield::scanUnit(LocalUnitWrapper *wrapper) {
 			float distance = static_cast<float>((contact->unit()->getGlobalPosition() - unit_position).length2());
 			peer_contacts.push_back(PeerContact(contact->owner(), distance));
 			unit->m_ContactList.push_back(contact->id());
-			signature = make_unordered_fingerprint(signature, hash_uint32(static_cast<uint32>(contact->id())));
+			signature = make_unordered_fingerprint(signature, hash_uint32(static_cast<uint32_t>(contact->id())));
 		}
 		unit->m_ContactSignature = signature;
 		CSPLOG(INFO, BATTLEFIELD) << "found " << peer_contacts.size() << " nearby units";
@@ -374,9 +375,9 @@ void LocalBattlefield::connectToServer(std::string const &name) {
 	assert(m_ConnectionState == CONNECTION_DETACHED);
 	Ref<JoinRequest> msg = new JoinRequest();
 	msg->set_user_name(name);
-	msg->set_internal_ip_addr(m_NetworkClient->getLocalNode().getIp());
-	msg->set_external_ip_addr(m_NetworkClient->getExternalNode().getIp());
-	msg->set_local_time(static_cast<uint32>(getSecondsSinceUnixEpoch()));
+	msg->set_internal_ip_addr(m_NetworkClient->getLocalNode().getAddress());
+	msg->set_external_ip_addr(m_NetworkClient->getExternalNode().getAddress());
+	msg->set_local_time(static_cast<uint32_t>(getSecondsSinceUnixEpoch()));
 	sendServerCommand(msg);
 	m_ConnectionState = CONNECTION_JOIN;
 }
@@ -602,7 +603,7 @@ void LocalBattlefield::__test__addLocalHumanUnit(Unit const &unit, bool human) {
 		Ref<RegisterUnit> msg = new RegisterUnit();
 		msg->set_unit_id(unit->id());
 		msg->set_unit_class(unit->getObjectPath());
-		msg->set_unit_type(static_cast<uint8>(unit->type()));
+		msg->set_unit_type(static_cast<uint8_t>(unit->type()));
 		msg->set_grid_x(wrapper->point().x());
 		msg->set_grid_y(wrapper->point().y());
 		sendServerCommand(msg);
@@ -791,7 +792,7 @@ double LocalBattlefield::UnitUpdateProxy::onUpdate(double dt) {
 		return 1.0;  /** wait 1 sec before checking again */
 	}
 
-	uint32_t dt_ms = static_cast<uint32>(dt * 1000.0);
+	uint32_t dt_ms = static_cast<uint32_t>(dt * 1000.0);
 	m_UpdateTime += dt_ms;
 	/** @bug this can get choppy when the frame rate and update rates are comparable */
 	if (m_UpdateTime < m_PeerUpdates[0].next_update) {
@@ -871,12 +872,12 @@ double LocalBattlefield::UnitUpdateProxy::onUpdate(double dt) {
 
 void LocalBattlefield::UnitUpdateProxy::setUpdateParameters(PeerId id, double interval, uint16_t detail) {
 	assert(detail < DETAIL_LEVELS);
-	uint16_t interval_ms = static_cast<uint16>(interval * 1000.0);
+	uint16_t interval_ms = static_cast<uint16_t>(interval * 1000.0);
 	const unsigned n = m_PeerUpdates.size();
 	for (unsigned i = 0; i < n; ++i) {
 		if (m_PeerUpdates[i].id == id) {
 			m_PeerUpdates[i].interval = interval_ms;
-			m_PeerUpdates[i].detail = static_cast<uint16>(detail);
+			m_PeerUpdates[i].detail = static_cast<uint16_t>(detail);
 			CSPLOG(INFO, BATTLEFIELD) << "set update interval for peer " << id << " to " << interval_ms << " ms";
 			return;
 		}
@@ -924,7 +925,7 @@ void LocalBattlefield::LocalUnitWrapper::setUpdateDistance(PeerId id, double dis
 	 * 1 = 6.4-12.8 km
 	 * 0 = >12.8 km
 	 */
-	uint16_t detail = static_cast<uint16>(std::max(0, 9 - static_cast<int>(1.4427 * ::log(std::max(1.0, distance / 25.0)))));
+	uint16_t detail = static_cast<uint16_t>(std::max(0, 9 - static_cast<int>(1.4427 * ::log(std::max(1.0, distance / 25.0)))));
 	m_UpdateProxy->setUpdateParameters(id, interval, detail);
 }
 

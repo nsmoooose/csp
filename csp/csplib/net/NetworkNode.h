@@ -27,29 +27,18 @@
 #include <csp/csplib/util/Export.h>
 #include <csp/csplib/util/Uniform.h>
 
-#ifdef _WIN32
-#	pragma warning(push)
-#	pragma warning(disable: 4100 4996)
-#endif
-
-#include <cc++/socket.h>
-
-#ifdef _WIN32
-#	pragma warning(pop)
-#endif
-
+#include <boost/asio.hpp>
 #include <string>
 
 namespace csp {
-
 
 /** Class representing a remote host address (ip address and receive port)
  *  @ingroup net
  */
 class CSPLIB_EXPORT NetworkNode {
 private:
-	ost::InetHostAddress m_addr;
-	ost::tpport_t m_port;
+	boost::asio::ip::address m_addr;
+	unsigned short m_port;
 
 public:
 	/** Construct a default node.  The address defaults to the interface
@@ -59,14 +48,7 @@ public:
 
 	/** Construct from an existing cc++ address and receive port.
 	 */
-	NetworkNode(ost::InetHostAddress addr, ost::tpport_t port);
-
-	/** Construct a new node from ip address and receive port.
-	 *
-	 *  @param addr the binary address of the host.
-	 *  @param port the port number used by the host for receiving data.
-	 */
-	NetworkNode(uint32_t addr, ost::tpport_t port);
+	NetworkNode(boost::asio::ip::address addr, unsigned short port);
 
 	/** Construct a new node from a ConnectionPoint.
 	 *
@@ -80,71 +62,56 @@ public:
 	 *    host machine (e.g. "csp.sourceforge.net").
 	 *  @param port the port number used by the host for receiving data.
 	 */
-	NetworkNode(std::string const &hostname, ost::tpport_t port);
-
-	/** Same as the (string const&, ost::tpport_t) constructor, but unfortunately
-	 *  necessary to disambiguate const char* hostnames.
-	 */
-	NetworkNode(const char *hostname, ost::tpport_t port);
+	NetworkNode(std::string const &hostname, unsigned short port);
 
 	/** Set the host ip address.
 	 */
-	void setAddress(ost::InetHostAddress addr);
+	void setAddress(boost::asio::ip::address addr);
 
 	/** Set the host receive port.
 	 */
-	void setPort(ost::tpport_t port);
+	void setPort(unsigned short port);
 
 	/** Get the host receive port.
 	 */
-	inline ost::tpport_t getPort() const { return m_port; }
+	inline unsigned short getPort() const { return m_port; }
 
 	/** Get the host ip address.
 	 */
-	ost::InetHostAddress const &getAddress() const;
+	boost::asio::ip::address const &getAddress() const;
 
 	/** Convert ip address and port to a ConnectionPoint.
 	 */
 	inline ConnectionPoint getConnectionPoint() const {
-		return ConnectionPoint(getIp(), getPort());
-	}
-
-	/** Get the ip address as a 32-bit int, in network byte-order.
-	 */
-	inline uint32_t getIp() const {
-		return m_addr.getAddress().s_addr;
+		return ConnectionPoint(getAddress(), getPort());
 	}
 
 	/** Get the host name.
 	 */
-	const char * getHostname() const;
+	std::string getHostname() const;
 
 	/** Get ip address as a dotted-quad string.
 	 */
 	inline std::string getIpString() const {
-		return ipToString(getIp());
+		return m_addr.to_string();
 	}
 
 	/** Return true if this ip is routable (ie, not 127.0.0.0/8, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16).
 	 */
 	inline bool isRoutable() const {
-		return isRoutable(getIp());
+		return isRoutable(m_addr);
 	}
 
 	/** Test if an ip address is routable (ie, not 127.0.0.0/8, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16).
 	 *  @param addr 32-bit ipv4 address in network byte-order.
 	 */
-	static bool isRoutable(uint32_t addr) {
+	static bool isRoutable(const boost::asio::ip::address &address) {
+		auto addr = address.to_v4().to_uint();
 		return ((addr & 0xffff) != 43200) &&  // 192.168.  0.  0 - 192.168.255.255
 		       ((addr & 0x00ff) !=    10) &&  //  10.  0.  0.  0 -  10.255.255.255
 		       ((addr & 0x00ff) !=   127) &&  // 127.  0.  0.  0 - 127.255.255.255
 		       ((addr & 0xf0ff) !=  4268);    // 172. 16.  0.  0 - 172. 31.255.255
 	}
-
-	/** Convert an ip address to a dotted-quad string.
-	 *  @param addr 32-bit ipv4 address in network byte-order.
-	 */
-	static std::string ipToString(uint32_t addr);
 };
 
 

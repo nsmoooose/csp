@@ -23,10 +23,11 @@
  **/
 
 #include <csignal>
+#include <iostream>
+
 #include <csp/cspsim/battlefield/GlobalBattlefield.h>
 #include <csp/cspsim/IndexServer.h>
 #include <csp/cspsim/Config.h>
-
 #include <csp/csplib/net/ClientServer.h>
 #include <csp/csplib/util/Log.h>
 #include <csp/csplib/util/SimpleConfig.h>
@@ -58,17 +59,20 @@ void IndexServer::initPrimaryInterface() {
 	const std::string server_interface = g_Config.getString("Network", "Bind", default_node.getIpString() + ":3160", true);
 	const std::string external_ip = g_Config.getString("Network", "ExternalIp", "", false);
 	const std::string::size_type colon = server_interface.find(':');
-	std::string address;
+	std::string ipaddress;
 	Port port = 0;
 	if (colon != std::string::npos) {
 		port = static_cast<Port>(atoi(server_interface.substr(colon + 1).c_str()));
-		address = server_interface.substr(0, colon);
+		ipaddress = server_interface.substr(0, colon);
 	}
-	if (address.size() == 0 || port == 0) {
+	if (ipaddress.size() == 0 || port == 0) {
 		std::cerr << "Invalid value for Network.Bind in .ini file: " << server_interface << "\n";
 		std::cerr << "Should be of the form www.xxx.yyy.zzz:port\n";
 		::exit(1);
 	}
+
+	auto address = boost::asio::ip::make_address(ipaddress);
+
 	NetworkNode local_node(address, port);
 	CSPLOG(INFO, APP) << "binding to interface " << local_node;
 
@@ -81,8 +85,9 @@ void IndexServer::initPrimaryInterface() {
 			CSPLOG(WARNING, APP) << "no external ip address specified; accepting only local (LAN) connections";
 		}
 	} else {
+		auto external_address = boost::asio::ip::make_address(external_ip);
 		if (!local_node.isRoutable()) {
-			NetworkNode external_node(external_ip, port);
+			NetworkNode external_node(external_address, port);
 			CSPLOG(INFO, APP) << "external interface is " << external_node;
 			if (external_node.isRoutable()) {
 				m_NetworkServer->setExternalNode(external_node);
@@ -90,7 +95,7 @@ void IndexServer::initPrimaryInterface() {
 				CSPLOG(ERROR, APP) << "external interface is not routable; ignoring ExternalIp and accepting only local (LAN) connections";
 			}
 		} else {
-			if (external_ip != address) {
+			if (external_address != address) {
 				CSPLOG(ERROR, APP) << "binding to a routable interface that does not match the specified external ip (" << external_ip << "); ignoring ExternalIp";
 			}
 		}
@@ -109,7 +114,7 @@ void IndexServer::run() {
 	Timer timer;
 	timer.start();
 	while (!sigint_quit) {
-		m_NetworkServer->processAndWait(0.01, 0.01, 0.10);
+		m_NetworkServer->processAndWait(0.01, 0.01, 0.1);
 		m_Battlefield->update(timer.incremental());
 	}
 }
@@ -125,8 +130,8 @@ int IndexServer::main() {
 		return 1;
 	}
 
-	csp::log().logToFile("IndexServer.log");
-	csp::log().setCategories(csp::cLogCategory_ALL);
+	// csp::log().logToFile("IndexServer.log");
+	csp::log().setCategories(csp::cLogCategory_ALL &~ (csp::cLogCategory_TIMING));
 	csp::log().setPriority(csp::g_Config.getInt("Debug", "LogPriority", csp::cLogPriority_INFO, true));
 
 	csp::IndexServer server;

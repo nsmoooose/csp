@@ -26,6 +26,7 @@
 ///////////////////////////////////////////////////////////////////
 // TESTING ONLY -- REMOVE ME!
 //
+#include <boost/asio.hpp>
 #include <csp/csplib/data/Vector3.h>
 #include <csp/csplib/data/Quat.h>
 
@@ -39,8 +40,8 @@ typedef csp::NetworkMessage NetworkMessage;
 message JoinRequest : NetworkMessage { @id=64;
 	// any identifier (e.g. callsign)
 	std::string user_name;
-	uint32_t internal_ip_addr;
-	uint32_t external_ip_addr;
+	boost::asio::ip::address internal_ip_addr;
+	boost::asio::ip::address external_ip_addr;
 	uint32_t local_time;
 }
 
@@ -60,7 +61,7 @@ message PlayerJoin : NetworkMessage { @id=66;
 	std::string user_name;
 	int16_t peer_id;
 	int16_t port;
-	int32_t ip_addr;
+	boost::asio::ip::address ip_addr;
 	int32_t incoming_bw;
 	int32_t outgoing_bw;
 }

@@ -147,6 +147,21 @@ Reader& Reader::operator>>(std::string &x) {
 	return *this;
 }
 
+Reader& Reader::operator>>(boost::asio::ip::address &x) {
+	int32_t n = readLength();
+	if (_read + n > _end) {
+		throw DataUnderflow();
+	}
+	if(n == 4) {
+		x = boost::asio::ip::address_v4(*reinterpret_cast<const std::array<unsigned char, 4>*>(_read));
+	} else if(n == 16) {
+	} else {
+		throw DataUnderflow();
+	}
+	return *this;
+}
+
+
 int32_t Reader::readLength() {
 	if (_read >= _end) throw DataUnderflow();
 	const uint32_t bytes = (static_cast<uint32_t>(*_read) & 3) + 1;
@@ -240,6 +255,21 @@ Writer& Writer::operator<<(const std::string &y) {
 	write(y.data(), n);
 	return *this;
 }
+
+Writer& Writer::operator<<(const boost::asio::ip::address &y) {
+	if (y.is_v4()) {
+		std::array<unsigned char, 4> bytes = y.to_v4().to_bytes();
+		writeLength(4);
+		write(bytes.data(), 4);
+	}
+	else if (y.is_v6()) {
+		std::array<unsigned char, 16> bytes = y.to_v6().to_bytes();
+		writeLength(16);
+		write(bytes.data(), 16);
+	}
+	return *this;
+}
+
 
 void Writer::writeLength(int32_t length) {
 	assert(length >= 0 && length <= 1073741823);

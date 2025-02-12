@@ -42,7 +42,6 @@
 #define _WINSOCKAPI_
 #endif
 
-#include <cc++/network.h>
 #include <string.h>
 #include <sys/types.h>
 #include <iostream>
@@ -73,8 +72,8 @@ struct PingPayload {
 #pragma pack(pop)
 
 
-const uint32_t NetworkInterface::HeaderSize = sizeof(PacketHeader);
-const uint32_t NetworkInterface::ReceiptHeaderSize = sizeof(PacketReceiptHeader);
+const std::uint32_t NetworkInterface::HeaderSize = sizeof(PacketHeader);
+const std::uint32_t NetworkInterface::ReceiptHeaderSize = sizeof(PacketReceiptHeader);
 
 CSP_STATIC_CONST_DEF(uint16_t NetworkInterface::PingID);
 CSP_STATIC_CONST_DEF(uint32_t NetworkInterface::PeerIndexSize);
@@ -109,7 +108,7 @@ public:
 void NetworkInterface::sendPackets(double timeout) {
 	static StopWatch::Data swd(0.00001f);
 	uint8_t *ptr;
-	ost::InetHostAddress addr;
+	boost::asio::ip::address addr;
 	uint32_t size;
 
 	int queue_idx = 3;
@@ -175,7 +174,6 @@ void NetworkInterface::sendPackets(double timeout) {
 				queue->replaceReadBuffer();
 				break;
 			}
-			ost::Thread::yield();
 			if (!socket->isOutputReady()) {
 				queue->replaceReadBuffer();
 				break;
@@ -245,7 +243,7 @@ bool NetworkInterface::pingPeer(PeerInfo *peer) {
 		peer->setReceipt(receipt, false /*reliable*/, sizeof(PingPayload));
 	}
 	PingPayload *payload = reinterpret_cast<PingPayload*>(ptr + header_size);
-	uint32_t transmit_time = static_cast<uint32>(getCalibratedRealTime() * 1000.0);
+	uint32_t transmit_time = static_cast<uint32_t>(getCalibratedRealTime() * 1000.0);
 	payload->transmit_time = CSP_UINT32_TO_LE(transmit_time);
 	payload->last_latency = CSP_INT32_TO_LE(peer->getLastPingLatency());
 	//std::cout << "PING " << peer->getId() << " .......\n";
@@ -373,16 +371,6 @@ void NetworkInterface::processOutgoing(double timeout) {
 
 }
 
-
-bool NetworkInterface::waitPending(double timeout) {
-	for (int queue_idx = 0; queue_idx <= 3; ++queue_idx) {
-		if (!m_RxQueues[queue_idx]->isEmpty()) return true;
-		if (!m_TxQueues[queue_idx]->isEmpty()) return true;
-	}
-	return (m_Socket->isPendingReceive(static_cast<int>(timeout * 1000)));
-}
-
-
 static double DEBUG_recvtime;
 
 int NetworkInterface::receivePackets(double timeout) {
@@ -405,17 +393,18 @@ int NetworkInterface::receivePackets(double timeout) {
 	watch.start();
 
 	for(;;) {
-
-		if (!m_Socket->isPendingReceive(0)) {
+		auto recv_timeout = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::duration<double>(timeout));
+		auto result = m_Socket->receive((void*)buffer, sizeof(buffer), recv_timeout);
+		if(result == -1) {
 			watch.calibrate();
 			break;
 		}
 
+		uint32_t packet_length = result;
+
 		// we only need this for initial connections right now, but it must be
 		// retrieved before the packet data is read.
-		ost::InetHostAddress sender_addr = m_Socket->getSender(0);
-
-		uint32_t packet_length = m_Socket->receive((void*)buffer, sizeof(buffer));
+		auto sender_addr = m_Socket->getSender(0);
 
 		if (packet_length < HeaderSize) {
 			m_BadPackets++;
@@ -438,8 +427,7 @@ int NetworkInterface::receivePackets(double timeout) {
 		// note: whenever source id is zero, routing_data will be set to the receive
 		// port number, and routing type will be zero
 		if (source == 0 && m_AllowUnknownPeers && header->routingType() == 0) {
-			uint32_t ip = sender_addr.getAddress().s_addr;
-			ConnectionPoint point(ip, static_cast<Port>(header->routingData()));
+			ConnectionPoint point(sender_addr, static_cast<Port>(header->routingData()));
 			source = getSourceId(point);
 		}
 
@@ -492,9 +480,9 @@ int NetworkInterface::receivePackets(double timeout) {
 				PingPayload *payload = reinterpret_cast<PingPayload*>(buffer + header_size);
 				int32_t last_ping_latency = CSP_INT32_FROM_LE(payload->last_latency);
 				uint32_t transmit_time = CSP_UINT32_FROM_LE(payload->transmit_time);
-				uint32_t receive_time = static_cast<uint32>(getCalibratedRealTime() * 1000.0);
+				uint32_t receive_time = static_cast<uint32_t>(getCalibratedRealTime() * 1000.0);
 				//std::cout << "PING TX=" << transmit_time << " RX=" << receive_time << " OFS=" << last_ping_latency << "\n";
-				int64_t t_latency = static_cast<int64>(receive_time) - static_cast<int64>(transmit_time);
+				int64_t t_latency = static_cast<int64_t>(receive_time) - static_cast<int64_t>(transmit_time);
 				if (t_latency >= 0x80000000LL) {
 					t_latency -= 0x80000000LL;
 				} else if (t_latency < -0x80000000LL) {
@@ -734,7 +722,7 @@ void NetworkInterface::initialize(NetworkNode const &local_node, bool isServer, 
 	assert(!m_Initialized);
 	m_Initialized = true;
 	m_LastUpdate = -1.0;
-	m_Socket.reset(new DatagramReceiveSocket(local_node.getAddress(), local_node.getPort()));
+	m_Socket.reset(new DatagramReceiveSocket(getIOContext(), local_node.getAddress(), local_node.getPort()));
 	m_LocalNode.reset(new NetworkNode(local_node));
 	assert(incoming_bw > 0 && outgoing_bw > 0);
 	m_IncomingBandwidth = incoming_bw;
@@ -848,7 +836,7 @@ PeerId NetworkInterface::getSourceId(ConnectionPoint const &point) {
 	IpPeerMap::iterator iter = m_IpPeerMap.find(point);
 	// if the ip is unknown ip, allocate a new peer id
 	if (iter == m_IpPeerMap.end()) {
-		CSPLOG(INFO, HANDSHAKE) << "initial connection from " << NetworkNode::ipToString(point.first) << ":" << point.second;
+		CSPLOG(INFO, HANDSHAKE) << "initial connection from " << point.first.to_string() << ":" << point.second;
 		// a connection must be disconnected for 60 seconds before the id can be reused.
 		double cutoff = get_realtime() - 60;
 		// use LastAssignedPeerId to rotate through assignments, rather than always

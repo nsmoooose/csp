@@ -125,10 +125,8 @@ public:
 	 *
 	 *  @param read_timeout The maximum time (in seconds) to spend processing incoming packets.
 	 *  @param write_timeout The maximum time (in seconds) to spend processing outgoing packets.
-	 *  @param timeout The maximum time (in seconds) to wait for incoming or outgoing packets
-	 *    before processing.
 	 */
-	void processAndWait(double read_timeout, double write_timeout, double timeout);
+	void processAndWait(double read_timeout, double write_timeout);
 
 	/** Convenience method for adding message handlers based on routing type.
 	 */

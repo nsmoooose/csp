@@ -26,6 +26,7 @@
 #include <csp/csplib/util/Timing.h>
 #include <csp/csplib/util/Verify.h>
 
+#include <iostream>
 #include <vector>
 #include <algorithm>
 
@@ -116,13 +117,13 @@ void PeerInfo::update(double dt, double scale_desired_rate_to_self) {
 
 	// update the desired bandwidth from self to peer
 	const uint32_t attempted_packets = m_packets_self_to_peer + m_packets_throttled;
-	const uint32_t attempted_bytes = static_cast<uint32>(attempted_packets * m_average_outgoing_packet_size);
+	const uint32_t attempted_bytes = static_cast<uint32_t>(attempted_packets * m_average_outgoing_packet_size);
 	const double desired_bandwidth = double(attempted_bytes) / dt;
 	m_desired_bandwidth_self_to_peer = lowpass<2000>(dt, m_desired_bandwidth_self_to_peer, desired_bandwidth);
 	const double desired_rate = 100.0 * m_desired_bandwidth_self_to_peer / m_total_peer_incoming_bandwidth;
-	m_desired_rate_self_to_peer = std::max(1U, std::min(static_cast<uint32>(desired_rate), 1023U));
+	m_desired_rate_self_to_peer = std::max(1U, std::min(static_cast<uint32_t>(desired_rate), 1023U));
 
-	m_allocation_peer_to_self = static_cast<uint32>(m_desired_rate_peer_to_self * scale_desired_rate_to_self);
+	m_allocation_peer_to_self = static_cast<uint32_t>(m_desired_rate_peer_to_self * scale_desired_rate_to_self);
 
 	// limit the inbound bandwidth we allocate for messages from this peer to between 1% and 100% of our
 	// total inbound bandwidth.  the lower limit is important to prevent the peer from throttling all
@@ -132,7 +133,7 @@ void PeerInfo::update(double dt, double scale_desired_rate_to_self) {
 	// translate our allocated bandwidth to this peer into a throttling threshold
 	const double allocated_bandwidth = m_allocation_self_to_peer * m_total_peer_incoming_bandwidth * (1.0 / 1024.0);
 	const double throttle_fraction = std::min(0.99, std::max(0.0, 1.0 - (allocated_bandwidth / desired_bandwidth)));
-	m_throttle_threshold = static_cast<uint32>(0xfffffffful * throttle_fraction);
+	m_throttle_threshold = static_cast<uint32_t>(0xfffffffful * throttle_fraction);
 
 	if (((DEBUG_connection_display_loop % 100) == 0)) {
 		if (m_packets_self_to_peer > 0) {
@@ -201,12 +202,12 @@ void PeerInfo::updateBandwidth(double incoming, double outgoing) {
 
 void PeerInfo::setNode(NetworkNode const &node, double incoming, double outgoing) {
 	m_node = node;
-	m_socket.reset(new DatagramTransmitSocket());
+	m_socket.reset(new DatagramTransmitSocket(getIOContext()));
 	m_socket->connect(node.getAddress(), node.getPort());
 	m_total_peer_incoming_bandwidth = incoming;
 	m_total_peer_outgoing_bandwidth = outgoing;
 	assert(!m_duplicate_filter);
-	m_duplicate_filter = new uint32[65536/32];
+	m_duplicate_filter = new uint32_t[65536/32];
 	assert(m_duplicate_filter);
 	memset(m_duplicate_filter, 0, 4*65536/32);
 	m_active = true;

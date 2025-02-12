@@ -361,12 +361,6 @@ public:
 	 */
 	void processOutgoing(double timeout);
 
-	/** Wait for incoming packets if all incoming and outgoing queues are empty.
-	 *  @param timeout the maximum time to wait, in seconds.
-	 *  @return false if the timeout expired (ie. no pending incoming packets and all queues empty).
-	 */
-	bool waitPending(double timeout);
-
 	/** Add a handler that will receive all inbound packets.  Any number of handlers
 	 *  can be added, although in practice one is usually sufficient.
 	 */

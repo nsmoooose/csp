@@ -104,6 +104,7 @@ build.SourceGroup(expenv,
         'net/RoutingHandler.cpp',
         'net/RoutingHandler.h',
         'net/Sockets.h',
+        'net/Sockets.cpp',
         'net/StopWatch.h',
         'net/TaggedRecord.h',
         'net/TaggedRecordRegistry.cpp',
@@ -185,7 +186,7 @@ build.SourceGroup(expenv,
         'xml/XmlParser.cpp',
         'xml/XmlParser.h',
     ],
-    deps = ['boost', 'gnucc2', 'sigc', 'windows'])
+    deps = ['boost', 'sigc', 'windows'])
 
 
 build.Program(env,

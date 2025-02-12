@@ -27,6 +27,7 @@
 #include <csp/csplib/util/Exception.h>
 #include <csp/csplib/util/HashUtility.h>
 
+#include <boost/asio.hpp>
 #include <string>
 #include <vector>
 #include <cstdlib>
@@ -107,6 +108,7 @@ public:
 	Reader& operator>>(double &x);
 	Reader& operator>>(hasht &x);
 	Reader& operator>>(std::string &x);
+	Reader& operator>>(boost::asio::ip::address &x);
 #endif // SWIG
 
 	int32_t readLength();
@@ -217,6 +219,7 @@ public:
 	Writer& operator<<(const double y);
 	Writer& operator<<(const hasht &y);
 	Writer& operator<<(const std::string &y);
+	Writer& operator<<(const boost::asio::ip::address &y);
 #endif // SWIG
 
 	void writeLength(int32_t length);

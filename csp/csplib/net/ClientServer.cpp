@@ -85,8 +85,7 @@ void ClientServerBase::processTraffic(double read_timeout, double write_timeout)
 	m_NetworkInterface->processOutgoing(write_timeout);
 }
 
-void ClientServerBase::processAndWait(double read_timeout, double write_timeout, double timeout) {
-	m_NetworkInterface->waitPending(timeout);
+void ClientServerBase::processAndWait(double read_timeout, double write_timeout) {
 	processTraffic(read_timeout, write_timeout);
 }
 
@@ -183,7 +182,7 @@ bool Client::connectToServer(NetworkNode const &server, double timeout) {
 	Timer timer;
 	timer.start();
 	while (!m_Connected && timer.elapsed() < timeout) {
-		processAndWait(0.01, 0.01, 0.1);
+		processAndWait(0.01, 0.01);
 	}
 
 	return m_Connected;

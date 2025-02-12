@@ -569,7 +569,7 @@ void CSPSim::loadSimulation() {
 			Timer timer;
 			timer.start();
 			while (timer.elapsed() < 5.0 && !m_Battlefield->isConnectionActive()) {
-				m_NetworkClient->processAndWait(0.01, 0.01, 0.1);
+				m_NetworkClient->processAndWait(0.01, 0.01);
 			}
 			if (!m_Battlefield->isConnectionActive()) {
 				/** connection failed, go back to local mode */

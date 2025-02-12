@@ -71,6 +71,7 @@ type_categories = {
         'csp::Path',
         'csp::Key',
     ),
+    'IP_ADDR_TYPE': ( 'boost::asio::ip::address', ),
     'GROUP_TYPE': ('group',),
     'BITSET_TYPE': ('bitset',),
     'MESSAGE_TYPE': ('message',),

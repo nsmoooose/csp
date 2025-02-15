@@ -241,7 +241,7 @@ void TestLogEntry::check() {
 }
 
 TestLogEntry::~TestLogEntry() {
-	LogStream::LogEntry(CSPLOG_, CSPLOG_PRIORITY(ERROR), _filename, _linenum) << _buffer.get();
+	LogStream::LogEntry(CSPLOG_, CSPLOG_PRIORITY(ERROR), CSPLOG_CATEGORY(TESTING), _filename, _linenum) << _buffer.get();
 	TestCase::AddMessage(stringprintf("%s:%d %s", _filename, _linenum, _buffer.get()));
 }
 

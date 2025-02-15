@@ -22,6 +22,8 @@
  * @brief Constants writing to the csp log.
  */
 
+#include <csp/csplib/util/Export.h>
+
 namespace csp {
 
 /** Log message priorities
@@ -55,6 +57,7 @@ enum {
 	cLogCategory_NUMERIC      = 0x00000200,
 	cLogCategory_PHYSICS      = 0x00000200,  // same as NUMERIC
 	cLogCategory_TESTING      = 0x00000400,
+	cLogCategory_GENERIC      = 0x00000800,
 
 	// net
 	cLogCategory_TIMING       = 0x00001000,
@@ -77,5 +80,7 @@ enum {
 	cLogCategory_NONE         = 0x00000000,
 	cLogCategory_ALL          = 0x7fffffff
 };
+
+CSPLIB_EXPORT const char *getLogCategoryName(int category);
 
 } // namespace csp

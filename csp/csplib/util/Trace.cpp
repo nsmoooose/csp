@@ -191,7 +191,7 @@ void AutoTrace::__sigsegv(int /*sig_n*/) {
 	_trace.acquire(/*skip=*/3);
 	LogStream *logstream = log();
 	// don't log at FATAL priority since that allocates another stack trace.
-	LogStream::LogEntry(*logstream, LogStream::cError) << "FATAL ERROR: segmentation fault";
+	LogStream::LogEntry(*logstream, LogStream::cError, CSPLOG_CATEGORY(NONE)) << "FATAL ERROR: segmentation fault";
 	logstream->trace(&_trace);
 	_abort = false;  // prevent the abort handler from also logging a trace
 	abort();
@@ -206,7 +206,7 @@ void AutoTrace::__sigabort(int /*sig_n*/) {
 		}
 		_trace.acquire(/*skip=*/3);
 		LogStream *logstream = log();
-		LogStream::LogEntry(*logstream, LogStream::cFatal) << "ABORT";
+		LogStream::LogEntry(*logstream, LogStream::cFatal, CSPLOG_CATEGORY(GENERIC)) << "ABORT";
 	}
 }
 
@@ -214,7 +214,7 @@ void AutoTrace::__sigterm(int /*sig_n*/) {
 	_trace.acquire(/*skip=*/3);
 	LogStream *logstream = log();
 	_abort = false;
-	LogStream::LogEntry(*logstream, LogStream::cFatal) << "TERMINATED";
+	LogStream::LogEntry(*logstream, LogStream::cFatal, CSPLOG_CATEGORY(GENERIC)) << "TERMINATED";
 }
 
 LogStream *AutoTrace::log() {

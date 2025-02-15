@@ -50,7 +50,7 @@ CSP_EXCEPTION(FatalException)
 class CSPLIB_EXPORT LogStream {
 public:
 	/// Flags controlling log metadata.
-	enum { cTerse=0, cPriority=1, cDatestamp=2, cTimestamp=4, cLinestamp=8, cFullPath=16, cThread=32, cVerbose=~0 };
+	enum { cTerse=0, cPriority=1, cDatestamp=2, cTimestamp=4, cLinestamp=8, cFullPath=16, cThread=32, cCategory=64, cVerbose=~0 };
 	enum { cDebug=0, cInfo=1, cWarning=2, cError=3, cFatal=4 };
 
 	/** Create a new log stream that defaults to stderr.
@@ -213,8 +213,9 @@ public:
 	 *    priority will be recorded in the message.  Note that this is only
 	 *    an advisory value; it is up to the creator of the LogEntry to
 	 *    filter messages based on priority.
+	 *  @param category category of this message.
 	 */
-	LogEntry(LogStream &stream, int priority): m_stream(stream), m_priority(priority) {
+	LogEntry(LogStream &stream, int priority, int category): m_stream(stream), m_priority(priority), m_category(category) {
 		prefix(NULL, 0);
 	}
 
@@ -226,10 +227,11 @@ public:
 	 *    priority will be recorded in the message.  Note that this is only
 	 *    an advisory value; it is up to the creator of the LogEntry to
 	 *    filter messages based on priority.
+	 *  @param category category of this message.
 	 *  @param filename source file that generated this message (typically __FILE__).
 	 *  @param linenum line number of the code that generated this message (typically __LINE__).
 	 */
-	LogEntry(LogStream &stream, int priority, const char *filename, int linenum): m_stream(stream), m_priority(priority) {
+	LogEntry(LogStream &stream, int priority, int category, const char *filename, int linenum): m_stream(stream), m_priority(priority), m_category(category) {
 		prefix(filename, linenum);
 	}
 
@@ -270,6 +272,7 @@ private:
 
 	LogStream &m_stream;
 	int m_priority;
+	int m_category;
 	BufferStream m_buffer;
 };
 

@@ -67,7 +67,7 @@ void __diagnose_op_failure(A const &lhs, B const &rhs, const char *lhs_s, const 
 template <typename A, typename B>
 void __diagnose_op_failure(A const &lhs, B const &rhs, const char *lhs_s, const char *rhs_s,
                            const char *file, int line, const char *type, const char *op) {
-	LogStream::LogEntry(CSPLOG_, CSPLOG_PRIORITY(FATAL), file, line)
+	LogStream::LogEntry(CSPLOG_, CSPLOG_PRIORITY(FATAL), CSPLOG_CATEGORY(TESTING), file, line)
 		<< type << '(' << lhs_s << ", " << rhs_s << ") FAILED  [" << lhs << op << rhs << ']';
 	::abort();  // should never get here (log fatal above), but need to ensure __noreturn__.
 }
@@ -82,7 +82,7 @@ void __diagnose_failure(const char *expr_s, const char *file, A line, const char
 
 template <typename A>
 void __diagnose_failure(const char *expr_s, const char *file, A line, const char *type) {
-	LogStream::LogEntry(CSPLOG_, CSPLOG_PRIORITY(FATAL), file, line) << type << '(' << expr_s << ") FAILED";
+	LogStream::LogEntry(CSPLOG_, CSPLOG_PRIORITY(FATAL), CSPLOG_CATEGORY(TESTING), file, line) << type << '(' << expr_s << ") FAILED";
 	::abort();  // should never get here (log fatal above), but need to ensure __noreturn__.
 }
 

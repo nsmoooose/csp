@@ -42,7 +42,7 @@ public:
 %extend {
 #define CSP_LOG_PYTHON(P) \
 	if (self->isNoteworthy(CSPLOG_PRIORITY(P), CSPLOG_CATEGORY(ALL))) \
-		csp::LogStream::LogEntry(*self, CSPLOG_PRIORITY(P))
+		csp::LogStream::LogEntry(*self, CSPLOG_PRIORITY(P), CSPLOG_CATEGORY(GENERIC))
 
 	void debug(const char *msg) { CSP_LOG_PYTHON(DEBUG) << msg; }
 	void info(const char *msg) { CSP_LOG_PYTHON(INFO) << msg; }

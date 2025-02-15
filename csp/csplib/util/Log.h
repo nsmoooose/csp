@@ -62,6 +62,6 @@ inline LogStream &log() {
 
 #define CSPLOG(P, C) \
 	if (!CSPLOG_NOTEWORTHY(P, C)); \
-	else csp::LogStream::LogEntry(CSPLOG_, CSPLOG_PRIORITY(P), __FILE__, __LINE__)
+	else csp::LogStream::LogEntry(CSPLOG_, CSPLOG_PRIORITY(P), CSPLOG_CATEGORY(C), __FILE__, __LINE__)
 
 } // namespace csp

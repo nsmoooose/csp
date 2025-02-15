@@ -187,6 +187,9 @@ void LogStream::LogEntry::prefix(const char *filename, int linenum) {
 	if (flags & LogStream::cPriority) {
 		m_buffer << ((m_priority >= 0 && m_priority <= 4) ? "DIWEF"[m_priority] : '?') << " ";
 	}
+	if (flags & LogStream::cCategory) {
+		m_buffer << getLogCategoryName(m_category) << " ";
+	}
 	if (flags & (LogStream::cTimestamp|LogStream::cDatestamp)) {
 		const time_t now = time(0);
 		char time_stamp[32];
@@ -248,7 +251,7 @@ void LogStream::init() {
 }
 
 LogStream::LogStream():
-		m_flags(cPriority|cTimestamp|cLinestamp|cThread),
+		m_flags(cPriority|cTimestamp|cLinestamp|cThread|cCategory),
 		m_priority(cInfo),
 		m_categories(~0),
 		m_stream(&std::cerr),
@@ -261,7 +264,7 @@ LogStream::LogStream():
 }
 
 LogStream::LogStream(std::ostream& stream):
-		m_flags(cPriority|cTimestamp|cLinestamp|cThread),
+		m_flags(cPriority|cTimestamp|cLinestamp|cThread|cCategory),
 		m_priority(cInfo),
 		m_categories(~0),
 		m_stream(&stream),

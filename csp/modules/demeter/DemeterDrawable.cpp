@@ -26,6 +26,8 @@ Boston, MA  02111-1307, USA.
 #include <fstream>
 #include <sstream>
 
+#include <csp/csplib/util/Log.h>
+
 //#ifdef DEMETER_MEMORYMANAGER
 //#include "mmgr.h"
 //#endif
@@ -236,7 +238,7 @@ DemeterLatticeDrawableLoadListener::DemeterLatticeDrawableLoadListener() : m_pLa
 void DemeterLatticeDrawableLoadListener::TerrainLoaded(Terrain* pTerrain) {
 	int x,y;
 	pTerrain->GetLatticePosition(x,y);
-	std::cout << "Terrain at " << x << "," << y << " loaded!" << std::endl;
+	CSPLOG(INFO, TERRAIN) << "Terrain at " << x << "," << y << " loaded!";
 
 	m_pLatticeDrawable->addTerrain(pTerrain);
 	// We could do application-specific actions here, such as loading
@@ -246,7 +248,7 @@ void DemeterLatticeDrawableLoadListener::TerrainLoaded(Terrain* pTerrain) {
 void DemeterLatticeDrawableLoadListener::TerrainUnloading(Terrain* pTerrain) {
 	int x,y;
 	pTerrain->GetLatticePosition(x,y);
-	std::cout << "Terrain at " << x << "," << y << " unloading!" << std::endl;
+	CSPLOG(INFO, TERRAIN) << "Terrain at " << x << "," << y << " unloading!";
 	m_pLatticeDrawable->removeTerrain(pTerrain);
 	// We could do application-specific actions here, such as unloading
 	// application objects for this region of the world

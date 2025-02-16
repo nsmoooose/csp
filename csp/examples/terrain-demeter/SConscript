@@ -19,9 +19,9 @@
 Import('env build')
 
 build.Program(env,
-	name = 'terrain-demeter',
-	sources = [
-		'Program.cpp',
-	],
-	deps = ['osg', 'csplib', 'cspsim', 'demeter'],
-	aliases = ['examples'])
+    name = 'terrain-demeter',
+    sources = [
+        'Program.cpp',
+    ],
+    deps = ['osg', 'csplib', 'cspsim', 'demeter'],
+    aliases = ['examples'])

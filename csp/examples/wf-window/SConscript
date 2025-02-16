@@ -19,9 +19,9 @@
 Import('env build')
 
 build.Program(env,
-	name = 'wf-window',
-	sources = [
-		'Program.cpp',
-	],
-	deps = ['osg', 'csplib', 'cspsim', 'cspwf'],
-	aliases = ['examples', 'wf-window'])
+    name = 'wf-window',
+    sources = [
+        'Program.cpp',
+    ],
+    deps = ['osg', 'csplib', 'cspsim', 'cspwf'],
+    aliases = ['examples', 'wf-window'])

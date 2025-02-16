@@ -19,9 +19,9 @@
 Import('env build')
 
 build.Program(env,
-	name = 'wf-listbox',
-	sources = [
-		'Program.cpp',
-	],
-	deps = ['osg', 'csplib', 'cspsim', 'cspwf'],
-	aliases = ['examples', 'wf-listbox'])
+    name = 'wf-listbox',
+    sources = [
+        'Program.cpp',
+    ],
+    deps = ['osg', 'csplib', 'cspsim', 'cspwf'],
+    aliases = ['examples', 'wf-listbox'])

@@ -19,13 +19,13 @@
 Import('env build')
 
 build.Program(env,
-	name = 'sdl-viewer',
-	sources = [
-		'Program.cpp',
-		'SDLViewer.cpp',
-		'SDLViewer.h',
-		'SkyGroup.cpp',
-		'SkyGroup.h',
-	],
-	deps = ['osg', 'csplib', 'cspsim', 'demeter'],
-	aliases = ['examples', 'sdl-viewer'])
+    name = 'sdl-viewer',
+    sources = [
+        'Program.cpp',
+        'SDLViewer.cpp',
+        'SDLViewer.h',
+        'SkyGroup.cpp',
+        'SkyGroup.h',
+    ],
+    deps = ['osg', 'csplib', 'cspsim', 'demeter'],
+    aliases = ['examples', 'sdl-viewer'])

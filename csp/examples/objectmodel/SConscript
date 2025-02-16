@@ -19,9 +19,9 @@
 Import('env build')
 
 build.Program(env,
-	name = 'objectmodel',
-	sources = [
-		'Program.cpp',
-	],
-	deps = ['osg', 'csplib', 'cspsim'],
-	aliases = ['examples'])
+    name = 'objectmodel',
+    sources = [
+        'Program.cpp',
+    ],
+    deps = ['osg', 'csplib', 'cspsim'],
+    aliases = ['examples'])

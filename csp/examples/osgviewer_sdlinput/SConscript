@@ -21,11 +21,11 @@
 Import('env build')
 
 build.PythonSharedLibrary(env,
-	name = 'osgviewer_sdlinput_module',
-	sources = [
-		'osgviewer_sdlinput.i',
-		'main.cpp',
-		'main.h',
-	],
-	deps = ['osg', 'sdl'],
-	aliases = ['examples', 'osgviewer_sdlinput'])
+    name = 'osgviewer_sdlinput_module',
+    sources = [
+        'osgviewer_sdlinput.i',
+        'main.cpp',
+        'main.h',
+    ],
+    deps = ['osg', 'sdl'],
+    aliases = ['examples', 'osgviewer_sdlinput'])

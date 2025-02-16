@@ -22,9 +22,9 @@ expenv = env.Clone()
 expenv.AppendUnique(CPPDEFINES=Split('CSPWF_EXPORTS __CSPSIM_EXE__'))
 
 build.SharedLibrary(expenv,
-	name = 'cspwf',
-	sources = Glob("*.cpp", strings=True) + Glob("*.h", strings=True),
-	aliases = ['all', 'cspwf'],
-	doxygen = 'cspwf.dox',
-	deps = ['csplib', 'opengl', 'osg', 'sdl', 'sound'],
-	softlink = 1)
+    name = 'cspwf',
+    sources = Glob("*.cpp", strings=True) + Glob("*.h", strings=True),
+    aliases = ['all', 'cspwf'],
+    doxygen = 'cspwf.dox',
+    deps = ['csplib', 'opengl', 'osg', 'sdl', 'sound'],
+    softlink = 1)

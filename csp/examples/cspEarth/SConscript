@@ -19,13 +19,13 @@
 Import('env build')
 
 build.Program(env,
-	name = 'cspEarth',
-	sources = [
-		'program.cpp',
-		'inputHandler.h',
-		'inputHandler.cpp'
-		'showNodeNamesVisitor.h',
-		'showNodeNamesVisitor.cpp'
-	],
-	deps = ['osg', 'csplib', 'cspsim'],
-	aliases = ['examples', 'cspEarth'])
+    name = 'cspEarth',
+    sources = [
+        'program.cpp',
+        'inputHandler.h',
+        'inputHandler.cpp'
+        'showNodeNamesVisitor.h',
+        'showNodeNamesVisitor.cpp'
+    ],
+    deps = ['osg', 'csplib', 'cspsim'],
+    aliases = ['examples', 'cspEarth'])

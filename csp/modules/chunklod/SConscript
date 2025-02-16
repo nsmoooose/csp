@@ -23,20 +23,19 @@ env.AppendUnique(CPPDEFINES=Split('OSGCHUNKLOD_LIBRARY'))
 
 # to remove conflicts with MSVCRT
 if env['PLATFORM'].startswith('win'):
-	env.AppendUnique(SHLINKFLAGS=Split('/NODEFAULTLIB:LIBCMT'))
+    env.AppendUnique(SHLINKFLAGS=Split('/NODEFAULTLIB:LIBCMT'))
 
 build.SharedLibrary(env,
-	name = 'chunklod',
-	sources = [
-		'ChunkLod.cpp',
-		'ChunkLodDrawable.cpp',
-		'ChunkLodLoader.cpp',
-		'Module.cpp',
-		'RayStrip.cpp',
-		'TextureQuadTree.cpp',
-		'Version.cpp',
-	],
-	deps = ['cspsim', 'jpeg'],
-	aliases = ['all', 'clod'],
-	softlink = 1)
-
+    name = 'chunklod',
+    sources = [
+        'ChunkLod.cpp',
+        'ChunkLodDrawable.cpp',
+        'ChunkLodLoader.cpp',
+        'Module.cpp',
+        'RayStrip.cpp',
+        'TextureQuadTree.cpp',
+        'Version.cpp',
+    ],
+    deps = ['cspsim', 'jpeg'],
+    aliases = ['all', 'clod'],
+    softlink = 1)

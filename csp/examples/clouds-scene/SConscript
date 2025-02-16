@@ -19,9 +19,9 @@
 Import('env build')
 
 build.Program(env,
-	name = 'clouds-scene',
-	sources = [
-		'Program.cpp',
-	],
-	deps = ['osg', 'csplib', 'cspsim'],
-	aliases = ['examples', 'clouds-scene'])
+    name = 'clouds-scene',
+    sources = [
+        'Program.cpp',
+    ],
+    deps = ['osg', 'csplib', 'cspsim'],
+    aliases = ['examples', 'clouds-scene'])

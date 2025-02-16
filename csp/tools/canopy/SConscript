@@ -19,13 +19,13 @@
 Import('env build')
 
 build.Program(env,
-	name = 'render_reflection',
-	sources = ['render_reflection.cpp'],
-	deps = ['osg'],
-	aliases = ['canopy', 'tools'])
+    name = 'render_reflection',
+    sources = ['render_reflection.cpp'],
+    deps = ['osg'],
+    aliases = ['canopy', 'tools'])
 
 build.Program(env,
-	name = 'map_reflection',
-	sources = ['map_reflection.cpp'],
-	deps = ['osg'],
-	aliases = ['canopy', 'tools'])
+    name = 'map_reflection',
+    sources = ['map_reflection.cpp'],
+    deps = ['osg'],
+    aliases = ['canopy', 'tools'])

@@ -26,30 +26,30 @@ build.CheckPythonVersion('2.2.0')
 build.DevpackConfig.SetMinimumVersion('0.6')
 
 build.ExternalLibrary(
-	name = 'osg',
-	config = [
-		build.PkgConfig(package='openscenegraph', version='1.0.0'),
-		build.PkgConfig(package='openthreads', version='1.0.0'),
-		build.PkgConfig(package='producer', version='1.0.0'),
-		build.DevpackConfig(dlls=['osg', 'osgDB', 'osgFX', 'osgGA', 'osgParticle', 'osgProducer', 'osgText', 'osgUtil', 'OpenThreadsWin32', 'Producer'], headers=[('osg', 'Depth'), ('osgText', 'Font')]),
-	])
+    name = 'osg',
+    config = [
+        build.PkgConfig(package='openscenegraph', version='1.0.0'),
+        build.PkgConfig(package='openthreads', version='1.0.0'),
+        build.PkgConfig(package='producer', version='1.0.0'),
+        build.DevpackConfig(dlls=['osg', 'osgDB', 'osgFX', 'osgGA', 'osgParticle', 'osgProducer', 'osgText', 'osgUtil', 'OpenThreadsWin32', 'Producer'], headers=[('osg', 'Depth'), ('osgText', 'Font')]),
+    ])
 
 class PlatformSettings:
-	def customize_linux(self, env):
-		env['CXXFLAGS'] = '-g -Wall -O2'
-		env['SWIGCXXFLAGS'] = '-O2 -g'
-	def customize_win(self, env):
-		env.CopyEnvironment(Split('PATH INCLUDE LIB'))
-		env['CXXFLAGS'] = Split('/GR /MD /O2 /EHsc /W3 /Zi /nologo')
-		env.AppendUnique(CPPDEFINES=Split('WIN32 __WIN32__ _USRDLL _DLL NDEBUG _CRT_SECURE_NO_DEPRECATE'))
-		env.AppendUnique(LINKFLAGS=Split('/INCREMENTAL:NO /RELEASE /nologo'))
-		env.AppendUnique(SHLINKFLAGS=Split('/INCREMENTAL:NO /RELEASE /nologo'))
-		env.AppendUnique(LIBPATH=[build.PYTHON_LIBRARY])
-		# currently there isn't a clean way to depend on the csplib/cspsim libs since they are
-		# under a separate SConstruct file.  probably should merge this SConstruct into the
-		# global one, but for now we just specify the libs by hand.
-		env.AppendUnique(LIBPATH=['#/../../cspsim/.bin', '#/../../csplib/.bin'])
-		env.AppendUnique(SHLINKFLAGS=[Split('%s %s' % ('cspsim.lib', 'csplib.lib'))])
+    def customize_linux(self, env):
+        env['CXXFLAGS'] = '-g -Wall -O2'
+        env['SWIGCXXFLAGS'] = '-O2 -g'
+    def customize_win(self, env):
+        env.CopyEnvironment(Split('PATH INCLUDE LIB'))
+        env['CXXFLAGS'] = Split('/GR /MD /O2 /EHsc /W3 /Zi /nologo')
+        env.AppendUnique(CPPDEFINES=Split('WIN32 __WIN32__ _USRDLL _DLL NDEBUG _CRT_SECURE_NO_DEPRECATE'))
+        env.AppendUnique(LINKFLAGS=Split('/INCREMENTAL:NO /RELEASE /nologo'))
+        env.AppendUnique(SHLINKFLAGS=Split('/INCREMENTAL:NO /RELEASE /nologo'))
+        env.AppendUnique(LIBPATH=[build.PYTHON_LIBRARY])
+        # currently there isn't a clean way to depend on the csplib/cspsim libs since they are
+        # under a separate SConstruct file.  probably should merge this SConstruct into the
+        # global one, but for now we just specify the libs by hand.
+        env.AppendUnique(LIBPATH=['#/../../cspsim/.bin', '#/../../csplib/.bin'])
+        env.AppendUnique(SHLINKFLAGS=[Split('%s %s' % ('cspsim.lib', 'csplib.lib'))])
 
 
 INCLUDES = ['#', '#/../../..', build.PYTHON_INCLUDE]
@@ -64,31 +64,31 @@ env = settings.env()
 
 
 build.SharedLibrary(env,
-	name = 'cLayout',
-	sources = [
-		'cLayout.i',
-		'DynamicGrid.cpp',
-		'FeatureGraph.cpp',
-		'LayoutNodes.cpp',
-		'PickHandler.cpp',
-		'RegionSelect.cpp',
-		'View.cpp',
-		'ViewEventHandler.cpp',
-	],
-	deps = ['osg'],
-	aliases = 'all',
-	SHLIBPREFIX = '_')
+    name = 'cLayout',
+    sources = [
+        'cLayout.i',
+        'DynamicGrid.cpp',
+        'FeatureGraph.cpp',
+        'LayoutNodes.cpp',
+        'PickHandler.cpp',
+        'RegionSelect.cpp',
+        'View.cpp',
+        'ViewEventHandler.cpp',
+    ],
+    deps = ['osg'],
+    aliases = 'all',
+    SHLIBPREFIX = '_')
 
 build.SharedLibrary(env,
-	name = 'cLoader',
-	sources = [
-		'cLoader.i',
-		'Handle.cpp',
-		'Loader.cpp',
-	],
-	deps = ['osg'],
-	aliases = 'all',
-	SHLIBPREFIX = '_')
+    name = 'cLoader',
+    sources = [
+        'cLoader.i',
+        'Handle.cpp',
+        'Loader.cpp',
+    ],
+    deps = ['osg'],
+    aliases = 'all',
+    SHLIBPREFIX = '_')
 
 build.BuildRegistry.Configure(env)
 build.BuildRegistry.Build()

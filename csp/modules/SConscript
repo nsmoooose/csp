@@ -19,9 +19,8 @@
 Import('env build')
 
 PACKAGES = [
-	'#/modules/demeter',
-	'#/modules/chunklod',
+    '#/modules/demeter',
+    '#/modules/chunklod',
 ]
 
 env.ReadPackages(PACKAGES)
-

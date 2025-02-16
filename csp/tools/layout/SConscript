@@ -19,27 +19,27 @@
 Import('env build')
 
 build.PythonSharedLibrary(env,
-	name = 'cLayout',
-	sources = [
-		'cLayout.i',
-		'DynamicGrid.cpp',
-		'FeatureGraph.cpp',
-		'LayoutNodes.cpp',
-		'PickHandler.cpp',
-		'RegionSelect.cpp',
-		'View.cpp',
-		'ViewEventHandler.cpp',
-	],
-	deps = ['osg', 'csplib', 'cspsim'],
-	aliases = 'layout')
+    name = 'cLayout',
+    sources = [
+        'cLayout.i',
+        'DynamicGrid.cpp',
+        'FeatureGraph.cpp',
+        'LayoutNodes.cpp',
+        'PickHandler.cpp',
+        'RegionSelect.cpp',
+        'View.cpp',
+        'ViewEventHandler.cpp',
+    ],
+    deps = ['osg', 'csplib', 'cspsim'],
+    aliases = 'layout')
 
 build.PythonSharedLibrary(env,
-	name = 'cLoader',
-	sources = [
-		'cLoader.i',
-		'Handle.cpp',
-		'Loader.cpp',
-	],
-	deps = ['osg', 'csplib', 'cspsim'],
-	aliases = 'layout')
+    name = 'cLoader',
+    sources = [
+        'cLoader.i',
+        'Handle.cpp',
+        'Loader.cpp',
+    ],
+    deps = ['osg', 'csplib', 'cspsim'],
+    aliases = 'layout')
 

@@ -22,18 +22,17 @@ env = env.Clone()
 env.AppendUnique(CPPDEFINES=Split('DEMETER_EXPORTS'))
 
 build.SharedLibrary(env,
-	name = 'demeter',
-	sources = [
-		'DemeterDrawable.cpp',
-		'DemeterTerrain.cpp',
-		'Export.h',
-		'Module.cpp',
-		'Terrain.cpp',
-		'TerrainTextureFactory.cpp',
+    name = 'demeter',
+    sources = [
+        'DemeterDrawable.cpp',
+        'DemeterTerrain.cpp',
+        'Export.h',
+        'Module.cpp',
+        'Terrain.cpp',
+        'TerrainTextureFactory.cpp',
         'TerrainFileTextureFactory.cpp',
-	],
-	LIBS=['GLU'],
-	deps = ['cspsim'],
-	aliases = 'all',
-	softlink = 1)
-
+    ],
+    LIBS=['GLU'],
+    deps = ['cspsim'],
+    aliases = 'all',
+    softlink = 1)

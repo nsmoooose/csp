@@ -21,17 +21,17 @@
 Import('env build')
 
 build.PythonSharedLibrary(env,
-	name = 'googlemaps_module',
-	sources = [
-		'googlemaps.i',
-		'cpp/TextureImageGenerator.cpp',
-		'cpp/TextureImageGenerator.h',
-		'cpp/Progress.cpp',
-		'cpp/Progress.h',
-		'cpp/Projection.cpp',
-		'cpp/Projection.h',
-		'cpp/Pixel.cpp',
-		'cpp/Pixel.h',
-	],
-	deps = ['osg', 'csplib', 'cspsim'],
-	aliases = ['googlemaps', 'all'])
+    name = 'googlemaps_module',
+    sources = [
+        'googlemaps.i',
+        'cpp/TextureImageGenerator.cpp',
+        'cpp/TextureImageGenerator.h',
+        'cpp/Progress.cpp',
+        'cpp/Progress.h',
+        'cpp/Projection.cpp',
+        'cpp/Projection.h',
+        'cpp/Pixel.cpp',
+        'cpp/Pixel.h',
+    ],
+    deps = ['osg', 'csplib', 'cspsim'],
+    aliases = ['googlemaps', 'all'])

@@ -37,7 +37,7 @@ RecordCodec::RecordCodec(): m_TagWriter(m_Writer), m_TagReader(m_Reader) {
 	for (int i = 0; i < static_cast<int>(factories.size()); ++i) {
 		int id = factories[i]->getCustomId();
 		if (id != 0) {
-			CSPLOG(DEBUG, MESSAGE) << "registering static message id " << id;
+			CSPLOG(DEBUG, MESSAGE) << "REGISTER: <" << factories[i]->getName() << "> " << id;
 			m_Factories[id] = factories[i];
 		}
 	}

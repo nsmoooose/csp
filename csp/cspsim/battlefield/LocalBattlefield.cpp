@@ -392,7 +392,7 @@ void LocalBattlefield::bindCommandDispatch(Ref<DispatchHandler> const &dispatch)
 }
 
 void LocalBattlefield::onPlayerQuit(Ref<PlayerQuit> const &msg, Ref<MessageQueue> const &) {
-	CSPLOG(INFO, MESSAGE) << *msg;
+	CSPLOG(INFO, MESSAGE) << "PROCESS: <PlayerQuit>";
 	const PeerId id = msg->peer_id();
 	PlayerInfoMap::iterator iter = m_PlayerInfoMap.find(id);
 	if (iter != m_PlayerInfoMap.end()) {
@@ -422,7 +422,7 @@ void LocalBattlefield::registerPlayerQuitCallback(callback<void, int, const std:
 }
 
 void LocalBattlefield::onPlayerJoin(Ref<PlayerJoin> const &msg, Ref<MessageQueue> const &) {
-	CSPLOG(INFO, MESSAGE) << *msg;
+	CSPLOG(INFO, MESSAGE) << "PROCESS: <PlayerJoin>";
 	const PeerId id = msg->peer_id();
 	if (!m_NetworkClient->getPeer(id)) {
 		const NetworkNode remote_node(msg->ip_addr(), msg->port());
@@ -436,7 +436,7 @@ void LocalBattlefield::onPlayerJoin(Ref<PlayerJoin> const &msg, Ref<MessageQueue
 }
 
 void LocalBattlefield::onCommandUpdatePeer(Ref<CommandUpdatePeer> const &msg, Ref<MessageQueue> const &) {
-	CSPLOG(INFO, MESSAGE) << *msg;
+	CSPLOG(INFO, MESSAGE) << "PROCESS: <CommandUpdatePeer>";
 	LocalUnitWrapper *wrapper = findLocalUnitWrapper(msg->unit_id());
 	if (wrapper) {
 		assert(wrapper->unit().valid() && wrapper->unit()->isLocal());
@@ -455,7 +455,7 @@ void LocalBattlefield::onCommandUpdatePeer(Ref<CommandUpdatePeer> const &msg, Re
 }
 
 void LocalBattlefield::onCommandAddUnit(Ref<CommandAddUnit> const &msg, Ref<MessageQueue> const &) {
-	CSPLOG(INFO, MESSAGE) << *msg;
+	CSPLOG(INFO, MESSAGE) << "PROCESS: <CommandAddUnit>";
 	LocalUnitWrapper *wrapper = findLocalUnitWrapper(msg->unit_id());
 	if (wrapper) {
 		/** @todo already added.  for testing, double check that the message is consistent (FIXME) */
@@ -469,7 +469,7 @@ void LocalBattlefield::onCommandAddUnit(Ref<CommandAddUnit> const &msg, Ref<Mess
 }
 
 void LocalBattlefield::onCommandRemoveUnit(Ref<CommandRemoveUnit> const &msg, Ref<MessageQueue> const &) {
-	CSPLOG(INFO, MESSAGE) << *msg;
+	CSPLOG(INFO, MESSAGE) << "PROCESS: <CommandRemoveUnit>";
 	removeUnit(msg->unit_id());
 }
 
@@ -479,7 +479,7 @@ void LocalBattlefield::sendServerCommand(Ref<NetworkMessage> const &msg) {
 }
 
 void LocalBattlefield::onJoinResponse(Ref<JoinResponse> const &msg, Ref<MessageQueue> const &) {
-	CSPLOG(INFO, MESSAGE) << *msg;
+	CSPLOG(INFO, MESSAGE) << "PROCESS: <JoinResponse>";
 	if (m_ConnectionState != CONNECTION_JOIN) {
 		CSPLOG(ERROR, BATTLEFIELD) << "received unrequested join response";
 		return;
@@ -499,7 +499,7 @@ void LocalBattlefield::onJoinResponse(Ref<JoinResponse> const &msg, Ref<MessageQ
 }
 
 void LocalBattlefield::onIdAllocationResponse(Ref<IdAllocationResponse> const &msg, Ref<MessageQueue> const &) {
-	CSPLOG(INFO, MESSAGE) << *msg;
+	CSPLOG(INFO, MESSAGE) << "PROCESS: <IdAllocationResponse>";
 	if (static_cast<ObjectId>(msg->first_id()) == m_LocalIdPool->reserve) return;  // duplicate
 	assert(m_LocalIdPool->reserve_limit == 0);
 	m_LocalIdPool->reserve = msg->first_id();
@@ -516,10 +516,10 @@ void LocalBattlefield::onUnitMessage(Ref<NetworkMessage> const &msg) {
 	if (wrapper) {
 		bool handled = m_NetworkClient->dispatch(wrapper->unit().get(), msg);
 		if (!handled) {
-			CSPLOG(ERROR, BATTLEFIELD) << "unhandled message for unit " << unit_id;
+			CSPLOG(ERROR, BATTLEFIELD) << "PROCESS: <NetworkMessage> unhandled message for unit " << unit_id;
 		}
 	} else {
-		CSPLOG(ERROR, BATTLEFIELD) << "received message for unknown unit id " << unit_id;
+		CSPLOG(ERROR, BATTLEFIELD) << "PROCESS: <NetworkMessage> received message for unknown unit id " << unit_id;
 	}
 }
 
@@ -527,7 +527,7 @@ void LocalBattlefield::onUnitUpdate(Ref<NetworkMessage> const &msg) {
 	int unit_id = msg->getRoutingData();
 	LocalUnitWrapper *wrapper = findLocalUnitWrapper(unit_id);
 	if (wrapper) {
-		CSPLOG(INFO, BATTLEFIELD) << "received update for unit id " << unit_id;
+		CSPLOG(INFO, BATTLEFIELD) << "PROCESS: <NetworkMessage> unit id " << unit_id;
 		if (!wrapper->unit()) {
 			CSPLOG(WARNING, BATTLEFIELD) << "creating object for unit " << unit_id << " (" << wrapper->path() << ")";
 			if (!m_DataManager.valid()) {

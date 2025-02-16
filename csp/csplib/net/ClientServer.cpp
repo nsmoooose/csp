@@ -115,7 +115,7 @@ Server::Server(NetworkNode const &bind, int inbound_bw, int outbound_bw):
 }
 
 void Server::onConnectionRequest(Ref<ConnectionRequest> const &msg, Ref<MessageQueue> const &queue) {
-	CSPLOG(INFO, HANDSHAKE) << "connection request " << *msg;
+	CSPLOG(INFO, HANDSHAKE) << "PROCESS: <ConnectionRequest> " << *msg;
 	const PeerId client_id = msg->getSource();
 	ConnectionData &connection_data = m_PendingConnections[client_id];
 	if (msg->incoming_bw() < 1000 || msg->outgoing_bw() < 1000) {
@@ -133,7 +133,7 @@ void Server::onConnectionRequest(Ref<ConnectionRequest> const &msg, Ref<MessageQ
 }
 
 void Server::onAcknowledge(Ref<Acknowledge> const &msg, Ref<MessageQueue> const &/*queue*/) {
-	CSPLOG(DEBUG, HANDSHAKE) << "received acknowledgement " << *msg;
+	CSPLOG(DEBUG, HANDSHAKE) << "PROCESS: <Acknowledge> " << *msg;
 	PendingConnectionMap::iterator iter = m_PendingConnections.find(msg->getSource());
 	if (iter == m_PendingConnections.end()) {
 		CSPLOG(WARNING, HANDSHAKE) << "received unsolicited connection acknowledgement from client id " << msg->getSource();
@@ -146,7 +146,7 @@ void Server::onAcknowledge(Ref<Acknowledge> const &msg, Ref<MessageQueue> const 
 }
 
 void Server::onDisconnect(Ref<Disconnect> const &msg, Ref<MessageQueue> const &/*queue*/) {
-	CSPLOG(DEBUG, HANDSHAKE) << "received disconnect notice " << *msg;
+	CSPLOG(DEBUG, HANDSHAKE) << "PROCESS: <Disconnect> notice " << *msg;
 	m_NetworkInterface->disconnectPeer(msg->getSource());
 }
 
@@ -190,7 +190,7 @@ bool Client::connectToServer(NetworkNode const &server, double timeout) {
 }
 
 void Client::onConnectionResponse(Ref<ConnectionResponse> const &msg, Ref<MessageQueue> const &queue) {
-	CSPLOG(DEBUG, HANDSHAKE) << "received connection response " << *msg;
+	CSPLOG(DEBUG, HANDSHAKE) << "PROCESS: <ConnectionResponse> " << *msg;
 	if (m_Connected) return;
 	if (!msg->has_success() || !msg->success() || !msg->has_client_id()) {
 		if (msg->has_response()) {

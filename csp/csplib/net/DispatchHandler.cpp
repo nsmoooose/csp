@@ -35,7 +35,7 @@ DispatchHandler::~DispatchHandler() {
 }
 
 void DispatchHandler::handleMessage(Ref<NetworkMessage> const &msg) {
-	CSPLOG(INFO, MESSAGE) << "handling message of type " << msg->getName();
+	CSPLOG(INFO, MESSAGE) << "DISPATCH: <" << msg->getName() << ">";
 	if (!dispatch(msg) && m_DefaultHandler.valid()) {
 		CSPLOG(INFO, MESSAGE) << "unknown message type, calling default handler";
 		m_DefaultHandler->call(msg, m_Queue);
@@ -50,7 +50,7 @@ bool DispatchHandler::dispatch(Ref<NetworkMessage> const &msg) const {
 }
 
 void DispatchHandler::_registerHandler(std::string const &name, const MessageId id, Ref<BaseCallback> const &handler) {
-	CSPLOG(INFO, MESSAGE) << "registering handler for " << name;
+	CSPLOG(INFO, MESSAGE) << "REGISTER: <" << name << "> " << id;
 	assert(!getCallback(id));
 	m_DispatchMap[id] = handler;
 }

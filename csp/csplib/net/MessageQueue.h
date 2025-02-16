@@ -26,6 +26,7 @@
 #include <csp/csplib/net/PacketSource.h>
 #include <csp/csplib/net/NetworkMessage.h>
 #include <csp/csplib/net/TaggedRecordRegistry.h>
+#include <csp/csplib/util/Log.h>
 #include <deque>
 
 namespace csp {
@@ -74,6 +75,7 @@ public:
 	/** Add a message to the queue.
 	 */
 	inline void queueMessage(Ref<NetworkMessage> msg) {
+		CSPLOG(DEBUG, MESSAGE) << "QUEUE: <" << msg->getName() << ">";
 		// messsage id 0 is reserved for "unknown" messages, which should never be sent.
 		if (msg->getCustomId() > 0) {
 			m_Queue.push_back(MessageWrapper(msg));
@@ -109,7 +111,7 @@ public:
 		Ref<NetworkMessage> message = m_Queue.front().message;
 		PeerId destination = m_Queue.front().destination;
 		m_Queue.pop_front();
-		CSPLOG(DEBUG, MESSAGE) << "SENDING MESSAGE " << message->getCustomId() << " " << message->getName();
+		CSPLOG(DEBUG, MESSAGE) << "SND: <" << message->getName() << "> " << message->getCustomId();
 		header->setDestination(destination);
 		header->setMessageId(static_cast<uint16_t>(message->getCustomId()));
 		header->setRouting(message->getRoutingType(), message->getRoutingData());

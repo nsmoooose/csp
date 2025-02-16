@@ -238,7 +238,7 @@ private:
 	}
 
 	void onJoinRequest(Ref<JoinRequest> const &msg, Ref<MessageQueue> const &queue) {
-		CSPLOG(INFO, BATTLEFIELD) << "received join request";
+		CSPLOG(INFO, BATTLEFIELD) << "PROCESS: <JoinRequest>";
 		ClientResponse<JoinResponse> response(msg);
 		response->set_success(false);
 
@@ -317,7 +317,7 @@ private:
 	}
 
 	void onIdAllocationRequest(Ref<IdAllocationRequest> const &msg, Ref<MessageQueue> const &queue) {
-		CSPLOG(INFO, BATTLEFIELD) << "allocating ids";
+		CSPLOG(INFO, BATTLEFIELD) << "PROCESS: <IdAllocationReqest>";
 		ClientResponse<IdAllocationResponse> response(msg);
 		response->set_first_id(m_NextId);
 		response->set_id_count(100);
@@ -328,11 +328,11 @@ private:
 	void onNotifyUnitMotion(Ref<NotifyUnitMotion> const &msg, Ref<MessageQueue> const &/*queue*/) {
 		UnitWrapper *wrapper = findUnitWrapper(msg->unit_id());
 		if (wrapper) {
-			CSPLOG(INFO, BATTLEFIELD) << "unit moved " << *(wrapper->unit());
+			CSPLOG(INFO, BATTLEFIELD) << "PROCESS: <NotifyUnitMotion> " << *(wrapper->unit());
 			GridPoint new_position(msg->grid_x(), msg->grid_y());
 			updatePosition(wrapper, new_position);
 		} else {
-			CSPLOG(ERROR, BATTLEFIELD) << "unknown unit moved " << msg->unit_id();
+			CSPLOG(ERROR, BATTLEFIELD) << "PROCESS: <NotifyUnitMotion> Unknown unit " << msg->unit_id();
 		}
 	}
 
@@ -346,7 +346,7 @@ private:
 		const PeerId owner = msg->getSource();
 		UnitWrapper *wrapper = findUnitWrapper(unit_id);
 		if (wrapper) {
-			CSPLOG(ERROR, BATTLEFIELD) << "request to register existing unit " << unit_id << " for " << owner << " (already owned by " << wrapper->owner() << ")";
+			CSPLOG(ERROR, BATTLEFIELD) << "PROCESS: <RegisterUnit> request to register existing unit " << unit_id << " for " << owner << " (already owned by " << wrapper->owner() << ")";
 			/**
 			 * wrapper != null could be a client side bug or a duplicate message that wasn't filtered.
 			 * either is bad enough that we want to fail (in debug mode).
@@ -354,7 +354,7 @@ private:
 			assert(0);
 			return;
 		}
-		CSPLOG(INFO, BATTLEFIELD) << "registering unit " << unit_id << " " << msg->unit_class() << " owned by " << owner;
+		CSPLOG(INFO, BATTLEFIELD) << "PROCESS: <RegisterUnit> " << unit_id << " " << msg->unit_class() << " owned by " << owner;
 		Ref<UnitContact> unit = new UnitContact(static_cast<SimObject::TypeId>(msg->unit_type()), msg->unit_class(), unit_id);
 		wrapper = new ContactWrapper(unit, owner);
 		addUnit(wrapper);
@@ -362,7 +362,7 @@ private:
 		updatePosition(wrapper, new_position);
 		m_ClientData[owner].units.insert(unit_id);
 	}
-	
+
 	/** Recompute unit update messages sent between peers when a unit moves.
 	 *
 	 *  The basic approach is as follows.  First find all units within a certain

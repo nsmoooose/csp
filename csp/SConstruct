@@ -128,28 +128,29 @@ build.ExternalLibrary(
 	])
 
 
+Help("""
+COMMON TARGETS:
+
+  scons config           check for necessary headers and libraries
+  scons all              build everything
+  scons all debug=1      build everything in debug mode (windows, linux)
+  scons all debug=2      build everything in full debug mode (windows)
+  scons cspsim           build the main flight simulator client
+  scons layout           build the theater layout tool version 1
+  scons layout2          build the theater layout tool version 2
+  scons googlemaps       build the googlemaps tool
+
+  scons dox              generate doxygen documentation
+
+  scons tests            build all unittests
+  scons runtests         build and run all unittests
+  scons csplib.runtests  build and run all unittests in csplib
+
+  scons examples         build all examples
+""")
+
+
 class Environment(build.Environment):
-	"""
-	COMMON TARGETS:
-
-	  scons config           check for necessary headers and libraries
-	  scons all              build everything
-	  scons all debug=1      build everything in debug mode (windows, linux)
-	  scons all debug=2      build everything in full debug mode (windows)
-	  scons cspsim           build the main flight simulator client
-	  scons layout           build the theater layout tool version 1
-	  scons layout2          build the theater layout tool version 2
-	  scons googlemaps       build the googlemaps tool
-
-	  scons dox              generate doxygen documentation
-
-	  scons tests            build all unittests
-	  scons runtests         build and run all unittests
-	  scons csplib.runtests  build and run all unittests in csplib
-
-	  scons examples         build all examples
-	"""
-
 	INCLUDE = ['#/..', build.GetPythonInclude(),  os.environ.get('CSPDEVPACK', '') + "\\include\\AL"]
 
 	def customize_all(self, env):

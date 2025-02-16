@@ -55,7 +55,6 @@ class Environment:
 
     def Initialize(klass, opts=None):
         settings = klass()
-        help = settings.__doc__
 
         env = SCons.Environment.Environment()
         GlobalSetup(env)
@@ -66,7 +65,6 @@ class Environment:
         if hasattr(settings, 'options'):
             settings.options(opts)
 
-        env.Help(help + opts.GenerateHelpText(env))
         opts.Update(env)
 
         if settings is not None:

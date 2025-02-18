@@ -26,9 +26,11 @@
 #include <csp/csplib/net/TaggedRecordRegistry.h>
 #include <csp/csplib/util/Log.h>
 
-
 namespace csp {
 
+TaggedRecordRegistry &TaggedRecordRegistry::getTaggedRecordRegistry() {
+	return TaggedRecordRegistry::getInstance();
+}
 
 void TaggedRecordRegistry::registerFactory(TaggedRecordFactoryBase *factory) {
 	assert(factory != 0);

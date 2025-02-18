@@ -29,7 +29,7 @@ namespace csp {
 CSP_STATIC_CONST_DEF(int RecordCodec::MAX_MESSAGE_IDS);
 
 RecordCodec::RecordCodec(): m_TagWriter(m_Writer), m_TagReader(m_Reader) {
-	TaggedRecordRegistry const &registry = TaggedRecordRegistry::getInstance();
+	TaggedRecordRegistry const &registry = TaggedRecordRegistry::getTaggedRecordRegistry();
 	TaggedRecordRegistry::FactoryList factories = registry.getFactories();
 	for (int i = 0; i < MAX_MESSAGE_IDS; ++i) {
 		m_Factories[i] = 0;
@@ -90,7 +90,7 @@ void RecordCodec::clearMessageIds() {
 bool RecordCodec::registerMessageId(TaggedRecord::Id id, int local_id) {
 	CSP_VERIFY_LT(local_id, MAX_MESSAGE_IDS);
 	CSP_VERIFY_GE(local_id, 64);  // can't reassign reserved messages
-	TaggedRecordRegistry const &registry = TaggedRecordRegistry::getInstance();
+	TaggedRecordRegistry const &registry = TaggedRecordRegistry::getTaggedRecordRegistry();
 	TaggedRecordFactoryBase const *factory = registry.getFactory(id);
 	if (!factory) return false;
 	uint16_t current_id = static_cast<uint16_t>(factory->getCustomId());

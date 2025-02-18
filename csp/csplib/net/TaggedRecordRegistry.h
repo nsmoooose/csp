@@ -61,7 +61,7 @@ public:
  *
  *  @ingroup net
  */
-class CSPLIB_EXPORT TaggedRecordRegistry: public Singleton<TaggedRecordRegistry> {
+class CSPLIB_EXPORT TaggedRecordRegistry: private Singleton<TaggedRecordRegistry> {
 
 friend class Singleton<TaggedRecordRegistry>;
 
@@ -107,9 +107,7 @@ public:
 
 	/** Get the interface registry singleton.
 	 */
-	static inline TaggedRecordRegistry &getTaggedRecordRegistry() {
-		return getInstance();
-	}
+	static TaggedRecordRegistry &getTaggedRecordRegistry();
 
 private:
 
@@ -129,7 +127,6 @@ private:
 
 };
 
-
 /** Factory template for creating TaggedRecord subclasses.
  *  @ingroup net
  */
@@ -138,7 +135,7 @@ class TaggedRecordFactory: public TaggedRecordFactoryBase {
 public:
 	typedef RECORD RecordType;
 	TaggedRecordFactory(): TaggedRecordFactoryBase() {
-		TaggedRecordRegistry &registry = TaggedRecordRegistry::getInstance();
+		TaggedRecordRegistry &registry = TaggedRecordRegistry::getTaggedRecordRegistry();
 		registry.registerFactory(this);
 	}
 	virtual Ref<TaggedRecord> create() const { return new RECORD(); }

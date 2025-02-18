@@ -35,6 +35,9 @@ template <class C>
 class Singleton: public NonCopyable {
 public:
 	/** Get the one instance of the template class.
+	 *  Note that this code below won't well if the singleton should
+	 *  be used between different dll:files. One instance per dll could
+	 *  be created.
 	 */
 	static C& getInstance() {
 		static C *__instance = 0;

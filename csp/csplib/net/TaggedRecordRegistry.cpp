@@ -35,7 +35,7 @@ TaggedRecordRegistry &TaggedRecordRegistry::getTaggedRecordRegistry() {
 void TaggedRecordRegistry::registerFactory(TaggedRecordFactoryBase *factory) {
 	assert(factory != 0);
 	assert(!hasFactory(factory->getName()));
-	CSPLOG(DEBUG, ALL) << "Registering TaggedRecordFactory<" << factory->getName() << "> [" << factory->getId() << "]";
+	CSPLOG(DEBUG, MESSAGE) << "REGISTER TaggedRecordFactory<" << factory->getName() << "> [" << factory->getId() << "]";
 	TaggedRecord::Id id = factory->getId();
 	HashT key(static_cast<uint32_t>(id), static_cast<uint32_t>(id>>32));
 	_map[factory->getName()] = factory;

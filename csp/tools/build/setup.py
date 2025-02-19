@@ -177,15 +177,6 @@ def FinalizePackages(env):
 
 
 def GlobalSetup(env):
-    options = scons.GetOptions()
-    # TODO remove ssoptions altogether; options.num_jobs should work in 0.97 and newer
-    # versions of scons.
-    try:
-        ssoptions = scons.GetSettableOptions()
-        num_jobs = ssoptions.get('num_jobs')
-    except AttributeError:
-        num_jobs = options.num_jobs
-
     import SCons.Tool.swig
     if not SCons.Tool.swig.exists(env):
         SCons.Tool.swig.generate(env)

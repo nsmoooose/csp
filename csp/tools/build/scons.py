@@ -46,9 +46,5 @@ def GetOptions():
     return SCons.Script.Main.OptionsParser.values
 
 
-def GetSettableOptions():
-    return SCons.Script.Main.ssoptions
-
-
 def GetCommandlineTargets():
     return SCons.Script.SConscript.CommandLineTargets

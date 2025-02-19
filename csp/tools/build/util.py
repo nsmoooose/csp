@@ -82,24 +82,6 @@ def CopyEnvironment(env, vars):
             env['ENV'][var] = os.environ[var]
 
 
-def RemoveFlags(env, **kw):
-    """
-    Remove flags from environment variables.  The specified environment
-    variables must be lists for this function to work.
-    """
-    for key, val in list(kw.items()):
-        if isinstance(val, str):
-            val = [val]
-        if key in env:
-            flags = env[key]
-            if isinstance(flags, list):
-                for flag in val:
-                    try:
-                        flags.remove(flag)
-                    except ValueError:
-                        pass
-
-
 def Apply(builder, sources, **overrides):
     def builder_wrap(source):
         return builder(source, **overrides)

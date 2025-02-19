@@ -195,7 +195,6 @@ def GlobalSetup(env):
     SConsEnvironment.CopyEnvironment = util.CopyEnvironment
     SConsEnvironment.SetConfig = autoconf.SetConfig
     SConsEnvironment.Documentation = MakeDocumentation
-    SConsEnvironment.RemoveFlags = util.RemoveFlags
     SConsEnvironment.ReadPackages = ReadPackages
     SConsEnvironment.FinalizePackages = FinalizePackages
 

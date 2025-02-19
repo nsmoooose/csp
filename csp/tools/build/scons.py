@@ -54,22 +54,6 @@ def GetCommandlineTargets():
     return SCons.Script.SConscript.CommandLineTargets
 
 
-def GetCurrentScript():
-    try:
-        call_stack = SCons.Script.call_stack
-    except AttributeError:
-        call_stack = SCons.Script.SConscript.stack  # pre 0.96.91
-    return call_stack[-1].sconscript
-
-
-def TargetToString(x):
-    if isinstance(x, list):
-        return list(map(TargetToString, x))
-    if isinstance(x, SCons.Node.FS.File):
-        return 'FILE:%s' % x.abspath
-    return str(x)
-
-
 def SetDistributed(env):
     '''
     Use distcc if available to distribute the build across multiple hosts.

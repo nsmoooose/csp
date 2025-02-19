@@ -52,24 +52,3 @@ def GetSettableOptions():
 
 def GetCommandlineTargets():
     return SCons.Script.SConscript.CommandLineTargets
-
-
-def SetDistributed(env):
-    '''
-    Use distcc if available to distribute the build across multiple hosts.
-    distcc must be installed and configured correctly.
-    '''
-    CXX = env['CXX']
-    if CXX is None:
-        return
-    distcc = WhereIs('distcc')
-    if not distcc:
-        print('Concurrent build requested, but distcc not found.')
-        return
-    # add distcc in '$( $)' escapes so that using it doesn't invalidate
-    # objects that were built without it, and vice-versa.
-    CXX = '$( %s $) %s' % (distcc, CXX)
-    # distcc typically needs access to configuration files in the home directory.
-    env['ENV']['HOME'] = os.environ.get('HOME', '')
-    env.Replace(CXX=CXX)
-    print('Using distcc for distributed build')

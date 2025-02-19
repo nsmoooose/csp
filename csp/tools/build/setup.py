@@ -176,7 +176,7 @@ def FinalizePackages(env):
     registry.BuildRegistry.Build(env)
 
 
-def GlobalSetup(env, distributed=1, config=None, timer=1):
+def GlobalSetup(env, config=None, timer=1):
     options = scons.GetOptions()
     # TODO remove ssoptions altogether; options.num_jobs should work in 0.97 and newer
     # versions of scons.
@@ -191,8 +191,6 @@ def GlobalSetup(env, distributed=1, config=None, timer=1):
         SCons.Tool.swig.generate(env)
 
     builders.AddBuilders(env)
-    if distributed and num_jobs > 1:
-        scons.SetDistributed(env)
     util.AddPhonyTarget(env, 'config')
     SConsEnvironment.CopyEnvironment = util.CopyEnvironment
     SConsEnvironment.SetConfig = autoconf.SetConfig

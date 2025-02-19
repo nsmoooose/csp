@@ -21,6 +21,12 @@ import SCons.Node
 import SCons.Util
 import SCons.Script
 
+# several global targets (e.g. 'all') are shared between copied subenvironments;
+# this is ok and the warning is annoying. This warning is shown when building
+# doxygen documentation where the target is index.html for both csplib and cspsim.
+import SCons.Warnings
+SCons.Warnings.suppressWarningClass(SCons.Warnings.DuplicateEnvironmentWarning)
+
 FS = SCons.Node.FS.default_fs
 File = SCons.Node.FS.default_fs.File
 Dir = SCons.Node.FS.default_fs.Dir

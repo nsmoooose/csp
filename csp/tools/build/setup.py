@@ -176,7 +176,7 @@ def FinalizePackages(env):
     registry.BuildRegistry.Build(env)
 
 
-def GlobalSetup(env, config=None, timer=1):
+def GlobalSetup(env):
     options = scons.GetOptions()
     # TODO remove ssoptions altogether; options.num_jobs should work in 0.97 and newer
     # versions of scons.
@@ -198,17 +198,6 @@ def GlobalSetup(env, config=None, timer=1):
     SConsEnvironment.RemoveFlags = util.RemoveFlags
     SConsEnvironment.ReadPackages = ReadPackages
     SConsEnvironment.FinalizePackages = FinalizePackages
-    if config:
-        env.SetConfig(config)
-    if timer:
-        start_time = time.time()
-
-        def showtime(start_time=start_time):
-            elapsed = time.time() - start_time
-            if elapsed > 10:
-                print(('build time: %d sec' % elapsed))
-
-        atexit.register(showtime)
 
 
 def MakeDocumentation(env, target, config, sources):

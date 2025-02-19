@@ -17,11 +17,12 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 print('COMBAT SIMULATOR PROJECT - Build System')
 
+EnsureSConsVersion(4, 6, 0)
+
 import os
 import sys
 from tools import build
 
-build.CheckSConsVersion('4.6.0')
 build.CheckPythonVersion('3.10')
 build.CheckWXVersion('2.6')
 build.CheckLXMLVersion()

@@ -37,14 +37,6 @@ WhereIs = SCons.Util.WhereIs
 IsList = SCons.Util.is_List
 
 
-def GetVersion():
-    return SCons.__version__
-
-
-def GetVersionTuple():
-    return tuple(map(int, SCons.__version__.split('.')))
-
-
 def SetReading():
     SCons.Script.SConscript.sconscript_reading = 1
 

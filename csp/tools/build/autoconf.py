@@ -28,14 +28,6 @@ GetPythonInclude = sysconfig.get_python_inc
 GetPythonLibrary = sysconfig.get_python_lib
 
 
-def CheckSConsVersion(minimum):
-    version = scons.GetVersion()
-    if util.CompareVersions(version, minimum) < 0:
-        print('SCons version %s is too old.  Please install'
-              'version %s or newer.' % (version, minimum))
-        sys.exit(1)
-
-
 def CheckPythonVersion(minimum):
     version = '.'.join(map(str, sys.version_info[:3]))
     if util.CompareVersions(version, minimum) < 0:

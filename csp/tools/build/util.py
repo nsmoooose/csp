@@ -31,10 +31,6 @@ def Glob(path):
     return result
 
 
-def AddPhonyTarget(env, target):
-    env.AlwaysBuild(env.Alias(target, [], Action([])))
-
-
 def CompareVersions(a, b):
     if (a.find('.') < 0) or (b.find('.') < 0):
         return -1

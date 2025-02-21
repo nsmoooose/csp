@@ -36,7 +36,7 @@ def FinalizePackages(env):
 
 def GlobalSetup(env):
     builders.AddBuilders(env)
-    util.AddPhonyTarget(env, 'config')
+    env.AlwaysBuild(env.Alias('config', [], env.Action([])))
     SConsEnvironment.CopyEnvironment = util.CopyEnvironment
     SConsEnvironment.SetConfig = autoconf.SetConfig
     SConsEnvironment.Documentation = MakeDocumentation

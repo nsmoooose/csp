@@ -14,7 +14,6 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 import SCons
-import SCons.Node
 import SCons.Script
 
 # several global targets (e.g. 'all') are shared between copied subenvironments;
@@ -23,9 +22,6 @@ import SCons.Script
 import SCons.Warnings
 SCons.Warnings.suppressWarningClass(SCons.Warnings.DuplicateEnvironmentWarning)
 
-FS = SCons.Node.FS.default_fs
-File = SCons.Node.FS.default_fs.File
-Dir = SCons.Node.FS.default_fs.Dir
 
 def SetReading():
     SCons.Script.SConscript.sconscript_reading = 1

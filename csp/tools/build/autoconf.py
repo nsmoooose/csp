@@ -21,6 +21,7 @@ from subprocess import Popen, PIPE
 
 import pickle
 import re
+import SCons.Script
 
 from distutils import sysconfig
 
@@ -228,8 +229,8 @@ def ReadConfig(env):
     # hack to rerun the config if the SConstruct file is modified; this can
     # probably be done more cleanly using regular scons dependencies.  also
     # shouldn't hardcode the name 'SConstruct' here.
-    t0 = scons.FS.getmtime(scons.File('#/SConstruct').abspath)
-    t1 = scons.FS.getmtime(scons.File('#/.config').abspath)
+    t0 = SCons.Script.File('#/SConstruct').getmtime()
+    t1 = SCons.Script.File('#/.config').getmtime()
     if t0 > t1:
         return None
     return pickle.load(config)

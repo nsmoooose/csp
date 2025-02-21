@@ -16,6 +16,7 @@
 
 import os
 import sys
+import SCons.Script
 
 from csp.tools.build import autoconf
 from csp.tools.build import scons
@@ -97,7 +98,7 @@ class _BuildRegistry:
         autoconf.SaveConfig(env, config)
 
     def _SetupTests(self):
-        os.environ.setdefault('CSPLOG_FILE', os.path.join(scons.File('#/.testlog').abspath))
+        os.environ.setdefault('CSPLOG_FILE', os.path.join(SCons.Script.File('#/.testlog').abspath))
         try:
             import csp.csplib
         except ImportError:

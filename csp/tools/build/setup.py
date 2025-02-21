@@ -191,11 +191,11 @@ def GlobalSetup(env):
 
 
 def MakeDocumentation(env, target, config, sources):
-    target = scons.Dir(target)
+    target = SCons.Script.Dir(target)
     html = target.Dir('html')
     if 'dox' in scons.GetCommandlineTargets():
         index = html.File('index.html')
-        dox = env.Doxygen(index, scons.File(config))
+        dox = env.Doxygen(index, SCons.Script.File(config))
         for item in sources:
             if isinstance(item, str):
                 if item.startswith('@'):

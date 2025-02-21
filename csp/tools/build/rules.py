@@ -158,9 +158,9 @@ class Target:
         settings.apply(self._env)
         target = self._apply(objects)
 
-        scons.Alias(self._name, target)
+        SCons.Script.Alias(self._name, target)
         if self._aliases:
-            scons.Alias(self._aliases, target)
+            SCons.Script.Alias(self._aliases, target)
         if self._doxygen:
             self._env.Documentation(self._dox, self._doxygen, self._sources)
         if self._always_build:
@@ -249,7 +249,7 @@ class SharedLibrary(Target):
 
     def _bindManifest(self, shlib):
         if SharedLibrary.MT_BIN == 0:
-            SharedLibrary.MT_BIN = scons.WhereIs('mt')
+            SharedLibrary.MT_BIN = SCons.Script.WhereIs('mt')
             if not SharedLibrary.MT_BIN:
                 print('WARNING: could not find mt.exe, will not bind manifests')
         if SharedLibrary.MT_BIN:

@@ -30,11 +30,8 @@ SCons.Warnings.suppressWarningClass(SCons.Warnings.DuplicateEnvironmentWarning)
 FS = SCons.Node.FS.default_fs
 File = SCons.Node.FS.default_fs.File
 Dir = SCons.Node.FS.default_fs.Dir
-Alias = SCons.Defaults.DefaultEnvironment().Alias
 AlwaysBuild = SCons.Defaults.DefaultEnvironment().AlwaysBuild
 Depends = SCons.Defaults.DefaultEnvironment().Depends
-WhereIs = SCons.Util.WhereIs
-IsList = SCons.Util.is_List
 
 
 def SetReading():

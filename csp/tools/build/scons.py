@@ -38,12 +38,6 @@ def SetReading():
     SCons.Script.SConscript.sconscript_reading = 1
 
 
-def DisableQuiet():
-    # override -Q
-    if hasattr(SCons.SConf, 'SetProgressDisplay'):
-        SCons.SConf.SetProgressDisplay(SCons.Util.display)
-
-
 def GetOptions():
     return SCons.Script.Main.OptionsParser.values
 

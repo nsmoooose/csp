@@ -202,7 +202,6 @@ def _checking(context, target, min_version=None, reset_cached=0):
 
 def CustomConfigure(env):
     scons.SetReading()
-    scons.DisableQuiet()
     conf = env.Configure(log_file="#/.config.log")
     conf.AddTests({'CheckSwig': CheckSwig})
     conf.AddTests({'CheckLibVersion': CheckLibVersion})

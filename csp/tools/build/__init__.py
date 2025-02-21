@@ -63,7 +63,7 @@ import csp
 import os
 import sys
 
-from csp.tools.build.setup import Environment
+from csp.tools.build.setup import GlobalSetup
 
 from csp.tools.build.rules import \
     SourceGroup, Program, Generate, SharedLibrary, PythonSharedLibrary, Command, Test

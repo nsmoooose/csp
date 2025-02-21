@@ -29,6 +29,9 @@ import os
 import sys
 from tools import build
 
+is_windows = sys.platform == 'win32'
+is_linux = sys.platform == 'linux'
+
 build.CheckPythonVersion('3.10')
 build.CheckWXVersion('2.6')
 build.CheckLXMLVersion()
@@ -156,82 +159,80 @@ COMMON TARGETS:
   scons examples         build all examples
 """)
 
+INCLUDE = [
+    '#/..',
+    build.GetPythonInclude(),
+    os.environ.get('CSPDEVPACK', '') + "\\include\\AL"
+]
 
-class Environment(build.Environment):
-    INCLUDE = ['#/..', build.GetPythonInclude(),  os.environ.get('CSPDEVPACK', '') + "\\include\\AL"]
+env = Environment()
+env.Replace(CXXFILESUFFIX='.cpp')
+env.Replace(CPPPATH=INCLUDE)
+env.Replace(SWIGFLAGS=Split('-python -c++'))
+env.Replace(SWIGPATH=INCLUDE)
 
-    def customize_all(self, env):
-        env.Replace(CXXFILESUFFIX='.cpp')
-        env.Replace(CPPPATH=self.INCLUDE)
-        env.Replace(SWIGFLAGS=Split('-python -c++'))
-        env.Replace(SWIGPATH=self.INCLUDE)
+if is_windows:
+    # The following compiler warnings has been disabled:
+    # warning C4251: 'X' : struct 'Y' needs to have dll-interface to be used by clients of class 'Z'
+    # warning C4275: non dll-interface class 'X' used as base for dll-interface class 'Y'
+    # warning C4290: C++ exception specification ignored except to indicate a function is not __declspec(nothrow)
 
-    def customize_win(self, env):
-        # The following compiler warnings has been disabled:
-        # warning C4251: 'X' : struct 'Y' needs to have dll-interface to be used by clients of class 'Z'
-        # warning C4275: non dll-interface class 'X' used as base for dll-interface class 'Y'
-        # warning C4290: C++ exception specification ignored except to indicate a function is not __declspec(nothrow)
+    debug = ARGUMENTS.get('debug', 0)
+    if int(debug) == 0:
+        print('Building release configuration')
+        env.Replace(CXXFLAGS=Split('/GR /MD /O2 /EHsc /W3 /nologo /wd4251 /wd4275 /wd4290'))
+        env.AppendUnique(CPPDEFINES=Split('WIN32 __WIN32__ _USRDLL _DLL NDEBUG _CRT_SECURE_NO_DEPRECATE _USE_MATH_DEFINES'))
+        env.AppendUnique(LINKFLAGS=Split('/INCREMENTAL:NO /RELEASE /nologo'))
+        env.AppendUnique(SHLINKFLAGS=Split('/INCREMENTAL:NO /RELEASE /nologo'))
+        env.AppendUnique(LIBPATH=[build.GetPythonLibrary()])
+        env.CopyEnvironment(Split('PATH INCLUDE LIB'))
+    elif int(debug) == 1:
+        print('Building debug configuration')
+        env.Replace(CXXFLAGS=Split('/GR /MD /Zi /EHsc /W3 /nologo /wd4251 /wd4275 /wd4290'))
+        env.AppendUnique(CPPDEFINES=Split('WIN32 __WIN32__ _USRDLL _DLL NDEBUG _CRT_SECURE_NO_DEPRECATE _USE_MATH_DEFINES'))
+        env.AppendUnique(LINKFLAGS=Split('/INCREMENTAL:NO /DEBUG /nologo'))
+        env.AppendUnique(SHLINKFLAGS=Split('/INCREMENTAL:NO /DEBUG /nologo'))
+        env.AppendUnique(LIBPATH=[build.GetPythonLibrary()])
+        env.CopyEnvironment(Split('PATH INCLUDE LIB'))
+    else:
+        print('Building full debug configuration')
+        env.Replace(CONFIG_DEBUG=debug)
+        env.Replace(CXXFLAGS=Split('/GR /MDd /Zi /EHsc /W3 /nologo /wd4251 /wd4275 /wd4290'))
+        env.AppendUnique(CPPDEFINES=Split('WIN32 __WIN32__ _USRDLL _DLL _CRT_SECURE_NO_DEPRECATE _USE_MATH_DEFINES'))
+        env.AppendUnique(LINKFLAGS=Split('/INCREMENTAL:NO /DEBUG /nologo'))
+        env.AppendUnique(SHLINKFLAGS=Split('/INCREMENTAL:NO /DEBUG /nologo'))
+        env.AppendUnique(LIBPATH=[build.GetPythonLibrary()])
+        env.CopyEnvironment(Split('PATH INCLUDE LIB'))
 
-        debug = ARGUMENTS.get('debug', 0)
-        if int(debug) == 0:
-            print('Building release configuration')
-            env.Replace(CXXFLAGS=Split('/GR /MD /O2 /EHsc /W3 /nologo /wd4251 /wd4275 /wd4290'))
-            env.AppendUnique(CPPDEFINES=Split('WIN32 __WIN32__ _USRDLL _DLL NDEBUG _CRT_SECURE_NO_DEPRECATE _USE_MATH_DEFINES'))
-            env.AppendUnique(LINKFLAGS=Split('/INCREMENTAL:NO /RELEASE /nologo'))
-            env.AppendUnique(SHLINKFLAGS=Split('/INCREMENTAL:NO /RELEASE /nologo'))
-            env.AppendUnique(LIBPATH=[build.GetPythonLibrary()])
-            env.CopyEnvironment(Split('PATH INCLUDE LIB'))
-        elif int(debug) == 1:
-            print('Building debug configuration')
-            env.Replace(CXXFLAGS=Split('/GR /MD /Zi /EHsc /W3 /nologo /wd4251 /wd4275 /wd4290'))
-            env.AppendUnique(CPPDEFINES=Split('WIN32 __WIN32__ _USRDLL _DLL NDEBUG _CRT_SECURE_NO_DEPRECATE _USE_MATH_DEFINES'))
-            env.AppendUnique(LINKFLAGS=Split('/INCREMENTAL:NO /DEBUG /nologo'))
-            env.AppendUnique(SHLINKFLAGS=Split('/INCREMENTAL:NO /DEBUG /nologo'))
-            env.AppendUnique(LIBPATH=[build.GetPythonLibrary()])
-            env.CopyEnvironment(Split('PATH INCLUDE LIB'))
-        else:
-            print('Building full debug configuration')
-            env.Replace(CONFIG_DEBUG=debug)
-            env.Replace(CXXFLAGS=Split('/GR /MDd /Zi /EHsc /W3 /nologo /wd4251 /wd4275 /wd4290'))
-            env.AppendUnique(CPPDEFINES=Split('WIN32 __WIN32__ _USRDLL _DLL _CRT_SECURE_NO_DEPRECATE _USE_MATH_DEFINES'))
-            env.AppendUnique(LINKFLAGS=Split('/INCREMENTAL:NO /DEBUG /nologo'))
-            env.AppendUnique(SHLINKFLAGS=Split('/INCREMENTAL:NO /DEBUG /nologo'))
-            env.AppendUnique(LIBPATH=[build.GetPythonLibrary()])
-            env.CopyEnvironment(Split('PATH INCLUDE LIB'))
+if is_linux:
+    debug = ARGUMENTS.get('debug', 0)
+    if int(debug) == 0:
+        print('Building release configuration')
+        gcc = build.GetGCCVersion()
+        env.Replace(CXXFLAGS=Split('-O2 -W -Wall -pedantic -fno-strict-aliasing -fvisibility=hidden -Wno-unused-local-typedefs'))
+        env.Replace(SWIGCXXFLAGS=Split('-O2 -g'))
+        env.Replace(ARFLAGS=Split('cr'))
+    elif int(debug) == 1:
+        print('Building debug configuration (no optimizations)')
+        gcc = build.GetGCCVersion()
+        env.Replace(CXXFLAGS=Split('-O0 -g -W -Wall -pedantic -fno-strict-aliasing -fvisibility=hidden -Wno-unused-local-typedefs'))
+        env.Replace(SWIGCXXFLAGS=Split('-O2 -g'))
+        env.Replace(ARFLAGS=Split('cr'))
 
-    def customize_linux(self, env):
-        debug = ARGUMENTS.get('debug', 0)
-        if int(debug) == 0:
-            print('Building release configuration')
-            gcc = build.GetGCCVersion()
-            env.Replace(CXXFLAGS=Split('-O2 -W -Wall -pedantic -fno-strict-aliasing -fvisibility=hidden -Wno-unused-local-typedefs'))
-            env.Replace(SWIGCXXFLAGS=Split('-O2 -g'))
-            env.Replace(ARFLAGS=Split('cr'))
-        elif int(debug) == 1:
-            print('Building debug configuration (no optimizations)')
-            gcc = build.GetGCCVersion()
-            env.Replace(CXXFLAGS=Split('-O0 -g -W -Wall -pedantic -fno-strict-aliasing -fvisibility=hidden -Wno-unused-local-typedefs'))
-            env.Replace(SWIGCXXFLAGS=Split('-O2 -g'))
-            env.Replace(ARFLAGS=Split('cr'))
+        # Disable inlining to prevent valgrind to be confused.
+        env.AppendUnique(CXXFLAGS=Split('-fno-inline'))
+        env.AppendUnique(CXXFLAGS=Split('-fno-builtin'))
 
-            # Disable inlining to prevent valgrind to be confused.
-            env.AppendUnique(CXXFLAGS=Split('-fno-inline'))
-            env.AppendUnique(CXXFLAGS=Split('-fno-builtin'))
+        # Some stack protection mechanisms can initialize stack variables,
+        # hiding uninitialized memory issues from Valgrind.
+        env.AppendUnique(CXXFLAGS=Split('-fno-stack-protector'))
 
-            # Some stack protection mechanisms can initialize stack variables,
-            # hiding uninitialized memory issues from Valgrind.
-            env.AppendUnique(CXXFLAGS=Split('-fno-stack-protector'))
+        # LTO can inline functions across translation units, making
+        # Valgrind’s checks less effective.
+        env.AppendUnique(CXXFLAGS=Split('-fno-lto'))
 
-            # LTO can inline functions across translation units, making
-            # Valgrind’s checks less effective.
-            env.AppendUnique(CXXFLAGS=Split('-fno-lto'))
 
-    def customize_darwin(self, env):
-        print('WARNING: Darwin is not yet a fully supported platform.')
-        self.customize_linux(env)
-        env.Replace(SHLINKFLAGS=Split('-Wl -bundle'))
-
-env = Environment.Initialize()
+build.GlobalSetup(env)
 
 # Make it possible for clang to set its tools. This makes it possible to use
 # scan-build tool to analyze the code. Instructions to set this up:

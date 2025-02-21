@@ -30,51 +30,6 @@ from csp.tools.build import registry
 from csp.tools.build import util
 
 
-class Environment:
-    '''
-    Environment defines the main entry point for initializing the build system
-    and creating the top-level SCons environment.  Define a subclass that
-    implements any of the following methods:
-
-        customize_all(self, env):
-            called on all platforms
-
-        customize_default(self, env):
-            called when no platform-specific customize methods match
-
-        customize_{platform}(self, env):
-            'platform' is any lowercase prefix of sys.platform (e.g.,
-            'customize_win' or 'customize_linux'.
-
-    The docstring of the subclass defines the default help message displayed
-    when 'scons -h' is run.  To initialize the build system, call Initialize
-    directly on the subclass (do not instantiate the subclass):
-
-        env = MyEnvironment.Initialize()
-    '''
-
-    def Initialize(klass, opts=None):
-        settings = klass()
-
-        env = SCons.Environment.Environment()
-        GlobalSetup(env)
-
-        if opts is None:
-            opts = SCons.Variables.Variables()
-
-        if hasattr(settings, 'options'):
-            settings.options(opts)
-
-        opts.Update(env)
-
-        if settings is not None:
-            CustomizeForPlatform(env, settings)
-
-        return env
-
-    Initialize = classmethod(Initialize)
-
-
 def ReadPackages(env, packages, **kw):
     '''
     Helper for loading sconscript build definitions in subdirectories.

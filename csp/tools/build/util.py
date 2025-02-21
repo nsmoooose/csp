@@ -68,10 +68,6 @@ def SilentAction(callback):
     return Action(callback, noprint)
 
 
-def Extension(fn):
-    return os.path.splitext(fn)[1]
-
-
 def CopyEnvironment(env, vars):
     for var in vars:
         if var in os.environ:

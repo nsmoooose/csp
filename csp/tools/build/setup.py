@@ -101,7 +101,7 @@ def ReadPackages(env, packages, **kw):
             if not isinstance(targets, list):
                 targets = [targets]
             result.extend(targets)
-    return scons.Flatten(result)
+    return SCons.Script.Flatten(result)
 
 
 def CustomizeForPlatform(env, settings):

@@ -24,6 +24,7 @@ import os
 import re
 import sys
 import SCons
+import SCons.Script
 
 
 class SourceGroup:
@@ -151,8 +152,8 @@ class Target:
         bdeps = []
         for group in self._groups:
             group.add(objects, settings, bdeps)
-        bdeps = scons.Flatten(bdeps)
-        objects = scons.Flatten(objects)
+        bdeps = SCons.Script.Flatten(bdeps)
+        objects = SCons.Script.Flatten(objects)
         settings.merge(self._options)
         settings.apply(self._env)
         target = self._apply(objects)

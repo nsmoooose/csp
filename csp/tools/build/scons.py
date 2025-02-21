@@ -33,7 +33,6 @@ Dir = SCons.Node.FS.default_fs.Dir
 Alias = SCons.Defaults.DefaultEnvironment().Alias
 AlwaysBuild = SCons.Defaults.DefaultEnvironment().AlwaysBuild
 Depends = SCons.Defaults.DefaultEnvironment().Depends
-Flatten = SCons.Util.flatten
 WhereIs = SCons.Util.WhereIs
 IsList = SCons.Util.is_List
 

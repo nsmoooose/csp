@@ -30,35 +30,6 @@ from csp.tools.build import registry
 from csp.tools.build import util
 
 
-def ReadPackages(env, packages, **kw):
-    '''
-    Helper for loading sconscript build definitions in subdirectories.
-    This method is added to the scons environment.
-
-    Similar to the build-in SConstruct() function, but by default sets
-    the build dir to '.bin' in each subdirectory, disables source duplication,
-    and exports both 'env' and 'build'.  Returns a single list of all
-    variables returned by all child build scripts.
-
-    Keyword arguments are passed to SConscript() and override the default
-    settings.
-    '''
-    from csp.tools import build
-    kw.setdefault('duplicate', 0)
-    kw.setdefault('exports', 'env build')
-    has_variant_dir = 'variant_dir' in kw
-    result = []
-    for package in packages:
-        if not has_variant_dir:
-            kw['variant_dir'] = '%s/.bin' % package
-        targets = env.SConscript('%s/SConscript' % package, **kw)
-        if targets:
-            if not isinstance(targets, list):
-                targets = [targets]
-            result.extend(targets)
-    return SCons.Script.Flatten(result)
-
-
 def FinalizePackages(env):
     registry.BuildRegistry.Build(env)
 
@@ -69,7 +40,6 @@ def GlobalSetup(env):
     SConsEnvironment.CopyEnvironment = util.CopyEnvironment
     SConsEnvironment.SetConfig = autoconf.SetConfig
     SConsEnvironment.Documentation = MakeDocumentation
-    SConsEnvironment.ReadPackages = ReadPackages
     SConsEnvironment.FinalizePackages = FinalizePackages
 
 

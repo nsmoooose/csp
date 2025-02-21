@@ -38,28 +38,6 @@ build.CheckLXMLVersion()
 build.DevpackConfig.SetMinimumVersion('0.6')
 
 
-PACKAGES = [
-    'csplib',
-    'cspsim',
-    'cspwf',
-    'modules',
-    'examples/clouds',
-    'examples/clouds-scene',
-    'examples/objectmodel',
-    'examples/osgviewer_sdlinput',
-    # 'examples/sdl-viewer',
-    'examples/sky',
-    'examples/terrain-demeter',
-    'examples/wf-listbox',
-    'examples/wf-scrollbars',
-    'examples/wf-signals',
-    'examples/wf-window',
-    'tools/canopy',
-    'tools/layout',
-    'tools/layout2',
-    'tools/googlemaps',
-]
-
 build.ExternalLibrary(
     name = 'jpeg',
     config = [
@@ -241,7 +219,26 @@ env["CC"] = os.getenv("CC") or env["CC"]
 env["CXX"] = os.getenv("CXX") or env["CXX"]
 env["ENV"].update(x for x in os.environ.items() if x[0].startswith("CCC_"))
 
-env.ReadPackages(PACKAGES)
+env.SConscript('csplib/SConscript', duplicate=0, exports='env build', variant_dir="csplib/.bin")
+env.SConscript('cspsim/SConscript', duplicate=0, exports='env build', variant_dir="cspsim/.bin")
+env.SConscript('cspwf/SConscript', duplicate=0, exports='env build', variant_dir="cspwf/.bin")
+env.SConscript('modules/SConscript', duplicate=0, exports='env build', variant_dir="modules/.bin")
+env.SConscript('examples/clouds/SConscript', duplicate=0, exports='env build', variant_dir="examples/clouds/.bin")
+env.SConscript('examples/clouds-scene/SConscript', duplicate=0, exports='env build', variant_dir="examples/clouds-scene/.bin")
+env.SConscript('examples/objectmodel/SConscript', duplicate=0, exports='env build', variant_dir="examples/objectmodel/.bin")
+env.SConscript('examples/osgviewer_sdlinput/SConscript', duplicate=0, exports='env build', variant_dir="examples/osgviewer_sdlinput/.bin")
+# env.SConscript('examples/sdl-viewer/SConscript', duplicate=0, exports='env build', variant_dir="examples/sdl-viewer/.bin")
+env.SConscript('examples/sky/SConscript', duplicate=0, exports='env build', variant_dir="examples/sky/.bin")
+env.SConscript('examples/terrain-demeter/SConscript', duplicate=0, exports='env build', variant_dir="examples/terrain-demeter/.bin")
+env.SConscript('examples/wf-listbox/SConscript', duplicate=0, exports='env build', variant_dir="examples/wf-listbox/.bin")
+env.SConscript('examples/wf-scrollbars/SConscript', duplicate=0, exports='env build', variant_dir="examples/wf-scrollbars/.bin")
+env.SConscript('examples/wf-signals/SConscript', duplicate=0, exports='env build', variant_dir="examples/wf-signals/.bin")
+env.SConscript('examples/wf-window/SConscript', duplicate=0, exports='env build', variant_dir="examples/wf-window/.bin")
+env.SConscript('tools/canopy/SConscript', duplicate=0, exports='env build', variant_dir="tools/canopy/.bin")
+# env.SConscript('tools/layout/SConscript', duplicate=0, exports='env build', variant_dir="tools/layout/.bin")
+env.SConscript('tools/layout2/SConscript', duplicate=0, exports='env build', variant_dir="tools/layout2/.bin")
+env.SConscript('tools/googlemaps/SConscript', duplicate=0, exports='env build', variant_dir="tools/googlemaps/.bin")
+
 env.FinalizePackages()
 
 Default("all")

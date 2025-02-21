@@ -18,9 +18,5 @@
 
 Import('env build')
 
-PACKAGES = [
-    '#/modules/demeter',
-    '#/modules/chunklod',
-]
-
-env.ReadPackages(PACKAGES)
+env.SConscript('demeter/SConscript', duplicate=0, exports='env build', variant_dir="demeter/.bin")
+env.SConscript('chunklod/SConscript', duplicate=0, exports='env build', variant_dir="chunklod/.bin")

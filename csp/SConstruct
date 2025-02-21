@@ -165,7 +165,7 @@ INCLUDE = [
     os.environ.get('CSPDEVPACK', '') + "\\include\\AL"
 ]
 
-env = Environment()
+env = Environment(tools=['default', 'swig'])
 env.Replace(CXXFILESUFFIX='.cpp')
 env.Replace(CPPPATH=INCLUDE)
 env.Replace(SWIGFLAGS=Split('-python -c++'))

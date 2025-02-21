@@ -64,10 +64,6 @@ def FinalizePackages(env):
 
 
 def GlobalSetup(env):
-    import SCons.Tool.swig
-    if not SCons.Tool.swig.exists(env):
-        SCons.Tool.swig.generate(env)
-
     builders.AddBuilders(env)
     util.AddPhonyTarget(env, 'config')
     SConsEnvironment.CopyEnvironment = util.CopyEnvironment

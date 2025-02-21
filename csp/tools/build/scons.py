@@ -29,7 +29,3 @@ def SetReading():
 
 def GetOptions():
     return SCons.Script.Main.OptionsParser.values
-
-
-def GetCommandlineTargets():
-    return SCons.Script.SConscript.CommandLineTargets

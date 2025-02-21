@@ -22,6 +22,7 @@ from subprocess import Popen, PIPE
 import pickle
 import re
 import SCons.Script
+import SCons.Script.SConscript
 
 from distutils import sysconfig
 
@@ -214,7 +215,7 @@ def CustomConfigure(env):
 
 def SetConfig(env, config):
     if config:
-        if ('config' in scons.GetCommandlineTargets()) or ReadConfig(env):
+        if ('config' in SCons.Script.SConscript.CommandLineTargets) or ReadConfig(env):
             if not env.GetOption('clean'):
                 config(env)
                 WriteConfig(env)

@@ -17,6 +17,7 @@
 import os
 import sys
 import SCons.Script
+import SCons.Script.SConscript
 
 from csp.tools.build import autoconf
 from csp.tools.build import scons
@@ -65,7 +66,7 @@ class _BuildRegistry:
         return self._libraries.get(name) or self._sources.get(name) or self._targets.get(name)
 
     def Configure(self, env):
-        if ('config' in scons.GetCommandlineTargets()) or not self._ReadConfigs(env):
+        if ('config' in SCons.Script.SConscript.CommandLineTargets) or not self._ReadConfigs(env):
             if not env.GetOption('clean'):
                 valid = 1
                 conf = autoconf.CustomConfigure(env.Clone())

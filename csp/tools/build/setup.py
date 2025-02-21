@@ -21,6 +21,7 @@ import time
 
 import SCons
 import SCons.Script
+import SCons.Script.SConscript
 from SCons.Script.SConscript import SConsEnvironment
 
 from csp.tools.build import autoconf
@@ -193,7 +194,7 @@ def GlobalSetup(env):
 def MakeDocumentation(env, target, config, sources):
     target = SCons.Script.Dir(target)
     html = target.Dir('html')
-    if 'dox' in scons.GetCommandlineTargets():
+    if 'dox' in SCons.Script.SConscript.CommandLineTargets:
         index = html.File('index.html')
         dox = env.Doxygen(index, SCons.Script.File(config))
         for item in sources:

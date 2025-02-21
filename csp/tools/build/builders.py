@@ -22,8 +22,6 @@ import SCons.Builder
 import SCons.Scanner
 import SCons.Tool
 
-from csp.tools.build import scons
-
 
 def AddDoxygen(env):
     env['DOXYGEN'] = 'doxygen'

@@ -16,7 +16,6 @@
 import sys
 
 from csp.tools.build import util
-from csp.tools.build import scons
 from subprocess import Popen, PIPE
 
 import pickle
@@ -203,7 +202,7 @@ def _checking(context, target, min_version=None, reset_cached=0):
 
 
 def CustomConfigure(env):
-    scons.SetReading()
+    SCons.Script.SConscript.sconscript_reading = 1
     conf = env.Configure(log_file="#/.config.log")
     conf.AddTests({'CheckSwig': CheckSwig})
     conf.AddTests({'CheckLibVersion': CheckLibVersion})

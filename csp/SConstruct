@@ -19,6 +19,12 @@ print('COMBAT SIMULATOR PROJECT - Build System')
 
 EnsureSConsVersion(4, 6, 0)
 
+# several global targets (e.g. 'all') are shared between copied subenvironments;
+# this is ok and the warning is annoying. This warning is shown when building
+# doxygen documentation where the target is index.html for both csplib and cspsim.
+import SCons.Warnings
+SCons.Warnings.suppressWarningClass(SCons.Warnings.DuplicateEnvironmentWarning)
+
 import os
 import sys
 from tools import build

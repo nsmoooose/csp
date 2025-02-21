@@ -27,7 +27,6 @@ from SCons.Script.SConscript import SConsEnvironment
 from csp.tools.build import autoconf
 from csp.tools.build import builders
 from csp.tools.build import registry
-from csp.tools.build import scons
 from csp.tools.build import util
 
 

@@ -20,7 +20,6 @@ import SCons.Script
 import SCons.Script.SConscript
 
 from csp.tools.build import autoconf
-from csp.tools.build import scons
 from csp.tools.build import util
 
 

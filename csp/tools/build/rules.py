@@ -164,10 +164,10 @@ class Target:
         if self._doxygen:
             self._env.Documentation(self._dox, self._doxygen, self._sources)
         if self._always_build:
-            scons.AlwaysBuild(target)
+            SCons.Script.AlwaysBuild(target)
         self._output = target
         if bdeps and not self._env.GetOption('clean'):
-            scons.Depends(target, bdeps)
+            SCons.Script.Depends(target, bdeps)
         return target  # [0]
 
     def _findSources(self):

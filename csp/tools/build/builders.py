@@ -23,12 +23,6 @@ import SCons.Scanner
 import SCons.Tool
 
 
-def AddDoxygen(env):
-    env['DOXYGEN'] = 'doxygen'
-    env['DOXYGENCOM'] = 'cd $SOURCE.dir && $DOXYGEN $SOURCES.file 1>.dox.log 2>.dox.err'
-    env.Append(BUILDERS={'Doxygen': SCons.Builder.Builder(action=SCons.Action.Action('$DOXYGENCOM', '$DOXYGENCOMSTR'))})
-
-
 def AddLinkFile(env):
     def symlink(target, source, env):
         source, target = source[0].abspath, target[0].abspath
@@ -61,6 +55,5 @@ def AddNet(env):
 
 
 def AddBuilders(env):
-    AddDoxygen(env)
     AddLinkFile(env)
     AddNet(env)

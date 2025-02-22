@@ -431,7 +431,6 @@ build.SharedLibrary(expenv,
         '@cspsim/sky',
     ],
     aliases = ['all', 'cspsim'],
-    doxygen = 'cspsim.dox',
     softlink = 1)
 
 
@@ -439,8 +438,7 @@ build.PythonSharedLibrary(env,
     name = 'cspsim_module',
     sources = ['cspsim.i'],
     deps = ['cspsim'],
-    aliases = ['all', 'cspsim'],
-    doxygen = 'cspsim.dox')
+    aliases = ['all', 'cspsim'])
 
 
 build.Program(env,
@@ -457,3 +455,13 @@ build.Test(env,
     sources = [ 'test/test_PhysicsModel.cpp' ],
     deps = ['csplib', 'cspsim'],
     aliases = ['all'])
+
+
+dox = env.Command(
+    target='#cspsim/doxygen_doc/index.html',
+    source='#cspsim/cspsim.dox',
+    action='doxygen - < ${SOURCE.file} 1>.dox.stdout 2>.dox.stderr',
+    chdir='cspsim')
+env.Alias('dox', dox)
+if env.GetOption('clean'):
+    Execute(Delete(Dir("#cspsim/doxygen_doc")))

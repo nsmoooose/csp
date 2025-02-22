@@ -25,6 +25,14 @@ build.SharedLibrary(expenv,
     name = 'cspwf',
     sources = Glob("*.cpp", strings=True) + Glob("*.h", strings=True),
     aliases = ['all', 'cspwf'],
-    doxygen = 'cspwf.dox',
     deps = ['csplib', 'opengl', 'osg', 'sdl', 'sound'],
     softlink = 1)
+
+dox = env.Command(
+    target='#cspwf/doxygen_doc/index.html',
+    source='#cspwf/cspwf.dox',
+    action='doxygen - < ${SOURCE.file} 1>.dox.stdout 2>.dox.stderr',
+    chdir='cspwf')
+env.Alias('dox', dox)
+if env.GetOption('clean'):
+    Execute(Delete(Dir("#cspwf/doxygen_doc")))

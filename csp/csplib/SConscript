@@ -204,7 +204,6 @@ build.SharedLibrary(expenv,
     name = 'csplib',
     sources = ['@csplib'],
     aliases = ['all', 'csplib'],
-    doxygen = 'csplib.dox',
     softlink = 1)
 
 
@@ -266,3 +265,12 @@ build.Test(env,
 #   sources = ['numeric/test/NumericalMethodTiming.cpp'],
 #   deps = ['csplib'],
 #        aliases = ['all'])
+
+dox = env.Command(
+    target='#csplib/doxygen_doc/index.html',
+    source='#csplib/csplib.dox',
+    action='doxygen - < ${SOURCE.file} 1>.dox.stdout 2>.dox.stderr',
+    chdir='csplib')
+env.Alias('dox', dox)
+if env.GetOption('clean'):
+    Execute(Delete(Dir("#csplib/doxygen_doc")))

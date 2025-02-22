@@ -109,7 +109,7 @@ class SourceGroup:
 
 
 class Target:
-    def __init__(self, env, name, sources=[], aliases=[], deps=[], always_build=0, softlink=0, doxygen=None, is_test=0, **kw):
+    def __init__(self, env, name, sources=[], aliases=[], deps=[], always_build=0, softlink=0, is_test=0, **kw):
         self._env = env.Clone()
         self._name = name
         self._sources = [s for s in sources if s.startswith('@')]
@@ -129,10 +129,6 @@ class Target:
         self._is_test = is_test or ('tests' in aliases)  # the latter is for backward compatibility
         self._always_build = always_build
         self._softlink = softlink
-        self._doxygen = None
-        if doxygen:
-            self._dox = env.Dir('.dox').srcnode()
-            self._doxygen = env.File(doxygen)
         self._options = kw
         self._groups = None
         self._output = None
@@ -159,8 +155,6 @@ class Target:
         SCons.Script.Alias(self._name, target)
         if self._aliases:
             SCons.Script.Alias(self._aliases, target)
-        if self._doxygen:
-            self._env.Documentation(self._dox, self._doxygen, self._sources)
         if self._always_build:
             SCons.Script.AlwaysBuild(target)
         self._output = target

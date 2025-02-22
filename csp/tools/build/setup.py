@@ -38,24 +38,4 @@ def GlobalSetup(env):
     builders.AddBuilders(env)
     env.AlwaysBuild(env.Alias('config', [], env.Action([])))
     SConsEnvironment.SetConfig = autoconf.SetConfig
-    SConsEnvironment.Documentation = MakeDocumentation
     SConsEnvironment.FinalizePackages = FinalizePackages
-
-
-def MakeDocumentation(env, target, config, sources):
-    target = SCons.Script.Dir(target)
-    html = target.Dir('html')
-    if 'dox' in SCons.Script.SConscript.CommandLineTargets:
-        index = html.File('index.html')
-        dox = env.Doxygen(index, SCons.Script.File(config))
-        for item in sources:
-            if isinstance(item, str):
-                if item.startswith('@'):
-                    item = registry.BuildRegistry.GetSourceGroup(item)
-                    env.Depends(dox, item.all)
-                else:
-                    env.Depends(dox, util.Glob(item))
-            else:
-                print('implement me')
-        env.Alias('dox', dox)
-    env.Clean(['dox', 'all'], html)

@@ -97,15 +97,3 @@ class Settings(dict):
                 env[key] = list(value)
             else:
                 env[key] = value
-
-    def Diff(old_env, new_env):
-        settings = {}
-        for key in ('CCFLAGS', 'CPPPATH', 'CPPFLAGS', 'LIBS', 'LIBPATH', 'LINKFLAGS'):
-            new_values = new_env.get(key, [])
-            old_values = old_env.get(key, [])
-            for old in old_values:
-                if old in new_values:
-                    new_values.remove(old)
-            settings[key] = new_values
-        return Settings(settings)
-    Diff = staticmethod(Diff)

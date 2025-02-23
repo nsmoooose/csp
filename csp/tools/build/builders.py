@@ -29,14 +29,6 @@ def AddDoxygen(env):
     env.Append(BUILDERS={'Doxygen': SCons.Builder.Builder(action=SCons.Action.Action('$DOXYGENCOM', '$DOXYGENCOMSTR'))})
 
 
-def AddCopyFile(env):
-    def copy(target, source, env):
-        source, target = source[0].abspath, target[0].abspath
-        shutil.copy(source, target)
-    CopyFile = SCons.Builder.Builder(action=SCons.Action.Action(copy, '$COPYFILECOMSTR'))
-    env.Append(BUILDERS={'CopyFile': CopyFile})
-
-
 def AddLinkFile(env):
     def symlink(target, source, env):
         source, target = source[0].abspath, target[0].abspath
@@ -70,6 +62,5 @@ def AddNet(env):
 
 def AddBuilders(env):
     AddDoxygen(env)
-    AddCopyFile(env)
     AddLinkFile(env)
     AddNet(env)

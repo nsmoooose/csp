@@ -68,12 +68,6 @@ def SilentAction(callback):
     return Action(callback, noprint)
 
 
-def CopyEnvironment(env, vars):
-    for var in vars:
-        if var in os.environ:
-            env['ENV'][var] = os.environ[var]
-
-
 def Apply(builder, sources, **overrides):
     def builder_wrap(source):
         return builder(source, **overrides)

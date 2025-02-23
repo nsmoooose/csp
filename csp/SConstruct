@@ -155,6 +155,11 @@ if is_windows:
     # warning C4275: non dll-interface class 'X' used as base for dll-interface class 'Y'
     # warning C4290: C++ exception specification ignored except to indicate a function is not __declspec(nothrow)
 
+    def CopyEnvironment(env, vars):
+        for var in vars:
+            if var in os.environ:
+                env['ENV'][var] = os.environ[var]
+
     debug = ARGUMENTS.get('debug', 0)
     if int(debug) == 0:
         print('Building release configuration')
@@ -163,7 +168,7 @@ if is_windows:
         env.AppendUnique(LINKFLAGS=Split('/INCREMENTAL:NO /RELEASE /nologo'))
         env.AppendUnique(SHLINKFLAGS=Split('/INCREMENTAL:NO /RELEASE /nologo'))
         env.AppendUnique(LIBPATH=[build.GetPythonLibrary()])
-        env.CopyEnvironment(Split('PATH INCLUDE LIB'))
+        CopyEnvironment(env, Split('PATH INCLUDE LIB'))
     elif int(debug) == 1:
         print('Building debug configuration')
         env.Replace(CXXFLAGS=Split('/GR /MD /Zi /EHsc /W3 /nologo /wd4251 /wd4275 /wd4290'))
@@ -171,7 +176,7 @@ if is_windows:
         env.AppendUnique(LINKFLAGS=Split('/INCREMENTAL:NO /DEBUG /nologo'))
         env.AppendUnique(SHLINKFLAGS=Split('/INCREMENTAL:NO /DEBUG /nologo'))
         env.AppendUnique(LIBPATH=[build.GetPythonLibrary()])
-        env.CopyEnvironment(Split('PATH INCLUDE LIB'))
+        CopyEnvironment(env, Split('PATH INCLUDE LIB'))
     else:
         print('Building full debug configuration')
         env.Replace(CONFIG_DEBUG=debug)
@@ -180,7 +185,7 @@ if is_windows:
         env.AppendUnique(LINKFLAGS=Split('/INCREMENTAL:NO /DEBUG /nologo'))
         env.AppendUnique(SHLINKFLAGS=Split('/INCREMENTAL:NO /DEBUG /nologo'))
         env.AppendUnique(LIBPATH=[build.GetPythonLibrary()])
-        env.CopyEnvironment(Split('PATH INCLUDE LIB'))
+        CopyEnvironment(env, Split('PATH INCLUDE LIB'))
 
 if is_linux:
     debug = ARGUMENTS.get('debug', 0)

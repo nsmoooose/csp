@@ -19,7 +19,7 @@
 Import('env build')
 
 expenv = env.Clone()
-expenv.AppendUnique(CPPDEFINES=Split('CSPSIM_EXPORTS __CSPSIM_EXE__'))
+expenv.AppendUnique(CPPDEFINES=Split('CSPSIM_EXPORTS'))
 
 
 build.SourceGroup(expenv,

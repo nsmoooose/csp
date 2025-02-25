@@ -441,15 +441,6 @@ build.PythonSharedLibrary(env,
     aliases = ['all', 'cspsim'])
 
 
-build.Program(env,
-    name = 'skydemo',
-    sources = [
-        '@cspsim/sky',
-        'sky/Test.cpp',
-    ],
-    deps = ['csplib', 'osg'],
-    aliases = 'skydemo')
-
 build.Test(env,
     name = 'test_PhysicsModel',
     sources = [ 'test/test_PhysicsModel.cpp' ],

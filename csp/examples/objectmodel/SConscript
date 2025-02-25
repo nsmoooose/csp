@@ -18,10 +18,12 @@
 
 Import('env build')
 
-build.Program(env,
-    name = 'objectmodel',
-    sources = [
-        'Program.cpp',
-    ],
-    deps = ['osg', 'csplib', 'cspsim'],
-    aliases = ['examples'])
+env.ParseConfig("pkg-config openscenegraph openthreads --cflags --libs")
+env.AppendUnique(LIBS=["csplib", "cspsim"])
+env.AppendUnique(LIBPATH=["#csplib/.bin", "#cspsim/.bin"])
+# env.AppendUnique(RPATH=["../../../csplib/.bin", "../../../cspsim/.bin"])
+om = env.Program(
+    target="objectmodel",
+    source="Program.cpp"
+)
+Alias(["examples", "objectmodel"], om)

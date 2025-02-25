@@ -17,11 +17,12 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 Import('env build')
-
-build.Program(env,
-    name = 'clouds',
-    sources = [
-        'Program.cpp',
-    ],
-    deps = ['osg', 'csplib', 'cspsim'],
-    aliases = ['examples', 'clouds'])
+env.ParseConfig("pkg-config openscenegraph openthreads --cflags --libs")
+env.AppendUnique(LIBS=["csplib", "cspsim"])
+env.AppendUnique(LIBPATH=["#csplib/.bin", "#cspsim/.bin"])
+# env.AppendUnique(RPATH=["../../../csplib/.bin", "../../../cspsim/.bin"])
+clouds = env.Program(
+    target="clouds",
+    source="Program.cpp"
+)
+Alias(["examples", "clouds"], clouds)

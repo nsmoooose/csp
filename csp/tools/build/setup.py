@@ -13,21 +13,10 @@
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-import sys
-import atexit
-import logging
-import os
-import time
-
-import SCons
-import SCons.Script
-import SCons.Script.SConscript
 from SCons.Script.SConscript import SConsEnvironment
-
 from csp.tools.build import autoconf
 from csp.tools.build import builders
 from csp.tools.build import registry
-from csp.tools.build import util
 
 
 def FinalizePackages(env):

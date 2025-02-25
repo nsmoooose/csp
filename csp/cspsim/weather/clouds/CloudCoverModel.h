@@ -10,7 +10,7 @@ namespace csp {
 namespace weather {
 namespace clouds {
 
-	class CloudCoverModel : public FeatureGroupModel {
+	class CSPSIM_EXPORT CloudCoverModel : public FeatureGroupModel {
 	public:
 		CSP_DECLARE_STATIC_OBJECT(CloudCoverModel)
 

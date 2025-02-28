@@ -27,7 +27,7 @@ run-client2:
 # This is used if you have Emacs as code editor together with
 # lsp-mode and clangd for quick code navigation.
 compile_commands.json:
-	bear $(MAKE) clean all
+	bear -- $(MAKE) clean all
 
 loc:
 	@echo "Number of lines of C++ code:"

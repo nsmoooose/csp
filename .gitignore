@@ -1,5 +1,13 @@
-.bin
+# Doxygen
 .dox*
+doxygen_doc
+
+# clangd compile command database used together with
+# Emacs, lsp-mode and clangd. Basically intellisense but
+# in linux.
+compile_commands.json
+
+.bin
 *.dar
 *.pyc
 csp/.buildlog

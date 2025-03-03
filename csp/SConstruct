@@ -35,14 +35,11 @@ is_linux = sys.platform == 'linux'
 build.CheckPythonVersion('3.10')
 build.CheckWXVersion('2.6')
 build.CheckLXMLVersion()
-build.DevpackConfig.SetMinimumVersion('0.6')
-
 
 build.ExternalLibrary(
     name = 'jpeg',
     config = [
         build.UnixLibConfig(lib='libjpeg', symbol='jpeg_resync_to_restart'),
-        build.DevpackConfig(libs='libjpeg'),
         build.WindowsLibConfig('user32'),
     ])
 
@@ -65,16 +62,12 @@ build.ExternalLibrary(
     config = [
         build.PkgConfig(package='freealut', version='0.2'),
         build.PkgConfig(package='vorbisfile', version='1.1.0'),
-        build.DevpackConfig(dlls='oalpp', headers=[('openalpp', 'sounddata')]),
-        build.DevpackConfig(dlls=['vorbis', 'vorbisfile'], headers=[('vorbis', 'vorbisfile.h')]),
-        build.DevpackConfig(dlls='ogg', headers=[('ogg', 'ogg.h')]),
     ])
 
 build.ExternalLibrary(
     name = 'sigc',
     config = [
         build.PkgConfig(package='sigc++-2.0', version='2.0.6', label='sigc'),
-        build.DevpackConfig(dlls='sigc-2.0', headers=['sigc++config.h', ('sigc++', 'trackable.h')]),
     ])
 
 build.ExternalLibrary(
@@ -84,22 +77,22 @@ build.ExternalLibrary(
         build.PkgConfig(package='openthreads', version='2.3'),
         # build.PkgConfig(package='osgal', version='0.6.1'),
         build.UnixLibConfig(lib='libosgAL'),
-        build.DevpackConfig(dlls='osgal', headers=[('osgAL', 'SoundNode')]),
-        build.DevpackConfig(libs=['osg', 'osgDB', 'osgFX', 'osgGA', 'osgParticle', 'osgViewer', 'osgText', 'osgUtil', 'OpenThreads'], dlls=[], headers=[('osg', 'Depth'), ('osgText', 'Font')]),
     ])
 
 build.ExternalLibrary(
     name = 'sdl',
     config = [
-        build.CommandConfig(package='sdl', version_command='sdl-config --version', flags_command='sdl-config --cflags --libs', version='1.2.5', label='sdl'),
-        build.DevpackConfig(dlls=['SDL'], headers=[('SDL', 'SDL_mouse.h')]),
+        build.PkgConfig(package='sdl', version='1.2.5'),
     ])
+
+# TODO check if boost_system is needed on linux
+# TODO check if -mt is also present in Linux.
 
 build.ExternalLibrary(
     name = 'boost',
     config = [
-        build.UnixLibConfig(lib='boost_system', label='boost system'),
-        build.UnixLibConfig(lib='boost_filesystem', label='boost filesystem'),
+        # build.UnixLibConfig(lib='libboost_system', label='boost system'),
+        build.UnixLibConfig(lib='libboost_filesystem-mt', label='boost filesystem'),
     ])
 
 build.ExternalLibrary(
@@ -133,80 +126,44 @@ COMMON TARGETS:
 INCLUDE = [
     '#/..',
     build.GetPythonInclude(),
-    os.environ.get('CSPDEVPACK', '') + "\\include\\AL"
 ]
 
-env = Environment(tools=['default', 'swig'])
+PLATFORM="linux"
+if is_windows:
+    PLATFORM="mingw"
+
+env = Environment(PLATFORM=PLATFORM, tools=['default', 'swig'])
+env.PrependENVPath("PATH", [r"C:\msys64\ucrt64\bin"])
 env.Replace(CXXFILESUFFIX='.cpp')
 env.Replace(CPPPATH=INCLUDE)
 env.Replace(SWIGFLAGS=Split('-python -c++'))
 env.Replace(SWIGPATH=INCLUDE)
 
-if is_windows:
-    # The following compiler warnings has been disabled:
-    # warning C4251: 'X' : struct 'Y' needs to have dll-interface to be used by clients of class 'Z'
-    # warning C4275: non dll-interface class 'X' used as base for dll-interface class 'Y'
-    # warning C4290: C++ exception specification ignored except to indicate a function is not __declspec(nothrow)
+debug = ARGUMENTS.get('debug', 0)
+if int(debug) == 0:
+    print('Building release configuration')
+    gcc = build.GetGCCVersion()
+    env.Replace(CXXFLAGS=Split('-std=gnu++17 -O2 -W -Wall -pedantic -fno-strict-aliasing -fvisibility=hidden -Wno-unused-local-typedefs'))
+    env.Replace(SWIGCXXFLAGS=Split('-O2 -g'))
+    env.Replace(ARFLAGS=Split('cr'))
+elif int(debug) == 1:
+    print('Building debug configuration (no optimizations)')
+    gcc = build.GetGCCVersion()
+    env.Replace(CXXFLAGS=Split('-std=gnu++17 -O0 -g -W -Wall -pedantic -fno-strict-aliasing -fvisibility=hidden -Wno-unused-local-typedefs'))
+    env.Replace(SWIGCXXFLAGS=Split('-O2 -g'))
+    env.Replace(ARFLAGS=Split('cr'))
 
-    def CopyEnvironment(env, vars):
-        for var in vars:
-            if var in os.environ:
-                env['ENV'][var] = os.environ[var]
+    # Disable inlining to prevent valgrind to be confused.
+    env.AppendUnique(CXXFLAGS=Split('-fno-inline'))
+    env.AppendUnique(CXXFLAGS=Split('-fno-builtin'))
 
-    debug = ARGUMENTS.get('debug', 0)
-    if int(debug) == 0:
-        print('Building release configuration')
-        env.Replace(CXXFLAGS=Split('/GR /MD /O2 /EHsc /W3 /nologo /wd4251 /wd4275 /wd4290'))
-        env.AppendUnique(CPPDEFINES=Split('WIN32 __WIN32__ _USRDLL _DLL NDEBUG _CRT_SECURE_NO_DEPRECATE _USE_MATH_DEFINES'))
-        env.AppendUnique(LINKFLAGS=Split('/INCREMENTAL:NO /RELEASE /nologo'))
-        env.AppendUnique(SHLINKFLAGS=Split('/INCREMENTAL:NO /RELEASE /nologo'))
-        env.AppendUnique(LIBPATH=[build.GetPythonLibrary()])
-        CopyEnvironment(env, Split('PATH INCLUDE LIB'))
-    elif int(debug) == 1:
-        print('Building debug configuration')
-        env.Replace(CXXFLAGS=Split('/GR /MD /Zi /EHsc /W3 /nologo /wd4251 /wd4275 /wd4290'))
-        env.AppendUnique(CPPDEFINES=Split('WIN32 __WIN32__ _USRDLL _DLL NDEBUG _CRT_SECURE_NO_DEPRECATE _USE_MATH_DEFINES'))
-        env.AppendUnique(LINKFLAGS=Split('/INCREMENTAL:NO /DEBUG /nologo'))
-        env.AppendUnique(SHLINKFLAGS=Split('/INCREMENTAL:NO /DEBUG /nologo'))
-        env.AppendUnique(LIBPATH=[build.GetPythonLibrary()])
-        CopyEnvironment(env, Split('PATH INCLUDE LIB'))
-    else:
-        print('Building full debug configuration')
-        env.Replace(CONFIG_DEBUG=debug)
-        env.Replace(CXXFLAGS=Split('/GR /MDd /Zi /EHsc /W3 /nologo /wd4251 /wd4275 /wd4290'))
-        env.AppendUnique(CPPDEFINES=Split('WIN32 __WIN32__ _USRDLL _DLL _CRT_SECURE_NO_DEPRECATE _USE_MATH_DEFINES'))
-        env.AppendUnique(LINKFLAGS=Split('/INCREMENTAL:NO /DEBUG /nologo'))
-        env.AppendUnique(SHLINKFLAGS=Split('/INCREMENTAL:NO /DEBUG /nologo'))
-        env.AppendUnique(LIBPATH=[build.GetPythonLibrary()])
-        CopyEnvironment(env, Split('PATH INCLUDE LIB'))
+    # Some stack protection mechanisms can initialize stack variables,
+    # hiding uninitialized memory issues from Valgrind.
+    env.AppendUnique(CXXFLAGS=Split('-fno-stack-protector'))
 
-if is_linux:
-    debug = ARGUMENTS.get('debug', 0)
-    if int(debug) == 0:
-        print('Building release configuration')
-        gcc = build.GetGCCVersion()
-        env.Replace(CXXFLAGS=Split('-O2 -W -Wall -pedantic -fno-strict-aliasing -fvisibility=hidden -Wno-unused-local-typedefs'))
-        env.Replace(SWIGCXXFLAGS=Split('-O2 -g'))
-        env.Replace(ARFLAGS=Split('cr'))
-    elif int(debug) == 1:
-        print('Building debug configuration (no optimizations)')
-        gcc = build.GetGCCVersion()
-        env.Replace(CXXFLAGS=Split('-O0 -g -W -Wall -pedantic -fno-strict-aliasing -fvisibility=hidden -Wno-unused-local-typedefs'))
-        env.Replace(SWIGCXXFLAGS=Split('-O2 -g'))
-        env.Replace(ARFLAGS=Split('cr'))
-
-        # Disable inlining to prevent valgrind to be confused.
-        env.AppendUnique(CXXFLAGS=Split('-fno-inline'))
-        env.AppendUnique(CXXFLAGS=Split('-fno-builtin'))
-
-        # Some stack protection mechanisms can initialize stack variables,
-        # hiding uninitialized memory issues from Valgrind.
-        env.AppendUnique(CXXFLAGS=Split('-fno-stack-protector'))
-
-        # LTO can inline functions across translation units, making
-        # Valgrind’s checks less effective.
-        env.AppendUnique(CXXFLAGS=Split('-fno-lto'))
-
+    # LTO can inline functions across translation units, making
+    # Valgrind’s checks less effective.
+    env.AppendUnique(CXXFLAGS=Split('-fno-lto'))
 
 build.GlobalSetup(env)
 

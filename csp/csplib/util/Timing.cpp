@@ -142,7 +142,7 @@ namespace csp {
 			}
 		}
 		// schedule the next calibration
-		next_calibration = counter + static_cast<uint64>(calibration_interval / counter_scale);
+		next_calibration = counter + static_cast<uint64_t>(calibration_interval / counter_scale);
 	}
 
 	double getCalibratedRealTime() {

@@ -80,8 +80,6 @@ class CommandConfig:
         self._label = label
 
     def configure(self, conf):
-        if util.IsWindows(conf.env):
-            return 1
         valid = conf.CheckCommandVersion(self._package, self._version_command, self._version, lib_name=self._label)
         if valid:
             conf.env.ParseConfig(self._flags_command)
@@ -105,8 +103,6 @@ class UnixLibConfig(LibConfig):
         LibConfig.__init__(self, lib, symbol, label)
 
     def configure(self, conf):
-        if util.IsWindows(conf.env):
-            return 1
         return conf.CheckLib(self._lib, self._symbol)
 
 
@@ -121,70 +117,3 @@ class WindowsLibConfig(LibConfig):
         if not util.IsWindows(conf.env):
             return 1
         return conf.CheckLib(self._lib, self._symbol)
-
-
-class DevpackConfig:
-    DEVPACK = None
-    VERSION = None
-
-    def _checkPath(*args):
-        path = os.path.join(*args)
-        if not os.path.exists(path):
-            print('CSPDEVPACK path (%s) not found.' % path)
-            sys.exit(1)
-    _checkPath = staticmethod(_checkPath)
-
-    def SetMinimumVersion(version):
-        DevpackConfig.VERSION = version
-    SetMinimumVersion = staticmethod(SetMinimumVersion)
-
-    def _Find():
-        if DevpackConfig.DEVPACK:
-            return
-        path = os.environ.get('CSPDEVPACK', '')
-        if not path:
-            print('CSPDEVPACK environment variable not set.')
-            sys.exit(1)
-        if path.startswith('"') and path.endswith('"'):
-            path = path[1:-1]
-        try:
-            v = list(map(int, re.search(r'([0-9.]+)"?$', path).group(1).split('.')))
-        except Exception:
-            print('ERROR: CSPDEVPACK environment variable (%s) does not look like a valid devpack path.' % path)
-            sys.exit(1)
-        if v < list(map(int, DevpackConfig.VERSION.split('.'))):
-            print('ERROR: The installed devpack (%s) is too old; need version %s' % (path, DevpackConfig.VERSION))
-            sys.exit(1)
-        DevpackConfig._checkPath(path)
-        DevpackConfig._checkPath(path, 'bin')
-        DevpackConfig._checkPath(path, 'lib')
-        DevpackConfig._checkPath(path, 'include')
-        DevpackConfig.DEVPACK = path
-    _Find = staticmethod(_Find)
-
-    def __init__(self, dlls=[], libs=[], headers=[]):
-        if isinstance(dlls, str):
-            dlls = [dlls]
-        if isinstance(libs, str):
-            libs = [libs]
-        self._dlls = dlls
-        self._libs = libs
-        self._headers = headers
-
-    def configure(self, conf):
-        if util.IsWindows(conf.env):
-            DevpackConfig._Find()
-            dp = DevpackConfig.DEVPACK
-            for dll in self._dlls:
-                self._checkPath(dp, 'bin', dll + '.dll')
-                self._checkPath(dp, 'lib', dll + '.lib')
-            for lib in self._libs:
-                self._checkPath(dp, 'lib', lib + '.lib')
-            for header in self._headers:
-                if isinstance(header, tuple):
-                    header = os.path.join(*header)
-                self._checkPath(os.path.join(dp, 'include', header))
-            conf.env.AppendUnique(CPPPATH=[os.path.join(dp, 'include')])
-            conf.env.AppendUnique(LIBPATH=[os.path.join(dp, 'lib')])
-            conf.env.AppendUnique(LIBS=self._dlls + self._libs)
-        return 1

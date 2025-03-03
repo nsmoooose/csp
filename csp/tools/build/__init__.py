@@ -73,4 +73,4 @@ from csp.tools.build.autoconf import \
     GetPythonInclude, GetPythonLibrary, GetGCCVersion
 
 from csp.tools.build.libconf import \
-    ExternalLibrary, PkgConfig, CommandConfig, UnixLibConfig, WindowsLibConfig, DevpackConfig
+    ExternalLibrary, PkgConfig, CommandConfig, UnixLibConfig, WindowsLibConfig

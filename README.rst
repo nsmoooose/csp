@@ -96,4 +96,37 @@ Execute the following::
 Building on Windows
 ===================
 
-TODO
+Install MSYS2
+Start a UCRT64 terminal and execute the following commands::
+
+  pacman -S make
+  pacman -S git
+  pacman -S ucrt64/mingw-w64-ucrt-x86_64-scons
+  pacman -S ucrt64/mingw-w64-ucrt-x86_64-ccmake
+  pacman -S ucrt64/mingw-w64-ucrt-x86_64-OpenSceneGraph
+  pacman -S ucrt64/mingw-w64-ucrt-x86_64-gcc
+  pacman -S ucrt64/mingw-w64-ucrt-x86_64-freealut
+  ucrt64/mingw-w64-ucrt-x86_64-libsigc++
+
+  ucrt64/mingw-w64-ucrt-x86_64-SDL2
+  ucrt64/mingw-w64-ucrt-x86_64-SDL2_image
+  ucrt64/mingw-w64-ucrt-x86_64-SDL
+  ucrt64/mingw-w64-ucrt-x86_64-SDL_image
+
+  ? change this one to the correct one. This has the right lib
+  ? as a dependency.
+  ucrt64/mingw-w64-ucrt-x86_64-python-pip
+  
+  ucrt64/mingw-w64-ucrt-x86_64-python-lxml
+  ucrt64/mingw-w64-ucrt-x86_64-wxPython
+
+
+Clone git repositories::
+
+  git clone TODO
+
+Build::
+
+  cd osg-al
+  ninja
+  cmake --install . --prefix /usr/local

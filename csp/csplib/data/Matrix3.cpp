@@ -57,15 +57,15 @@ Matrix3::Matrix3(const Vector3& col0, const Vector3& col1, const Vector3& col2) 
 
 bool Matrix3::isNaN() const {
 	return
-		csp::isNaN(_mat[0][0]) ||
-		csp::isNaN(_mat[0][1]) ||
-		csp::isNaN(_mat[0][2]) ||
-		csp::isNaN(_mat[1][0]) ||
-		csp::isNaN(_mat[1][1]) ||
-		csp::isNaN(_mat[1][2]) ||
-		csp::isNaN(_mat[2][0]) ||
-		csp::isNaN(_mat[2][1]) ||
-		csp::isNaN(_mat[2][2]);
+		std::isnan(_mat[0][0]) ||
+		std::isnan(_mat[0][1]) ||
+		std::isnan(_mat[0][2]) ||
+		std::isnan(_mat[1][0]) ||
+		std::isnan(_mat[1][1]) ||
+		std::isnan(_mat[1][2]) ||
+		std::isnan(_mat[2][0]) ||
+		std::isnan(_mat[2][1]) ||
+		std::isnan(_mat[2][2]);
 }
 
 std::vector<double> Matrix3::getElements() const {

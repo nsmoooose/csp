@@ -96,24 +96,4 @@ inline typename ToFloat<T>::Type inDegrees(T angle) { return toRadians(angle); }
 template<typename T>
 inline typename ToFloat<T>::Type inRadians(T angle) { return static_cast<typename ToFloat<T>::Type>(angle); }
 
-#if (defined(_WIN32) && !(defined(_MSC_VER) && (_MSC_VER >= 1300)) && !defined(__MINGW32__) ) ||  defined (sun)
-    #ifndef isnanf
-    #define isnanf (float)isnan
-    #endif
-#endif
-
-#if defined(_WIN32) && !defined(__CYGWIN__) && !defined(__MWERKS__)
-	inline bool isNaN(float v) { return _isnan(v) != 0; }
-	inline bool isNaN(double v) { return _isnan(v) != 0; }
-#else
-#	if defined(__APPLE__)
-	inline bool isNaN(float v) { return __isnanf(v); }
-	inline bool isNaN(double v) { return __isnand(v); }
-#	else
-	inline bool isNaN(float v) { return std::isnan(v); }
-	inline bool isNaN(double v) { return std::isnan(v); }
-#	endif
-#endif
-
-
 } // namespace csp

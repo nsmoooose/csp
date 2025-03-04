@@ -164,7 +164,7 @@ public:
 	bool valid() const { return !isNaN(); }
 	
 	/// Test if any components are NaN (not-a-number).
-	bool isNaN() const { return csp::isNaN(_x) || csp::isNaN(_y) || csp::isNaN(_z); }
+	bool isNaN() const { return std::isnan(_x) || std::isnan(_y) || std::isnan(_z); }
 	bool isZero() const { return *this == ZERO; }
 
 	/// Compute the dot product with another vector.

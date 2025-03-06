@@ -68,7 +68,7 @@ bool Shader::applyShader(std::string const &effect, osg::StateSet *ss) {
 	}
 	osg::Program *program = getEffect(effect);
 	if (!program) {
-		CSPLOG(ERROR, SCENE) << "Could not find shader effect '" << effect << "'";
+		CSPLOG(Prio_ERROR, Cat_SCENE) << "Could not find shader effect '" << effect << "'";
 		return false;
 	}
 	ss->setAttributeAndModes(program, osg::StateAttribute::ON);

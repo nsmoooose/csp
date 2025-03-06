@@ -65,7 +65,7 @@ const char *buildDate() {
 class load_check {
 public:
 	load_check() {
-		CSPLOG(INFO, ALL) << "CSPLIB " << getVersion() << " loaded @ " << this;
+		CSPLOG(Prio_INFO, Cat_ALL) << "CSPLIB " << getVersion() << " loaded @ " << this;
 	}
 } check_basetype;
 

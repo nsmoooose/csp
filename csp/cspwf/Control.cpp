@@ -48,11 +48,11 @@ Control::Control(std::string name) :
 	osg::ref_ptr<ControlCallback> callback = new ControlCallback(this);
 	m_TransformGroup->setUpdateCallback(callback.get());
 
-	CSPLOG(DEBUG, APP) << "Creating csp::wf::" << name.c_str();
+	CSPLOG(Prio_DEBUG, Cat_APP) << "Creating csp::wf::" << name.c_str();
 }
 
 Control::~Control() {
-	CSPLOG(DEBUG, APP) << "Destroing csp::wf::" << getName().c_str();
+	CSPLOG(Prio_DEBUG, Cat_APP) << "Destroing csp::wf::" << getName().c_str();
 }
 
 void Control::dispose() {
@@ -221,7 +221,7 @@ void Control::onClick(ClickEventArgs& event) {
 		return;
 	}
 
-	CSPLOG(DEBUG, APP) << "Signal Click on csp::wf::" << getName().c_str();
+	CSPLOG(Prio_DEBUG, Cat_APP) << "Signal Click on csp::wf::" << getName().c_str();
 	Click(event);
 	if(event.handled == false) {
 		Control* parent = getParent();
@@ -235,7 +235,7 @@ void Control::onClick(ClickEventArgs& event) {
 }
 
 void Control::onHover(HoverEventArgs& event) {
-	CSPLOG(DEBUG, APP) << "Signal MouseHover on csp::wf::" << getName().c_str();
+	CSPLOG(Prio_DEBUG, Cat_APP) << "Signal MouseHover on csp::wf::" << getName().c_str();
 	Hover(event);
 	if(event.handled == false) {
 		Control* parent = getParent();
@@ -246,7 +246,7 @@ void Control::onHover(HoverEventArgs& event) {
 }
 
 void Control::onMouseMove(MouseEventArgs& event) {
-	CSPLOG(DEBUG, APP) << "Signal MouseMove on csp::wf::" << getName().c_str();
+	CSPLOG(Prio_DEBUG, Cat_APP) << "Signal MouseMove on csp::wf::" << getName().c_str();
 	MouseMove(event);
 	if(event.handled == false) {
 		Control* parent = getParent();
@@ -257,7 +257,7 @@ void Control::onMouseMove(MouseEventArgs& event) {
 }
 
 void Control::onMouseDown(MouseButtonEventArgs& event) {
-	CSPLOG(DEBUG, APP) << "Signal MouseDown on csp::wf::" << getName().c_str();
+	CSPLOG(Prio_DEBUG, Cat_APP) << "Signal MouseDown on csp::wf::" << getName().c_str();
 	MouseDown(event);
 	if(event.handled == false) {
 		Control* parent = getParent();
@@ -268,7 +268,7 @@ void Control::onMouseDown(MouseButtonEventArgs& event) {
 }
 
 void Control::onMouseUp(MouseButtonEventArgs& event) {
-	CSPLOG(DEBUG, APP) << "Signal MouseUp on csp::wf::" << getName().c_str();
+	CSPLOG(Prio_DEBUG, Cat_APP) << "Signal MouseUp on csp::wf::" << getName().c_str();
 	MouseUp(event);
 	if(event.handled == false) {
 		Control* parent = getParent();

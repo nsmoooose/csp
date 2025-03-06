@@ -95,7 +95,7 @@ void DataEntryDisplay::importChannels(Bus* bus) {
 void DataEntryDisplay::initDisplay() {
 	assert(m_LineCount == 0);
 	m_LineCount = b_DEDReadout->value()->height();
-	CSPLOG(INFO, ALL) << "DataEntryDisplay::initDisplaye " << m_LineCount;
+	CSPLOG(Prio_INFO, Cat_ALL) << "DataEntryDisplay::initDisplaye " << m_LineCount;
 	m_Lines = new osg::ref_ptr<osgText::Text>[m_LineCount];
 	for (unsigned i = 0; i < m_LineCount; ++i) {
 		hud::display::LabelElement *line = new hud::display::LabelElement;

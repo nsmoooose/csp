@@ -28,19 +28,19 @@ SDLGraphicsWindow::SDLGraphicsWindow(const char *caption, const ::csp::ScreenSet
 	: osgViewer::GraphicsWindowEmbedded(0, 0, screenSettings.width, screenSettings.height)
 	, m_valid(false)
 {
-	CSPLOG(DEBUG, APP) << "Initializing SDL";
+	CSPLOG(Prio_DEBUG, Cat_APP) << "Initializing SDL";
 
 	if ( SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK) != 0 )
 	{
 		std::cerr << "Unable to initialize SDL (" << SDL_GetError() << ")" << std::endl;
-		CSPLOG(ERROR, APP) << "Unable to initialize SDL (" << SDL_GetError() << ")";
+		CSPLOG(Prio_ERROR, Cat_APP) << "Unable to initialize SDL (" << SDL_GetError() << ")";
 		return;
 	}
 
 	const SDL_VideoInfo *info = SDL_GetVideoInfo();
 	int bpp = info->vfmt->BitsPerPixel;
 
-	CSPLOG(INFO, APP) << "Initializing video at " << bpp << " bits per pixel.";
+	CSPLOG(Prio_INFO, Cat_APP) << "Initializing video at " << bpp << " bits per pixel.";
 
 	Uint32 flags = SDL_OPENGL | SDL_HWSURFACE | SDL_DOUBLEBUF;
 
@@ -52,7 +52,7 @@ SDLGraphicsWindow::SDLGraphicsWindow(const char *caption, const ::csp::ScreenSet
 	if ( !SDL_SetVideoMode(screenSettings.width, screenSettings.height, bpp, flags) )
 	{
 		std::cerr << "Unable to set video mode (" << SDL_GetError() << ")" << std::endl;
-		CSPLOG(ERROR, APP) << "Unable to set video mode (" << SDL_GetError() << ")";
+		CSPLOG(Prio_ERROR, Cat_APP) << "Unable to set video mode (" << SDL_GetError() << ")";
 		return;
 	}
 

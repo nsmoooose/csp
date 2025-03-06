@@ -89,10 +89,10 @@ public:
 	void operator()(osg::ref_ptr<AnimationCallback> &cb) {
 		if (cb.valid()) {
 			if (!cb->bindChannels(m_Bus)) {
-				CSPLOG(WARNING, OBJECT) << "AnimationBinder: failed to bind animation in " << m_Label;
+				CSPLOG(Prio_WARNING, Cat_OBJECT) << "AnimationBinder: failed to bind animation in " << m_Label;
 			}
 		} else {
-			CSPLOG(WARNING, OBJECT) << "AnimationBinder: AnimationCallback not valid in " << m_Label << "; skipping";
+			CSPLOG(Prio_WARNING, Cat_OBJECT) << "AnimationBinder: AnimationCallback not valid in " << m_Label << "; skipping";
 		}
 	}
 };
@@ -132,24 +132,24 @@ public:
 				} else if (node->asTransform()) {
 					new_node = static_cast<osg::Node*>(node->clone(*this));
 				} else {
-					CSPLOG(ERROR, OBJECT) << "Unknown node type for animation binding";
+					CSPLOG(Prio_ERROR, Cat_OBJECT) << "Unknown node type for animation binding";
 				}
 				assert(new_node);
 				if (!bind_node) bind_node = new_node;
 				AnimationCallback *cb = binding->bind(bind_node);
 				if (cb) {
 					m_AnimationCallbacks.push_back(cb);
-					CSPLOG(INFO, OBJECT) << "ADDED CALLBACK (" << m_AnimationCallbacks.size() << ") ON " << node->getName().substr(6);
+					CSPLOG(Prio_INFO, Cat_OBJECT) << "ADDED CALLBACK (" << m_AnimationCallbacks.size() << ") ON " << node->getName().substr(6);
 				} else {
-					CSPLOG(WARNING, OBJECT) << "Failed to add animation callback to " << node->getName().substr(6);
+					CSPLOG(Prio_WARNING, Cat_OBJECT) << "Failed to add animation callback to " << node->getName().substr(6);
 				}
 				if (binding->hasNestedAnimation()) {
 					AnimationCallback *cb = binding->bindNested(new_node);
 					if (cb) {
 						m_AnimationCallbacks.push_back(cb);
-						CSPLOG(INFO, OBJECT) << "ADDED NESTED CALLBACK (" << m_AnimationCallbacks.size() << ") ON " << node->getName().substr(6);
+						CSPLOG(Prio_INFO, Cat_OBJECT) << "ADDED NESTED CALLBACK (" << m_AnimationCallbacks.size() << ") ON " << node->getName().substr(6);
 					} else {
-						CSPLOG(WARNING, OBJECT) << "Failed to add nested animation callback to " << node->getName().substr(6);
+						CSPLOG(Prio_WARNING, Cat_OBJECT) << "Failed to add nested animation callback to " << node->getName().substr(6);
 					}
 				}
 				return new_node;
@@ -157,7 +157,7 @@ public:
 		}
 		if (node->asGroup()) {
 			if (node->getName() == "__PITS__") {
-				CSPLOG(INFO, OBJECT) << "Copying __PITS__ node";
+				CSPLOG(Prio_INFO, Cat_OBJECT) << "Copying __PITS__ node";
 				assert(!m_PitSwitch.valid());
 				// clone the __PITS__ node as a switch and save a reference.
 				osg::Switch *select_node = 0;
@@ -214,7 +214,7 @@ private:
 SceneModel::SceneModel(Ref<ObjectModel> const & model) {
 	m_Model = model;
 	assert(m_Model.valid());
-	CSPLOG(INFO, APP) << "create SceneModel for " << m_Model->getModelPath();
+	CSPLOG(Prio_INFO, Cat_APP) << "create SceneModel for " << m_Model->getModelPath();
 
 	// get the prototype model scene graph
 	osg::Node *model_node = m_Model->getModel().get();
@@ -229,9 +229,9 @@ SceneModel::SceneModel(Ref<ObjectModel> const & model) {
 	m_PitSwitch = model_copy.getPitSwitch();
 	timer.stop();
 
-	CSPLOG(INFO, APP) << "Copied model, animation count = " << model_copy.getAnimationCallbacks().size();
+	CSPLOG(Prio_INFO, Cat_APP) << "Copied model, animation count = " << model_copy.getAnimationCallbacks().size();
 	if (timer.elapsed() > 0.01) {
-		CSPLOG(WARNING, APP) << "Model copy took " << (timer.elapsed() * 1e+3) << " ms";
+		CSPLOG(Prio_WARNING, Cat_APP) << "Model copy took " << (timer.elapsed() * 1e+3) << " ms";
 	}
 
 	m_AnimationCallbacks.resize(model_copy.getAnimationCallbacks().size());
@@ -362,10 +362,10 @@ void SceneModel::disableSmoke() {
 }
 
 void SceneModel::enableSmoke() {
-	CSPLOG(DEBUG, OBJECT) << "SceneModel::enableSmoke()...";
+	CSPLOG(Prio_DEBUG, Cat_OBJECT) << "SceneModel::enableSmoke()...";
 	if (!m_Smoke) {
 		if (!addSmoke()) return;
-		CSPLOG(DEBUG, OBJECT) << "SceneModel::enableSmoke()";
+		CSPLOG(Prio_DEBUG, Cat_OBJECT) << "SceneModel::enableSmoke()";
 		m_SmokeTrails->setEnabled(true);
 		m_Smoke = true;
 	}
@@ -377,7 +377,7 @@ void SceneModel::bindAnimationChannels(Bus* bus) {
 }
 
 void SceneModel::bindHud(hud::HUD *hud) {
-	CSPLOG(DEBUG, OBJECT) << "adding HUD to model";
+	CSPLOG(Prio_DEBUG, Cat_OBJECT) << "adding HUD to model";
 	assert(hud);
 	m_HudModel = hud->hud();
 	m_HudModel->setPosition(toOSG(m_Model->getHudPlacement()));
@@ -472,12 +472,12 @@ SceneModelChild::~SceneModelChild() {}
 SceneModelChild::SceneModelChild(Ref<ObjectModel> const &model) {
 	m_Model = model;
 	assert(m_Model.valid());
-	CSPLOG(INFO, APP) << "Create SceneModelChild for " << m_Model->getModelPath();
+	CSPLOG(Prio_INFO, Cat_APP) << "Create SceneModelChild for " << m_Model->getModelPath();
 
 	// create a working copy of the prototype model
 	ModelCopy model_copy;
 	m_ModelCopy = model_copy(m_Model->getModel().get());
-	CSPLOG(INFO, APP) << "Copied model, animation count = " << model_copy.getAnimationCallbacks().size();
+	CSPLOG(Prio_INFO, Cat_APP) << "Copied model, animation count = " << model_copy.getAnimationCallbacks().size();
 
 	// store all the animation update callbacks
 	m_AnimationCallbacks.resize(model_copy.getAnimationCallbacks().size());

@@ -217,7 +217,7 @@ LocalBattlefield::LocalBattlefield(Ref<DataManager> const &data_manager):
 	m_LocalIdPool->limit = 1000000000;
 	// assert(data_manager.valid());
 	if (!m_DataManager) {
-		CSPLOG(ERROR, BATTLEFIELD) << "No data manager, cannot create objects.";
+		CSPLOG(Prio_ERROR, Cat_BATTLEFIELD) << "No data manager, cannot create objects.";
 	}
 }
 
@@ -234,13 +234,13 @@ struct PeerContactSorter {
 
 void LocalBattlefield::scanUnit(LocalUnitWrapper *wrapper) {
 	if (wrapper == NULL) {
-		CSPLOG(DEBUG, BATTLEFIELD) << "scan update, skipping removed unit";
+		CSPLOG(Prio_DEBUG, Cat_BATTLEFIELD) << "scan update, skipping removed unit";
 		return;
 	}
 	GridPoint point = wrapper->point();
 	if (!isNullPoint(point)) {
 		Unit unit = wrapper->unit();
-		CSPLOG(INFO, BATTLEFIELD) << "scan update for " << *unit;
+		CSPLOG(Prio_INFO, Cat_BATTLEFIELD) << "scan update for " << *unit;
 		GridRegion region = makeGridRegionEnclosingCircle(point, 60000);
 		std::vector<QuadTreeChild*> contacts;
 		dynamicIndex()->query(region, contacts);
@@ -260,7 +260,7 @@ void LocalBattlefield::scanUnit(LocalUnitWrapper *wrapper) {
 			signature = make_unordered_fingerprint(signature, hash_uint32(static_cast<uint32_t>(contact->id())));
 		}
 		unit->m_ContactSignature = signature;
-		CSPLOG(INFO, BATTLEFIELD) << "found " << peer_contacts.size() << " nearby units";
+		CSPLOG(Prio_INFO, Cat_BATTLEFIELD) << "found " << peer_contacts.size() << " nearby units";
 		if (!peer_contacts.empty()) {
 			std::sort(peer_contacts.begin(), peer_contacts.end(), PeerContactSorter());
 			PeerId current_id = 0;
@@ -268,13 +268,13 @@ void LocalBattlefield::scanUnit(LocalUnitWrapper *wrapper) {
 				if (iter->first != current_id) {
 					current_id = iter->first;
 					float distance = sqrt(iter->second);
-					CSPLOG(INFO, BATTLEFIELD) << "nearest unit owned by " << current_id << " is " << distance << " meters";
+					CSPLOG(Prio_INFO, Cat_BATTLEFIELD) << "nearest unit owned by " << current_id << " is " << distance << " meters";
 					wrapper->setUpdateDistance(current_id, distance);
 				}
 			}
 		}
 	} else {
-		CSPLOG(DEBUG, BATTLEFIELD) << "scan update, skipping unit outside battlefield";
+		CSPLOG(Prio_DEBUG, Cat_BATTLEFIELD) << "scan update, skipping unit outside battlefield";
 	}
 }
 
@@ -393,15 +393,15 @@ void LocalBattlefield::bindCommandDispatch(Ref<DispatchHandler> const &dispatch)
 }
 
 void LocalBattlefield::onPlayerQuit(Ref<PlayerQuit> const &msg, Ref<MessageQueue> const &) {
-	CSPLOG(INFO, MESSAGE) << "PROCESS: <PlayerQuit>";
+	CSPLOG(Prio_INFO, Cat_MESSAGE) << "PROCESS: <PlayerQuit>";
 	const PeerId id = msg->peer_id();
 	PlayerInfoMap::iterator iter = m_PlayerInfoMap.find(id);
 	if (iter != m_PlayerInfoMap.end()) {
-		CSPLOG(INFO, BATTLEFIELD) << iter->second->GetName() << " just quit the game! (id " << id << ")";
+		CSPLOG(Prio_INFO, Cat_BATTLEFIELD) << iter->second->GetName() << " just quit the game! (id " << id << ")";
 		m_PlayerQuitSignal->emit(id, iter->second->GetName());
 		m_PlayerInfoMap.erase(iter);
 	} else {
-		CSPLOG(WARNING, BATTLEFIELD) << "received quit message for unmapped peer " << id;
+		CSPLOG(Prio_WARNING, Cat_BATTLEFIELD) << "received quit message for unmapped peer " << id;
 	}
 	if (m_NetworkClient->getPeer(id)) {
 		m_NetworkClient->disconnectPeer(id);
@@ -410,7 +410,7 @@ void LocalBattlefield::onPlayerQuit(Ref<PlayerQuit> const &msg, Ref<MessageQueue
 		 * all objects owned by this peer
 		 */
 	} else {
-		CSPLOG(WARNING, BATTLEFIELD) << "received quit message for unknown peer " << id;
+		CSPLOG(Prio_WARNING, Cat_BATTLEFIELD) << "received quit message for unknown peer " << id;
 	}
 }
 
@@ -423,11 +423,11 @@ void LocalBattlefield::registerPlayerQuitCallback(callback<void, int, const std:
 }
 
 void LocalBattlefield::onPlayerJoin(Ref<PlayerJoin> const &msg, Ref<MessageQueue> const &) {
-	CSPLOG(INFO, MESSAGE) << "PROCESS: <PlayerJoin>";
+	CSPLOG(Prio_INFO, Cat_MESSAGE) << "PROCESS: <PlayerJoin>";
 	const PeerId id = msg->peer_id();
 	if (!m_NetworkClient->getPeer(id)) {
 		const NetworkNode remote_node(msg->ip_addr(), msg->port());
-		CSPLOG(INFO, BATTLEFIELD) << msg->user_name() << " just joined the game! (id " << id << ", ip " << remote_node << ")";
+		CSPLOG(Prio_INFO, Cat_BATTLEFIELD) << msg->user_name() << " just joined the game! (id " << id << ", ip " << remote_node << ")";
 		const int incoming_bw = msg->incoming_bw();
 		const int outgoing_bw = msg->outgoing_bw();
 		m_PlayerInfoMap[id] = new PlayerInfo(id, msg->user_name());
@@ -437,7 +437,7 @@ void LocalBattlefield::onPlayerJoin(Ref<PlayerJoin> const &msg, Ref<MessageQueue
 }
 
 void LocalBattlefield::onCommandUpdatePeer(Ref<CommandUpdatePeer> const &msg, Ref<MessageQueue> const &) {
-	CSPLOG(INFO, MESSAGE) << "PROCESS: <CommandUpdatePeer>";
+	CSPLOG(Prio_INFO, Cat_MESSAGE) << "PROCESS: <CommandUpdatePeer>";
 	LocalUnitWrapper *wrapper = findLocalUnitWrapper(msg->unit_id());
 	if (wrapper) {
 		assert(wrapper->unit().valid() && wrapper->unit()->isLocal());
@@ -445,23 +445,23 @@ void LocalBattlefield::onCommandUpdatePeer(Ref<CommandUpdatePeer> const &msg, Re
 			wrapper->removePeerUpdate(msg->peer_id());
 		} else {
 			if (!wrapper->hasUpdateProxy()) {
-				CSPLOG(ERROR, BATTLEFIELD) << "creating update proxy for unit " << msg->unit_id();
+				CSPLOG(Prio_ERROR, Cat_BATTLEFIELD) << "creating update proxy for unit " << msg->unit_id();
 				wrapper->setUpdateProxy(*m_UnitRemoteUpdateMaster, m_UpdateProxyConnection);
 			}
 			wrapper->addPeerUpdate(msg->peer_id());
 		}
 	} else {
-		CSPLOG(ERROR, BATTLEFIELD) << "received update peer request for unknown unit " << msg->unit_id();
+		CSPLOG(Prio_ERROR, Cat_BATTLEFIELD) << "received update peer request for unknown unit " << msg->unit_id();
 	}
 }
 
 void LocalBattlefield::onCommandAddUnit(Ref<CommandAddUnit> const &msg, Ref<MessageQueue> const &) {
-	CSPLOG(INFO, MESSAGE) << "PROCESS: <CommandAddUnit>";
+	CSPLOG(Prio_INFO, Cat_MESSAGE) << "PROCESS: <CommandAddUnit>";
 	LocalUnitWrapper *wrapper = findLocalUnitWrapper(msg->unit_id());
 	if (wrapper) {
 		/** @todo already added.  for testing, double check that the message is consistent (FIXME) */
 		CSP_VERIFY_EQ(msg->owner_id(), wrapper->owner());
-		CSPLOG(INFO, BATTLEFIELD) << "unit already exists, disregarding duplicate message";
+		CSPLOG(Prio_INFO, Cat_BATTLEFIELD) << "unit already exists, disregarding duplicate message";
 		return;
 	}
 	wrapper = new LocalUnitWrapper(msg->unit_id(), msg->unit_class(), msg->owner_id());
@@ -470,7 +470,7 @@ void LocalBattlefield::onCommandAddUnit(Ref<CommandAddUnit> const &msg, Ref<Mess
 }
 
 void LocalBattlefield::onCommandRemoveUnit(Ref<CommandRemoveUnit> const &msg, Ref<MessageQueue> const &) {
-	CSPLOG(INFO, MESSAGE) << "PROCESS: <CommandRemoveUnit>";
+	CSPLOG(Prio_INFO, Cat_MESSAGE) << "PROCESS: <CommandRemoveUnit>";
 	removeUnit(msg->unit_id());
 }
 
@@ -480,16 +480,16 @@ void LocalBattlefield::sendServerCommand(Ref<NetworkMessage> const &msg) {
 }
 
 void LocalBattlefield::onJoinResponse(Ref<JoinResponse> const &msg, Ref<MessageQueue> const &) {
-	CSPLOG(INFO, MESSAGE) << "PROCESS: <JoinResponse>";
+	CSPLOG(Prio_INFO, Cat_MESSAGE) << "PROCESS: <JoinResponse>";
 	if (m_ConnectionState != CONNECTION_JOIN) {
-		CSPLOG(ERROR, BATTLEFIELD) << "received unrequested join response";
+		CSPLOG(Prio_ERROR, Cat_BATTLEFIELD) << "received unrequested join response";
 		return;
 	}
 	if (!msg->success()) {
-		CSPLOG(ERROR, BATTLEFIELD) << "battlefield failed to connect to server: " << msg->details();
+		CSPLOG(Prio_ERROR, Cat_BATTLEFIELD) << "battlefield failed to connect to server: " << msg->details();
 		assert(0);
 	}
-	CSPLOG(INFO, BATTLEFIELD) << "battlefield connected to server: " << msg->details();
+	CSPLOG(Prio_INFO, Cat_BATTLEFIELD) << "battlefield connected to server: " << msg->details();
 	assert(msg->first_id() > 0);
 	assert(msg->id_count() > 63);
 	m_LocalIdPool->next = msg->first_id();
@@ -500,7 +500,7 @@ void LocalBattlefield::onJoinResponse(Ref<JoinResponse> const &msg, Ref<MessageQ
 }
 
 void LocalBattlefield::onIdAllocationResponse(Ref<IdAllocationResponse> const &msg, Ref<MessageQueue> const &) {
-	CSPLOG(INFO, MESSAGE) << "PROCESS: <IdAllocationResponse>";
+	CSPLOG(Prio_INFO, Cat_MESSAGE) << "PROCESS: <IdAllocationResponse>";
 	if (static_cast<ObjectId>(msg->first_id()) == m_LocalIdPool->reserve) return;  // duplicate
 	assert(m_LocalIdPool->reserve_limit == 0);
 	m_LocalIdPool->reserve = msg->first_id();
@@ -517,10 +517,10 @@ void LocalBattlefield::onUnitMessage(Ref<NetworkMessage> const &msg) {
 	if (wrapper) {
 		bool handled = m_NetworkClient->dispatch(wrapper->unit().get(), msg);
 		if (!handled) {
-			CSPLOG(ERROR, BATTLEFIELD) << "PROCESS: <NetworkMessage> unhandled message for unit " << unit_id;
+			CSPLOG(Prio_ERROR, Cat_BATTLEFIELD) << "PROCESS: <NetworkMessage> unhandled message for unit " << unit_id;
 		}
 	} else {
-		CSPLOG(ERROR, BATTLEFIELD) << "PROCESS: <NetworkMessage> received message for unknown unit id " << unit_id;
+		CSPLOG(Prio_ERROR, Cat_BATTLEFIELD) << "PROCESS: <NetworkMessage> received message for unknown unit id " << unit_id;
 	}
 }
 
@@ -528,11 +528,11 @@ void LocalBattlefield::onUnitUpdate(Ref<NetworkMessage> const &msg) {
 	int unit_id = msg->getRoutingData();
 	LocalUnitWrapper *wrapper = findLocalUnitWrapper(unit_id);
 	if (wrapper) {
-		CSPLOG(INFO, BATTLEFIELD) << "PROCESS: <NetworkMessage> unit id " << unit_id;
+		CSPLOG(Prio_INFO, Cat_BATTLEFIELD) << "PROCESS: <NetworkMessage> unit id " << unit_id;
 		if (!wrapper->unit()) {
-			CSPLOG(WARNING, BATTLEFIELD) << "creating object for unit " << unit_id << " (" << wrapper->path() << ")";
+			CSPLOG(Prio_WARNING, Cat_BATTLEFIELD) << "creating object for unit " << unit_id << " (" << wrapper->path() << ")";
 			if (!m_DataManager.valid()) {
-				CSPLOG(ERROR, BATTLEFIELD) << "data manager not set, unable to create object " << wrapper->path();
+				CSPLOG(Prio_ERROR, Cat_BATTLEFIELD) << "data manager not set, unable to create object " << wrapper->path();
 				return;
 			}
 			Unit unit;
@@ -542,7 +542,7 @@ void LocalBattlefield::onUnitUpdate(Ref<NetworkMessage> const &msg) {
 				// pass (error handled below)
 			}
 			if (!unit) {
-				CSPLOG(ERROR, BATTLEFIELD) << "unable to create object " << wrapper->path();
+				CSPLOG(Prio_ERROR, Cat_BATTLEFIELD) << "unable to create object " << wrapper->path();
 				return;
 			}
 			/** 
@@ -562,7 +562,7 @@ void LocalBattlefield::onUnitUpdate(Ref<NetworkMessage> const &msg) {
 		}
 		wrapper->unit()->setState(msg, m_CurrentTimeStamp);
 	} else {
-		CSPLOG(ERROR, BATTLEFIELD) << "received update for unknown unit id " << unit_id;
+		CSPLOG(Prio_ERROR, Cat_BATTLEFIELD) << "received update for unknown unit id " << unit_id;
 	}
 }
 
@@ -577,7 +577,7 @@ void LocalBattlefield::assignNewId(Object const &object) {
 			sendServerCommand(new IdAllocationRequest());
 		}
 	}
-	CSPLOG(INFO, BATTLEFIELD) << "allocating unit id " << id;
+	CSPLOG(Prio_INFO, Cat_BATTLEFIELD) << "allocating unit id " << id;
 	_assignObjectId(object, id);
 }
 
@@ -660,7 +660,7 @@ void LocalBattlefield::updateVisibility(GridPoint old_camera_position, GridPoint
 		 * usual case, overlapping old and new visibility regions.  do one query
 		 * and filter out the objects that enter and leave the visibility bubble.
 		 */
-		CSPLOG(DEBUG, BATTLEFIELD) << "updateVisibility(): small camera move";
+		CSPLOG(Prio_DEBUG, Cat_BATTLEFIELD) << "updateVisibility(): small camera move";
 
 		/**
 		 * construct a query region that includes both the old and new bubbles
@@ -687,7 +687,7 @@ void LocalBattlefield::updateVisibility(GridPoint old_camera_position, GridPoint
 		 * visibility regions don't overlap.  this is easier, since no sorting
 		 * is required.
 		 */
-		CSPLOG(DEBUG, BATTLEFIELD) << "updateVisibility(): large camera move";
+		CSPLOG(Prio_DEBUG, Cat_BATTLEFIELD) << "updateVisibility(): large camera move";
 		if (!old_position_is_null) {
 			dynamicIndex()->query(old_region, hide);
 			staticIndex()->query(old_region, hide);
@@ -698,7 +698,7 @@ void LocalBattlefield::updateVisibility(GridPoint old_camera_position, GridPoint
 		}
 	}
 
-	CSPLOG(DEBUG, BATTLEFIELD) << "updateVisibility(): hiding " << hide.size() << " objects";
+	CSPLOG(Prio_DEBUG, Cat_BATTLEFIELD) << "updateVisibility(): hiding " << hide.size() << " objects";
 	for (unsigned i = 0; i < hide.size(); ++i) {
 		Object object = static_cast<ObjectWrapper*>(hide[i])->object();
 		/**
@@ -713,7 +713,7 @@ void LocalBattlefield::updateVisibility(GridPoint old_camera_position, GridPoint
 		}
 	}
 
-	CSPLOG(DEBUG, BATTLEFIELD) << "updateVisibility(): showing " << show.size() << " objects";
+	CSPLOG(Prio_DEBUG, Cat_BATTLEFIELD) << "updateVisibility(): showing " << show.size() << " objects";
 	for (unsigned i = 0; i < show.size(); ++i) {
 		Object object = static_cast<ObjectWrapper*>(show[i])->object();
 		/**
@@ -747,7 +747,7 @@ void LocalBattlefield::setCamera(Vector3 const &eye_point, const Vector3& look_p
 	 * to deterimine if elevation data is available, and block (in the feature
 	 * construction thread) if it isn't.
 	 */
-	CSPLOG(DEBUG, BATTLEFIELD) << "setCamera(): update scene camera";
+	CSPLOG(Prio_DEBUG, Cat_BATTLEFIELD) << "setCamera(): update scene camera";
 	m_SceneManager->setCamera(eye_point, look_pos, up_vec);
 
 	/**
@@ -756,7 +756,7 @@ void LocalBattlefield::setCamera(Vector3 const &eye_point, const Vector3& look_p
 	 */
 	GridPoint new_grid_position = globalToGrid(eye_point);
 	if (hasMoved(m_CameraGridPosition, new_grid_position)) {
-		CSPLOG(DEBUG, BATTLEFIELD) << "setCamera(): updating visibility " << new_grid_position.x() << ", " << new_grid_position.y();
+		CSPLOG(Prio_DEBUG, Cat_BATTLEFIELD) << "setCamera(): updating visibility " << new_grid_position.x() << ", " << new_grid_position.y();
 		updateVisibility(m_CameraGridPosition, new_grid_position);
 		m_CameraGridPosition = new_grid_position;
 	}
@@ -784,11 +784,11 @@ void LocalBattlefield::UnitUpdateProxy::removePeerUpdate(PeerId id) {
 }
 
 double LocalBattlefield::UnitUpdateProxy::onUpdate(double dt) {
-	CSPLOG(INFO, BATTLEFIELD) << "update proxy called";
+	CSPLOG(Prio_INFO, Cat_BATTLEFIELD) << "update proxy called";
 
 	const unsigned n_updates = m_PeerUpdates.size();
 	if (n_updates == 0) {
-		CSPLOG(WARNING, BATTLEFIELD) << "no peers to update";
+		CSPLOG(Prio_WARNING, Cat_BATTLEFIELD) << "no peers to update";
 		return 1.0;  /** wait 1 sec before checking again */
 	}
 
@@ -796,7 +796,7 @@ double LocalBattlefield::UnitUpdateProxy::onUpdate(double dt) {
 	m_UpdateTime += dt_ms;
 	/** @bug this can get choppy when the frame rate and update rates are comparable */
 	if (m_UpdateTime < m_PeerUpdates[0].next_update) {
-		CSPLOG(DEBUG, BATTLEFIELD) << "too soon, " << (m_UpdateTime - m_PeerUpdates[0].next_update) << " ms";
+		CSPLOG(Prio_DEBUG, Cat_BATTLEFIELD) << "too soon, " << (m_UpdateTime - m_PeerUpdates[0].next_update) << " ms";
 		return (m_UpdateTime - m_PeerUpdates[0].next_update) * 1e-3;
 	}
 
@@ -860,7 +860,7 @@ double LocalBattlefield::UnitUpdateProxy::onUpdate(double dt) {
 		if (msg.valid()) {
 			m_Connection->send(msg, static_cast<PeerId>(id));
 		} else {
-			CSPLOG(ERROR, BATTLEFIELD) << "no state message";
+			CSPLOG(Prio_ERROR, Cat_BATTLEFIELD) << "no state message";
 		}
 	}
 
@@ -878,11 +878,11 @@ void LocalBattlefield::UnitUpdateProxy::setUpdateParameters(PeerId id, double in
 		if (m_PeerUpdates[i].id == id) {
 			m_PeerUpdates[i].interval = interval_ms;
 			m_PeerUpdates[i].detail = static_cast<uint16_t>(detail);
-			CSPLOG(INFO, BATTLEFIELD) << "set update interval for peer " << id << " to " << interval_ms << " ms";
+			CSPLOG(Prio_INFO, Cat_BATTLEFIELD) << "set update interval for peer " << id << " to " << interval_ms << " ms";
 			return;
 		}
 	}
-	CSPLOG(WARNING, BATTLEFIELD) << "set update interval, peer " << id << " not found";
+	CSPLOG(Prio_WARNING, Cat_BATTLEFIELD) << "set update interval, peer " << id << " not found";
 }
 
 void LocalBattlefield::LocalUnitWrapper::setUnit(Unit const &object) {

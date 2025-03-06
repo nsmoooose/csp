@@ -112,7 +112,7 @@ void NetworkInterface::sendPackets(double timeout) {
 
 	bool first = true;
 
-	CSPLOG(DEBUG, TIMING) << "TRANSMIT " << (timeout * 1000.0) << " ms available to send packets";
+	CSPLOG(Prio_DEBUG, Cat_TIMING) << "TRANSMIT " << (timeout * 1000.0) << " ms available to send packets";
 
 	StopWatch watch(timeout, swd);
 	watch.start();
@@ -145,7 +145,7 @@ void NetworkInterface::sendPackets(double timeout) {
 			// check that this peer id was previously active (not a very stringent test).
 			//assert(peer->getLastDeactivationTime() > 0);
 			if (peer->getLastDeactivationTime() <= 0) {
-				CSPLOG(WARNING, PACKET) << "sending to inacive peer " << header->destination() << " and last deactivation time <= 0 " << (!peer ? "null" : "nonnull");
+				CSPLOG(Prio_WARNING, Cat_PACKET) << "sending to inacive peer " << header->destination() << " and last deactivation time <= 0 " << (!peer ? "null" : "nonnull");
 			}
 			queue->releaseReadBuffer();
 			continue;
@@ -180,7 +180,7 @@ void NetworkInterface::sendPackets(double timeout) {
 		}
 
 		if (header->reliable()) {
-			CSPLOG(DEBUG, PACKET) << "send reliable header to " << peer->getId() << ", size=" << size;
+			CSPLOG(Prio_DEBUG, Cat_PACKET) << "send reliable header to " << peer->getId() << ", size=" << size;
 		}
 		int len = socket->transmit((char*)ptr, size);
 		queue->releaseReadBuffer();
@@ -188,7 +188,7 @@ void NetworkInterface::sendPackets(double timeout) {
 		peer->tallySentPacket(size);
 
 		if (len != int(size)) {
-			CSPLOG(INFO, PACKET) << "Send underflow! (" << len << " of " << size << " bytes sent)";
+			CSPLOG(Prio_INFO, Cat_PACKET) << "Send underflow! (" << len << " of " << size << " bytes sent)";
 			// TODO tally errors and eventually disconnect.
 		}
 
@@ -197,7 +197,7 @@ void NetworkInterface::sendPackets(double timeout) {
 		if (watch.checkExpired()) break;
 	}
 
-	CSPLOG(DEBUG, TIMING) << "TRANSMIT COMPLETE " << (watch.elapsed() * 1000.0) << " ms used";
+	CSPLOG(Prio_DEBUG, Cat_TIMING) << "TRANSMIT COMPLETE " << (watch.elapsed() * 1000.0) << " ms used";
 
 	// drop a fraction of the packets we were unable to send
 	for (int idx = 0; idx < 4; ++idx) {
@@ -271,7 +271,7 @@ void NetworkInterface::processOutgoing(double timeout) {
 	// TODO divide timeout between packet_source and tx based
 	// on queue lengths.  for now just split evenly
 
-	CSPLOG(DEBUG, TIMING) << "outgoing loop start (" << m_PacketSource->size() << " packets to send)";
+	CSPLOG(Prio_DEBUG, Cat_TIMING) << "outgoing loop start (" << m_PacketSource->size() << " packets to send)";
 	int DEBUG_exitcode = 0;
 	double DEBUG_dt[20000];
 	int DEBUG_idx = 0;
@@ -314,7 +314,7 @@ void NetworkInterface::processOutgoing(double timeout) {
 
 		const bool reliable = (queue_idx == 3);
 		if (reliable || peer->hasPendingConfirmations()) {
-			CSPLOG(DEBUG, PACKET) << "send reliable header to " << destination;
+			CSPLOG(Prio_DEBUG, Cat_PACKET) << "send reliable header to " << destination;
 			header->setReliable(true);
 			header_size = ReceiptHeaderSize;
 			receipt = reinterpret_cast<PacketReceiptHeader*>(ptr);
@@ -350,17 +350,17 @@ void NetworkInterface::processOutgoing(double timeout) {
 	// next flush the tx queue to the outgoing sockets
 	sendPackets(timeout);
 
-	CSPLOG(DEBUG, TIMING) << "outgoing loop end: " << (DEBUG_elapsed * 1000.0) << " ms to queue packets";
+	CSPLOG(Prio_DEBUG, Cat_TIMING) << "outgoing loop end: " << (DEBUG_elapsed * 1000.0) << " ms to queue packets";
 	if (DEBUG_exitcode == 1) {
-		CSPLOG(DEBUG, TIMING) << "  exit state: queue buffer full";
+		CSPLOG(Prio_DEBUG, Cat_TIMING) << "  exit state: queue buffer full";
 	} else
 	if (DEBUG_exitcode == 2) {
-		CSPLOG(DEBUG, TIMING) << "  exit state: send time expired";
+		CSPLOG(Prio_DEBUG, Cat_TIMING) << "  exit state: send time expired";
 	} else {
-		CSPLOG(DEBUG, TIMING) << "  exit state: no more packets";
+		CSPLOG(Prio_DEBUG, Cat_TIMING) << "  exit state: no more packets";
 	}
 	for (int i=0; i < DEBUG_idx; ++i) {
-		CSPLOG(DEBUG, TIMING) << "send packet @ " << (DEBUG_dt[i]*1000.0) << " ms";
+		CSPLOG(Prio_DEBUG, Cat_TIMING) << "send packet @ " << (DEBUG_dt[i]*1000.0) << " ms";
 	}
 
 }
@@ -386,7 +386,7 @@ int NetworkInterface::receivePackets(double timeout) {
 	PacketQueue *queue;
 	header = reinterpret_cast<PacketReceiptHeader*>(buffer);
 
-	CSPLOG(DEBUG, TIMING) << "receive packets; " << (timeout * 1000.0) << " ms available";
+	CSPLOG(Prio_DEBUG, Cat_TIMING) << "receive packets; " << (timeout * 1000.0) << " ms available";
 	int DEBUG_exitcode = 0;
 	int DEBUG_count = 0;
 
@@ -404,16 +404,16 @@ int NetworkInterface::receivePackets(double timeout) {
 		unsigned short port;
 		auto sender_addr = m_Socket->getSender(&port);
 
-		CSPLOG(DEBUG, PACKET) << "RCV: from: " << sender_addr << ":" << port;
+		CSPLOG(Prio_DEBUG, Cat_PACKET) << "RCV: from: " << sender_addr << ":" << port;
 
 		if (packet_length < HeaderSize) {
-			CSPLOG(WARNING, PACKET) << "received bad packet (length less than headersize): " << *header;
+			CSPLOG(Prio_WARNING, Cat_PACKET) << "received bad packet (length less than headersize): " << *header;
 			m_BadPackets++;
 			continue;
 		}
 
 		if (header->destination() != m_LocalId) {
-			CSPLOG(WARNING, PACKET) << "received bad packet (wrong destination): " << *header;
+			CSPLOG(Prio_WARNING, Cat_PACKET) << "received bad packet (wrong destination): " << *header;
 			m_BadPackets++;
 			continue;
 		}
@@ -434,7 +434,7 @@ int NetworkInterface::receivePackets(double timeout) {
 
 		if (source > 0 && source < PeerIndexSize) peer = &(m_PeerIndex[source]);
 		if (!peer || !peer->isActive()) {
-			CSPLOG(WARNING, PACKET) << "received packet from unknown source: " << *header;
+			CSPLOG(Prio_WARNING, Cat_PACKET) << "received packet from unknown source: " << *header;
 			m_BadPackets++;
 			continue;
 		}
@@ -446,7 +446,7 @@ int NetworkInterface::receivePackets(double timeout) {
 		int header_size = HeaderSize;
 		if (header->reliable()) {
 			header_size = ReceiptHeaderSize;
-			CSPLOG(DEBUG, PACKET) << "received a reliable header " << *header;
+			CSPLOG(Prio_DEBUG, Cat_PACKET) << "received a reliable header " << *header;
 			if (packet_length >= ReceiptHeaderSize) {
 				// if this packet is priority 3, it requires confirmation (id stored in id0);
 				// there may also be confirmation receipts in the remaining id slots.  we
@@ -477,7 +477,7 @@ int NetworkInterface::receivePackets(double timeout) {
 		}
 
 		if (header->messageId() == PingID) {
-			CSPLOG(DEBUG, PACKET) << "PROCESS: <PingID> " << sender_addr << ":" << port;
+			CSPLOG(Prio_DEBUG, Cat_PACKET) << "PROCESS: <PingID> " << sender_addr << ":" << port;
 			if (packet_length == header_size + sizeof(PingPayload)) {
 				PingPayload *payload = reinterpret_cast<PingPayload*>(buffer + header_size);
 				int32_t last_ping_latency = CSP_INT32_FROM_LE(payload->last_latency);
@@ -496,19 +496,19 @@ int NetworkInterface::receivePackets(double timeout) {
 					peer->updateTiming(latency, last_ping_latency);
 				}
 			} else {
-				CSPLOG(ERROR, PEER) << "Ping packet does not contain timing payload";
+				CSPLOG(Prio_ERROR, Cat_PEER) << "Ping packet does not contain timing payload";
 			}
 			// pings are handled internally without being seen by the upstream handlers.
 			continue;
 		}
 
 		int queue_idx = header->priority();
-		CSPLOG(INFO, PACKET) << "receiving packet in queue " << queue_idx;
+		CSPLOG(Prio_INFO, Cat_PACKET) << "receiving packet in queue " << queue_idx;
 		queue = m_RxQueues[queue_idx];
 
 		ptr = queue->getWriteBuffer(packet_length);
 		if (ptr) {
-			CSPLOG(INFO, PACKET) << "copying packet data (" << packet_length << " bytes) " << *header;
+			CSPLOG(Prio_INFO, Cat_PACKET) << "copying packet data (" << packet_length << " bytes) " << *header;
 			memcpy((void*)ptr, (const void*)buffer, packet_length);
 			// rewrite the source field, in case we have assigned a new one.
 			reinterpret_cast<PacketHeader*>(ptr)->setSource(source);
@@ -518,7 +518,7 @@ int NetworkInterface::receivePackets(double timeout) {
 			received_packets++;
 
 			queue->commitWriteBuffer(packet_length);
-			CSPLOG(INFO, PACKET) << "committed packet data (" << packet_length << " bytes)";
+			CSPLOG(Prio_INFO, Cat_PACKET) << "committed packet data (" << packet_length << " bytes)";
 
 		} else {
 			// this is a bad state; we have no room left to receive the incoming packet.
@@ -537,12 +537,12 @@ int NetworkInterface::receivePackets(double timeout) {
 
 	double DEBUG_elapsed = watch.elapsed();
 	DEBUG_recvtime = DEBUG_elapsed;
-	CSPLOG(DEBUG, TIMING) << "receive loop end: " << (DEBUG_elapsed * 1000.0) << " ms to queue " << DEBUG_count << " packets";
-	CSPLOG(DEBUG, TIMING) << "receive stats: " << m_BadPackets << " bad, " << m_DroppedPackets << " dropped, " << m_DuplicatePackets << " dups, " << m_ReceivedPackets << " ok)";
+	CSPLOG(Prio_DEBUG, Cat_TIMING) << "receive loop end: " << (DEBUG_elapsed * 1000.0) << " ms to queue " << DEBUG_count << " packets";
+	CSPLOG(Prio_DEBUG, Cat_TIMING) << "receive stats: " << m_BadPackets << " bad, " << m_DroppedPackets << " dropped, " << m_DuplicatePackets << " dups, " << m_ReceivedPackets << " ok)";
 	if (DEBUG_exitcode == 1) {
-		CSPLOG(DEBUG, TIMING) << "  exit state: recv time expired";
+		CSPLOG(Prio_DEBUG, Cat_TIMING) << "  exit state: recv time expired";
 	} else {
-		CSPLOG(DEBUG, TIMING) << "  exit state: no more packets";
+		CSPLOG(Prio_DEBUG, Cat_TIMING) << "  exit state: no more packets";
 	}
 
 	return received_packets;
@@ -568,7 +568,7 @@ int NetworkInterface::receivePackets(double timeout) {
 void NetworkInterface::processIncoming(double timeout) {
 	static StopWatch::Data swd(0.000001f);
 
-	CSPLOG(DEBUG, TIMING) << "processing incoming packets";
+	CSPLOG(Prio_DEBUG, Cat_TIMING) << "processing incoming packets";
 
 	double start_time = get_realtime();
 
@@ -599,7 +599,7 @@ void NetworkInterface::processIncoming(double timeout) {
 	receive_dt = DEBUG_recvtime;  // XXX XXX remove me when debug logging is removed from receivePackets
 	timeout -= receive_dt;
 
-	CSPLOG(DEBUG, TIMING) << "handling packets; " << (timeout * 1000.0) << " ms available";
+	CSPLOG(Prio_DEBUG, Cat_TIMING) << "handling packets; " << (timeout * 1000.0) << " ms available";
 
 	StopWatch watch(timeout, swd);
 	watch.start();
@@ -632,14 +632,14 @@ void NetworkInterface::processIncoming(double timeout) {
 		--count;
 
 		// XXX remove me!
-		CSPLOG(INFO, PACKET) << "reading packet from receive queue";
+		CSPLOG(Prio_INFO, Cat_PACKET) << "reading packet from receive queue";
 		uint8_t *ptr = queue->getReadBuffer(size);
 		PacketHeader *header = reinterpret_cast<PacketHeader*>(ptr);
 		uint32_t header_size = (header->reliable() ? ReceiptHeaderSize : HeaderSize);
 		uint8_t *payload = ptr + header_size;
 		uint32_t payload_length = size - header_size;
 		// XXX remove me!
-		CSPLOG(INFO, PACKET) << "found payload " << payload_length << " bytes, " << *header;
+		CSPLOG(Prio_INFO, Cat_PACKET) << "found payload " << payload_length << " bytes, " << *header;
 
 		// pass the packet to all handlers
 		PacketHandlerCallback callback(header, payload, payload_length);
@@ -655,11 +655,11 @@ void NetworkInterface::processIncoming(double timeout) {
 	}
 
 	double DEBUG_elapsed = watch.elapsed();
-	CSPLOG(DEBUG, TIMING) << "handling loop end: " << (DEBUG_elapsed * 1000.0) << " ms to handle packets";
+	CSPLOG(Prio_DEBUG, Cat_TIMING) << "handling loop end: " << (DEBUG_elapsed * 1000.0) << " ms to handle packets";
 	if (DEBUG_exitcode == 1) {
-		CSPLOG(DEBUG, TIMING) << "  exit state: send time expired";
+		CSPLOG(Prio_DEBUG, Cat_TIMING) << "  exit state: send time expired";
 	} else {
-		CSPLOG(DEBUG, TIMING) << "  exit state: no more packets";
+		CSPLOG(Prio_DEBUG, Cat_TIMING) << "  exit state: no more packets";
 	}
 
 	double now = get_realtime();
@@ -746,7 +746,7 @@ void NetworkInterface::initialize(NetworkNode const &local_node, bool isServer, 
 
 
 void NetworkInterface::addPeer(PeerId id, NetworkNode const &remote_node, bool provisional, double incoming, double outgoing) {
-	CSPLOG(INFO, PEER) << "add peer " << id;
+	CSPLOG(Prio_INFO, Cat_PEER) << "add peer " << id;
 	PeerInfo *peer = getPeer(id);
 	assert(peer && !peer->isActive());
 	peer->setNode(remote_node, incoming, outgoing);
@@ -760,7 +760,7 @@ void NetworkInterface::addPeer(PeerId id, NetworkNode const &remote_node, double
 }
 
 void NetworkInterface::removePeer(PeerId id) {
-	CSPLOG(INFO, PEER) << "remove peer " << id;
+	CSPLOG(Prio_INFO, Cat_PEER) << "remove peer " << id;
 	PeerInfo *peer = getPeer(id);
 	assert(peer && peer->isActive());
 	notifyPeerDisconnect(id);
@@ -798,10 +798,10 @@ PeerInfo const *NetworkInterface::getPeer(PeerId id) const {
 }
 
 void NetworkInterface::establishConnection(PeerId id, double incoming, double outgoing) {
-	CSPLOG(INFO, PEER) << "connection established with peer " << id;
+	CSPLOG(Prio_INFO, Cat_PEER) << "connection established with peer " << id;
 	PeerInfo *peer = getPeer(id);
 	if (peer && peer->isActive() && peer->isProvisional()) {
-		CSPLOG(INFO, PEER) << "setting peer bandwidth " << incoming << ", " << outgoing;
+		CSPLOG(Prio_INFO, Cat_PEER) << "setting peer bandwidth " << incoming << ", " << outgoing;
 		peer->updateBandwidth(incoming, outgoing);
 		peer->setProvisional(false);
 	}
@@ -837,7 +837,7 @@ PeerId NetworkInterface::getSourceId(ConnectionPoint const &point) {
 	IpPeerMap::iterator iter = m_IpPeerMap.find(point);
 	// if the ip is unknown ip, allocate a new peer id
 	if (iter == m_IpPeerMap.end()) {
-		CSPLOG(INFO, HANDSHAKE) << "initial connection from " << point.first.to_string() << ":" << point.second;
+		CSPLOG(Prio_INFO, Cat_HANDSHAKE) << "initial connection from " << point.first.to_string() << ":" << point.second;
 		// a connection must be disconnected for 60 seconds before the id can be reused.
 		double cutoff = get_realtime() - 60;
 		// use LastAssignedPeerId to rotate through assignments, rather than always
@@ -847,7 +847,7 @@ PeerId NetworkInterface::getSourceId(ConnectionPoint const &point) {
 			if (id == PeerIndexSize) id = 2;
 			if (!m_PeerIndex[id].isActive()) {
 				if (m_PeerIndex[id].getLastDeactivationTime() < cutoff) {
-					CSPLOG(INFO, HANDSHAKE) << "assigned provisional id " << id;
+					CSPLOG(Prio_INFO, Cat_HANDSHAKE) << "assigned provisional id " << id;
 					// TODO add a callback mechanism for validating ips?
 					NetworkNode node(point);
 					// restrict to a low initial bandwidth; will be reconfigured once the
@@ -859,7 +859,7 @@ PeerId NetworkInterface::getSourceId(ConnectionPoint const &point) {
 			}
 			if (id == m_LastAssignedPeerId) break;
 		}
-		CSPLOG(WARNING, HANDSHAKE) << "all peer ids in use; rejecting connection";
+		CSPLOG(Prio_WARNING, Cat_HANDSHAKE) << "all peer ids in use; rejecting connection";
 		return 0;
 	}
 	return iter->second;

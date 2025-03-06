@@ -115,11 +115,11 @@ Server::Server(NetworkNode const &bind, int inbound_bw, int outbound_bw):
 }
 
 void Server::onConnectionRequest(Ref<ConnectionRequest> const &msg, Ref<MessageQueue> const &queue) {
-	CSPLOG(INFO, HANDSHAKE) << "PROCESS: <ConnectionRequest> " << *msg;
+	CSPLOG(Prio_INFO, Cat_HANDSHAKE) << "PROCESS: <ConnectionRequest> " << *msg;
 	const PeerId client_id = msg->getSource();
 	ConnectionData &connection_data = m_PendingConnections[client_id];
 	if (msg->incoming_bw() < 1000 || msg->outgoing_bw() < 1000) {
-		CSPLOG(ERROR, HANDSHAKE) << "client reports very low bandwidth " << *msg;
+		CSPLOG(Prio_ERROR, Cat_HANDSHAKE) << "client reports very low bandwidth " << *msg;
 	}
 	connection_data.incoming_bw = msg->incoming_bw();
 	connection_data.outgoing_bw = msg->outgoing_bw();
@@ -133,20 +133,20 @@ void Server::onConnectionRequest(Ref<ConnectionRequest> const &msg, Ref<MessageQ
 }
 
 void Server::onAcknowledge(Ref<Acknowledge> const &msg, Ref<MessageQueue> const &/*queue*/) {
-	CSPLOG(DEBUG, HANDSHAKE) << "PROCESS: <Acknowledge> " << *msg;
+	CSPLOG(Prio_DEBUG, Cat_HANDSHAKE) << "PROCESS: <Acknowledge> " << *msg;
 	PendingConnectionMap::iterator iter = m_PendingConnections.find(msg->getSource());
 	if (iter == m_PendingConnections.end()) {
-		CSPLOG(WARNING, HANDSHAKE) << "received unsolicited connection acknowledgement from client id " << msg->getSource();
+		CSPLOG(Prio_WARNING, Cat_HANDSHAKE) << "received unsolicited connection acknowledgement from client id " << msg->getSource();
 		return;
 	}
-	CSPLOG(INFO, HANDSHAKE) << "adding client " << msg->getSource()
+	CSPLOG(Prio_INFO, Cat_HANDSHAKE) << "adding client " << msg->getSource()
 		<< " (bw " << (iter->second.incoming_bw) << "/" << (iter->second.outgoing_bw) << ")";
 	m_NetworkInterface->establishConnection(msg->getSource(), iter->second.incoming_bw, iter->second.outgoing_bw);
 	m_PendingConnections.erase(iter);
 }
 
 void Server::onDisconnect(Ref<Disconnect> const &msg, Ref<MessageQueue> const &/*queue*/) {
-	CSPLOG(DEBUG, HANDSHAKE) << "PROCESS: <Disconnect> notice " << *msg;
+	CSPLOG(Prio_DEBUG, Cat_HANDSHAKE) << "PROCESS: <Disconnect> notice " << *msg;
 	m_NetworkInterface->disconnectPeer(msg->getSource());
 }
 
@@ -190,19 +190,19 @@ bool Client::connectToServer(NetworkNode const &server, double timeout) {
 }
 
 void Client::onConnectionResponse(Ref<ConnectionResponse> const &msg, Ref<MessageQueue> const &queue) {
-	CSPLOG(DEBUG, HANDSHAKE) << "PROCESS: <ConnectionResponse> " << *msg;
+	CSPLOG(Prio_DEBUG, Cat_HANDSHAKE) << "PROCESS: <ConnectionResponse> " << *msg;
 	if (m_Connected) return;
 	if (!msg->has_success() || !msg->success() || !msg->has_client_id()) {
 		if (msg->has_response()) {
-			CSPLOG(ERROR, HANDSHAKE) << "connection failed: " << msg->response();
+			CSPLOG(Prio_ERROR, Cat_HANDSHAKE) << "connection failed: " << msg->response();
 		} else {
-			CSPLOG(ERROR, HANDSHAKE) << "connection failed: " << *msg;
+			CSPLOG(Prio_ERROR, Cat_HANDSHAKE) << "connection failed: " << *msg;
 		}
 		// TODO set m_Connected to indicate failure
 		return;
 	}
 	if (msg->client_id() < 2) {
-		CSPLOG(ERROR, HANDSHAKE) << "connection failed: bad id assignment from server";
+		CSPLOG(Prio_ERROR, Cat_HANDSHAKE) << "connection failed: bad id assignment from server";
 		// TODO set m_Connected to indicate failure
 		return;
 	}

@@ -122,12 +122,12 @@ CSPSim::CSPSim():
 	}
 
 	int level = g_Config.getInt("Debug", "LoggingLevel", 0, true);
-	log().setCategories(cLogCategory_ALL);
+	log().setCategories(Cat_ALL);
 	log().setPriority(level);
 
 	g_DisableRender = g_Config.getBool("Debug", "DisableRender", false, false);
 
-	CSPLOG(DEBUG, APP) << "Constructing CSPSim object";
+	CSPLOG(Prio_DEBUG, Cat_APP) << "Constructing CSPSim object";
 
 	m_Clean = true;
 	m_UnloadSimulationRequested = false;
@@ -234,9 +234,9 @@ wf::Signal* CSPSim::getConfigurationChangedSignal() {
 
 void CSPSim::setActiveObject(Ref<DynamicObject> object) {
 	if (object.valid()) {
-		CSPLOG(INFO, APP) << "Setting active object to " << *object;
+		CSPLOG(Prio_INFO, Cat_APP) << "Setting active object to " << *object;
 	} else {
-		CSPLOG(INFO, APP) << "Deselecting active object";
+		CSPLOG(Prio_INFO, Cat_APP) << "Deselecting active object";
 	}
 
 	if (object == m_ActiveObject) return;
@@ -264,9 +264,9 @@ void CSPSim::setActiveObject(Ref<DynamicObject> object) {
 		 * XXX XXX @code m_Battlefield->setHuman(m_ActiveObject->id(), true); @endcode
 		 */
 		hasht classhash = m_ActiveObject->getPath();
-		CSPLOG(DEBUG, APP) << "Getting input interface map for " << classhash.str();
+		CSPLOG(Prio_DEBUG, Cat_APP) << "Getting input interface map for " << classhash.str();
 		Ref<input::EventMapping> map = m_InterfaceMaps->getMap(classhash);
-		CSPLOG(INFO, APP) << "Selecting map @ " << map.get();
+		CSPLOG(Prio_INFO, Cat_APP) << "Selecting map @ " << map.get();
 		m_Interface->setMapping(map);
 	}
 	m_Interface->bindObject(m_ActiveObject.get());
@@ -300,10 +300,10 @@ void CSPSim::togglePause() {
 
 void CSPSim::init() {
 	try {
-		CSPLOG(INFO, APP) << "Installing stack trace handler";
+		CSPLOG(Prio_INFO, Cat_APP) << "Installing stack trace handler";
 		AutoTrace::install();
 
-		CSPLOG(INFO, APP) << "Beginning initialization";
+		CSPLOG(Prio_INFO, Cat_APP) << "Beginning initialization";
 		osg::setNotifyLevel(osg::WARN);
 
 		// setup osg search path for external data files
@@ -339,16 +339,16 @@ void CSPSim::init() {
 		m_Clean = false;
 
 		/** load all interface maps and create a virtual hid for the active object */
-		CSPLOG(DEBUG, APP) << "Initializing input event maps";
+		CSPLOG(Prio_DEBUG, Cat_APP) << "Initializing input event maps";
 		m_InterfaceMaps = new input::EventMapIndex();
 		m_InterfaceMaps->loadAllMaps();
 		m_Interface = new input::VirtualHID();
 
-		CSPLOG(DEBUG, APP) << "Initializing sound system";
+		CSPLOG(Prio_DEBUG, Cat_APP) << "Initializing sound system";
 		SoundEngine::getInstance().initialize();
-		CSPLOG(DEBUG, APP) << "Muting sound";
+		CSPLOG(Prio_DEBUG, Cat_APP) << "Muting sound";
 		SoundEngine::getInstance().mute();
-		CSPLOG(DEBUG, APP) << "Initializing sound file loader";
+		CSPLOG(Prio_DEBUG, Cat_APP) << "Initializing sound file loader";
 		SoundFileLoader::init();
 
 		/** This is the root node that holds the entire scene. */
@@ -381,7 +381,7 @@ void CSPSim::init() {
 }
 
 void CSPSim::cleanup() {
-	CSPLOG(INFO, APP) << "Cleaning up resources";
+	CSPLOG(Prio_INFO, Cat_APP) << "Cleaning up resources";
 
 	setActiveObject(NULL);
 	changeScreen(NULL);
@@ -412,13 +412,13 @@ void CSPSim::cleanup() {
 }
 
 void CSPSim::quit() {
-	CSPLOG(INFO, APP) << "Quit requested";
+	CSPLOG(Prio_INFO, Cat_APP) << "Quit requested";
 	m_Finished = true;
 	SoundEngine::getInstance().mute();
 }
 
 void CSPSim::changeScreen(BaseScreen * newScreen) {
-	CSPLOG(DEBUG, APP) << "Changing screen";
+	CSPLOG(Prio_DEBUG, Cat_APP) << "Changing screen";
 	if ( m_CurrentScreen.valid() ) m_CurrentScreen->onExit();
 	m_CurrentScreen = newScreen;
 }
@@ -440,8 +440,8 @@ void CSPSim::loadSimulation() {
 		m_DataManager->addArchive(sim);
 	}
 	catch (Exception &e) {
-		CSPLOG(ERROR, APP) << "Error opening data archive " << archive_file;
-		CSPLOG(ERROR, APP) << e.getType() << ": " << e.getMessage();
+		CSPLOG(Prio_ERROR, Cat_APP) << "Error opening data archive " << archive_file;
+		CSPLOG(Prio_ERROR, Cat_APP) << e.getType() << ": " << e.getMessage();
 		throw e;
 		//::exit(0);
 	}
@@ -450,7 +450,7 @@ void CSPSim::loadSimulation() {
 		m_Viewer->frame();
 	}
 	
-	CSPLOG(DEBUG, APP) << "Initializing simulation time";
+	CSPLOG(Prio_DEBUG, Cat_APP) << "Initializing simulation time";
 
 	std::string date_string = g_Config.getString("Testing", "Date", "2000-01-01 00:00:00.0", true);
 	SimDate date;
@@ -472,7 +472,7 @@ void CSPSim::loadSimulation() {
 
 	const ScreenSettings & screenSettings = getScreenSettings();
 	
-	CSPLOG(DEBUG, APP) << "Initializing theater";
+	CSPLOG(Prio_DEBUG, Cat_APP) << "Initializing theater";
 	std::string theater = g_Config.getPath("Testing", "Theater", "sim:theater.balkan", false);
 	m_Theater = m_DataManager->getObject(theater.c_str());
 	assert(m_Theater.valid());
@@ -498,7 +498,7 @@ void CSPSim::loadSimulation() {
 		m_Viewer->frame();
 	}
 
-	CSPLOG(DEBUG, APP) << "Initializing scene graph";
+	CSPLOG(Prio_DEBUG, Cat_APP) << "Initializing scene graph";
 	m_Scene = new VirtualScene(m_VirtualSceneGroup.get(), screenSettings.width, screenSettings.height);
 	m_Scene->buildScene();
 	m_Scene->setTerrain(m_Terrain);
@@ -523,13 +523,13 @@ void CSPSim::loadSimulation() {
 	int fog_end = g_Config.getInt("View", "FogEnd", 35000, true);
 	m_Scene->setFogEnd(fog_end);
 
-	CSPLOG(DEBUG, APP) << "Initializing battlefield";
+	CSPLOG(Prio_DEBUG, Cat_APP) << "Initializing battlefield";
 	int visual_radius = g_Config.getInt("Testing", "VisualRadius",  40000, true);
 	m_Battlefield = new LocalBattlefield(m_DataManager);
 	m_Battlefield->setSceneManager(new SimpleSceneManager(m_Scene, visual_radius));
 	if (m_Theater.valid()) {
 		FeatureGroupRef::list groups = m_Theater->getAllFeatureGroups();
-		CSPLOG(DEBUG, BATTLEFIELD) << "Adding " << groups.size() << " features to the battlefield";
+		CSPLOG(Prio_DEBUG, Cat_BATTLEFIELD) << "Adding " << groups.size() << " features to the battlefield";
 		for (FeatureGroupRef::list::iterator iter = groups.begin(); iter != groups.end(); ++iter) {
 			m_Battlefield->addStatic(*iter);
 		}
@@ -542,12 +542,12 @@ void CSPSim::loadSimulation() {
 
 	/** create the networking layer */
 	if (g_Config.getBool("Networking", "UseNetworking", false, true)) {
-		CSPLOG(DEBUG, APP) << "Initializing network layer";
+		CSPLOG(Prio_DEBUG, Cat_APP) << "Initializing network layer";
 		std::string default_ip = NetworkNode().getIpString();
 		std::string local_address = g_Config.getString("Networking", "LocalIp", default_ip, true);
 		int local_port = g_Config.getInt("Networking", "LocalPort", 3161, true);
 		NetworkNode local_node(local_address, local_port);
-		CSPLOG(INFO, NETWORK) << "Initializing network interface " << local_address << ":" << local_port;
+		CSPLOG(Prio_INFO, Cat_NETWORK) << "Initializing network interface " << local_address << ":" << local_port;
 
 		int incoming_bw = g_Config.getInt("Networking", "IncomingBandwidth", 36000, true);
 		int outgoing_bw = g_Config.getInt("Networking", "OutgoingBandwidth", 36000, true);
@@ -555,15 +555,15 @@ void CSPSim::loadSimulation() {
 
 		std::string server_address = g_Config.getString("Networking", "ServerIp", default_ip, true);
 		int server_port = g_Config.getInt("Networking", "ServerPort", 3160, true);
-		CSPLOG(INFO, NETWORK) << "Connecting to server: " << server_address << ":" << server_port;
+		CSPLOG(Prio_INFO, Cat_NETWORK) << "Connecting to server: " << server_address << ":" << server_port;
 		NetworkNode server_node(server_address, server_port);
 		if (!m_NetworkClient->connectToServer(server_node, 5.0 /*seconds*/)) {
 			std::cerr << "Unable to connecting to server, running in local mode\n";
-			CSPLOG(ERROR, NETWORK) << "Unable to connecting to server, running in local mode";
+			CSPLOG(Prio_ERROR, Cat_NETWORK) << "Unable to connecting to server, running in local mode";
 			m_NetworkClient = 0;
 		} else {
 			std::string name = g_Config.getString("Networking", "UserName", "anonymous", true);
-			CSPLOG(INFO, NETWORK) << "Connecting to server battlefield as " << name;
+			CSPLOG(Prio_INFO, Cat_NETWORK) << "Connecting to server battlefield as " << name;
 			m_Battlefield->setNetworkClient(m_NetworkClient);
 			m_Battlefield->connectToServer(name);
 			Timer timer;
@@ -583,10 +583,10 @@ void CSPSim::loadSimulation() {
 		m_Viewer->frame();
 	}
 
-	CSPLOG(DEBUG, APP) << "Unmuting sound";
+	CSPLOG(Prio_DEBUG, Cat_APP) << "Unmuting sound";
 	SoundEngine::getInstance().unmute();
 
-	CSPLOG(DEBUG, APP) << "Initializing gamescreen";
+	CSPLOG(Prio_DEBUG, Cat_APP) << "Initializing gamescreen";
 
 	/**
 	 * Following variables should be set before calling GameScreen.init()
@@ -599,9 +599,9 @@ void CSPSim::loadSimulation() {
 	Ref<GameScreen> gameScreen = new GameScreen(screenSettings.width, screenSettings.height);
 	gameScreen->onInit();
 
-	CSPLOG(DEBUG, APP) << "About to change screen to gameScreen";
+	CSPLOG(Prio_DEBUG, Cat_APP) << "About to change screen to gameScreen";
 	changeScreen(gameScreen.get());
-	CSPLOG(DEBUG, APP) << "gamescreen successfully initialized";
+	CSPLOG(Prio_DEBUG, Cat_APP) << "gamescreen successfully initialized";
 }
 
 void CSPSim::unloadSimulation() {
@@ -645,7 +645,7 @@ void CSPSim::displayMenuScreen() {
 
 /** Main Game loop */
 void CSPSim::run() {
-	CSPLOG(INFO, APP) << "Entering main simulation loop";
+	CSPLOG(Prio_INFO, Cat_APP) << "Entering main simulation loop";
 	try {
 		while ( !m_Finished && !m_Viewer->done() ) {
 			/**
@@ -687,7 +687,7 @@ void CSPSim::run() {
 	}
 	catch (DemeterException& e) {
 		std::string msg = e.what();
-		CSPLOG(ERROR, APP) << "Caught demeter exception: " << msg;
+		CSPLOG(Prio_ERROR, Cat_APP) << "Caught demeter exception: " << msg;
 		cleanup();
 		::exit(1);
 	}
@@ -695,8 +695,8 @@ void CSPSim::run() {
 		FatalException(e, "mainloop");
 	}
 	catch (...) {
-		CSPLOG(ERROR, APP) << "Caught unexpected (and unknown) exception";
-		CSPLOG(ERROR, APP) << "glError is " << glGetError();
+		CSPLOG(Prio_ERROR, Cat_APP) << "Caught unexpected (and unknown) exception";
+		CSPLOG(Prio_ERROR, Cat_APP) << "glError is " << glGetError();
 		cleanup();
 		::exit(1);
 	}

@@ -60,7 +60,7 @@ namespace {
 
 void SoundFileLoader::registerExtension(SoundFileLoader *loader, std::string const &extension) {
 	assert(loader);
-	CSPLOG(ERROR, AUDIO) << "Registering sound sample loader for extension " << extension;
+	CSPLOG(Prio_ERROR, Cat_AUDIO) << "Registering sound sample loader for extension " << extension;
 	SoundRegistry::map().insert(SoundRegistry::LoaderMap::value_type(extension, loader));
 }
 
@@ -75,13 +75,13 @@ SoundFileLoader::~SoundFileLoader() { }
 
 openalpp::Sample *SoundFileLoader::load(std::string const &filename) {
 	if (!initialized) {
-		CSPLOG(ERROR, AUDIO) << "SoundFileLoader::init() not called.";
+		CSPLOG(Prio_ERROR, Cat_AUDIO) << "SoundFileLoader::init() not called.";
 		return 0;
 	}
 	std::string ext = ospath::ext(filename);
 	SoundRegistry::LoaderMap::const_iterator iter = SoundRegistry::map().find(ext);
 	if (iter == SoundRegistry::map().end()) {
-		CSPLOG(ERROR, AUDIO) << "No loader found for extension '" << ext << "' when loading " << filename;
+		CSPLOG(Prio_ERROR, Cat_AUDIO) << "No loader found for extension '" << ext << "' when loading " << filename;
 		return 0;
 	}
 	return iter->second->_load(filename);
@@ -109,7 +109,7 @@ void SoundFileLoader::init() {
 int main() {
 	openalpp::ref_ptr<openalpp::Sample> sample = SoundFileLoader::load("/home/mrose/tmp/test.ogg");
 	if (sample.valid()) {
-		CSPLOG(ERROR, AUDIO) << "loaded!";
+		CSPLOG(Prio_ERROR, Cat_AUDIO) << "loaded!";
 		openalpp::Source *source = new openalpp::Source;
 		openalpp::Listener *listener = new openalpp::Listener(0,0,0);
 		listener->select();

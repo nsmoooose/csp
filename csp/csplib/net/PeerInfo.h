@@ -311,7 +311,7 @@ public:
 	 *  peer receives the confirmation id, reliable transmission of the packet is complete.
 	 */
 	inline void pushConfirmation(ConfirmationId id) {
-		CSPLOG(DEBUG, PEER) << "Peer requests confirmation of id " << id;
+		CSPLOG(Prio_DEBUG, Cat_PEER) << "Peer requests confirmation of id " << id;
 		m_confirmation_queue.push_back(id);
 	}
 
@@ -331,7 +331,7 @@ public:
 			iter->second->confirm();
 			m_reliable_packet_map.erase(iter);
 		} else {
-			CSPLOG(WARNING, PEER) << "Received confirmation that we did not request " << id;
+			CSPLOG(Prio_WARNING, Cat_PEER) << "Received confirmation that we did not request " << id;
 		}
 	}
 

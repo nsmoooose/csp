@@ -41,14 +41,14 @@ public:
 
 %extend {
 #define CSP_LOG_PYTHON(P) \
-	if (self->isNoteworthy(CSPLOG_PRIORITY(P), CSPLOG_CATEGORY(ALL))) \
-		csp::LogStream::LogEntry(*self, CSPLOG_PRIORITY(P), CSPLOG_CATEGORY(GENERIC))
+	if (self->isNoteworthy(P, csp::Cat_ALL))					\
+		csp::LogStream::LogEntry(*self, P, csp::Cat_GENERIC)
 
-	void debug(const char *msg) { CSP_LOG_PYTHON(DEBUG) << msg; }
-	void info(const char *msg) { CSP_LOG_PYTHON(INFO) << msg; }
-	void warning(const char *msg) { CSP_LOG_PYTHON(WARNING) << msg; }
-	void error(const char *msg) { CSP_LOG_PYTHON(ERROR) << msg; }
-	void fatal(const char *msg) { CSP_LOG_PYTHON(FATAL) << msg; }
+	void debug(const char *msg) { CSP_LOG_PYTHON(csp::Prio_DEBUG) << msg; }
+	void info(const char *msg) { CSP_LOG_PYTHON(csp::Prio_INFO) << msg; }
+	void warning(const char *msg) { CSP_LOG_PYTHON(csp::Prio_WARNING) << msg; }
+	void error(const char *msg) { CSP_LOG_PYTHON(csp::Prio_ERROR) << msg; }
+	void fatal(const char *msg) { CSP_LOG_PYTHON(csp::Prio_FATAL) << msg; }
 #undef CSP_LOG_PYTHON
 }
 

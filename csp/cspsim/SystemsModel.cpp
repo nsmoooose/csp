@@ -124,20 +124,20 @@ Ref<StoresManagementSystem> SystemsModel::getStoresManagementSystem() const {
 void SystemsModel::postCreate() {
 	System::postCreate();
 	if (m_PhysicsModel.valid()) {
-		CSPLOG(DEBUG, OBJECT) << "Adding PhysicsModel (" << m_PhysicsModel->getClassName() << ")";
+		CSPLOG(Prio_DEBUG, Cat_OBJECT) << "Adding PhysicsModel (" << m_PhysicsModel->getClassName() << ")";
 		addChild(m_PhysicsModel.get());
 	}
 	assert(!(m_RemoteController.valid() && m_LocalController.valid()));
 	if (m_RemoteController.valid()) {
-		CSPLOG(DEBUG, OBJECT) << "Adding RemoteController (" << m_RemoteController->getClassName() << ")";
+		CSPLOG(Prio_DEBUG, Cat_OBJECT) << "Adding RemoteController (" << m_RemoteController->getClassName() << ")";
 		addChild(m_RemoteController.get());
 	}
 	if (m_LocalController.valid()) {
-		CSPLOG(DEBUG, OBJECT) << "Adding LocalController (" << m_LocalController->getClassName() << ")";
+		CSPLOG(Prio_DEBUG, Cat_OBJECT) << "Adding LocalController (" << m_LocalController->getClassName() << ")";
 		addChild(m_LocalController.get());
 	}
 	if (m_StoresManagementSystem.valid()) {
-		CSPLOG(DEBUG, OBJECT) << "Adding StoresManagementSystem (" << m_StoresManagementSystem->getClassName() << ")";
+		CSPLOG(Prio_DEBUG, Cat_OBJECT) << "Adding StoresManagementSystem (" << m_StoresManagementSystem->getClassName() << ")";
 		addChild(m_StoresManagementSystem.get());
 	}
 }

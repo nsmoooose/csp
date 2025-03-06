@@ -69,7 +69,7 @@ protected:
 	void link(MapID &map) {
 		m_Input = map[m_InputID];
 		if (!m_Input) {
-			CSPLOG(ERROR, APP) << "Cannot find input channel for FCS junction node " << getID();
+			CSPLOG(Prio_ERROR, Cat_APP) << "Cannot find input channel for FCS junction node " << getID();
 			assert(0); /** @TODO make fatal */
 		}
 		assert(m_Input.valid()); }
@@ -99,11 +99,11 @@ protected:
 		m_InputA = map[m_InputIDA];
 		m_InputB = map[m_InputIDB];
 		if (!m_InputA) {
-			CSPLOG(ERROR, APP) << "Cannot find input channel A for FCS Junction2 node " << getID();
+			CSPLOG(Prio_ERROR, Cat_APP) << "Cannot find input channel A for FCS Junction2 node " << getID();
 			assert(0); /** @TODO make fatal */
 		}
 		if (!m_InputB) {
-			CSPLOG(ERROR, APP) << "Cannot find input channel B for FCS Junction2 node " << getID();
+			CSPLOG(Prio_ERROR, Cat_APP) << "Cannot find input channel B for FCS Junction2 node " << getID();
 			assert(0); /** @TODO make fatal */
 		}
 	}
@@ -140,15 +140,15 @@ protected:
 		m_InputB = map[m_InputIDB];
 		m_InputC = map[m_InputIDC];
 		if (!m_InputA) {
-			CSPLOG(ERROR, APP) << "Cannot find input channel A for FCS Junction3 node " << getID();
+			CSPLOG(Prio_ERROR, Cat_APP) << "Cannot find input channel A for FCS Junction3 node " << getID();
 			assert(0); /** TODO make fatal */
 		}
 		if (!m_InputB) {
-			CSPLOG(ERROR, APP) << "Cannot find input channel B for FCS Junction3 node " << getID();
+			CSPLOG(Prio_ERROR, Cat_APP) << "Cannot find input channel B for FCS Junction3 node " << getID();
 			assert(0); /** TODO make fatal */
 		}
 		if (!m_InputC) {
-			CSPLOG(ERROR, APP) << "Cannot find input channel C for FCS Junction3 node " << getID();
+			CSPLOG(Prio_ERROR, Cat_APP) << "Cannot find input channel C for FCS Junction3 node " << getID();
 			assert(0); /** TODO make fatal */
 		}
 	}
@@ -590,7 +590,7 @@ public:
 	}
 	void bindRecorder(DataRecorder *recorder) const {
 		if (recorder) {
-			CSPLOG(INFO, APP) << "Binding channel to recorder " << m_Channel->getName();
+			CSPLOG(Prio_INFO, Cat_APP) << "Binding channel to recorder " << m_Channel->getName();
 			recorder->addSource(m_Channel);
 		}
 	}

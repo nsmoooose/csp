@@ -126,7 +126,7 @@ void UpdateTarget::registerUpdate(UpdateMaster *master) {
 	if (master) {
 		if (m_UpdateProxy.valid()) m_UpdateProxy->targetSelfDetach();
 		m_UpdateProxy = master->registerUpdate(this);
-		CSPLOG(DEBUG, APP) << "Registering update with master (master=" << master << ", target=" << this << ")";
+		CSPLOG(Prio_DEBUG, Cat_APP) << "Registering update with master (master=" << master << ", target=" << this << ")";
 	}
 }
 

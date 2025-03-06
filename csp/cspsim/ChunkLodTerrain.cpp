@@ -256,13 +256,13 @@ float ChunkLodTerrain::getGroundElevation(double x, double y, Vector3 &normal, I
 
 void ChunkLodTerrain::setCameraPosition(double x, double y, double z) {
 	if (m_Terrain != 0) {
-		CSPLOG(DEBUG, TERRAIN) << "Terrain camera @ " << (Vector3(x,y,z));
+		CSPLOG(Prio_DEBUG, Cat_TERRAIN) << "Terrain camera @ " << (Vector3(x,y,z));
 		// osgChunkLod terrain is in the x-z plane
 		m_Terrain->setCameraPosition(x, y);
 		m_Terrain->getLocalOrigin(x, y, z);
 		// translate coordinates
 		m_Origin.set(x, -z, y);
-		CSPLOG(DEBUG, TERRAIN) << "Terrain origin @ " << (Vector3(x,y,z));
+		CSPLOG(Prio_DEBUG, Cat_TERRAIN) << "Terrain origin @ " << (Vector3(x,y,z));
 	} else {
 		m_Origin = Vector3::ZERO;
 	}

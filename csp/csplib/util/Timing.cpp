@@ -125,7 +125,7 @@ namespace csp {
 			if (calibrations == 0) {
 				throw TimerError("Unable to calibrate high resolution timer using system time");
 			}
-			CSPLOG(ERROR, TIME) << "High resolution timer calibration failed";
+			CSPLOG(Prio_ERROR, Cat_TIME) << "High resolution timer calibration failed";
 		} else {
 			if (calibrations++ == 0) {
 				first_counter = counter;

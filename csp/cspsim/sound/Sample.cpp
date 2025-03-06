@@ -99,7 +99,7 @@ void SoundSample::loadSample() const {
 	}
 	catch (std::exception & e)
 	{
-		CSPLOG(ERROR, AUDIO) << "Loading sample " << m_Filename << " failed. (" << e.what() << ")";
+		CSPLOG(Prio_ERROR, Cat_AUDIO) << "Loading sample " << m_Filename << " failed. (" << e.what() << ")";
 	}
 }
 

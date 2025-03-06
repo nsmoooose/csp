@@ -134,8 +134,8 @@ public:
 	virtual Vector3 getNominalViewPointBody() const;
 	virtual void setViewPointBody(Vector3 const &point);
 
-	virtual void onAggregate() { CSPLOG(INFO, APP) << "aggregate @ " << *this; }
-	virtual void onDeaggregate() { CSPLOG(INFO, APP) << "deaggregate @ " << *this; }
+	virtual void onAggregate() { CSPLOG(Prio_INFO, Cat_APP) << "aggregate @ " << *this; }
+	virtual void onDeaggregate() { CSPLOG(Prio_INFO, Cat_APP) << "deaggregate @ " << *this; }
 
 	bool isNearGround();
 

@@ -79,7 +79,7 @@ public:
 		m_Width = (width != 0.0f) ? fabs(width) : 20.0f;
 		m_Height = (height != 0.0f) ? fabs(height) : 50.0f;
 		if (width * height == 0.0f) {
-			CSPLOG(WARNING, APP) << "Rectangle: [" << width << "," << height << "corrected to 20x50]";
+			CSPLOG(Prio_WARNING, Cat_APP) << "Rectangle: [" << width << "," << height << "corrected to 20x50]";
 		}
 	}
 	virtual Vector3 getPoint(float x, float y) const {

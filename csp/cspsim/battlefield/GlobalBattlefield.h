@@ -156,7 +156,7 @@ private:
 		ClientDataMap::iterator data = m_ClientData.find(id);
 		if (data != m_ClientData.end()) {
 			std::set<SimObject::ObjectId> const &units = data->second.units;
-			CSPLOG(INFO, BATTLEFIELD) << "Removing client " << id << " with " << units.size() << " units";
+			CSPLOG(Prio_INFO, Cat_BATTLEFIELD) << "Removing client " << id << " with " << units.size() << " units";
 			std::set<SimObject::ObjectId>::const_iterator uiter = units.begin();
 			std::set<SimObject::ObjectId>::const_iterator uend = units.end();
 			for (; uiter != uend; ++uiter) {
@@ -164,7 +164,7 @@ private:
 			}
 			m_ClientData.erase(data);
 		} else {
-			CSPLOG(ERROR, BATTLEFIELD) << "Removing client " << id << " but client data not found!";
+			CSPLOG(Prio_ERROR, Cat_BATTLEFIELD) << "Removing client " << id << " but client data not found!";
 		}
 		announceExit(id);
 	}
@@ -238,12 +238,12 @@ private:
 	}
 
 	void onJoinRequest(Ref<JoinRequest> const &msg, Ref<MessageQueue> const &queue) {
-		CSPLOG(INFO, BATTLEFIELD) << "PROCESS: <JoinRequest>";
+		CSPLOG(Prio_INFO, Cat_BATTLEFIELD) << "PROCESS: <JoinRequest>";
 		ClientResponse<JoinResponse> response(msg);
 		response->set_success(false);
 
 		if (!msg->has_user_name()) {
-			CSPLOG(ERROR, BATTLEFIELD) << "join rejected: no user name";
+			CSPLOG(Prio_ERROR, Cat_BATTLEFIELD) << "join rejected: no user name";
 			response->set_details("no user name");
 			response.send(queue);
 			return;
@@ -253,13 +253,13 @@ private:
 			int skew = static_cast<int>(static_cast<double>(msg->local_time()) - getSecondsSinceUnixEpoch());
 			// 10 seconds is somewhat arbitrary, but reasonable
 			if (std::abs(skew) > 10) {
-				CSPLOG(ERROR, BATTLEFIELD) << "join rejected: large clock skew (" << skew << "s)";
+				CSPLOG(Prio_ERROR, Cat_BATTLEFIELD) << "join rejected: large clock skew (" << skew << "s)";
 				response->set_details("excessive clock skew");
 				response.send(queue);
 				return;
 			}
 		} else {
-			CSPLOG(WARNING, BATTLEFIELD) << "join request missing local time";
+			CSPLOG(Prio_WARNING, Cat_BATTLEFIELD) << "join request missing local time";
 		}
 
 		PeerId id = msg->getSource();
@@ -268,24 +268,24 @@ private:
 		auto inbound_ip_addr = peer_info->getNode().getAddress();
 		auto internal_ip_addr = msg->has_internal_ip_addr() ? msg->internal_ip_addr() : inbound_ip_addr;
 
-		CSPLOG(INFO, BATTLEFIELD) << "join request from " << peer_info->getNode();
-		CSPLOG(INFO, BATTLEFIELD) << "      internal ip " << internal_ip_addr.to_string();
+		CSPLOG(Prio_INFO, Cat_BATTLEFIELD) << "join request from " << peer_info->getNode();
+		CSPLOG(Prio_INFO, Cat_BATTLEFIELD) << "      internal ip " << internal_ip_addr.to_string();
 
 		/** basic sanity checking on ip addresses */
 		if (NetworkNode::isRoutable(internal_ip_addr) && (internal_ip_addr != inbound_ip_addr)) {
-			CSPLOG(ERROR, BATTLEFIELD) << "join rejected: internal ip routable, but does not match external ip";
+			CSPLOG(Prio_ERROR, Cat_BATTLEFIELD) << "join rejected: internal ip routable, but does not match external ip";
 			response->set_details("internal ip routable, but does not match external ip");
 			response.send(queue);
 			return;
 		}
 		if (!NetworkNode::isRoutable(inbound_ip_addr) && (internal_ip_addr != inbound_ip_addr)) {
-			CSPLOG(ERROR, BATTLEFIELD) << "join rejected: inbound ip unroutable, but does not match internal ip";
+			CSPLOG(Prio_ERROR, Cat_BATTLEFIELD) << "join rejected: inbound ip unroutable, but does not match internal ip";
 			response->set_details("inbound ip is unroutable, but does not match internal ip");
 			response.send(queue);
 			return;
 		}
 		if (NetworkNode::isRoutable(inbound_ip_addr) && (!m_NetworkServer->getExternalNode().isRoutable())) {
-			CSPLOG(ERROR, BATTLEFIELD) << "join rejected: inbound ip routable, but server is not configured to accept remote connections (no external ip set).";
+			CSPLOG(Prio_ERROR, Cat_BATTLEFIELD) << "join rejected: inbound ip routable, but server is not configured to accept remote connections (no external ip set).";
 			response->set_details("server not configured to accept remote connections");
 			response.send(queue);
 			return;
@@ -317,7 +317,7 @@ private:
 	}
 
 	void onIdAllocationRequest(Ref<IdAllocationRequest> const &msg, Ref<MessageQueue> const &queue) {
-		CSPLOG(INFO, BATTLEFIELD) << "PROCESS: <IdAllocationReqest>";
+		CSPLOG(Prio_INFO, Cat_BATTLEFIELD) << "PROCESS: <IdAllocationReqest>";
 		ClientResponse<IdAllocationResponse> response(msg);
 		response->set_first_id(m_NextId);
 		response->set_id_count(100);
@@ -328,11 +328,11 @@ private:
 	void onNotifyUnitMotion(Ref<NotifyUnitMotion> const &msg, Ref<MessageQueue> const &/*queue*/) {
 		UnitWrapper *wrapper = findUnitWrapper(msg->unit_id());
 		if (wrapper) {
-			CSPLOG(INFO, BATTLEFIELD) << "PROCESS: <NotifyUnitMotion> " << *(wrapper->unit());
+			CSPLOG(Prio_INFO, Cat_BATTLEFIELD) << "PROCESS: <NotifyUnitMotion> " << *(wrapper->unit());
 			GridPoint new_position(msg->grid_x(), msg->grid_y());
 			updatePosition(wrapper, new_position);
 		} else {
-			CSPLOG(ERROR, BATTLEFIELD) << "PROCESS: <NotifyUnitMotion> Unknown unit " << msg->unit_id();
+			CSPLOG(Prio_ERROR, Cat_BATTLEFIELD) << "PROCESS: <NotifyUnitMotion> Unknown unit " << msg->unit_id();
 		}
 	}
 
@@ -346,7 +346,7 @@ private:
 		const PeerId owner = msg->getSource();
 		UnitWrapper *wrapper = findUnitWrapper(unit_id);
 		if (wrapper) {
-			CSPLOG(ERROR, BATTLEFIELD) << "PROCESS: <RegisterUnit> request to register existing unit " << unit_id << " for " << owner << " (already owned by " << wrapper->owner() << ")";
+			CSPLOG(Prio_ERROR, Cat_BATTLEFIELD) << "PROCESS: <RegisterUnit> request to register existing unit " << unit_id << " for " << owner << " (already owned by " << wrapper->owner() << ")";
 			/**
 			 * wrapper != null could be a client side bug or a duplicate message that wasn't filtered.
 			 * either is bad enough that we want to fail (in debug mode).
@@ -354,7 +354,7 @@ private:
 			assert(0);
 			return;
 		}
-		CSPLOG(INFO, BATTLEFIELD) << "PROCESS: <RegisterUnit> " << unit_id << " " << msg->unit_class() << " owned by " << owner;
+		CSPLOG(Prio_INFO, Cat_BATTLEFIELD) << "PROCESS: <RegisterUnit> " << unit_id << " " << msg->unit_class() << " owned by " << owner;
 		Ref<UnitContact> unit = new UnitContact(static_cast<SimObject::TypeId>(msg->unit_type()), msg->unit_class(), unit_id);
 		wrapper = new ContactWrapper(unit, owner);
 		addUnit(wrapper);
@@ -396,7 +396,7 @@ private:
 	 *  the Unit.
 	 */
 	void recomputeUpdates(UnitWrapper *wrapper, GridPoint const old_position, GridPoint const new_position) {
-		CSPLOG(INFO, BATTLEFIELD) << "recomputing updates for " << *(wrapper->unit());
+		CSPLOG(Prio_INFO, Cat_BATTLEFIELD) << "recomputing updates for " << *(wrapper->unit());
 
 		/**
 		 * find all nearby objects.  the query range will be chosen to be somewhat larger than the most common
@@ -415,7 +415,7 @@ private:
 			dynamicIndex()->query(region, units);
 		}
 
-		CSPLOG(INFO, BATTLEFIELD) << "found " << units.size() << " nearby units";
+		CSPLOG(Prio_INFO, Cat_BATTLEFIELD) << "found " << units.size() << " nearby units";
 
 		std::set<int> position_hints;  /** set of peers that need hints about A's motion */
 		int radius = 40000;  /** @warning temporary hack */
@@ -426,7 +426,7 @@ private:
 			int other_radius = 40000;  // XXX temporary hack
 			int old_separation = static_cast<int>(sqrt(globalDistance2(other_wrapper->point(), old_position)));
 			int new_separation = static_cast<int>(sqrt(globalDistance2(other_wrapper->point(), new_position)));
-			CSPLOG(INFO, BATTLEFIELD) << "separations (old, new): " << old_separation << ", " << new_separation;
+			CSPLOG(Prio_INFO, Cat_BATTLEFIELD) << "separations (old, new): " << old_separation << ", " << new_separation;
 
 			/** consider updates from other_wrapper to wrapper */
 			if (new_separation > radius) {
@@ -463,7 +463,7 @@ private:
 
 	void incrementUpdateCount(UnitWrapper *from, UnitWrapper *to) {
 		ContactWrapper *cfrom = static_cast<ContactWrapper*>(from);
-		CSPLOG(DEBUG, BATTLEFIELD) << "INCREMENT: " << *(from->unit()) << " -> " << *(to->unit());
+		CSPLOG(Prio_DEBUG, Cat_BATTLEFIELD) << "INCREMENT: " << *(from->unit()) << " -> " << *(to->unit());
 		if (cfrom->incrementCount(to->owner())) {
 			/**
 			 * if the units are owned by the same client we still reference count
@@ -471,7 +471,7 @@ private:
 			 * the client's local battlefield.
 			 */
 			if (from->owner() != to->owner()) {
-				CSPLOG(INFO, BATTLEFIELD) << "sending add unit " << from->unit()->id() << " to client " << to->owner();
+				CSPLOG(Prio_INFO, Cat_BATTLEFIELD) << "sending add unit " << from->unit()->id() << " to client " << to->owner();
 				{  // tell OWNER[to] to expect updates from OWNER[from]
 					Ref<CommandAddUnit> msg = new CommandAddUnit();
 					msg->set_unit_id(from->id());
@@ -494,7 +494,7 @@ private:
 
 	void decrementUpdateCount(UnitWrapper *from, UnitWrapper *to) {
 		ContactWrapper *cfrom = static_cast<ContactWrapper*>(from);
-		CSPLOG(DEBUG, BATTLEFIELD) << "DECREMENT: " << *(from->unit()) << " -> " << *(to->unit());
+		CSPLOG(Prio_DEBUG, Cat_BATTLEFIELD) << "DECREMENT: " << *(from->unit()) << " -> " << *(to->unit());
 		if (cfrom->decrementCount(to->owner())) {
 			/**
 			 * if the units are owned by the same client we still reference count
@@ -502,7 +502,7 @@ private:
 			 * has already been done in the client's battlefield.
 			 */
 			if (from->owner() != to->owner()) {
-				CSPLOG(INFO, BATTLEFIELD) << "sending remove unit " << from->unit()->id() << " to client " << to->owner();
+				CSPLOG(Prio_INFO, Cat_BATTLEFIELD) << "sending remove unit " << from->unit()->id() << " to client " << to->owner();
 				{
 					Ref<CommandRemoveUnit> msg = new CommandRemoveUnit();
 					msg->set_unit_id(from->id());

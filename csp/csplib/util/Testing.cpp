@@ -45,7 +45,7 @@ public:
 	virtual Log *getFixtureLog() { return &m_fixture_log; }
 
 	virtual void beginFixture(std::string const &name) {
-		CSPLOG(INFO, TESTING) << "Starting test fixture " << name;
+		CSPLOG(Prio_INFO, Cat_TESTING) << "Starting test fixture " << name;
 		std::cout << "\nTESTING " << name << "\n";
 		m_fixture_name = name;
 		m_last_successes = 0;
@@ -55,14 +55,14 @@ public:
 
 	virtual void beginTestCase(std::string const &name) {
 		m_test_name = name;
-		CSPLOG(INFO, TESTING) << "Starting test " << getTestName();
+		CSPLOG(Prio_INFO, Cat_TESTING) << "Starting test " << getTestName();
 		m_test_timer.start();
 	}
 
 	virtual void endTestCase(bool success) {
 		m_test_timer.stop();
 		const int time_ms = static_cast<int>(m_test_timer.elapsed() * 1000.0);
-		CSPLOG(INFO, TESTING) << "Finished test " << getTestName() << ": " << (success ? "PASS" : "FAIL") << " [" << time_ms << " ms]";
+		CSPLOG(Prio_INFO, Cat_TESTING) << "Finished test " << getTestName() << ": " << (success ? "PASS" : "FAIL") << " [" << time_ms << " ms]";
 		if (success) {
 			std::cout << "        - " << m_test_name << "\n";
 			m_successes++;
@@ -94,7 +94,7 @@ public:
 	virtual void endFixture() {
 		/*
 		if (m_last_failures) {
-			CSPLOG(INFO, TESTING) << "Test fixture " << m_fixture_name << " had " << m_last_failures << " failures";
+			CSPLOG(Prio_INFO, Cat_TESTING) << "Test fixture " << m_fixture_name << " had " << m_last_failures << " failures";
 			std::cout << "\nFAILED TESTCASES [" << m_last_failures << " of " << (m_last_failures + m_last_successes) << "]\n";
 		}
 		*/
@@ -175,7 +175,7 @@ bool TestRegistry::runOnePath(const char *path) {
 bool TestRegistry::runOneTest(const char *test) {
 	std::map<std::string, TestRunner*>::const_iterator iter = data().tests_by_name.find(test);
 	if (iter == data().tests_by_name.end()) {
-		CSPLOG(ERROR, TESTING) << "Unknown test fixture '" << test << "'";
+		CSPLOG(Prio_ERROR, Cat_TESTING) << "Unknown test fixture '" << test << "'";
 		return false;
 	}
 	std::vector<TestRunner*> tests;
@@ -191,7 +191,7 @@ void TestRegistry::addTestRunner(TestRunner *runner) {
 	// CSP_TESTFIXTURE declaration.
 	bool duplicate = !data().tests_by_name.insert(std::make_pair(runner->name(), runner)).second;
 	if (duplicate) {
-		CSPLOG(ERROR, TESTING) << "Duplicate test fixture name " << runner->name();
+		CSPLOG(Prio_ERROR, Cat_TESTING) << "Duplicate test fixture name " << runner->name();
 	}
 
 	std::string dirname = ospath::skiproot(ospath::dirname(runner->file()));
@@ -241,7 +241,7 @@ void TestLogEntry::check() {
 }
 
 TestLogEntry::~TestLogEntry() {
-	LogStream::LogEntry(CSPLOG_, CSPLOG_PRIORITY(ERROR), CSPLOG_CATEGORY(TESTING), _filename, _linenum) << _buffer.get();
+	LogStream::LogEntry(CSPLOG_, Prio_ERROR, Cat_TESTING, _filename, _linenum) << _buffer.get();
 	TestCase::AddMessage(stringprintf("%s:%d %s", _filename, _linenum, _buffer.get()));
 }
 

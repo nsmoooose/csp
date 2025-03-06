@@ -38,12 +38,12 @@ DispatchManager::DispatchManager(Ref<MessageQueue> queue, unsigned cache_size)
 bool DispatchManager::dispatch(DispatchTarget *target, Ref<NetworkMessage> const &msg) {
 	Ref<BaseCallback> callback;
 	if (m_Cache->findHandler(msg, callback)) {
-		CSPLOG(DEBUG, MESSAGE) << "Found handler in cache";
+		CSPLOG(Prio_DEBUG, Cat_MESSAGE) << "Found handler in cache";
 		if (!callback) return false;
 		callback->call(msg, m_Queue);
 		return true;
 	} else {
-		CSPLOG(DEBUG, MESSAGE) << "Did not find handler in cache";
+		CSPLOG(Prio_DEBUG, Cat_MESSAGE) << "Did not find handler in cache";
 		m_Message = msg;
 		bool result = target->dispatch(this);
 		if (!result) {

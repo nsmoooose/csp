@@ -77,7 +77,7 @@ osgText::Text* ControlGeometryBuilder::buildText(const std::string& text, const 
 		return textNode.release();
 	}
 	else {
-		CSPLOG(ERROR, APP) << WF_FILENOTFOUND << fontFilePath;
+		CSPLOG(Prio_ERROR, Cat_APP) << WF_FILENOTFOUND << fontFilePath;
 	}
 	return NULL;
 }
@@ -239,11 +239,11 @@ void ControlGeometryBuilder::buildControl(osg::Geode* geode, float& z, const Sty
 		if (resourceLocator->locateResource(filePath)) {
 			image = osgDB::readImageFile(filePath);
 			if(!image.valid()) {
-				CSPLOG(ERROR, APP) << "Failed to read file: " << filePath;
+				CSPLOG(Prio_ERROR, Cat_APP) << "Failed to read file: " << filePath;
 			}
 		}
 		else {
-			CSPLOG(ERROR, APP) << WF_FILENOTFOUND << filePath;
+			CSPLOG(Prio_ERROR, Cat_APP) << WF_FILENOTFOUND << filePath;
 		}
 
 		// If we succeeded with loading of the texture then we
@@ -627,7 +627,7 @@ osg::Group* ControlGeometryBuilder::buildModel(const Model* model) const {
 			}
 		}
 		else {
-			CSPLOG(ERROR, APP) << WF_FILENOTFOUND << modelPath;
+			CSPLOG(Prio_ERROR, Cat_APP) << WF_FILENOTFOUND << modelPath;
 		}
 	}
 

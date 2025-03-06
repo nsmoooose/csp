@@ -170,7 +170,7 @@ Ref<NetworkMessage> RemoteController::getUpdate(TimeStamp current_timestamp, Sim
 #endif
 
 	//if (m_UpdateDelay % 20 == 0) {
-	//	CSPLOG(ERROR, APP) << "skip: " << acceleration_error << " " << rotation_error << " " << skip_count;
+	//	CSPLOG(Prio_ERROR, Cat_APP) << "skip: " << acceleration_error << " " << rotation_error << " " << skip_count;
 	//}
 
 	Ref<ObjectUpdate> update = new ObjectUpdate();
@@ -239,7 +239,7 @@ void LocalController::postCreate() {
 }
 
 void LocalController::registerChannels(Bus *bus) {
-	CSPLOG(INFO, APP) << "LocalController::registerChannels";
+	CSPLOG(Prio_INFO, Cat_APP) << "LocalController::registerChannels";
 	for (ChannelSlaves::iterator iter = m_ChannelSlaves.begin(); iter != m_ChannelSlaves.end(); ++iter) (*iter)->bind(bus);
 }
 
@@ -305,12 +305,12 @@ bool LocalController::sequentialUpdate(TimeStamp stamp, TimeStamp now, SimTime &
 }
 
 void LocalController::onUpdate(Ref<NetworkMessage> const &msg, TimeStamp now) {
-	CSPLOG(INFO, OBJECT) << "received state: " << *msg;
+	CSPLOG(Prio_INFO, Cat_OBJECT) << "received state: " << *msg;
 	Ref<ObjectUpdate> update = NetworkMessage::FastCast<ObjectUpdate>(msg);
 	if (!update) return;
 	SimTime dt;
 	if (sequentialUpdate(update->timestamp(), now, dt)) {
-		CSPLOG(INFO, OBJECT) << "updating kinetics";
+		CSPLOG(Prio_INFO, Cat_OBJECT) << "updating kinetics";
 		setTargetVelocity(update->velocity().asVector3());
 		if (update->has_attitude()) {
 			setTargetAttitude(update->attitude().asQuat());
@@ -331,12 +331,12 @@ void LocalController::onUpdate(Ref<NetworkMessage> const &msg, TimeStamp now) {
 			assert(idx == values.size());
 		}
 	} else {
-		CSPLOG(INFO, OBJECT) << "non sequential update: msg=" << update->timestamp() << " local=" << now;
+		CSPLOG(Prio_INFO, Cat_OBJECT) << "non sequential update: msg=" << update->timestamp() << " local=" << now;
 	}
 }
 
 double LocalController::onUpdate(double dt) {
-	CSPLOG(INFO, OBJECT) << "local controller update";
+	CSPLOG(Prio_INFO, Cat_OBJECT) << "local controller update";
 	b_Position->value() = b_Position->value() + b_Velocity->value() * dt;
 	{
 		double dx = m_Correction.length() - 50.0;

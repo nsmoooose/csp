@@ -41,7 +41,7 @@ CSP_XML_END
 
 
 TankObject::TankObject(): DynamicObject(TYPE_MUD_UNIT) {
-	CSPLOG(DEBUG, OBJECT) << "TankObject::TankObject() ...";
+	CSPLOG(Prio_DEBUG, Cat_OBJECT) << "TankObject::TankObject() ...";
 	b_Heading = DataChannel<double>::newLocal(bus::Kinetics::Heading, 0.0);
 
 //	m_ObjectType = TANK_OBJECT_TYPE;
@@ -62,7 +62,7 @@ TankObject::~TankObject() {
 }
 
 void TankObject::registerChannels(Bus * bus) {
-	CSPLOG(DEBUG, OBJECT) << "TankObject::registerChannels() ...";
+	CSPLOG(Prio_DEBUG, Cat_OBJECT) << "TankObject::registerChannels() ...";
 
 	DynamicObject::registerChannels(bus);
 //	if (bus->valid()) {
@@ -71,7 +71,7 @@ void TankObject::registerChannels(Bus * bus) {
 }
 
 void TankObject::bindChannels(Bus*) {
-	CSPLOG(DEBUG, OBJECT) << "TankObject::bindChannels() ...";
+	CSPLOG(Prio_DEBUG, Cat_OBJECT) << "TankObject::bindChannels() ...";
 //	DynamicObject::bindChannels(bus);
 }
 

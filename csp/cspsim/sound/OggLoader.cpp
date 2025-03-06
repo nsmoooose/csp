@@ -38,7 +38,7 @@ public:
 		OggVorbis_File ogg;
 		int open_result = ov_fopen(const_cast<char*>(filename.c_str()), &ogg);
 		if(open_result < 0) {
-			CSPLOG(ERROR, AUDIO) << "error opening file sound sample " << filename;
+			CSPLOG(Prio_ERROR, Cat_AUDIO) << "error opening file sound sample " << filename;
 			return false;
 		}
 		vorbis_info *info = ov_info(&ogg, -1);
@@ -52,7 +52,7 @@ public:
 			if (bytes == 0) break;
 			data.insert(data.end(), buf, buf + bytes);
 		}
-		CSPLOG(DEBUG, AUDIO) << "loaded ogg sample " << filename << " (" << data.size() << " bytes)";
+		CSPLOG(Prio_DEBUG, Cat_AUDIO) << "loaded ogg sample " << filename << " (" << data.size() << " bytes)";
 		ov_clear(&ogg);
 		return true;
 	}

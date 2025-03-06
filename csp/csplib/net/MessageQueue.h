@@ -75,12 +75,12 @@ public:
 	/** Add a message to the queue.
 	 */
 	inline void queueMessage(Ref<NetworkMessage> msg) {
-		CSPLOG(DEBUG, MESSAGE) << "QUEUE: <" << msg->getName() << ">";
+		CSPLOG(Prio_DEBUG, Cat_MESSAGE) << "QUEUE: <" << msg->getName() << ">";
 		// messsage id 0 is reserved for "unknown" messages, which should never be sent.
 		if (msg->getCustomId() > 0) {
 			m_Queue.push_back(MessageWrapper(msg));
 		} else {
-			CSPLOG(ERROR, PACKET) << "attempt to send message id=0";
+			CSPLOG(Prio_ERROR, Cat_PACKET) << "attempt to send message id=0";
 		}
 	}
 
@@ -91,7 +91,7 @@ public:
 		if (msg->getCustomId() > 0) {
 			m_Queue.push_back(MessageWrapper(msg, destination));
 		} else {
-			CSPLOG(ERROR, PACKET) << "attempt to send message id=0";
+			CSPLOG(Prio_ERROR, Cat_PACKET) << "attempt to send message id=0";
 		}
 	}
 
@@ -111,7 +111,7 @@ public:
 		Ref<NetworkMessage> message = m_Queue.front().message;
 		PeerId destination = m_Queue.front().destination;
 		m_Queue.pop_front();
-		CSPLOG(DEBUG, MESSAGE) << "SND: <" << message->getName() << "> " << message->getCustomId();
+		CSPLOG(Prio_DEBUG, Cat_MESSAGE) << "SND: <" << message->getName() << "> " << message->getCustomId();
 		header->setDestination(destination);
 		header->setMessageId(static_cast<uint16_t>(message->getCustomId()));
 		header->setRouting(message->getRoutingType(), message->getRoutingData());
@@ -122,9 +122,9 @@ public:
 			if (m_PayloadCacheLength <= payload_length) {
 				memcpy(payload, m_PayloadCache, m_PayloadCacheLength);
 				payload_length = m_PayloadCacheLength;
-				CSPLOG(DEBUG, MESSAGE) << "SENDING CACHED PAYLOAD, length = " << payload_length;
+				CSPLOG(Prio_DEBUG, Cat_MESSAGE) << "SENDING CACHED PAYLOAD, length = " << payload_length;
 			} else {
-				CSPLOG(WARNING, MESSAGE) << "buffer overflow sending " << message->getName();
+				CSPLOG(Prio_WARNING, Cat_MESSAGE) << "buffer overflow sending " << message->getName();
 			}
 		} else {
 			// serialize directly into the target buffer
@@ -170,7 +170,7 @@ public:
 	virtual void skipPacket() {
 		if (m_Queue.size() > 0) {
 			Ref<NetworkMessage> message = m_Queue.front().message;
-			CSPLOG(INFO, PACKET) << "dropping outbound packet " << *message;
+			CSPLOG(Prio_INFO, Cat_PACKET) << "dropping outbound packet " << *message;
 			m_Queue.pop_front();
 			// if we had a cached payload for the message that was skipped, and the
 			// next message is different we need to invalidate the cache.

@@ -41,7 +41,7 @@ CSP_TESTFIXTURE(Testing) {
 
 	template <typename T>
 	void checkFloatEqNearZero(T value, bool result) {
-		CSPLOG(INFO, TESTING) << "value = " << value;
+		CSPLOG(Prio_INFO, Cat_TESTING) << "value = " << value;
 		const T zero = 0.0f;
 		CSP_EXPECT(float_eq_t<T>::call(zero, value) == result);
 		CSP_EXPECT(float_eq_t<T>::call(-zero, value) == result);
@@ -55,14 +55,14 @@ CSP_TESTFIXTURE(Testing) {
 
 	template <typename T>
 	void checkSymmetricFloatEq(T a, T b, bool result) {
-		CSPLOG(INFO, TESTING) << "a = " << a << ", b = " << b << ", result = " << result;
+		CSPLOG(Prio_INFO, Cat_TESTING) << "a = " << a << ", b = " << b << ", result = " << result;
 		CSP_EXPECT(float_eq_t<T>::call(a, b) == result);
 		CSP_EXPECT(float_eq_t<T>::call(b, a) == result);
 	}
 
 	template <typename T>
 	void checkSignFloatEq(T value) {
-		CSPLOG(INFO, TESTING) << "value = " << value;
+		CSPLOG(Prio_INFO, Cat_TESTING) << "value = " << value;
 		CSP_EXPECT(float_eq_t<T>::call(value, value));
 		CSP_EXPECT(float_eq_t<T>::call(-value, -value));
 	}

@@ -128,12 +128,12 @@ bool StoresManagementSystem::mountStore(StoreIndex const &index, Store *store) {
 	Hardpoint *hp = m_Hardpoints.at(index.hardpoint()).get();
 	assert(hp);
 	if (!hp->data()->isCompatible(store->key())) {
-		CSPLOG(INFO, OBJECT) << "store " << store->name() << " incompatible with hardpoint " << hp->name();
+		CSPLOG(Prio_INFO, Cat_OBJECT) << "store " << store->name() << " incompatible with hardpoint " << hp->name();
 		return false;
 	}
 	Store *parent = hp->getStore(index.parent());
 	if (!parent || !parent->asRack()) {
-		CSPLOG(INFO, OBJECT) << "cannot mount store " << store->name() << "; mount point not found on hardpoint " << hp->name();
+		CSPLOG(Prio_INFO, Cat_OBJECT) << "cannot mount store " << store->name() << "; mount point not found on hardpoint " << hp->name();
 		return false;
 	}
 	return parent->asRack()->setChild(index, store);
@@ -158,7 +158,7 @@ void StoresManagementSystem::releaseMarkedStores(DynamicObject *parent) {
 	bool released = false;
 	for (std::set<StoreIndex>::const_iterator iter = m_MarkedForRelease.begin(); iter != m_MarkedForRelease.end(); ++iter) {
 		StoreIndex const &index = *iter;
-		CSPLOG(INFO, OBJECT) << "Removing store @ " << index;
+		CSPLOG(Prio_INFO, Cat_OBJECT) << "Removing store @ " << index;
 
 		Hardpoint *hp = m_Hardpoints.at(index.hardpoint()).get();
 		assert(hp);
@@ -176,7 +176,7 @@ void StoresManagementSystem::releaseMarkedStores(DynamicObject *parent) {
 		assert(store.valid());
 		released = true;
 
-		CSPLOG(INFO, OBJECT) << "Creating dynamic object for released store";
+		CSPLOG(Prio_INFO, Cat_OBJECT) << "Creating dynamic object for released store";
 
 		// open questions / problems:
 		//  - for racks, need to include child models and dynamics
@@ -217,18 +217,18 @@ bool StoresManagementSystem::DEPRECATED_releaseStore(StoreIndex const &index) {
 	Store::Ref store;
 	Vector3 position;
 	Quat attitude;
-	CSPLOG(INFO, OBJECT) << "Removing store @ " << index;
+	CSPLOG(Prio_INFO, Cat_OBJECT) << "Removing store @ " << index;
 	if (!hp->removeStore(index, store, position, attitude)) return false;
 	assert(store.valid());
 
-	CSPLOG(INFO, OBJECT) << "Removing store from vehicle scene graph";
+	CSPLOG(Prio_INFO, Cat_OBJECT) << "Removing store from vehicle scene graph";
 	osg::Group *group = store->getParentGroup();
 	if (group) {
 		assert(group->getNumParents() == 1);
 		group->getParent(0)->asGroup()->removeChild(group);
 	}
 
-	CSPLOG(INFO, OBJECT) << "Creating dynamic object for released store";
+	CSPLOG(Prio_INFO, Cat_OBJECT) << "Creating dynamic object for released store";
 	// TODO constructing and return a wrapper object
 	// open questions / problems:
 	//  - for racks, need to include child models and dynamics
@@ -240,7 +240,7 @@ bool StoresManagementSystem::DEPRECATED_releaseStore(StoreIndex const &index) {
 	if (object.valid()) {
 		object->setGlobalPosition(position);
 		object->setAttitude(attitude);
-		CSPLOG(INFO, OBJECT) << "Created dynamic object, queueing for parent.";
+		CSPLOG(Prio_INFO, Cat_OBJECT) << "Created dynamic object, queueing for parent.";
 		m_ReleasedObjects.push_back(object);
 	}
 

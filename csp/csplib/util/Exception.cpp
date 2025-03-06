@@ -99,7 +99,7 @@ void ExceptionBase::details(bool no_trace) const {
 }
 
 void ExceptionBase::logAndClear() const {
-	CSPLOG(ERROR, ALL) << *this;
+	CSPLOG(Prio_ERROR, Cat_ALL) << *this;
 	clear();
 }
 

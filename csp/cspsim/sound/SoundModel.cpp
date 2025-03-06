@@ -45,7 +45,7 @@ SoundModel::~SoundModel() { }
 
 void SoundModel::bind(SceneModel *scene_model) {
 	if (scene_model) {
-		CSPLOG(INFO, AUDIO) << "bind sound model";
+		CSPLOG(Prio_INFO, Cat_AUDIO) << "bind sound model";
 		osg::Group *group = scene_model->getDynamicGroup();
 		if (group) group->addChild(m_SoundGroup.get());
 	}
@@ -53,7 +53,7 @@ void SoundModel::bind(SceneModel *scene_model) {
 
 void SoundModel::unbind(SceneModel *scene_model) {
 	if (scene_model) {
-		CSPLOG(INFO, AUDIO) << "unbind sound model";
+		CSPLOG(Prio_INFO, Cat_AUDIO) << "unbind sound model";
 		osg::Group *group = scene_model->getDynamicGroup();
 		if (group) group->removeChild(m_SoundGroup.get());
 	}
@@ -70,7 +70,7 @@ void SoundModel::addExternalSound(osgAL::SoundState *sound, Vector3 const &offse
 	data.mode = EXTERNAL;
 	const bool duplicate = !m_SoundIndex.insert(std::make_pair(sound, data)).second;
 	if (duplicate) {
-		CSPLOG(FATAL, AUDIO) << "Duplicate sound " << sound->getName();
+		CSPLOG(Prio_FATAL, Cat_AUDIO) << "Duplicate sound " << sound->getName();
 	}
 	m_SoundGroup->addChild(data.scene_node.get());
 }
@@ -86,7 +86,7 @@ void SoundModel::addInternalSound(osgAL::SoundState *sound, Vector3 const &offse
 	data.mode = INTERNAL;
 	const bool duplicate = !m_SoundIndex.insert(std::make_pair(sound, data)).second;
 	if (duplicate) {
-		CSPLOG(FATAL, AUDIO) << "Duplicate sound " << sound->getName();
+		CSPLOG(Prio_FATAL, Cat_AUDIO) << "Duplicate sound " << sound->getName();
 	}
 	m_SoundGroup->addChild(data.scene_node.get());
 }
@@ -103,7 +103,7 @@ void SoundModel::addHeadsetSound(osgAL::SoundState *sound) {
 	data.mode = HEADSET;
 	const bool duplicate = !m_SoundIndex.insert(std::make_pair(sound, data)).second;
 	if (duplicate) {
-		CSPLOG(FATAL, AUDIO) << "Duplicate sound " << sound->getName();
+		CSPLOG(Prio_FATAL, Cat_AUDIO) << "Duplicate sound " << sound->getName();
 	}
 	m_SoundGroup->addChild(data.scene_node.get());
 }
@@ -112,13 +112,13 @@ bool SoundModel::removeSound(osgAL::SoundState *sound) {
 	assert(sound && !sound->getName().empty());
 	SoundIndex::iterator iter = m_SoundIndex.find(sound);
 	if (iter == m_SoundIndex.end()) {
-		CSPLOG(WARNING, AUDIO) << "Sound node '" << sound->getName() << "' not found";
+		CSPLOG(Prio_WARNING, Cat_AUDIO) << "Sound node '" << sound->getName() << "' not found";
 		return false;
 	}
 	Node node = iter->second.scene_node;
 	m_SoundIndex.erase(iter);
 	if (!m_SoundGroup->removeChild(node.get())) {
-		CSPLOG(ERROR, AUDIO) << "Sound node '" << sound->getName() << "' not found in scene graph";
+		CSPLOG(Prio_ERROR, Cat_AUDIO) << "Sound node '" << sound->getName() << "' not found in scene graph";
 	}
 	return true;
 }

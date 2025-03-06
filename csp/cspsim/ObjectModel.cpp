@@ -135,10 +135,10 @@ public:
 	void operator()(osg::ref_ptr<AnimationCallback> &cb) {
 		if (cb.valid()) {
 			if (!cb->bindChannels(m_Bus)) {
-				CSPLOG(WARNING, OBJECT) << "AnimationBinder: failed to bind animation in " << m_Label;
+				CSPLOG(Prio_WARNING, Cat_OBJECT) << "AnimationBinder: failed to bind animation in " << m_Label;
 			}
 		} else {
-			CSPLOG(WARNING, OBJECT) << "AnimationBinder: AnimationCallback not valid in " << m_Label << "; skipping";
+			CSPLOG(Prio_WARNING, Cat_OBJECT) << "AnimationBinder: AnimationCallback not valid in " << m_Label << "; skipping";
 		}
 	}
 };
@@ -253,26 +253,26 @@ public:
 				}
 			}
 			if (found_first_animation) {
-				CSPLOG(DEBUG, OBJECT) << "Found primary animation for " << name;
+				CSPLOG(Prio_DEBUG, Cat_OBJECT) << "Found primary animation for " << name;
 			}
 			if (found_second_animation) {
 				// Install as a nested callback.
-				CSPLOG(DEBUG, OBJECT) << "Found secondary animation for " << name;
+				CSPLOG(Prio_DEBUG, Cat_OBJECT) << "Found secondary animation for " << name;
 				if (animation_binding) animation_binding->setNestedAnimation(i->second.get());
 			}
 			if (!found_first_animation && !found_second_animation) {
-				CSPLOG(WARNING, OBJECT) << "Found no animations for node " << name;
+				CSPLOG(Prio_WARNING, Cat_OBJECT) << "Found no animations for node " << name;
 			}
 		} else if (label.substr(0, 8) == "__PITS__") {
-			CSPLOG(INFO, OBJECT) << "Found __PITS__, " << node.getNumChildren() << " children";
+			CSPLOG(Prio_INFO, Cat_OBJECT) << "Found __PITS__, " << node.getNumChildren() << " children";
 			assert(m_InteriorMap.empty());
 			for (unsigned i = 0; i < node.getNumChildren(); ++i) {
 				std::string pitname = node.getChild(i)->getName();
 				if (m_InteriorMap.find(pitname) == m_InteriorMap.end()) {
-					CSPLOG(INFO, OBJECT) << "Found pit " << pitname;
+					CSPLOG(Prio_INFO, Cat_OBJECT) << "Found pit " << pitname;
 					m_InteriorMap[pitname] = i;
 				} else {
-					CSPLOG(ERROR, OBJECT) << "Duplicate interior label " << pitname;
+					CSPLOG(Prio_ERROR, Cat_OBJECT) << "Duplicate interior label " << pitname;
 				}
 			}
 		}
@@ -402,7 +402,7 @@ void ObjectModel::generateStationMasks(std::map<std::string, unsigned> const &in
 			if (iter != interior_map.end()) {
 				mask |= (1 << iter->second);
 			} else {
-				CSPLOG(WARNING, OBJECT) << "Pit " << names[j] << " not found while processing station " << m_Stations[i]->getName();
+				CSPLOG(Prio_WARNING, Cat_OBJECT) << "Pit " << names[j] << " not found while processing station " << m_Stations[i]->getName();
 			}
 		}
 		assert(m_Stations[i]->getMask() == 0U);
@@ -414,16 +414,16 @@ void ObjectModel::loadModel() {
 	Timer timer;
 	const std::string source = m_ModelPath.getSource();
 
-	CSPLOG(INFO, OBJECT) << "ObjectModel::loadModel: " << source;
+	CSPLOG(Prio_INFO, Cat_OBJECT) << "ObjectModel::loadModel: " << source;
 
 	timer.start();
 	osg::Node *node = osgDB::readNodeFile(source);
 	timer.stop();
 
 	if (node) {
-		CSPLOG(INFO, OBJECT) << "Loaded model '" << source << "' in " << (timer.elapsed() * 1e3) << " ms";
+		CSPLOG(Prio_INFO, Cat_OBJECT) << "Loaded model '" << source << "' in " << (timer.elapsed() * 1e3) << " ms";
 	} else {
-		CSPLOG(FATAL, OBJECT) << "Failed to load model '" << source << "'";
+		CSPLOG(Prio_FATAL, Cat_OBJECT) << "Failed to load model '" << source << "'";
 	}
 
 	m_Model = node;
@@ -468,7 +468,7 @@ void ObjectModel::loadModel() {
 
 	/** insert an adjustment matrix at the head of the model only if necessary. */
 	if (m_Axis0 != Vector3::XAXIS || m_Axis1 != Vector3::YAXIS || m_Scale != 1.0 || m_Offset != Vector3::ZERO) {
-		CSPLOG(WARNING, OBJECT) << "Adding model adjustment matrix";
+		CSPLOG(Prio_WARNING, Cat_OBJECT) << "Adding model adjustment matrix";
 		/** find third axis and make the transform matrix */
 		Vector3 axis2 = m_Axis0 ^ m_Axis1;
 		Matrix3 o(m_Axis0.x(), m_Axis0.y(), m_Axis0.z(),
@@ -528,7 +528,7 @@ void ObjectModel::loadModel() {
 	m_DebugMarkers->getOrCreateStateSet()->setAttributeAndModes(new osg::CullFace, osg::StateAttribute::ON);
 
 	// create visible markers for each contact and debug point
-	CSPLOG(DEBUG, OBJECT) << "Adding debug markers";
+	CSPLOG(Prio_DEBUG, Cat_OBJECT) << "Adding debug markers";
 	addDebugMarkers();
 
 	/**
@@ -536,12 +536,12 @@ void ObjectModel::loadModel() {
 	
 	osg::ref_ptr<osg::State> state = new osg::State;
 
-	CSPLOG(DEBUG, OBJECT) << "Compiling display lists";
+	CSPLOG(Prio_DEBUG, Cat_OBJECT) << "Compiling display lists";
 	osgUtil::GLObjectsVisitor ov;
 	ov.setState(state.get());
 	ov.setNodeMaskOverride(0xffffffff);
 	m_Model->accept(ov);
-	CSPLOG(DEBUG, OBJECT) << "Compiling display lists for debug markers";
+	CSPLOG(Prio_DEBUG, Cat_OBJECT) << "Compiling display lists for debug markers";
 	m_DebugMarkers->accept(ov);
 	*/
 
@@ -558,14 +558,14 @@ void ObjectModel::loadModel() {
 	 * 5) I'm unable to trace it :)
 	 * 
 	 *	@code
-	 *	CSPLOG(DEBUG, OBJECT) << "LoadModel: Optimizer run";
+	 *	CSPLOG(Prio_DEBUG, Cat_OBJECT) << "LoadModel: Optimizer run";
 	 *	osgUtil::Optimizer opt;
 	 *	opt.optimize(m_Model.get());
-	 *	CSPLOG(DEBUG, OBJECT) << "LoadModel: Optimizer done";
+	 *	CSPLOG(Prio_DEBUG, Cat_OBJECT) << "LoadModel: Optimizer done";
 	 *	@endcode
 	 */
 	if (!m_GroundShadowPath.asString().empty()) {
-		CSPLOG(DEBUG, OBJECT) << "Loading ground shadow " << m_GroundShadowPath.asString();
+		CSPLOG(Prio_DEBUG, Cat_OBJECT) << "Loading ground shadow " << m_GroundShadowPath.asString();
 		m_GroundShadow = osgDB::readNodeFile(m_GroundShadowPath.asString());
 		if (m_GroundShadow.valid()) {
 			/**
@@ -578,16 +578,16 @@ void ObjectModel::loadModel() {
 			ss->setAttributeAndModes(new osg::Depth(osg::Depth::LEQUAL, 0.0, 1.0, false), osg::StateAttribute::ON);
 			ss->setAttributeAndModes(new osg::PolygonOffset(-5, -10), osg::StateAttribute::ON);
 		} else {
-			CSPLOG(WARNING, OBJECT) << "Failed to load ground shadow " << m_GroundShadowPath.asString();
+			CSPLOG(Prio_WARNING, Cat_OBJECT) << "Failed to load ground shadow " << m_GroundShadowPath.asString();
 		}
 	}
 
-	CSPLOG(DEBUG, OBJECT) << "Done loading model " << source;
+	CSPLOG(Prio_DEBUG, Cat_OBJECT) << "Done loading model " << source;
 
 }
 
 void ObjectModel::processModel() {
-	CSPLOG(INFO, OBJECT) << "Processing model";
+	CSPLOG(Prio_INFO, Cat_OBJECT) << "Processing model";
 
 	static const double us = 1e+6;  /** report microseconds */
 	double smooth_time = 0.0;
@@ -624,7 +624,7 @@ void ObjectModel::processModel() {
 	m_Model->accept(sv);
 	shader_time = timer.incremental() * us;
 
-	CSPLOG(INFO, OBJECT) << "Processing model finished ("
+	CSPLOG(Prio_INFO, Cat_OBJECT) << "Processing model finished ("
 		"smooth " << smooth_time << " us, "
 		"filter " << filter_time << " us, "
 		"rigging " << animation_time << " us, "
@@ -732,24 +732,24 @@ public:
 				} else if (node->asTransform()) {
 					new_node = static_cast<osg::Node*>(node->clone(*this));
 				} else {
-					CSPLOG(ERROR, OBJECT) << "Unknown node type for animation binding";
+					CSPLOG(Prio_ERROR, Cat_OBJECT) << "Unknown node type for animation binding";
 				}
 				assert(new_node);
 				if (!bind_node) bind_node = new_node;
 				AnimationCallback *cb = binding->bind(bind_node);
 				if (cb) {
 					m_AnimationCallbacks.push_back(cb);
-					CSPLOG(INFO, OBJECT) << "ADDED CALLBACK (" << m_AnimationCallbacks.size() << ") ON " << node->getName().substr(6);
+					CSPLOG(Prio_INFO, Cat_OBJECT) << "ADDED CALLBACK (" << m_AnimationCallbacks.size() << ") ON " << node->getName().substr(6);
 				} else {
-					CSPLOG(WARNING, OBJECT) << "Failed to add animation callback to " << node->getName().substr(6);
+					CSPLOG(Prio_WARNING, Cat_OBJECT) << "Failed to add animation callback to " << node->getName().substr(6);
 				}
 				if (binding->hasNestedAnimation()) {
 					AnimationCallback *cb = binding->bindNested(new_node);
 					if (cb) {
 						m_AnimationCallbacks.push_back(cb);
-						CSPLOG(INFO, OBJECT) << "ADDED NESTED CALLBACK (" << m_AnimationCallbacks.size() << ") ON " << node->getName().substr(6);
+						CSPLOG(Prio_INFO, Cat_OBJECT) << "ADDED NESTED CALLBACK (" << m_AnimationCallbacks.size() << ") ON " << node->getName().substr(6);
 					} else {
-						CSPLOG(WARNING, OBJECT) << "Failed to add nested animation callback to " << node->getName().substr(6);
+						CSPLOG(Prio_WARNING, Cat_OBJECT) << "Failed to add nested animation callback to " << node->getName().substr(6);
 					}
 				}
 				return new_node;
@@ -757,7 +757,7 @@ public:
 		}
 		if (node->asGroup()) {
 			if (node->getName() == "__PITS__") {
-				CSPLOG(INFO, OBJECT) << "Copying __PITS__ node";
+				CSPLOG(Prio_INFO, Cat_OBJECT) << "Copying __PITS__ node";
 				assert(!m_PitSwitch.valid());
 				/** clone the __PITS__ node as a switch and save a reference.*/
 				osg::Switch *select_node = 0;

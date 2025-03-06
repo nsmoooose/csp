@@ -37,7 +37,7 @@ RecordCodec::RecordCodec(): m_TagWriter(m_Writer), m_TagReader(m_Reader) {
 	for (int i = 0; i < static_cast<int>(factories.size()); ++i) {
 		int id = factories[i]->getCustomId();
 		if (id != 0) {
-			CSPLOG(DEBUG, MESSAGE) << "REGISTER: <" << factories[i]->getName() << "> " << id;
+			CSPLOG(Prio_DEBUG, Cat_MESSAGE) << "REGISTER: <" << factories[i]->getName() << "> " << id;
 			m_Factories[id] = factories[i];
 		}
 	}
@@ -54,14 +54,14 @@ size_t RecordCodec::encode(Ref<TaggedRecord> record, uint8_t *buffer, size_t buf
 
 Ref<TaggedRecord> RecordCodec::decode(int local_id, uint8_t const *buffer, const size_t buffer_length) {
 	if (buffer == 0 || buffer_length == 0) {
-		CSPLOG(ERROR, MESSAGE) << "no buffer";
+		CSPLOG(Prio_ERROR, Cat_MESSAGE) << "no buffer";
 		return 0;
 	}
 	CSP_VERIFY_GE(local_id, 0);
 	CSP_VERIFY_LT(local_id, MAX_MESSAGE_IDS);
 	TaggedRecordFactoryBase const *factory = m_Factories[local_id];
 	if (!factory) {
-		CSPLOG(ERROR, MESSAGE) << "unknown message id: " << local_id;
+		CSPLOG(Prio_ERROR, Cat_MESSAGE) << "unknown message id: " << local_id;
 		return 0;
 	}
 	Ref<TaggedRecord> record = factory->create();
@@ -69,7 +69,7 @@ Ref<TaggedRecord> RecordCodec::decode(int local_id, uint8_t const *buffer, const
 	try {
 		record->serialize(m_TagReader);
 	} catch (DataUnderflow const &/*err*/) {
-		CSPLOG(ERROR, MESSAGE) << "buffer underflow decoding message";
+		CSPLOG(Prio_ERROR, Cat_MESSAGE) << "buffer underflow decoding message";
 		// TODO need to modify tagged record serialization so that compound blocks
 		// are prefixed with their length (instead of start/end tags).  this will
 		// allow the deserializer to skip unknown tags at the end of each compound

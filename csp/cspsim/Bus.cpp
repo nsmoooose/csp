@@ -27,19 +27,19 @@
 namespace csp {
 
 Bus::Bus(std::string const &name): m_Bound(false), m_Enabled(true), m_Name(name), m_Status(1.0) {
-	CSPLOG(DEBUG, OBJECT) << "Bus(" << name << ") created.";
+	CSPLOG(Prio_DEBUG, Cat_OBJECT) << "Bus(" << name << ") created.";
 }
 
 ChannelBase* Bus::registerChannel(ChannelBase *channel, std::string const &groups) {
 	assert(channel);
 	std::string name = channel->getName();
-	CSPLOG(DEBUG, OBJECT) << "Bus::registerChannel(" << name << ")";
+	CSPLOG(Prio_DEBUG, Cat_OBJECT) << "Bus::registerChannel(" << name << ")";
 	assert(m_Channels.find(name) == m_Channels.end());
 	m_Channels[name] = channel;
-	CSPLOG(DEBUG, OBJECT) << "Bus::registerChannel: groups = " << groups;
+	CSPLOG(Prio_DEBUG, Cat_OBJECT) << "Bus::registerChannel: groups = " << groups;
 	TokenQueue grouplist(groups, " ");
 	for (TokenQueue::iterator group = grouplist.begin(); group != grouplist.end(); ++group) {
-		CSPLOG(DEBUG, OBJECT) << "Bus::registerChannel: groupX = " << *group;
+		CSPLOG(Prio_DEBUG, Cat_OBJECT) << "Bus::registerChannel: groupX = " << *group;
 		m_Groups[*group].push_back(channel);
 	}
 	return channel;
@@ -48,7 +48,7 @@ ChannelBase* Bus::registerChannel(ChannelBase *channel, std::string const &group
 ChannelBase::RefT Bus::getSharedChannel(std::string const &name, bool required, bool override) {
 	ChannelMap::iterator iter = m_Channels.find(name);
 	if (iter == m_Channels.end()) {
-		CSPLOG(DEBUG, OBJECT) << "Bus::getSharedChannel(" << name << ") failed.";
+		CSPLOG(Prio_DEBUG, Cat_OBJECT) << "Bus::getSharedChannel(" << name << ") failed.";
 		assert(!required);
 		return 0;
 	}
@@ -60,10 +60,10 @@ ChannelBase::CRefT Bus::getChannel(std::string const &name, bool required) {
 	ChannelMap::iterator iter = m_Channels.find(name);
 	if (iter == m_Channels.end()) {
 		if (required) {
-			CSPLOG(ERROR, OBJECT) << "Bus::getChannel(" << name << ") failed.";
+			CSPLOG(Prio_ERROR, Cat_OBJECT) << "Bus::getChannel(" << name << ") failed.";
 			assert(0);
 		} else {
-			CSPLOG(DEBUG, OBJECT) << "Bus::getChannel(" << name << ") failed.";
+			CSPLOG(Prio_DEBUG, Cat_OBJECT) << "Bus::getChannel(" << name << ") failed.";
 		}
 		return 0;
 	}

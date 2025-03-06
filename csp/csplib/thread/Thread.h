@@ -157,7 +157,7 @@ public:
 	 *  The thread will be joined if it is running and not detached.
 	 */
 	virtual ~Thread() {
-		CSPLOG(INFO, THREAD) << "~thread " << this;
+		CSPLOG(Prio_INFO, Cat_THREAD) << "~thread " << this;
 		if (!isDetached()) {
 			join();
 		}
@@ -232,11 +232,11 @@ public:
 
 protected:
 	virtual void final() {
-		CSPLOG(INFO, THREAD) << "thread exit " << m_thread->get_id();
+		CSPLOG(Prio_INFO, Cat_THREAD) << "thread exit " << m_thread->get_id();
 	}
 
 	virtual void run() {
-		CSPLOG(INFO, THREAD) << "thread start " << m_thread->get_id();
+		CSPLOG(Prio_INFO, Cat_THREAD) << "thread start " << m_thread->get_id();
 		// should we try to catch and translate ost exceptions here?  note that the
 		// ost::Thread constructor can throw, but there's no way to catch the exception
 		// from this subclass.

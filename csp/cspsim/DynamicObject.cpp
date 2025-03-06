@@ -188,18 +188,18 @@ void DynamicObject::registerUpdate(UpdateMaster *master) {
 }
 
 Ref<NetworkMessage> DynamicObject::getState(TimeStamp current_time, SimTime interval, int detail) const {
-	CSPLOG(INFO, OBJECT) << "get object state";
+	CSPLOG(Prio_INFO, Cat_OBJECT) << "get object state";
 	if (m_RemoteController.valid()) {
-		CSPLOG(INFO, OBJECT) << "get object state from remote controller";
+		CSPLOG(Prio_INFO, Cat_OBJECT) << "get object state from remote controller";
 		return m_RemoteController->getUpdate(current_time, interval, detail);
 	}
 	return 0;
 }
 
 void DynamicObject::setState(Ref<NetworkMessage> const &msg, TimeStamp now) {
-	CSPLOG(INFO, OBJECT) << "set object state";
+	CSPLOG(Prio_INFO, Cat_OBJECT) << "set object state";
 	if (m_LocalController.valid()) {
-		CSPLOG(INFO, OBJECT) << "set object state (local controller)";
+		CSPLOG(Prio_INFO, Cat_OBJECT) << "set object state (local controller)";
 		m_LocalController->onUpdate(msg, now);
 	}
 }
@@ -438,7 +438,7 @@ void DynamicObject::createStationSceneModel() {
 }
 
 void DynamicObject::activateStation(int index) {
-	CSPLOG(INFO, OBJECT) << "Object " << *this << " selecting station " << index;
+	CSPLOG(Prio_INFO, Cat_OBJECT) << "Object " << *this << " selecting station " << index;
 	if (m_ActiveStation != index) {
 		if (m_SceneModel.valid() && m_StationSceneModel.valid()) {
 			m_StationSceneModel->bindAnimationChannels(0);
@@ -450,7 +450,7 @@ void DynamicObject::activateStation(int index) {
 			m_ActiveStation = index;
 		} else {
 			m_ActiveStation = NO_STATION;
-			CSPLOG(ERROR, OBJECT) << "Selecting invalid station " << index;
+			CSPLOG(Prio_ERROR, Cat_OBJECT) << "Selecting invalid station " << index;
 		}
 		if (m_SceneModel.valid() && activeStation()) {
 			createStationSceneModel();
@@ -488,7 +488,7 @@ void DynamicObject::bindChannels(Bus* bus) {
 		b_Hud = bus->getChannel("HUD", false);
 		bindAnimations(bus);
 	} else {
-		CSPLOG(DEBUG, OBJECT) << "DynamicObject::bindChannels() - bus is invalid";
+		CSPLOG(Prio_DEBUG, Cat_OBJECT) << "DynamicObject::bindChannels() - bus is invalid";
 	}
 }
 
@@ -499,16 +499,16 @@ void DynamicObject::selectVehicleCore() {
 		if (isHuman()) {
 			systems = getCachedSystemsModel();
 			path = m_HumanModel;
-			CSPLOG(INFO, OBJECT) << "selecting local human systems model for " << *this;
+			CSPLOG(Prio_INFO, Cat_OBJECT) << "selecting local human systems model for " << *this;
 			activateStation(m_PreviousStation);
 		} else {
 			path = m_AgentModel;
-			CSPLOG(INFO, OBJECT) << "selecting local agent systems model for " << *this;
+			CSPLOG(Prio_INFO, Cat_OBJECT) << "selecting local agent systems model for " << *this;
 			deactivateStation();
 		}
 	} else {
 		path = m_RemoteModel;
-		CSPLOG(INFO, OBJECT) << "selecting remote systems model for " << *this;
+		CSPLOG(Prio_INFO, Cat_OBJECT) << "selecting remote systems model for " << *this;
 		deactivateStation();
 	}
 	if (!systems && !path.isNone()) {
@@ -517,7 +517,7 @@ void DynamicObject::selectVehicleCore() {
 			DataManager &manager = sim->getDataManager();
 			systems = manager.getObject(path);
 			if (systems.valid()) {
-				CSPLOG(INFO, OBJECT) << "registering channels and binding systems for " << *this << " " << this;
+				CSPLOG(Prio_INFO, Cat_OBJECT) << "registering channels and binding systems for " << *this << " " << this;
 				registerChannels(systems->getBus());
 				systems->bindSystems();
 			}

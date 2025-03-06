@@ -252,10 +252,10 @@ void DataArchive::addObject(Object& a, std::string const &path) {
 	if (!_is_read && !_finalized) {
 		int offset = ftell(_f);
 		ArchiveWriter writer(_f);
-		CSPLOG(DEBUG, ARCHIVE) << "DataArchive: adding " << path << " [" << ObjectID(path) << "]";
+		CSPLOG(Prio_DEBUG, Cat_ARCHIVE) << "DataArchive: adding " << path << " [" << ObjectID(path) << "]";
 		a.serialize(writer);
 		int length = writer.getCount();
-		CSPLOG(DEBUG, ARCHIVE) << "DataArchive: stored " << length << " bytes (" << path << ")";
+		CSPLOG(Prio_DEBUG, Cat_ARCHIVE) << "DataArchive: stored " << length << " bytes (" << path << ")";
 		_addEntry(offset, length, a.getClassHash(), path);
 	}
 }
@@ -303,7 +303,7 @@ const DataArchive::TableEntry* DataArchive::_lookupPath(ObjectID const &id, std:
 				msg = "human-readable path unavailable";
 			}
 		}
-		CSPLOG(ERROR, ARCHIVE) << "DataArchive: path not found in '" << _fn << "' (" << msg << ") " + id.str();
+		CSPLOG(Prio_ERROR, Cat_ARCHIVE) << "DataArchive: path not found in '" << _fn << "' (" << msg << ") " + id.str();
 		throw IndexError(msg.c_str());
 	}
 	int idx = (*i).second;
@@ -313,7 +313,7 @@ const DataArchive::TableEntry* DataArchive::_lookupPath(ObjectID const &id, std:
 Object *DataArchive::_createObject(ObjectID classhash) {
 	InterfaceProxy *proxy = InterfaceRegistry::getInterfaceRegistry().getInterface(classhash);
 	if (!proxy) {
-		CSPLOG(ERROR, ARCHIVE) << "Interface proxy [" << classhash << "] not found.";
+		CSPLOG(Prio_ERROR, Cat_ARCHIVE) << "Interface proxy [" << classhash << "] not found.";
 		throw MissingInterface("Missing interface for " + classhash.str());
 	}
 	Object *dup = proxy->createObject();
@@ -340,21 +340,21 @@ const LinkBase DataArchive::getObject(const Path& path, std::string const &path_
 		if (_manager == 0) throw;
 		return _manager->getObject(path, path_str, this);
 	}
-	CSPLOG(DEBUG, ARCHIVE) << "getObject using interface registry @ " << (&(InterfaceRegistry::getInterfaceRegistry()));
+	CSPLOG(Prio_DEBUG, Cat_ARCHIVE) << "getObject using interface registry @ " << (&(InterfaceRegistry::getInterfaceRegistry()));
 	InterfaceProxy *proxy = InterfaceRegistry::getInterfaceRegistry().getInterface(t->classhash);
 	std::string from = path_str;
 	if (from == "") from = getPathString(path.getPath());
 	if (!proxy) {
 		std::string msg = "Missing interface for";
 		if (from != "") {
-			CSPLOG(ERROR, ARCHIVE) << "getObject(" << from << "):";
+			CSPLOG(Prio_ERROR, Cat_ARCHIVE) << "getObject(" << from << "):";
 			msg = msg + " '" + from + "'";
 		}
-		CSPLOG(ERROR, ARCHIVE) << "Interface proxy [" << t->classhash << "] not found while loading " << path << " (" << from << ")";
+		CSPLOG(Prio_ERROR, Cat_ARCHIVE) << "Interface proxy [" << t->classhash << "] not found while loading " << path << " (" << from << ")";
 		msg = msg + " " + t->classhash.str();
 		throw MissingInterface(msg);
 	}
-	CSPLOG(DEBUG, ARCHIVE) << "Creating object using interface proxy [" << proxy->getClassName() << "]";
+	CSPLOG(Prio_DEBUG, Cat_ARCHIVE) << "Creating object using interface proxy [" << proxy->getClassName() << "]";
 	Ref<Object> dup = proxy->createObject();
 	uint32_t offset = t->offset;
 	uint32_t length = t->length;
@@ -364,7 +364,7 @@ const LinkBase DataArchive::getObject(const Path& path, std::string const &path_
 		buffer = &(_buffers[_buffer][0]);
 		++_buffer;
 	} else {
-		CSPLOG(INFO, ARCHIVE) << "BUFFERSIZE exceeded, allocating larger buffer";
+		CSPLOG(Prio_INFO, Cat_ARCHIVE) << "BUFFERSIZE exceeded, allocating larger buffer";
 		temp_buffer.resize(length);
 		buffer = &(temp_buffer[0]);
 	}
@@ -372,14 +372,14 @@ const LinkBase DataArchive::getObject(const Path& path, std::string const &path_
 	fseek(_f, offset, SEEK_SET);
 	fread(buffer, length, 1, _f);
 	ArchiveReader reader(buffer, length, this, _chain);
-	CSPLOG(DEBUG, ARCHIVE) << "loading new object " << dup->getClassName() << " from " << from;
+	CSPLOG(Prio_DEBUG, Cat_ARCHIVE) << "loading new object " << dup->getClassName() << " from " << from;
 	dup->_setPath(id);
 	try {
 		dup->serialize(reader);
 	} catch (DataUnderflow &e) {
 		if (temp_buffer.size() == 0) --_buffer;
 		e.clear();
-		CSPLOG(ERROR, ARCHIVE) << "INTERNAL ERROR: Object extraction incomplete for class '" << dup->getClassName() << "': " << from << " (data underflow).";
+		CSPLOG(Prio_ERROR, Cat_ARCHIVE) << "INTERNAL ERROR: Object extraction incomplete for class '" << dup->getClassName() << "': " << from << " (data underflow).";
 		throw CorruptArchive("Object extraction incomplete for class '" + std::string(dup->getClassName()) + "'");
 	}
 	if (_chain) {
@@ -387,13 +387,13 @@ const LinkBase DataArchive::getObject(const Path& path, std::string const &path_
 	}
 	if (temp_buffer.size() == 0) --_buffer;
 	if (!reader.isComplete()) {
-		CSPLOG(ERROR, ARCHIVE) << "INTERNAL ERROR: Object extraction incomplete for class '" << dup->getClassName() << "': " << from << " (data overflow).";
+		CSPLOG(Prio_ERROR, Cat_ARCHIVE) << "INTERNAL ERROR: Object extraction incomplete for class '" << dup->getClassName() << "': " << from << " (data overflow).";
 		throw CorruptArchive("Object extraction incomplete for class '" + std::string(dup->getClassName()) + "'");
 	}
 	if (proxy->isStatic()) {
 		_addStatic(dup.get(), "", id);
 	}
-	CSPLOG(DEBUG, ARCHIVE) << "finished loading " << dup->getClassName() << " from " << from;
+	CSPLOG(Prio_DEBUG, Cat_ARCHIVE) << "finished loading " << dup->getClassName() << " from " << from;
 	return LinkBase(path, dup.get());
 }
 

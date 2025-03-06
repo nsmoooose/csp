@@ -112,7 +112,7 @@ void ScrollBar::setMaximum(float maximum) {
 }
 
 void ScrollBar::onScroll(ScrollEventArgs& event) {
-	CSPLOG(DEBUG, APP) << "Signal Scroll on csp::wf::" << getName().c_str();
+	CSPLOG(Prio_DEBUG, Cat_APP) << "Signal Scroll on csp::wf::" << getName().c_str();
 	Scroll(event);
 }
 

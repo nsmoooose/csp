@@ -39,7 +39,7 @@ SimObject::SimObject(TypeId type):
 	m_GroundBubble(0),
 	m_ContactSignature(0)
 {
-	CSPLOG(DEBUG, BATTLEFIELD) << "SimObject::SimObject(): " << _debugId();
+	CSPLOG(Prio_DEBUG, Cat_BATTLEFIELD) << "SimObject::SimObject(): " << _debugId();
 	// XXX battlefield should set this!
 	setAggregateFlag(true);
 	switch (type) {
@@ -57,13 +57,13 @@ SimObject::SimObject(TypeId type):
 			setFlags(F_STATIC, true);
 			break;
 		default:
-			CSPLOG(ERROR, BATTLEFIELD) << "Invalid object type: " << type;
+			CSPLOG(Prio_ERROR, Cat_BATTLEFIELD) << "Invalid object type: " << type;
 			assert(0);
 	};
 }
 
 SimObject::~SimObject() {
-	CSPLOG(DEBUG, BATTLEFIELD) << "SimObject::~SimObject()" ;
+	CSPLOG(Prio_DEBUG, Cat_BATTLEFIELD) << "SimObject::~SimObject()" ;
 }
 
 std::string SimObject::_debugId() const {

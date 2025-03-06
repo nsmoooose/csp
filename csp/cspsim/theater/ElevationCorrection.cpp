@@ -42,13 +42,13 @@ ElevationCorrection::ElevationCorrection(TerrainObject *terrain, float x, float 
 osg::Vec3 ElevationCorrection::operator()(osg::Vec3 const &offset) const {
 	osg::Vec3 absolute = LayoutTransform::operator()(offset);
 	float elevation = 0.0;
-	CSPLOG(DEBUG, SCENE) << "Placing feature at absolute position " << absolute;
+	CSPLOG(Prio_DEBUG, Cat_SCENE) << "Placing feature at absolute position " << absolute;
 	if (m_Terrain != 0) {
 		TerrainObject::IntersectionHint hint;
 		elevation = m_Terrain->getGroundElevation(absolute.x(), absolute.y(), hint);
-		CSPLOG(DEBUG, SCENE) << "Feature elevation " << elevation << " m, offset " << offset;
+		CSPLOG(Prio_DEBUG, Cat_SCENE) << "Feature elevation " << elevation << " m, offset " << offset;
 	} else {
-		CSPLOG(ERROR, SCENE) << "No elevation data available for feature!";
+		CSPLOG(Prio_ERROR, Cat_SCENE) << "No elevation data available for feature!";
 	}
 	return offset + osg::Z_AXIS * elevation;
 }

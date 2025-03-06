@@ -69,7 +69,7 @@ public:
 	void bindInput(Bus *bus, std::string const &name) {
 		b_Input = bus->getChannel(name, false);
 		if (!b_Input) {
-			CSPLOG(WARNING, INPUT) << "AircraftSimpleFCS: input channel '" << name << "' unavailable.";
+			CSPLOG(Prio_WARNING, Cat_INPUT) << "AircraftSimpleFCS: input channel '" << name << "' unavailable.";
 		}
 	}
 	void registerOutput(Bus *bus, std::string const &name) {

@@ -51,7 +51,7 @@ def AddNet(env):
     cxx_file.add_emitter('.net', EmitNet)
     cxx_file.add_action('.net', SCons.Action.Action('$TRC', '$TRCCOMSTR'))
     trc = env.File('#/tools/trc/trc.py')
-    env['TRC'] = '%s --source=${TARGETS[0]} --header=${TARGETS[1]} $SOURCES' % trc
+    env['TRC'] = 'python3 %s --source=${TARGETS[0]} --header=${TARGETS[1]} $SOURCES' % trc
 
 
 def AddBuilders(env):

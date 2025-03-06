@@ -130,11 +130,11 @@ public:
 			try {
 				m_Channel = bus->getChannel(name, false);
 			} catch (ConversionError &) {
-				CSPLOG(WARNING, OBJECT) << "Incompatible channel " << name << " for animation; expected double";
+				CSPLOG(Prio_WARNING, Cat_OBJECT) << "Incompatible channel " << name << " for animation; expected double";
 				return false;
 			}
 			if (!m_Channel) {
-				CSPLOG(WARNING, OBJECT) << "Unable to bind channel " << name << " for animation";
+				CSPLOG(Prio_WARNING, Cat_OBJECT) << "Unable to bind channel " << name << " for animation";
 			}
 		}
 		return m_Channel.valid();
@@ -197,12 +197,12 @@ public:
 					m_BoolChannel = bus->getChannel(name, false);
 				} catch (ConversionError &e) {
 					e.clear();
-					CSPLOG(WARNING, OBJECT) << "Incompatible channel " << name << " for animation; expected enumlink";
+					CSPLOG(Prio_WARNING, Cat_OBJECT) << "Incompatible channel " << name << " for animation; expected enumlink";
 					return false;
 				}
 			}
 			if (!m_Channel) {
-				CSPLOG(WARNING, OBJECT) << "Unable to bind channel " << name << " for animation";
+				CSPLOG(Prio_WARNING, Cat_OBJECT) << "Unable to bind channel " << name << " for animation";
 			}
 		}
 		return m_Channel.valid() || m_BoolChannel.valid();
@@ -258,11 +258,11 @@ void AnimationCallback::bind(osg::Node &node) {
 	osg::Callback *old = node.getUpdateCallback();
 	if (old) {
 		if (dynamic_cast<AnimationCallback*>(old)) {
-			CSPLOG(INFO, OBJECT) << "Adding nested animation callback (node " << node.getName() << ")";
+			CSPLOG(Prio_INFO, Cat_OBJECT) << "Adding nested animation callback (node " << node.getName() << ")";
 			old->addNestedCallback(this);
 			return;
 		}
-		CSPLOG(WARNING, OBJECT) << "Overwriting update callback with animation callback (node " << node.getName() << ")";
+		CSPLOG(Prio_WARNING, Cat_OBJECT) << "Overwriting update callback with animation callback (node " << node.getName() << ")";
 	}
 	node.setUpdateCallback(this);
 }
@@ -482,7 +482,7 @@ public:
 	void operator()(osg::Node* node, osg::NodeVisitor* nv) {
 		if (nv->getVisitorType() == osg::NodeVisitor::UPDATE_VISITOR && m_Channel.update()) {
 			if (!m_Switch) {
-				CSPLOG(INFO, OBJECT) << "StateSwitch found node";
+				CSPLOG(Prio_INFO, Cat_OBJECT) << "StateSwitch found node";
 				m_Switch = dynamic_cast<osg::Switch*>(node);
 				assert(m_Switch);
 			}
@@ -497,7 +497,7 @@ public:
 						}
 					}
 					if (child == UNASSIGNED) {
-						CSPLOG(WARNING, SCENE) << "Unknown child " << m_Channel.token() << " in StateSwitch " << m_Animation->getChannelName();
+						CSPLOG(Prio_WARNING, Cat_SCENE) << "Unknown child " << m_Channel.token() << " in StateSwitch " << m_Animation->getChannelName();
 						m_Translation[m_Channel.value()] = MISSING;
 					}
 				}
@@ -521,7 +521,7 @@ public:
 
 AnimationCallback *StateSwitch::newCallback(osg::Node *node) const {
 	assert(node);
-	CSPLOG(INFO, OBJECT) << "Creating StateSwitch callback";
+	CSPLOG(Prio_INFO, Cat_OBJECT) << "Creating StateSwitch callback";
 	AnimationCallback *callback = new Callback(this);
 	callback->bind(*node);
 	return callback;
@@ -581,11 +581,11 @@ protected:
 		std::vector<double> const &times = m_Animation->getTimes();
 		if (times.empty()) return value;
 		if (value < 0) {
-			CSPLOG(WARNING, SCENE) << "AnimatedSwitch value < 0" << m_Animation->getChannelName();
+			CSPLOG(Prio_WARNING, Cat_SCENE) << "AnimatedSwitch value < 0" << m_Animation->getChannelName();
 			return times[0];
 		}
 		if (value >= static_cast<int>(times.size())) {
-			CSPLOG(WARNING, SCENE) << "AnimatedSwitch value exceeds specified times" << m_Animation->getChannelName();
+			CSPLOG(Prio_WARNING, Cat_SCENE) << "AnimatedSwitch value exceeds specified times" << m_Animation->getChannelName();
 			return times[times.size() - 1];
 		}
 		return times[value];
@@ -648,7 +648,7 @@ public:
 		assert(path);
 		assert(m_Animation->getRate() > 0.0);
 		if (m_AnimationPathCallback->getAnimationPath()->getLoopMode() != osg::AnimationPath::LOOP) {
-			CSPLOG(WARNING, OBJECT) << "Overriding loop mode of animation path " << m_Animation->getChannelName();
+			CSPLOG(Prio_WARNING, Cat_OBJECT) << "Overriding loop mode of animation path " << m_Animation->getChannelName();
 			osg::AnimationPath *ap = const_cast<osg::AnimationPath*>(m_AnimationPathCallback->getAnimationPath());
 			ap->setLoopMode(osg::AnimationPath::LOOP);
 		}
@@ -662,7 +662,7 @@ AnimationCallback *AnimatedSwitch::newCallback(osg::Node *node) const {
 	assert(node);
 	osg::AnimationPathCallback *oapc = dynamic_cast<osg::AnimationPathCallback*>(node->getUpdateCallback());
 	if (!oapc) {
-		CSPLOG(WARNING, OBJECT) << "AnimatedSwitch node has no animation path (channel " << getChannelName() << ")";
+		CSPLOG(Prio_WARNING, Cat_OBJECT) << "AnimatedSwitch node has no animation path (channel " << getChannelName() << ")";
 		return 0;
 	}
 	AnimationCallback *callback = new Callback(this, oapc);
@@ -1105,7 +1105,7 @@ public:
 			try {
 				m_Channel = bus->getChannel(m_Animation->getChannelName(), false);
 			} catch (ConversionError &) {
-				CSPLOG(WARNING, OBJECT) << "Incompatible channel (" << m_Animation->getChannelName() << ") type for DrivenVectorialTranslation";
+				CSPLOG(Prio_WARNING, Cat_OBJECT) << "Incompatible channel (" << m_Animation->getChannelName() << ") type for DrivenVectorialTranslation";
 			}
 		}
 		return m_Channel.valid();
@@ -1258,7 +1258,7 @@ private:
 AnimationCallback *DrivenAnimationPath::newCallback(osg::Node *node) const {
 	osg::AnimationPathCallback *oapc = dynamic_cast<osg::AnimationPathCallback*>(node->getUpdateCallback());
 	if (!oapc) {
-		CSPLOG(WARNING, OBJECT) << "DrivenAnimationPath node has no animation path (channel " << getChannelName() << ")";
+		CSPLOG(Prio_WARNING, Cat_OBJECT) << "DrivenAnimationPath node has no animation path (channel " << getChannelName() << ")";
 		return 0;
 	}
 	Callback *callback = new Callback(this, *oapc);
@@ -1396,7 +1396,7 @@ protected:
 	virtual void postCreate() {
 		Animation::postCreate();
 		if (m_EventChannelNames.empty()) {
-			CSPLOG(WARNING, OBJECT) << "No channel name specified, using node label " << getNodeLabel();
+			CSPLOG(Prio_WARNING, Cat_OBJECT) << "No channel name specified, using node label " << getNodeLabel();
 			m_EventChannelNames.push_back(getNodeLabel());
 		}
 	}
@@ -1512,7 +1512,7 @@ public:
 				if (channel.valid()) {
 					channel->connect(sigc::bind(sigc::mem_fun(this, &Callback::onEvent), i));
 				} else {
-					CSPLOG(WARNING, OBJECT) << "InputEventChannel " << channel_names[i] << " not found; ignoring.";
+					CSPLOG(Prio_WARNING, Cat_OBJECT) << "InputEventChannel " << channel_names[i] << " not found; ignoring.";
 				}
 				m_EventChannels.push_back(channel);
 			}
@@ -1525,7 +1525,7 @@ AnimationCallback *AnimatedMomentarySwitch::newCallback(osg::Node *node) const {
 	assert(node);
 	osg::AnimationPathCallback *oapc = dynamic_cast<osg::AnimationPathCallback*>(node->getUpdateCallback());
 	if (!oapc) {
-		CSPLOG(WARNING, OBJECT) << "AnimatedMomentarySwitch node has no animation path (" << node->getName() << ")";
+		CSPLOG(Prio_WARNING, Cat_OBJECT) << "AnimatedMomentarySwitch node has no animation path (" << node->getName() << ")";
 	}
 	AnimationCallback *callback = new Callback(this, oapc);
 	callback->bind(*node);
@@ -1568,7 +1568,7 @@ public:
 			m_Adjustment->setPosition(toOSG(display_screen->offset()));
 			group->addChild(m_Adjustment.get());
 		} else {
-			CSPLOG(ERROR, OBJECT) << "Display screen " << display_screen->getChannelName() << " bound to non-group node";
+			CSPLOG(Prio_ERROR, Cat_OBJECT) << "Display screen " << display_screen->getChannelName() << " bound to non-group node";
 		}
 	}
 	virtual void operator()(osg::Node* node, osg::NodeVisitor* nv) { traverse(node, nv); }

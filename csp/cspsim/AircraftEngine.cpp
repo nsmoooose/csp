@@ -87,18 +87,18 @@ Vector3 const &AircraftEngine::getSmokeEmitterLocation() const {
 void AircraftEngine::bindSounds(SoundModel* model, ResourceBundle* bundle) {
 	if ( !SoundEngine::getInstance().getSoundEnabled() ) return;
 	assert(model);
-	CSPLOG(DEBUG, AUDIO) << "AircraftEngine::bindSounds";
+	CSPLOG(Prio_DEBUG, Cat_AUDIO) << "AircraftEngine::bindSounds";
 	if (bundle) {
 		// set main engine sound
-		CSPLOG(DEBUG, AUDIO) << "AircraftEngine::bindSounds have bundle";
+		CSPLOG(Prio_DEBUG, Cat_AUDIO) << "AircraftEngine::bindSounds have bundle";
 		Ref<const SoundSample> engine_sample(bundle->getSoundSample("engine"));
 		m_EngineSound = SoundEffect::ExternalSound(engine_sample, model);
 		if (m_EngineSound.valid()) {
-			CSPLOG(DEBUG, AUDIO) << "AircraftEngine::bindSounds engine sound available";
+			CSPLOG(Prio_DEBUG, Cat_AUDIO) << "AircraftEngine::bindSounds engine sound available";
 			m_EngineSound->state()->setPosition(toOSG(m_EngineOffset));
 			m_EngineSound->state()->setDirection(toOSG(m_ThrustDirection));
-			CSPLOG(DEBUG, AUDIO) << "engine sound position " << m_EngineOffset;
-			CSPLOG(DEBUG, AUDIO) << "engine sound direction " << m_ThrustDirection;
+			CSPLOG(Prio_DEBUG, Cat_AUDIO) << "engine sound position " << m_EngineOffset;
+			CSPLOG(Prio_DEBUG, Cat_AUDIO) << "engine sound direction " << m_ThrustDirection;
 			m_EngineSound->state()->apply();
 			m_EngineSound->play();	/** @todo check if engine's really running */
 		}
@@ -107,15 +107,15 @@ void AircraftEngine::bindSounds(SoundModel* model, ResourceBundle* bundle) {
 		Ref<const SoundSample> afterburner_sample(bundle->getSoundSample("afterburner"));
 		m_AfterburnerSound = SoundEffect::ExternalSound(afterburner_sample, model);
 		if (m_AfterburnerSound.valid()) {
-			CSPLOG(DEBUG, AUDIO) << "AircraftEngine::bindSounds afterburner sound available";
+			CSPLOG(Prio_DEBUG, Cat_AUDIO) << "AircraftEngine::bindSounds afterburner sound available";
 			m_AfterburnerSound->state()->setPosition(toOSG(m_EngineOffset));
 			m_AfterburnerSound->state()->setDirection(toOSG(m_ThrustDirection));
-			CSPLOG(DEBUG, AUDIO) << "afterburner sound position " << m_EngineOffset;
-			CSPLOG(DEBUG, AUDIO) << "afterburner sound direction " << m_ThrustDirection;
+			CSPLOG(Prio_DEBUG, Cat_AUDIO) << "afterburner sound position " << m_EngineOffset;
+			CSPLOG(Prio_DEBUG, Cat_AUDIO) << "afterburner sound direction " << m_ThrustDirection;
 			m_AfterburnerSound->state()->apply();
 		}
 	}
-	CSPLOG(DEBUG, AUDIO) << "AircraftEngine::bindSounds exit";
+	CSPLOG(Prio_DEBUG, Cat_AUDIO) << "AircraftEngine::bindSounds exit";
 }
 
 void AircraftEngine::updateThrust() {

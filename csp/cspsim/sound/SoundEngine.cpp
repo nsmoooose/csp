@@ -35,16 +35,16 @@ namespace csp {
 
 // Local log macro
 
-#define LOG(P) CSPLOG(P, AUDIO)
+#define LOG(P) CSPLOG(P, Cat_AUDIO)
 
-#define ERR LOG(ERROR)
-#define DEB LOG(DEBUG)
-#define INF LOG(INFO) 
+#define ERR LOG(Prio_ERROR)
+#define DEB LOG(Prio_DEBUG)
+#define INF LOG(Prio_INFO) 
 
 SoundEngine &SoundEngine::getInstance() {
 	static SoundEngine *engine = 0;
 	if (!engine) {
-		CSPLOG(DEBUG, APP) << "Creating SoundEngine";
+		CSPLOG(Prio_DEBUG, Cat_APP) << "Creating SoundEngine";
 		engine = new SoundEngine;
 	}
 	return *engine;

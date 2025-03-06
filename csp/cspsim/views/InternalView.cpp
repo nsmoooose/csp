@@ -188,7 +188,7 @@ bool InternalView::checkPadlocked() {
 	if (!m_Padlocked) return false;
 	m_Padlocked = !m_CameraKinematics->externalPan();
 	if (!m_Padlocked) {
-		CSPLOG(ERROR, APP) << "moved out of padlock";
+		CSPLOG(Prio_ERROR, Cat_APP) << "moved out of padlock";
 	}
 	return m_Padlocked;
 }

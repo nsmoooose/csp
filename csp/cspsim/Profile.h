@@ -44,7 +44,7 @@
 #define PROF1(id, n) \
 	id##_t += csp::SimDate::getSystemTime() - id##_t0;	\
 	if (++id##_c >= n) { \
-		CSPLOG(DEBUG, TIMING) << "PROF " << #id << ": " << (1000.0*id##_t/id##_c) << " ms"; \
+		CSPLOG(Prio_DEBUG, Cat_TIMING) << "PROF " << #id << ": " << (1000.0*id##_t/id##_c) << " ms"; \
 		id##_t = 0; \
 		id##_c = 0; \
 	}

@@ -200,7 +200,7 @@ void Serialization::load(Window* window, const std::string& file) {
 		throw SerializationException("No default resource allocator defined.");
 	}
 	if(!resourceLocator->locateResource(absoluteFilePath)) {
-		CSPLOG(ERROR, APP) << "UI Window document: " << file.c_str() << " not found.";
+		CSPLOG(Prio_ERROR, Cat_APP) << "UI Window document: " << file.c_str() << " not found.";
 		return;
 	}
 
@@ -253,7 +253,7 @@ void Serialization::load(Window* window, const std::string& file) {
 void Serialization::load(StringResourceManager* resourceManager, const std::string& filePath) {
 	// Test to see if the file exists.
 	if(!ospath::exists(filePath)) {
-		CSPLOG(ERROR, APP) << "UI string table document not found.";
+		CSPLOG(Prio_ERROR, Cat_APP) << "UI string table document not found.";
 		return;
 	}
 

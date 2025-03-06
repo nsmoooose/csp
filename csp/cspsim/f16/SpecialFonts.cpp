@@ -61,7 +61,7 @@ public:
 		std::string fontdir = getDataPath("FontPath");
 		std::string fontpath = ospath::join(fontdir, filename);
 		if (!ospath::exists(fontpath)) {
-			CSPLOG(ERROR, DATA) << "Unable to find font " << fontpath;
+			CSPLOG(Prio_ERROR, Cat_DATA) << "Unable to find font " << fontpath;
 			return 0;
 		}
 		// force the file to be reloaded; the osg cached version (if any) is used for
@@ -71,7 +71,7 @@ public:
 		osg::Object* object = osgDB::readObjectFile(fontpath, options.get());
 		font = dynamic_cast<osgText::Font*>(object);
 		if (!font) {
-			CSPLOG(ERROR, DATA) << "Invalid font " << fontpath;
+			CSPLOG(Prio_ERROR, Cat_DATA) << "Invalid font " << fontpath;
 			// if the object has zero references then delete it by doing another unref().
 			if (object && object->referenceCount()==0) object->unref();
 			return 0;
@@ -89,7 +89,7 @@ public:
 		{ osg::ref_ptr<osgText::Font> cleaner(font); } // ref and unref to delete.
 
 		assert(prototype);
-		CSPLOG(INFO, DATA) << "Assigning font implementation " << font->getImplementation() << " to " << prototype;
+		CSPLOG(Prio_INFO, Cat_DATA) << "Assigning font implementation " << font->getImplementation() << " to " << prototype;
 		prototype->setImplementation(implementation.get());
 		set(key, prototype);
 		return prototype;
@@ -127,11 +127,11 @@ osgText::Font* ScaledAltFont::load(std::string const &filename, float scale, boo
 }
 
 ReverseAltFont::ReverseAltFont() {
-	CSPLOG(INFO, DATA) << "ReverseAltFont " << this;
+	CSPLOG(Prio_INFO, Cat_DATA) << "ReverseAltFont " << this;
 }
 
 ReverseAltFont::~ReverseAltFont() {
-	CSPLOG(INFO, DATA) << "~ReverseAltFont " << this << ", imp=" << getImplementation();
+	CSPLOG(Prio_INFO, Cat_DATA) << "~ReverseAltFont " << this << ", imp=" << getImplementation();
 }
 
 osgText::Glyph* ReverseAltFont::getGlyph(const osgText::FontResolution& fontRes, unsigned int charcode) {

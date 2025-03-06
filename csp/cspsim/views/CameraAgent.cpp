@@ -114,7 +114,7 @@ void CameraAgent::validate(double dt, const TerrainObject *terrain) {
 
 void CameraAgent::setViewMode(ViewMode vm) {
 	if (vm == m_ViewMode) {
-		CSPLOG(INFO, APP) << "reactivate view";
+		CSPLOG(Prio_INFO, Cat_APP) << "reactivate view";
 		assert(m_ActiveView.valid());
 		m_ActiveView->reactivate();
 	} else {
@@ -150,7 +150,7 @@ void CameraAgent::setCameraCommand(CameraCommand *cc) {
 
 void CameraAgent::updateCamera(double dt, const TerrainObject *terrain) {
 	if (m_NearPlane == 0) {
-		CSPLOG(FATAL, VIEW) << "CameraAgent near plane not set; call setCameraParameters first!";
+		CSPLOG(Prio_FATAL, Cat_VIEW) << "CameraAgent near plane not set; call setCameraParameters first!";
 	}
 	if (m_ActiveView.valid()) {
 		m_ActiveView->update(m_EyePoint, m_LookPoint, m_UpVector, dt);

@@ -302,7 +302,7 @@ void LogStream::close() {
 void LogStream::logToFile(std::string const &filename) {
 	std::ofstream *target = new std::ofstream(filename.c_str());
 	if (!target) {
-	  CSPLOG(ERROR, ALL) << "Unable to open log stream to file " << filename;
+	  CSPLOG(Prio_ERROR, Cat_ALL) << "Unable to open log stream to file " << filename;
 	}
 	close();
 	if (target) {
@@ -357,12 +357,12 @@ void CSPLIB_EXPORT fatal(std::string const &msg) {
 
 // not really the right place for this, but convenient.
 void CSPLIB_EXPORT _log_reference_count_error(int count, void *pointer) {
-	CSPLOG(FATAL, ALL) << "ReferencedBase(" << pointer << ") deleted with non-zero reference count (" << count << "): memory corruption possible.";
+	CSPLOG(Prio_FATAL, Cat_ALL) << "ReferencedBase(" << pointer << ") deleted with non-zero reference count (" << count << "): memory corruption possible.";
 }
 
 // not really the right place for this, but convenient.
 void CSPLIB_EXPORT _log_reference_conversion_error() {
-	CSPLOG(ERROR, ALL) << "Ref() assignment: incompatible types (dynamic cast failed).";
+	CSPLOG(Prio_ERROR, Cat_ALL) << "Ref() assignment: incompatible types (dynamic cast failed).";
 }
 
 } // namespace csp

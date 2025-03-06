@@ -45,7 +45,7 @@ SoundEffect::SoundEffect(Ref<const SoundSample> const &sample, Ref<SoundModel> c
 		case INTERNAL: model->addInternalSound(m_SoundState.get()); break;
 		case HEADSET: model->addHeadsetSound(m_SoundState.get()); break;
 		default:
-			CSPLOG(ERROR, AUDIO) << "Unknown sound effect mode " << mode;
+			CSPLOG(Prio_ERROR, Cat_AUDIO) << "Unknown sound effect mode " << mode;
 			m_SoundState = 0;
 	}
 }

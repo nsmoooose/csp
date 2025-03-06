@@ -41,7 +41,7 @@ NavigationSystem::NavigationSystem() {
 }
 
 void NavigationSystem::addTestSteerpoints() {
-	CSPLOG(DEBUG, APP) << "add test steerpoints";
+	CSPLOG(Prio_DEBUG, Cat_APP) << "add test steerpoints";
 	m_Steerpoints.clear();
 	Steerpoint *steerpoint;
 	DateZulu sptime = CSPSim::theSim->getCurrentTime();
@@ -71,14 +71,14 @@ void NavigationSystem::addTestSteerpoints() {
 }
 
 void NavigationSystem::nextSteerpoint() {
-	CSPLOG(DEBUG, APP) << "next steerpoint " << m_SteerpointIndex << " " << m_Steerpoints.size();
+	CSPLOG(Prio_DEBUG, Cat_APP) << "next steerpoint " << m_SteerpointIndex << " " << m_Steerpoints.size();
 	if (!m_Steerpoints.empty()) {
 		m_SteerpointIndex = (m_SteerpointIndex + 1) % m_Steerpoints.size();
 	}
 }
 
 void NavigationSystem::prevSteerpoint() {
-	CSPLOG(DEBUG, APP) << "prev steerpoint " << m_SteerpointIndex << " " << m_Steerpoints.size();
+	CSPLOG(Prio_DEBUG, Cat_APP) << "prev steerpoint " << m_SteerpointIndex << " " << m_Steerpoints.size();
 	if (!m_Steerpoints.empty()) {
 		m_SteerpointIndex = (m_SteerpointIndex + m_Steerpoints.size() - 1) % m_Steerpoints.size();
 	}

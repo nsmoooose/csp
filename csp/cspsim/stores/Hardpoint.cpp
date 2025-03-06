@@ -79,19 +79,19 @@ Hardpoint::Hardpoint(HardpointData const *data, unsigned index): m_Data(data), m
 }
 
 bool Hardpoint::mountStore(Store *store) {
-	CSPLOG(INFO, OBJECT) << "mounting store";
+	CSPLOG(Prio_INFO, Cat_OBJECT) << "mounting store";
 	assert(store);
-	CSPLOG(INFO, OBJECT) << "mounting store " << store->name();
+	CSPLOG(Prio_INFO, Cat_OBJECT) << "mounting store " << store->name();
 	assert(m_Data.valid());
 	if (!m_Data->isMountCompatible(store->key())) {
-		CSPLOG(INFO, OBJECT) << "could not mount incompatible store " << store->name() << " on hardpoint " << name();
+		CSPLOG(Prio_INFO, Cat_OBJECT) << "could not mount incompatible store " << store->name() << " on hardpoint " << name();
 		return false;
 	}
 	if (m_Store.valid()) {
-		CSPLOG(INFO, OBJECT) << "could not mount store " << store->name() << "; hardpoint " << name() << " already has a mounted store";
+		CSPLOG(Prio_INFO, Cat_OBJECT) << "could not mount store " << store->name() << "; hardpoint " << name() << " already has a mounted store";
 		return false;
 	}
-	CSPLOG(INFO, OBJECT) << "mounting " << store->name() << " on hardpoint " << name();
+	CSPLOG(Prio_INFO, Cat_OBJECT) << "mounting " << store->name() << " on hardpoint " << name();
 	store->m_Index = StoreIndex::Hardpoint(m_Index);  // FIXME kludge
 	m_Store = store;
 	return true;

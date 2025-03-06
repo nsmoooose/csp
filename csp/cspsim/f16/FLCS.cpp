@@ -197,7 +197,7 @@ CSP_XML_END
 
 
 void PitchLimiterControl::evaluate(Timer const &timer) {
-	CSPLOG(DEBUG, APP) << "PitchLimiterControl.evaluate";
+	CSPLOG(Prio_DEBUG, Cat_APP) << "PitchLimiterControl.evaluate";
 
 	double alpha_f = m_FilteredAlpha->step(timer);
 

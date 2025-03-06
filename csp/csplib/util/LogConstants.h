@@ -34,51 +34,51 @@ namespace csp {
  *  details).
  */
 enum {
-	cLogPriority_DEBUG,
-	cLogPriority_INFO,
-	cLogPriority_WARNING,
-	cLogPriority_ERROR,
-	cLogPriority_FATAL
+	Prio_DEBUG,
+	Prio_INFO,
+	Prio_WARNING,
+	Prio_ERROR,
+	Prio_FATAL
 };
 
 /** Log message categories.
  */
 enum {
 	// csplib
-	cLogCategory_DATA         = 0x00000001,
-	cLogCategory_ARCHIVE      = 0x00000002,
-	cLogCategory_REGISTRY     = 0x00000004,
-	cLogCategory_THREAD       = 0x00000008,
-	cLogCategory_TIME         = 0x00000010,
-	cLogCategory_NETWORK      = 0x00000020,
-	cLogCategory_AUDIO        = 0x00000040,
-	cLogCategory_OPENGL       = 0x00000080,
-	cLogCategory_INPUT        = 0x00000100,
-	cLogCategory_NUMERIC      = 0x00000200,
-	cLogCategory_PHYSICS      = 0x00000200,  // same as NUMERIC
-	cLogCategory_TESTING      = 0x00000400,
-	cLogCategory_GENERIC      = 0x00000800,
+	Cat_DATA         = 0x00000001,
+	Cat_ARCHIVE      = 0x00000002,
+	Cat_REGISTRY     = 0x00000004,
+	Cat_THREAD       = 0x00000008,
+	Cat_TIME         = 0x00000010,
+	Cat_NETWORK      = 0x00000020,
+	Cat_AUDIO        = 0x00000040,
+	Cat_OPENGL       = 0x00000080,
+	Cat_INPUT        = 0x00000100,
+	Cat_NUMERIC      = 0x00000200,
+	Cat_PHYSICS      = 0x00000200,  // same as NUMERIC
+	Cat_TESTING      = 0x00000400,
+	Cat_GENERIC      = 0x00000800,
 
 	// net
-	cLogCategory_TIMING       = 0x00001000,
-	cLogCategory_HANDSHAKE    = 0x00002000,
-	cLogCategory_BALANCING    = 0x00004000,
-	cLogCategory_PACKET       = 0x00008000,
-	cLogCategory_PEER         = 0x00010000,
-	cLogCategory_MESSAGE      = 0x00020000,
+	Cat_TIMING       = 0x00001000,
+	Cat_HANDSHAKE    = 0x00002000,
+	Cat_BALANCING    = 0x00004000,
+	Cat_PACKET       = 0x00008000,
+	Cat_PEER         = 0x00010000,
+	Cat_MESSAGE      = 0x00020000,
 
 	// cspsim
-	cLogCategory_TERRAIN      = 0x00100000,
-	cLogCategory_SCENE        = 0x00200000,
-	cLogCategory_BATTLEFIELD  = 0x00400000,
-	cLogCategory_OBJECT       = 0x00800000,
-	cLogCategory_APP          = 0x01000000,
-	cLogCategory_VIEW         = 0x02000000,
-	cLogCategory_THEATER      = 0x04000000,
+	Cat_TERRAIN      = 0x00100000,
+	Cat_SCENE        = 0x00200000,
+	Cat_BATTLEFIELD  = 0x00400000,
+	Cat_OBJECT       = 0x00800000,
+	Cat_APP          = 0x01000000,
+	Cat_VIEW         = 0x02000000,
+	Cat_THEATER      = 0x04000000,
 
 	// groups
-	cLogCategory_NONE         = 0x00000000,
-	cLogCategory_ALL          = 0x7fffffff
+	Cat_NONE         = 0x00000000,
+	Cat_ALL          = 0x7fffffff
 };
 
 CSPLIB_EXPORT const char *getLogCategoryName(int category);

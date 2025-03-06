@@ -127,7 +127,7 @@ bool RungeKutta::rkqc(Vectord const &y0, Vectord const &dydx, Vectord &y, double
 		rk4(m_rkqc_ytemp, m_rkqc_dy, x, hh, m_rkqc_y1);
 		x = x0 + h;
 		if (x == x0) {
-			CSPLOG(DEBUG, NUMERIC) << "Step size too small in RungeKutta::rkqc";
+			CSPLOG(Prio_DEBUG, Cat_NUMERIC) << "Step size too small in RungeKutta::rkqc";
 			return false;
 		}
 
@@ -175,13 +175,13 @@ bool RungeKutta::odeint(Vectord const &y0, Vectord &y, double x1, double x2, dou
 		if (hdid == h) ++nok; else ++nbad;
 		if ((x-x2) * (x2-x1) >= 0.0) return true;
 		if (fabs(hnext) < hmin) {
-			CSPLOG(DEBUG, NUMERIC) << "Step size too small in RungeKutta::odeint";
+			CSPLOG(Prio_DEBUG, Cat_NUMERIC) << "Step size too small in RungeKutta::odeint";
 			return false;
 		}
 		h = hnext;
 	}
 
-	CSPLOG(DEBUG, NUMERIC) << "Too many steps in RungeKutta::odeint";
+	CSPLOG(Prio_DEBUG, Cat_NUMERIC) << "Too many steps in RungeKutta::odeint";
 	return false;
 }
 
@@ -193,7 +193,7 @@ void RungeKutta::quickSolve(Vectord const &y0, Vectord &y, double t0, double dt)
 bool RungeKutta::enhancedSolve(Vectord const &y0, Vectord &y, double t0, double dt) {
 	unsigned int nok, nbad;
 	const bool result = odeint(y0, y, t0, t0+dt, epsilon(), m_hestimate, m_hmin, nok, nbad);
-	CSPLOG(DEBUG, NUMERIC) << "RungeKutta::enhancedSolve nok = " << nok << "; nbad = " << nbad;
+	CSPLOG(Prio_DEBUG, Cat_NUMERIC) << "RungeKutta::enhancedSolve nok = " << nok << "; nbad = " << nbad;
 	return result;
 }
 
@@ -284,7 +284,7 @@ bool RungeKuttaCK::rkqs(Vectord &y, Vectord &dydx, double &x, double htry, doubl
 		h = (h >= 0.0 ? std::max(htemp, 0.1 * h) : std::min(htemp, 0.1 * h));
 		xnew = x + h;
 		if (x == xnew) {
-			CSPLOG(DEBUG, NUMERIC) << "Stepsize underflow in RungeKuttaCK::rkqs";
+			CSPLOG(Prio_DEBUG, Cat_NUMERIC) << "Stepsize underflow in RungeKuttaCK::rkqs";
 			return false;
 		}
 	}
@@ -321,13 +321,13 @@ bool RungeKuttaCK::odeint(Vectord const &y0, Vectord &y, double x1, double x2, d
 		if (hdid == h) ++nok; else ++nbad;
 		if ((x-x2) * delta21 >= 0.0) return true;
 		if (fabs(hnext) <= hmin) {
-			CSPLOG(DEBUG, NUMERIC) << "Step size too small in RungeKuttaCK::odeint: " << hnext;
+			CSPLOG(Prio_DEBUG, Cat_NUMERIC) << "Step size too small in RungeKuttaCK::odeint: " << hnext;
 			return false;
 		}
 		h = hnext;
 	}
 
-	CSPLOG(DEBUG, NUMERIC) << "Too many steps in RungeKuttaCK::odeint: " << steps();
+	CSPLOG(Prio_DEBUG, Cat_NUMERIC) << "Too many steps in RungeKuttaCK::odeint: " << steps();
 	return false;
 }
 
@@ -339,7 +339,7 @@ void RungeKuttaCK::quickSolve(Vectord const &y0, Vectord &y, double t0, double d
 bool RungeKuttaCK::enhancedSolve(Vectord const &y0, Vectord &y, double t0, double dt) {
 	unsigned int nok, nbad;
 	const bool result = odeint(y0, y, t0, t0+dt, epsilon(), m_hestimate, m_hmin, nok, nbad);
-	//CSPLOG(DEBUG, NUMERIC) << "RungeKuttaCK::enhancedSolve nok = " << nok << "; nbad = " << nbad;
+	//CSPLOG(Prio_DEBUG, Cat_NUMERIC) << "RungeKuttaCK::enhancedSolve nok = " << nok << "; nbad = " << nbad;
 	return result;
 }
 
@@ -599,9 +599,9 @@ bool RKCK_VS_VO::vrkf(Vectord const &y0, Vectord &y, double a, double h, double 
 	}
 
 	if (fabs(h) <= m_hmin) {
-		CSPLOG(DEBUG, NUMERIC) << "Step size too small in RKCK_VS_VO::vrkf (x=" << a << ", h=" << h << ")";
+		CSPLOG(Prio_DEBUG, Cat_NUMERIC) << "Step size too small in RKCK_VS_VO::vrkf (x=" << a << ", h=" << h << ")";
 	} else {
-		CSPLOG(DEBUG, NUMERIC) << "Too many steps in RKCK_VS_VO::vrkf: " << steps();
+		CSPLOG(Prio_DEBUG, Cat_NUMERIC) << "Too many steps in RKCK_VS_VO::vrkf: " << steps();
 	}
 
 	return false;
@@ -619,7 +619,7 @@ bool RKCK_VS_VO::vrkfBound(Vectord const &y0, Vectord &y, double a, double h, do
 		hnext = hdid = 0.0;
 		if (!vrkf(y, y, x, h1, hdid, hnext)) return false;
 		if (fabs(hdid) < m_hmin) {
-			CSPLOG(DEBUG, NUMERIC) << "Step size too small in RKCK_VS_VO::vrkfBound h = " << fabs(hdid);
+			CSPLOG(Prio_DEBUG, Cat_NUMERIC) << "Step size too small in RKCK_VS_VO::vrkfBound h = " << fabs(hdid);
 			return false;
 		}
 		x += hdid;
@@ -628,7 +628,7 @@ bool RKCK_VS_VO::vrkfBound(Vectord const &y0, Vectord &y, double a, double h, do
 			return true;
 		}
 	}
-	CSPLOG(DEBUG, NUMERIC) << "Too many steps in RKCK_VS_VO::vrkfBound: " << steps();
+	CSPLOG(Prio_DEBUG, Cat_NUMERIC) << "Too many steps in RKCK_VS_VO::vrkfBound: " << steps();
 	return false;
 }
 

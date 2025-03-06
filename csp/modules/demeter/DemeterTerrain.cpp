@@ -77,7 +77,7 @@ CSP_XML_END
  * Default constructor for the Terrain Object. Sets default values.
  */
 DemeterTerrain::DemeterTerrain() {
-	CSPLOG(DEBUG, TERRAIN) << "DemeterTerrain::DemeterTerrain";
+	CSPLOG(Prio_DEBUG, Cat_TERRAIN) << "DemeterTerrain::DemeterTerrain";
 	m_TerrainLattice = NULL;
 	m_Terrain = NULL;
 	m_TerrainTextureFactory = NULL;
@@ -128,9 +128,9 @@ void DemeterTerrain::unload() {
 void DemeterTerrain::load() {
 	if (m_Loaded) return;
 	std::string terrain_path = getDataPath("TerrainPath");
-	CSPLOG(INFO, APP) << "Using terrain path " << terrain_path;
+	CSPLOG(Prio_INFO, Cat_APP) << "Using terrain path " << terrain_path;
 	if (!ospath::exists(terrain_path)) {
-		CSPLOG(ERROR, APP) << "Terrain path " << terrain_path << " not found";
+		CSPLOG(Prio_ERROR, Cat_APP) << "Terrain path " << terrain_path << " not found";
 		throw csp::DataError("Terrain path " + terrain_path + " not found");
 	}
 	if (m_Lattice) {
@@ -231,7 +231,7 @@ float DemeterTerrain::getGroundElevation(double x, double y, Vector3 &normal, In
 
 
 int DemeterTerrain::createTerrain() {
-	CSPLOG(DEBUG, TERRAIN) << "DemeterTerrain::createTerrain() ";
+	CSPLOG(Prio_DEBUG, Cat_TERRAIN) << "DemeterTerrain::createTerrain() ";
 	updateDemeterSettings();
 	if (!m_TextureFactory) {
 		if (m_DetailTextureFile.empty()) {
@@ -262,7 +262,7 @@ int DemeterTerrain::createTerrain() {
 
 
 int DemeterTerrain::createTerrainLattice() {
-	CSPLOG(DEBUG, TERRAIN) << "DemeterTerrain::createTerrainLattice()...";
+	CSPLOG(Prio_DEBUG, Cat_TERRAIN) << "DemeterTerrain::createTerrainLattice()...";
 
 	//float detailThreshold = Config.GetFloat("TerraindetailThreshold");
 
@@ -306,7 +306,7 @@ int DemeterTerrain::createTerrainLattice() {
 	m_TerrainLattice->SetTextureFactory(m_TerrainTextureFactory.get(), m_LatticeTilesWidth, m_LatticeTilesHeight);
 
 	m_TerrainLattice->SetDetailThreshold(m_DetailThreshold);
-	CSPLOG(DEBUG, TERRAIN) << "Terrain size: " << m_TerrainLattice->GetWidth() << "(" << m_Width << "), " << m_TerrainLattice->GetHeight() << "(" << m_Height << ")";
+	CSPLOG(Prio_DEBUG, Cat_TERRAIN) << "Terrain size: " << m_TerrainLattice->GetWidth() << "(" << m_Width << "), " << m_TerrainLattice->GetHeight() << "(" << m_Height << ")";
 	assert(m_TerrainLattice->GetWidth() == m_Width);
 	assert(m_TerrainLattice->GetHeight() == m_Height);
 
@@ -317,21 +317,21 @@ int DemeterTerrain::createTerrainLattice() {
 	//m_TerrainLattice->SetCameraPosition(512000, 512000, 3000);///?
 	//m_TerrainLattice->SetCameraPosition(374790, 397450, 1000);///?
 
-	CSPLOG(DEBUG, TERRAIN) << " ...DemeterTerrain::createTerrainLattice()";
+	CSPLOG(Prio_DEBUG, Cat_TERRAIN) << " ...DemeterTerrain::createTerrainLattice()";
 
 	return 1;
 }
 
 void DemeterTerrain::setCameraPosition(double x, double y, double z) {
 	if (m_TerrainLattice.valid()) {
-		CSPLOG(DEBUG, TERRAIN) << "Terrain camera @ " << (m_Offset + Vector3(x, y, z));
+		CSPLOG(Prio_DEBUG, Cat_TERRAIN) << "Terrain camera @ " << (m_Offset + Vector3(x, y, z));
 		m_TerrainLattice->SetCameraPosition(x+m_Offset.x(), y+m_Offset.y(), z+m_Offset.z());
 	}
 }
 
 
 osg::Node* DemeterTerrain::createTerrainLatticeNode(Demeter::TerrainLattice* pTerrainLattice) {
-	CSPLOG(INFO, TERRAIN) << "DemeterTerrain::createTerrainLatticeNode";
+	CSPLOG(Prio_INFO, Cat_TERRAIN) << "DemeterTerrain::createTerrainLatticeNode";
 
 	Demeter::DemeterLatticeDrawable* pLatticeDrawable = NULL;
 	osg::Geode* pGeode = NULL;
@@ -351,7 +351,7 @@ osg::Node* DemeterTerrain::createTerrainLatticeNode(Demeter::TerrainLattice* pTe
 		pGeode->addDrawable(pLatticeDrawable);
 	}
 	catch(...) {
-		CSPLOG(ERROR, TERRAIN) << "Caught Exception in DemeterTerrain::createTerrainLatticeNode";
+		CSPLOG(Prio_ERROR, Cat_TERRAIN) << "Caught Exception in DemeterTerrain::createTerrainLatticeNode";
 	}
 
 	return pGeode;
@@ -359,7 +359,7 @@ osg::Node* DemeterTerrain::createTerrainLatticeNode(Demeter::TerrainLattice* pTe
 
 
 osg::Node* DemeterTerrain::createTerrainNode(Demeter::Terrain* pTerrain) {
-	CSPLOG(INFO, TERRAIN) << "DemeterTerrain::createTerrainNode";
+	CSPLOG(Prio_INFO, Cat_TERRAIN) << "DemeterTerrain::createTerrainNode";
 
 	osg::Geode* pGeode = NULL;
 
@@ -370,7 +370,7 @@ osg::Node* DemeterTerrain::createTerrainNode(Demeter::Terrain* pTerrain) {
 		pGeode->addDrawable(pDrawable);
 	}
 	catch(...) {
-		CSPLOG(ERROR, TERRAIN) << "Caught Exception in DemeterTerrain::createTerrainNode";
+		CSPLOG(Prio_ERROR, Cat_TERRAIN) << "Caught Exception in DemeterTerrain::createTerrainNode";
 	}
 
 	return pGeode;
@@ -412,8 +412,8 @@ void DemeterTerrain::updateDemeterSettings() {
 
 void DemeterTerrain::postCreate() {
 	TerrainObject::postCreate();
-	CSPLOG(INFO, TERRAIN) << "Terrain Center @ " << getCenter().asString();
-	CSPLOG(INFO, TERRAIN) << "Terrain Size " << getWidth() << " x " << getHeight() << " m";
+	CSPLOG(Prio_INFO, Cat_TERRAIN) << "Terrain Center @ " << getCenter().asString();
+	CSPLOG(Prio_INFO, Cat_TERRAIN) << "Terrain Size " << getWidth() << " x " << getHeight() << " m";
 	m_Offset.set(getWidth()*0.5, getHeight()*0.5, 0.0);
 	m_CellWidth = getWidth() / m_LatticeWidth;
 	m_CellHeight = getHeight() / m_LatticeHeight;

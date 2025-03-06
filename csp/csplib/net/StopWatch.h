@@ -79,7 +79,7 @@ public:
 	 */
 	StopWatch(double timeout, Data &data): m_data(data), m_tally(0), m_count(0), m_counts(0), m_timeout(timeout) {
 		resetCount(timeout);
-		CSPLOG(DEBUG, TIMING) << "STOPWATCH: " << m_counts << " iterations ~ " << (timeout * 1000.0) << " ms, scale=" << m_data.scale;
+		CSPLOG(Prio_DEBUG, Cat_TIMING) << "STOPWATCH: " << m_counts << " iterations ~ " << (timeout * 1000.0) << " ms, scale=" << m_data.scale;
 		m_DEBUG_extra = 0;
 	}
 
@@ -111,7 +111,7 @@ public:
 		if (--m_count > 0) return false;
 		double dt = elapsed();
 		if (dt > m_timeout) {
-			CSPLOG(DEBUG, TIMING) << "STOPWATCH: TOO LONG (" << dt << " > " << m_timeout << "; " << m_DEBUG_extra << " extra)";
+			CSPLOG(Prio_DEBUG, Cat_TIMING) << "STOPWATCH: TOO LONG (" << dt << " > " << m_timeout << "; " << m_DEBUG_extra << " extra)";
 			if (m_counts > 1) {
 				m_data.scale *= 0.99;
 			}
@@ -120,7 +120,7 @@ public:
 		m_data.scale *= 1.01;
 		resetCount(dt);
 		if (m_count < 1) {
-			CSPLOG(DEBUG, TIMING) << "STOPWATCH: TOO SHORT (" << (dt * 1000.0) << " <= " << (m_timeout*1000.0) << "ms; " << m_DEBUG_extra << " extra)";
+			CSPLOG(Prio_DEBUG, Cat_TIMING) << "STOPWATCH: TOO SHORT (" << (dt * 1000.0) << " <= " << (m_timeout*1000.0) << "ms; " << m_DEBUG_extra << " extra)";
 		}
 		m_DEBUG_extra += m_count;
 		return (m_count < 1);

@@ -306,11 +306,11 @@ void VirtualScene::addFeature(Ref<FeatureGroup> feature) {
 		tile = new FeatureTile(origin);
 		m_FeatureTiles[index] = tile;
 		m_FeatureGroup->addChild(tile.get());
-		CSPLOG(DEBUG, SCENE) << "adding new feature cell, index = " << index;
+		CSPLOG(Prio_DEBUG, Cat_SCENE) << "adding new feature cell, index = " << index;
 	} else {
 		tile = iter->second;
 	}
-	CSPLOG(DEBUG, SCENE) << "adding feature " << *feature << " to scene";
+	CSPLOG(Prio_DEBUG, Cat_SCENE) << "adding feature " << *feature << " to scene";
 	FeatureSceneGroup *scene_group = feature->getSceneGroup();
 	assert(scene_group != 0);
 	if (scene_group == 0) return;
@@ -333,11 +333,11 @@ void VirtualScene::removeFeature(Ref<FeatureGroup> feature) {
 	FeatureTile* tile = iter->second.get();
 	tile->removeChild(scene_group);
 	feature->leaveScene();
-	CSPLOG(DEBUG, SCENE) << "removing feature " << *feature << " from scene";
+	CSPLOG(Prio_DEBUG, Cat_SCENE) << "removing feature " << *feature << " from scene";
 	if (tile->getNumChildren() == 0) {
 		m_FeatureGroup->removeChild(tile);
 		m_FeatureTiles.erase(iter);
-		CSPLOG(DEBUG, SCENE) << "removing empty feature cell, index = " << index;
+		CSPLOG(Prio_DEBUG, Cat_SCENE) << "removing empty feature cell, index = " << index;
 	}
 	// TODO feature->discardSceneGroup() ??
 }
@@ -442,7 +442,7 @@ void VirtualScene::createNearView() {
 }
 
 void VirtualScene::buildScene() {
-	CSPLOG(INFO, APP) << "VirtualScene::buildScene() ";
+	CSPLOG(Prio_INFO, Cat_APP) << "VirtualScene::buildScene() ";
 
 	/////////////////////////////////////
 	//(Un)comment to (enable) disable debug info from osg
@@ -601,12 +601,12 @@ void VirtualScene::onUpdate(float dt) {
 
 	m_Sky->update(day + spin);
 
-	CSPLOG(DEBUG, APP) << "VirtualScene::onUpdate - entering" ;
+	CSPLOG(Prio_DEBUG, Cat_APP) << "VirtualScene::onUpdate - entering" ;
 
 	m_FrameStamp->setReferenceTime(m_FrameStamp->getReferenceTime() + dt);
 	m_FrameStamp->setFrameNumber(m_FrameStamp->getFrameNumber() + 1);
 
-	CSPLOG(DEBUG, APP) << "VirtualScene::onUpdate - leaving" ;
+	CSPLOG(Prio_DEBUG, Cat_APP) << "VirtualScene::onUpdate - leaving" ;
 }
 
 
@@ -614,7 +614,7 @@ void VirtualScene::setCameraNode(osg::Node *) {
 }
 
 void VirtualScene::_setLookAt(const Vector3& eyePos, const Vector3& lookPos, const Vector3& upVec) {
-	CSPLOG(DEBUG, APP) << "VirtualScene::setLookAt - eye: " << eyePos << ", look: " << lookPos << ", up: " << upVec;
+	CSPLOG(Prio_DEBUG, Cat_APP) << "VirtualScene::setLookAt - eye: " << eyePos << ", look: " << lookPos << ", up: " << upVec;
 
 	_updateOrigin(eyePos);
 	osg::Vec3 _up(upVec.x(), upVec.y(), upVec.z());
@@ -690,7 +690,7 @@ void VirtualScene::getLookAt(Vector3 & eyePos, Vector3 & lookPos, Vector3 & upVe
 	lookPos = Vector3(_center.x(), _center.y(), _center.z());
 	upVec = Vector3(_up.x(), _up.y(), _up.z());
 
-	CSPLOG(DEBUG, APP) << "VirtualScene::getLookAt - eye: " << eyePos << ", look: " << lookPos << ", up: " << upVec;
+	CSPLOG(Prio_DEBUG, Cat_APP) << "VirtualScene::getLookAt - eye: " << eyePos << ", look: " << lookPos << ", up: " << upVec;
 }
 
 
@@ -739,11 +739,11 @@ void VirtualScene::addObject(Ref<DynamicObject> object) {
 	if (object->isNearField()) {
 		bool ok = m_NearObjectGroup->addChild(node);
 		assert(ok);
-		CSPLOG(INFO, SCENE) << "adding object to near field " << *object;
+		CSPLOG(Prio_INFO, Cat_SCENE) << "adding object to near field " << *object;
 	} else {
 		bool ok = m_FreeObjectGroup->addChild(node);
 		assert(ok);
-		CSPLOG(INFO, SCENE) << "adding object to far field " << *object;
+		CSPLOG(Prio_INFO, Cat_SCENE) << "adding object to far field " << *object;
 	}
 	m_DynamicObjects.push_back(object);
 }
@@ -755,10 +755,10 @@ void VirtualScene::removeObject(Ref<DynamicObject> object) {
 	assert(node != 0);
 	if (object->isNearField()) {
 		m_NearObjectGroup->removeChild(node);
-		CSPLOG(INFO, SCENE) << "removing object from near field " << *object;
+		CSPLOG(Prio_INFO, Cat_SCENE) << "removing object from near field " << *object;
 	} else {
 		m_FreeObjectGroup->removeChild(node);
-		CSPLOG(INFO, SCENE) << "removing object from far field " << *object;
+		CSPLOG(Prio_INFO, Cat_SCENE) << "removing object from far field " << *object;
 	}
 	object->leaveScene();
 	// not very efficient, but object removal is rare compared to
@@ -776,17 +776,17 @@ void VirtualScene::setNearObject(Ref<DynamicObject> object, bool isNear) {
 	assert(object.valid());
 	if (object->isNearField() == isNear) return;
 	object->setNearFlag(isNear);
-	CSPLOG(INFO, SCENE) << "setting near flag for " << *object << " to " << isNear;
+	CSPLOG(Prio_INFO, Cat_SCENE) << "setting near flag for " << *object << " to " << isNear;
 	if (object->isInScene()) {
 		osg::Node *node = object->getOrCreateModelNode();
 		if (isNear) {
 			m_FreeObjectGroup->removeChild(node);
 			m_NearObjectGroup->addChild(node);
-			CSPLOG(INFO, SCENE) << "moving object from far to near field " << *object;
+			CSPLOG(Prio_INFO, Cat_SCENE) << "moving object from far to near field " << *object;
 		} else {
 			CSP_VERIFY(m_NearObjectGroup->removeChild(node));
 			CSP_VERIFY(m_FreeObjectGroup->addChild(node));
-			CSPLOG(INFO, SCENE) << "moving object from near to far field " << *object;
+			CSPLOG(Prio_INFO, Cat_SCENE) << "moving object from near to far field " << *object;
 		}
 	}
 }

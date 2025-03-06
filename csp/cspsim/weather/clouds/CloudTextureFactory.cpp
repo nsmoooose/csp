@@ -30,11 +30,11 @@ osg::ref_ptr<osg::Texture2D> CloudTextureFactory::getTexture(const char* fileNam
 			osg::ref_ptr<osg::Texture2D> texture = new osg::Texture2D;
 			texture->setImage(image.get());
 			m_Textures.insert(TextureMap::value_type(fileName, texture));
-			CSPLOG(DEBUG, APP) << "Caching texture file: " << fileName;
+			CSPLOG(Prio_DEBUG, Cat_APP) << "Caching texture file: " << fileName;
 			return texture;
 		}
 		else {
-			CSPLOG(DEBUG, APP) << "Texture file not found: " << fileName;
+			CSPLOG(Prio_DEBUG, Cat_APP) << "Texture file not found: " << fileName;
 		}
 	}
 	return foundTexture->second;

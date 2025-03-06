@@ -55,12 +55,12 @@ public:
 			m_Channel = bus->registerSharedDataChannel<double>(getChannelName(), 0.0);
 		} else {
 			if (!m_Channel->isShared()) {
-				CSPLOG(ERROR, OBJECT) << "Cannot drive nonshared data channel " << getChannelName();
+				CSPLOG(Prio_ERROR, Cat_OBJECT) << "Cannot drive nonshared data channel " << getChannelName();
 				m_Channel = 0;  // be nice
 			}
 		}
 		if (!m_Channel) {
-			CSPLOG(WARNING, OBJECT) << "Unable to bind or create shared data channel " << getChannelName();
+			CSPLOG(Prio_WARNING, Cat_OBJECT) << "Unable to bind or create shared data channel " << getChannelName();
 		}
 	}
 

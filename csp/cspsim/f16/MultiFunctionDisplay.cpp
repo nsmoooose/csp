@@ -176,7 +176,7 @@ public:
 		M->update();
 		osg::BoundingBox bbox = M->getBoundingBox();
 		m_Width = (bbox.xMax() - bbox.xMin()) * 0.1;
-		CSPLOG(INFO, ALL) << "font width: " << m_Width << " " << m_Height << " " << (bbox.zMax() - bbox.zMin());
+		CSPLOG(Prio_INFO, Cat_ALL) << "font width: " << m_Width << " " << m_Height << " " << (bbox.zMax() - bbox.zMin());
 	}
 	virtual double getHeight() const { return m_Height; }
 	virtual double getWidth() const { return m_Width; }
@@ -496,16 +496,16 @@ public:
 
 	void addFormat(Ref<DisplayFormat> format) {
 		assert(format.valid());
-		CSPLOG(INFO, OBJECT) << "Adding MFD format id " << format->id();
+		CSPLOG(Prio_INFO, Cat_OBJECT) << "Adding MFD format id " << format->id();
 		if (!m_FormatMap.insert(std::make_pair(format->id(), format)).second) {
-			CSPLOG(ERROR, OBJECT) << "Duplicate MFD format id " << format->id();
+			CSPLOG(Prio_ERROR, Cat_OBJECT) << "Duplicate MFD format id " << format->id();
 		}
 	}
 
 	DisplayFormat *getFormat(std::string const &id) {
 		FormatMap::iterator iter = m_FormatMap.find(id);
 		if (iter == m_FormatMap.end()) {
-			CSPLOG(ERROR, OBJECT) << "Could not find MFD format page " << id;
+			CSPLOG(Prio_ERROR, Cat_OBJECT) << "Could not find MFD format page " << id;
 			return 0;
 		}
 		return iter->second.get();

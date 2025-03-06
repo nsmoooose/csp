@@ -43,11 +43,11 @@ void ResourceBundle::postCreate() {
 	for (unsigned i = 0; i < m_SoundSamples.size(); ++i) {
 		Ref<SoundSample> sample = m_SoundSamples[i];
 		if (!sample) {
-			CSPLOG(ERROR, APP) << "Null sound sample in resource bundle " << i;
+			CSPLOG(Prio_ERROR, Cat_APP) << "Null sound sample in resource bundle " << i;
 			continue;
 		}
 		if (!m_SoundSampleMap.insert(std::make_pair(sample->getName(), sample)).second) {
-			CSPLOG(ERROR, APP) << "Duplicate sound sample name in resource bundle " << getPath() << " (" << sample->getName() << ")";
+			CSPLOG(Prio_ERROR, Cat_APP) << "Duplicate sound sample name in resource bundle " << getPath() << " (" << sample->getName() << ")";
 		}
 	}
 }
@@ -55,7 +55,7 @@ void ResourceBundle::postCreate() {
 SoundSample const *ResourceBundle::getSoundSample(std::string const &name) const {
 	SoundSampleMap::const_iterator iter = m_SoundSampleMap.find(name);
 	if (iter == m_SoundSampleMap.end()) {
-		CSPLOG(WARNING, APP) << "Could not find sound sample " << name << " in resource bundle " << getPath();
+		CSPLOG(Prio_WARNING, Cat_APP) << "Could not find sound sample " << name << " in resource bundle " << getPath();
 		return 0;
 	}
 	return iter->second.get();

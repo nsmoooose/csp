@@ -47,7 +47,7 @@ void sigint_handler(int parameter) {
 }
 
 IndexServer::IndexServer() {
-	CSPLOG(INFO, APP) << "IndexServer()";
+	CSPLOG(Prio_INFO, Cat_APP) << "IndexServer()";
 }
 
 IndexServer::~IndexServer() {
@@ -74,7 +74,7 @@ void IndexServer::initPrimaryInterface() {
 	auto address = boost::asio::ip::make_address(ipaddress);
 
 	NetworkNode local_node(address, port);
-	CSPLOG(INFO, APP) << "binding to interface " << local_node;
+	CSPLOG(Prio_INFO, Cat_APP) << "binding to interface " << local_node;
 
 	const int incoming_bw = g_Config.getInt("Network", "IncomingBandwidth", 12000, true);
 	const int outgoing_bw = g_Config.getInt("Network", "OutgoingBandwidth", 12000, true);
@@ -82,21 +82,21 @@ void IndexServer::initPrimaryInterface() {
 
 	if (external_ip.empty()) {
 		if (!local_node.isRoutable()) {
-			CSPLOG(WARNING, APP) << "no external ip address specified; accepting only local (LAN) connections";
+			CSPLOG(Prio_WARNING, Cat_APP) << "no external ip address specified; accepting only local (LAN) connections";
 		}
 	} else {
 		auto external_address = boost::asio::ip::make_address(external_ip);
 		if (!local_node.isRoutable()) {
 			NetworkNode external_node(external_address, port);
-			CSPLOG(INFO, APP) << "external interface is " << external_node;
+			CSPLOG(Prio_INFO, Cat_APP) << "external interface is " << external_node;
 			if (external_node.isRoutable()) {
 				m_NetworkServer->setExternalNode(external_node);
 			} else {
-				CSPLOG(ERROR, APP) << "external interface is not routable; ignoring ExternalIp and accepting only local (LAN) connections";
+				CSPLOG(Prio_ERROR, Cat_APP) << "external interface is not routable; ignoring ExternalIp and accepting only local (LAN) connections";
 			}
 		} else {
 			if (external_address != address) {
-				CSPLOG(ERROR, APP) << "binding to a routable interface that does not match the specified external ip (" << external_ip << "); ignoring ExternalIp";
+				CSPLOG(Prio_ERROR, Cat_APP) << "binding to a routable interface that does not match the specified external ip (" << external_ip << "); ignoring ExternalIp";
 			}
 		}
 	}
@@ -110,7 +110,7 @@ void IndexServer::initialize() {
 
 void IndexServer::run() {
 	initialize();
-	CSPLOG(INFO, APP) << "starting network loop";
+	CSPLOG(Prio_INFO, Cat_APP) << "starting network loop";
 	Timer timer;
 	timer.start();
 	while (!sigint_quit) {
@@ -131,8 +131,8 @@ int IndexServer::main() {
 	}
 
 	// csp::log().logToFile("IndexServer.log");
-	csp::log().setCategories(csp::cLogCategory_ALL &~ (csp::cLogCategory_TIMING));
-	csp::log().setPriority(csp::g_Config.getInt("Debug", "LogPriority", csp::cLogPriority_INFO, true));
+	csp::log().setCategories(Cat_ALL &~ (csp::Cat_TIMING));
+	csp::log().setPriority(csp::g_Config.getInt("Debug", "LogPriority", Prio_INFO, true));
 
 	csp::IndexServer server;
 	server.run();

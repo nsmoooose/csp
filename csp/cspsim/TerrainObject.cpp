@@ -55,9 +55,9 @@ TerrainObject::~TerrainObject() {
 }
 
 void TerrainObject::postCreate() {
-	CSPLOG(INFO, TERRAIN) << "Terrain " << m_Name << " (version " << m_Version << ")";
-	CSPLOG(INFO, TERRAIN) << "   center = " << getCenter().asString();
-	CSPLOG(INFO, TERRAIN) << "     size = " << getWidth() << " x " << getHeight() << " m";
+	CSPLOG(Prio_INFO, Cat_TERRAIN) << "Terrain " << m_Name << " (version " << m_Version << ")";
+	CSPLOG(Prio_INFO, Cat_TERRAIN) << "   center = " << getCenter().asString();
+	CSPLOG(Prio_INFO, Cat_TERRAIN) << "     size = " << getWidth() << " x " << getHeight() << " m";
 	SecantGnomonicProjection *projection = new SecantGnomonicProjection;
 	projection->set(getCenter(), getWidth(), getHeight());
 	m_Map = projection;

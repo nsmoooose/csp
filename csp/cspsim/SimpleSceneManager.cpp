@@ -48,15 +48,15 @@ void SimpleSceneManager::scheduleHideFeature(Ref<FeatureGroup> feature) {
 }
 
 void SimpleSceneManager::scheduleShowFeature(Ref<FeatureGroup> feature) {
-	CSPLOG(DEBUG, SCENE) << "scheduling show feature " << *feature;
+	CSPLOG(Prio_DEBUG, Cat_SCENE) << "scheduling show feature " << *feature;
 	FeatureSceneGroup *scene_group = feature->getSceneGroup();
 	if (scene_group == 0) {
 		Vector3 origin = m_Scene->getFeatureOrigin(feature);
 		TerrainObject *terrain = m_Scene->getTerrain().get();
-		CSPLOG(DEBUG, SCENE) << "constructing feature scene group @ " << origin;
+		CSPLOG(Prio_DEBUG, Cat_SCENE) << "constructing feature scene group @ " << origin;
 		scene_group = feature->makeSceneGroup(origin, terrain);
 	}
-	CSPLOG(DEBUG, SCENE) << "adding feature to scene";
+	CSPLOG(Prio_DEBUG, Cat_SCENE) << "adding feature to scene";
 	m_Scene->addFeature(feature);
 }
 
@@ -69,7 +69,7 @@ void SimpleSceneManager::scheduleShowDynamic(Ref<DynamicObject> dynamic) {
 }
 
 void SimpleSceneManager::scheduleVisibilityChange(ObjectRef const& object, bool hide) {
-	CSPLOG(DEBUG, SCENE) << "setting visibility for " << *object << " to " << !hide;
+	CSPLOG(Prio_DEBUG, Cat_SCENE) << "setting visibility for " << *object << " to " << !hide;
 	if (hide) {
 		assert(object->isVisible());
 		if (!object->isVisible()) return;

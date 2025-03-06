@@ -466,7 +466,7 @@ public:
 	DEDReadout(Ref<const AlphaNumericDisplay> display, osg::ref_ptr<DisplayFont> font): m_Display(display) {
 		assert(font.valid());
 		unsigned lines = m_Display->height();
-		CSPLOG(DEBUG, APP) << "DEDReadout: " << lines << " lines";
+		CSPLOG(Prio_DEBUG, Cat_APP) << "DEDReadout: " << lines << " lines";
 		m_Lines = new osgText::Text*[lines];
 		for (unsigned i = 0; i < lines; ++i) {
 			m_Lines[i] = addText();
@@ -767,7 +767,7 @@ double F16HUD::onUpdate(double dt) {
 		updateSwitches();
 	}
 	//double debug_dt = timer.stop();
-	//CSPLOG(DEBUG, APP) << "HUD UPDATE took " << static_cast<int>(1e+6*debug_dt) << " microseconds";
+	//CSPLOG(Prio_DEBUG, Cat_APP) << "HUD UPDATE took " << static_cast<int>(1e+6*debug_dt) << " microseconds";
 	return 0.0;
 }
 
@@ -926,7 +926,7 @@ void F16HUD::updateReadouts() {
 			m_SteerpointDistance->setText(stringprintf("%03d>%02d", dsteerpoint_distance, active_steerpoint->index()));
 		}
 	} else {
-		CSPLOG(DEBUG, APP) << "no active steerpoint";
+		CSPLOG(Prio_DEBUG, Cat_APP) << "no active steerpoint";
 	}
 
 	m_AirspeedUnits->setText(m_VelocityLabel);
@@ -1168,7 +1168,7 @@ void F16HUD::addDEDReadout() {
 		m_DEDReadout->setPosition(-0.030, -0.0760);
 		m_HUD.addFrameElement(m_DEDReadout);
 	} else {
-		CSPLOG(ERROR, APP) << "DED channel not found";
+		CSPLOG(Prio_ERROR, Cat_APP) << "DED channel not found";
 	}
 }
 

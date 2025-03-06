@@ -52,7 +52,7 @@ bool ModuleLoader::load(std::string const &path) {
 		}
 	}
 	catch (...) {
-		CSPLOG(ERROR, REGISTRY) << "Failed to load module " << path;
+		CSPLOG(Prio_ERROR, Cat_REGISTRY) << "Failed to load module " << path;
 		return false;
 	}
 	return true;

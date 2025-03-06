@@ -224,19 +224,19 @@ public:
 	 */
 	virtual bool addChild(Node *node) {
 		if (!isContainer()) {
-			CSPLOG(WARNING, ALL) << "csp::Composite<>::addChild() to non-container.";
+			CSPLOG(Prio_WARNING, Cat_ALL) << "csp::Composite<>::addChild() to non-container.";
 			return false;
 		}
 		if (!node) {
-			CSPLOG(WARNING, ALL) << "csp::Composite<>::addChild() null node.";
+			CSPLOG(Prio_WARNING, Cat_ALL) << "csp::Composite<>::addChild() null node.";
 			return false;
 		}
 		if (!node->canBeAdded()) {
-			CSPLOG(WARNING, ALL) <<"csp::Composite<>::addChild() cannot be added.";
+			CSPLOG(Prio_WARNING, Cat_ALL) <<"csp::Composite<>::addChild() cannot be added.";
 			return false;
 		}
 		if (containsNode(node)) {
-			CSPLOG(WARNING, ALL) << "csp::Composite<>::addChild() duplicate node.";
+			CSPLOG(Prio_WARNING, Cat_ALL) << "csp::Composite<>::addChild() duplicate node.";
 			return false;
 		}
 		_children.push_back(node);
@@ -263,7 +263,7 @@ public:
 		if (pos >= _children.size() || count == 0) return false;
 		unsigned int end = pos + count;
 		if (end > _children.size()) {
-			CSPLOG(WARNING, ALL) << "csp::Composite<>::removeChild() index range truncated.";
+			CSPLOG(Prio_WARNING, Cat_ALL) << "csp::Composite<>::removeChild() index range truncated.";
 			end = _children.size();
 		}
 		for (unsigned int i = pos; i < end; ++i) {

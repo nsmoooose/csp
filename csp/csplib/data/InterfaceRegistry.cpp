@@ -40,11 +40,11 @@ InterfaceRegistry &InterfaceRegistry::getInterfaceRegistry() {
 }
 
 InterfaceRegistry::InterfaceRegistry() {
-	CSPLOG(INFO, REGISTRY) << "Initializing interface registry.";
+	CSPLOG(Prio_INFO, Cat_REGISTRY) << "Initializing interface registry.";
 }
 
 InterfaceRegistry::~InterfaceRegistry() {
-	CSPLOG(INFO, REGISTRY) << "Destroying the interface registry.";
+	CSPLOG(Prio_INFO, Cat_REGISTRY) << "Destroying the interface registry.";
 }
 
 InterfaceProxy *InterfaceRegistry::getInterface(const char *name) {
@@ -87,7 +87,7 @@ void InterfaceRegistry::addInterface(const char *name, hasht id, InterfaceProxy 
 	__map[name] = proxy;
 	__id_map[id] = proxy;
 	__list.push_back(proxy);
-	CSPLOG(DEBUG, REGISTRY) << "Registering interface<" << name << "> [" << id << "]";
+	CSPLOG(Prio_DEBUG, Cat_REGISTRY) << "Registering interface<" << name << "> [" << id << "]";
 }
 
 } // namespace csp

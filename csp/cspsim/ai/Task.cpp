@@ -106,7 +106,7 @@ bool Task::advance() {
 	if (m_NextState == m_StateMachine->state()) return false;
 	m_StateMachine->setState(m_NextState);
 	// TODO use AGENT instead of OBJECT; can we get the object id too?
-	CSPLOG(DEBUG, OBJECT) << "State: " << m_StateMachine->stateName();
+	CSPLOG(Prio_DEBUG, Cat_OBJECT) << "State: " << m_StateMachine->stateName();
 	m_NewState = true;
 	resetElapsedTime();
 	return true;

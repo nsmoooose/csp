@@ -49,14 +49,14 @@ DEFINE_INPUT_INTERFACE(AircraftObject)
 
 
 AircraftObject::AircraftObject(): DynamicObject(TYPE_AIR_UNIT) {
-	CSPLOG(DEBUG, OBJECT) << "AircraftObject::AircraftObject() ...";
+	CSPLOG(Prio_DEBUG, Cat_OBJECT) << "AircraftObject::AircraftObject() ...";
 	m_ObjectName = "AIRCRAFT";
 
 	b_Heading = DataChannel<double>::newLocal(bus::Kinetics::Heading, 0.0);
 	b_Roll = DataChannel<double>::newLocal(bus::Kinetics::Roll, 0.0);
 	b_Pitch = DataChannel<double>::newLocal(bus::Kinetics::Pitch, 0.0);
 
-	CSPLOG(DEBUG, OBJECT) << "... AircraftObject::AircraftObject()";
+	CSPLOG(Prio_DEBUG, Cat_OBJECT) << "... AircraftObject::AircraftObject()";
 }
 
 AircraftObject::~AircraftObject() {

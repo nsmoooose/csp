@@ -141,12 +141,12 @@ void F16System::setCatIII() {
 }
 
 void F16System::nextSteerpoint() {
-	CSPLOG(DEBUG, APP) << "next steerpoint event";
+	CSPLOG(Prio_DEBUG, Cat_APP) << "next steerpoint event";
 	if (b_NavigationSystem.valid()) b_NavigationSystem->value()->nextSteerpoint();
 }
 
 void F16System::prevSteerpoint() {
-	CSPLOG(DEBUG, APP) << "prev steerpoint event";
+	CSPLOG(Prio_DEBUG, Cat_APP) << "prev steerpoint event";
 	if (b_NavigationSystem.valid()) b_NavigationSystem->value()->prevSteerpoint();
 }
 

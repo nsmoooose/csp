@@ -81,14 +81,14 @@ void FuelTankNode::bindStores(StoresManagementSystem* sms) {
 		}
 	}
 	if (add && m_Tank.valid()) {
-		CSPLOG(INFO, OBJECT) << "adding fuel to " << m_TankId;
+		CSPLOG(Prio_INFO, Cat_OBJECT) << "adding fuel to " << m_TankId;
 		m_Tank->setQuantity(m_Tank->capacity());  // TODO SMS should handle this!
 		sms->setDirtyDynamics();
 	}
 	if (m_Tank.valid()) {
-		CSPLOG(INFO, OBJECT) << "FuelTankNode::bindStores: tank " << m_TankId << " found";
+		CSPLOG(Prio_INFO, Cat_OBJECT) << "FuelTankNode::bindStores: tank " << m_TankId << " found";
 	} else {
-		CSPLOG(INFO, OBJECT) << "FuelTankNode::bindStores: tank " << m_TankId << " not found";
+		CSPLOG(Prio_INFO, Cat_OBJECT) << "FuelTankNode::bindStores: tank " << m_TankId << " not found";
 	}
 }
 

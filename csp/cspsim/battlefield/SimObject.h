@@ -109,7 +109,7 @@ private:
 	std::string _debugId() const;
 
 	inline void _debug(std::string const &msg) {
-		CSPLOG(DEBUG, BATTLEFIELD) << _debugId() << ": " << msg;
+		CSPLOG(Prio_DEBUG, Cat_BATTLEFIELD) << _debugId() << ": " << msg;
 	}
 
 

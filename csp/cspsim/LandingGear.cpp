@@ -631,7 +631,7 @@ void LandingGear::updateWheel(double dt,
 }
 
 void LandingGear::registerChannels(Bus* bus) {
-	CSPLOG(INFO, OBJECT) << "Registering " << getName() << " channels";
+	CSPLOG(Prio_INFO, Cat_OBJECT) << "Registering " << getName() << " channels";
 	b_WOW = bus->registerLocalDataChannel<bool>(bus::LandingGear::selectWOW(getName()), false);
 	b_FullyRetracted = bus->registerLocalDataChannel<bool>(bus::LandingGear::selectFullyRetracted(getName()), false);
 	b_FullyExtended = bus->registerLocalDataChannel<bool>(bus::LandingGear::selectFullyExtended(getName()), false);
@@ -641,7 +641,7 @@ void LandingGear::registerChannels(Bus* bus) {
 		m_GearAnimation->setCompressionMotion(m_Motion, m_CompressionLimit);
 		m_GearAnimation->registerChannels(bus);
 	} else {
-		CSPLOG(DEBUG, OBJECT) << "GearAnimation for " << getName() << " not valid";
+		CSPLOG(Prio_DEBUG, Cat_OBJECT) << "GearAnimation for " << getName() << " not valid";
 	}
 }
 
@@ -656,21 +656,21 @@ void LandingGear::bindChannels(Bus* bus) {
 void LandingGear::bindSounds(SoundModel *model, ResourceBundle *bundle) {
 	if ( !SoundEngine::getInstance().getSoundEnabled() ) return;
 	assert(model);
-	CSPLOG(DEBUG, AUDIO) << "GearDynamics::bindSounds";
+	CSPLOG(Prio_DEBUG, Cat_AUDIO) << "GearDynamics::bindSounds";
 	if (bundle) {
-		CSPLOG(DEBUG, AUDIO) << "GearDynamics::bindSounds have bundle";
+		CSPLOG(Prio_DEBUG, Cat_AUDIO) << "GearDynamics::bindSounds have bundle";
 		Ref<const SoundSample> sample(bundle->getSoundSample("wheel_touchdown"));
 		m_TouchdownSound = SoundEffect::ExternalSound(sample, model);
 		if (m_TouchdownSound.valid()) {
-			CSPLOG(DEBUG, AUDIO) << "GearDynamics::bindSounds have sound";
+			CSPLOG(Prio_DEBUG, Cat_AUDIO) << "GearDynamics::bindSounds have sound";
 			m_TouchdownSound->state()->setPosition(toOSG(getPosition()));
 			m_TouchdownSound->state()->setDirection(toOSG(getPosition()));
-			CSPLOG(DEBUG, AUDIO) << "gear touchdown sound position " << getPosition();
-			CSPLOG(DEBUG, AUDIO) << "gear touchdown sound direction " << getPosition();
+			CSPLOG(Prio_DEBUG, Cat_AUDIO) << "gear touchdown sound position " << getPosition();
+			CSPLOG(Prio_DEBUG, Cat_AUDIO) << "gear touchdown sound direction " << getPosition();
 			m_TouchdownSound->state()->apply();
 		}
 	}
-	CSPLOG(DEBUG, AUDIO) << "GearDynamics::bindSounds exit";
+	CSPLOG(Prio_DEBUG, Cat_AUDIO) << "GearDynamics::bindSounds exit";
 }
 
 DEFINE_INPUT_INTERFACE(GearDynamics)

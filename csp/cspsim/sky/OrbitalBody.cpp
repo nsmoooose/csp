@@ -62,7 +62,7 @@ OrbitalBody::OrbitalBody(
 }
 
 OrbitalBody::~OrbitalBody() {
-	CSPLOG(DEBUG, PHYSICS) << "~OrbitalBody " << label();
+	CSPLOG(Prio_DEBUG, Cat_PHYSICS) << "~OrbitalBody " << label();
 }
 
 void OrbitalBody::computePosition(OrbitalBody::OrbitalState &state) {
@@ -172,7 +172,7 @@ double OrbitalBody::computeMagnitude(double time, Vector3 const &observer) const
 }
 
 void OrbitalBody::logInterpolationError(double time) const {
-	CSPLOG(ERROR, PHYSICS) << label() << " interpolation outside interval: " << time << ", [" << m_OrbitalState[0].time << ", " << m_OrbitalState[1].time << ", " << m_OrbitalState[2].time << "]";
+	CSPLOG(Prio_ERROR, Cat_PHYSICS) << label() << " interpolation outside interval: " << time << ", [" << m_OrbitalState[0].time << ", " << m_OrbitalState[1].time << ", " << m_OrbitalState[2].time << "]";
 }
 
 } // namespace csp

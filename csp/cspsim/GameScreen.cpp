@@ -83,10 +83,10 @@ void GameScreen::initInterface()
 		if (map != NULL) {
 			m_Interface->setMapping(map);
 		} else {
-			CSPLOG(ERROR, APP) << "HID interface map '__gamescreen__' not found.";
+			CSPLOG(Prio_ERROR, Cat_APP) << "HID interface map '__gamescreen__' not found.";
 		}
 	} else {
-		CSPLOG(ERROR, APP) << "No HID interface maps defined, '__gamescreen__' not found.";
+		CSPLOG(Prio_ERROR, Cat_APP) << "No HID interface maps defined, '__gamescreen__' not found.";
 	}
 }
 
@@ -108,9 +108,9 @@ GameScreen::~GameScreen() {
 
 void GameScreen::onInit() {
 	// add a layer for overlay text on screen
-	CSPLOG(DEBUG, APP) << "Inside GameScreen::onInit()";
+	CSPLOG(Prio_DEBUG, Cat_APP) << "Inside GameScreen::onInit()";
 
-	CSPLOG(DEBUG, APP) << "creating ScreenInfoManager";
+	CSPLOG(Prio_DEBUG, Cat_APP) << "creating ScreenInfoManager";
 	m_ScreenInfoManager = new ScreenInfoManager(m_screenWidth, m_screenHeight);
 	m_ScreenInfoManager->setName("ScreenInfoManager");
 	m_ScreenInfoManager->setStatus("RECORD", false);
@@ -119,24 +119,24 @@ void GameScreen::onInit() {
 	m_ScreenInfoManager->setStatus("GENERAL STATS", false);
 	m_ScreenInfoManager->setStatus("OBJECT STATS", false);
 
-	CSPLOG(DEBUG, APP) << "attach ScreenInfoManager to scene";
+	CSPLOG(Prio_DEBUG, Cat_APP) << "attach ScreenInfoManager to scene";
 	osg::Group *info = ScreenInfoNode::getGroup(CSPSim::theSim->getSceneData());
 	info->removeChild(0, info->getNumChildren());
 	info->addChild(m_ScreenInfoManager.get());
 
-	CSPLOG(DEBUG, APP) << "trying to set ActiveObject";
+	CSPLOG(Prio_DEBUG, Cat_APP) << "trying to set ActiveObject";
 	Ref<DynamicObject> ao = CSPSim::theSim->getActiveObject();
 	if (ao.valid()) {
 		setActiveObject(ao);
-		CSPLOG(DEBUG, APP) << "successfully set ActiveObject";
+		CSPLOG(Prio_DEBUG, Cat_APP) << "successfully set ActiveObject";
 	}
 
-	CSPLOG(DEBUG, APP) << "trying to get Battlefield";
+	CSPLOG(Prio_DEBUG, Cat_APP) << "trying to get Battlefield";
 	LocalBattlefield *bf = CSPSim::theSim->getBattlefield();
 	if (bf) {
 		bf->registerPlayerJoinCallback(m_OnPlayerJoin);
 		bf->registerPlayerQuitCallback(m_OnPlayerQuit);
-		CSPLOG(DEBUG, APP) << "Battlefield available";
+		CSPLOG(Prio_DEBUG, Cat_APP) << "Battlefield available";
 	}
 }
 

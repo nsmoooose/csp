@@ -58,7 +58,7 @@ EventMapping::RefT EventMapIndex::getMap(const std::string &id) {
 void EventMapIndex::load(std::string const &path) {
 	EventMapping::RefT m = new EventMapping;
 	assert(m.valid());
-	CSPLOG(INFO, APP) << "Loading human interface device mapping '" << path << "'";
+	CSPLOG(Prio_INFO, Cat_APP) << "Loading human interface device mapping '" << path << "'";
 	if (m->load(path)) {
 		m_Maps.push_back(m);
 		std::vector<hasht>::const_iterator idx;
@@ -72,7 +72,7 @@ void EventMapIndex::load(std::string const &path) {
 
 void EventMapIndex::loadAllMaps() {
 	std::string path = getConfigPath("InputMapPath");
-	CSPLOG(INFO, APP) << "Looking for human interface device mappings in '" << path << "'";
+	CSPLOG(Prio_INFO, Cat_APP) << "Looking for human interface device mappings in '" << path << "'";
 	ospath::DirectoryContents dc = ospath::getDirectoryContents(path);
 	for (ospath::DirectoryContents::const_iterator file = dc.begin(); file != dc.end(); ++file) {
 		std::string fn = ospath::join(path, *file);
@@ -90,7 +90,7 @@ void EventMapIndex::openNewJoysticks(const EventMapping::UsedJoysticks & usedJoy
 		if (insertResult.second) {
 			insertResult.first->second = SDL_JoystickOpen(insertResult.first->first);
 			if (insertResult.first->second == 0) {
-				CSPLOG(ERROR, APP) << "Failed to open joystick #"
+				CSPLOG(Prio_ERROR, Cat_APP) << "Failed to open joystick #"
 					<< std::dec << insertResult.first->first
 					<< " (" << SDL_GetError() << ")";
 			}

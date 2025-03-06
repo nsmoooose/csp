@@ -668,7 +668,7 @@ public:
 		typename DataChannel<T>::CRefT channel;
 		if (bus.valid()) channel = bus->getChannel(name, false);
 		if (!channel) {
-			CSPLOG(DEBUG, OBJECT) << "Bus::defaultDataChannel(" << name << ") creating default.";
+			CSPLOG(Prio_DEBUG, Cat_OBJECT) << "Bus::defaultDataChannel(" << name << ") creating default.";
 			channel = DataChannel<T>::newLocal(name, default_value);
 		}
 		return channel;

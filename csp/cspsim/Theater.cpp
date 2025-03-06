@@ -61,9 +61,9 @@ Theater::~Theater() {
 }
 
 void Theater::postCreate() {
-	CSPLOG(INFO, TERRAIN) << "Projecting feature groups.";
+	CSPLOG(Prio_INFO, Cat_TERRAIN) << "Projecting feature groups.";
 	m_FeatureGroupList->projectFeatureGroups(*(m_Terrain->getProjection()));
-	CSPLOG(INFO, TERRAIN) << "Projecting feature groups done.";
+	CSPLOG(Prio_INFO, Cat_TERRAIN) << "Projecting feature groups done.";
 }
 
 Ref<TerrainObject> Theater::getTerrain() {

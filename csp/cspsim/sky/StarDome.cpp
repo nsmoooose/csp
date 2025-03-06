@@ -148,7 +148,7 @@ StarDome::StarDome(double radius): m_Radius(radius) {
 		bright_texture->setBorderColor(osg::Vec4(0.0, 0.0, 0.0, 0.0));
 		flare_angular_size = 1.2 * toRadians(image->s() / 64.0);
 	} else {
-		CSPLOG(ERROR, SCENE) << "Unable to load " << StarFlareImage;
+		CSPLOG(Prio_ERROR, Cat_SCENE) << "Unable to load " << StarFlareImage;
 	}
 
 	for (unsigned i = 0; i < cNumStars; ++i) {

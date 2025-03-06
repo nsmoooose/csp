@@ -33,7 +33,7 @@ namespace csp {
 
 void FatalException(Exception &e, std::string const &location) {
 	DataError *pDataError = dynamic_cast<DataError*> (&e);
-	CSPLOG(ERROR, APP) << "CSPSim: caught exception in " << location << ": " << e.getMessage();
+	CSPLOG(Prio_ERROR, Cat_APP) << "CSPSim: caught exception in " << location << ": " << e.getMessage();
 	std::cerr << "\n";
 	e.details();
 	std::cerr << "\n";
@@ -58,7 +58,7 @@ void FatalException(Exception &e, std::string const &location) {
 }
 
 void DemeterFatalException(DemeterException &e,  std::string const &location) {
-	CSPLOG(ERROR, APP) << "CSPSim: caught Demeter exception in " << location << ": " << e.what();
+	CSPLOG(Prio_ERROR, Cat_APP) << "CSPSim: caught Demeter exception in " << location << ": " << e.what();
 	std::cerr << "\n"
 		<< "CSPSim: caught an Demeter exception.  Please report this along\n"
 		<< "with as much information as possible about what was happening at \n"
@@ -69,7 +69,7 @@ void DemeterFatalException(DemeterException &e,  std::string const &location) {
 }
 
 void OtherFatalException(std::string const &location) {
-	CSPLOG(ERROR, APP) << "CSPSim: caught unknown exception in " << location << ".";
+	CSPLOG(Prio_ERROR, Cat_APP) << "CSPSim: caught unknown exception in " << location << ".";
 	std::cerr
 		<< "\n"
 		<< "CSPSim: caught an (unknown) exception.  Please report this along\n"

@@ -63,11 +63,11 @@ LinkCore LinkCore::_serialize(Reader &reader, DataArchive* &data_archive) {
 			ObjectID class_id;
 			reader >> class_id;
 			if (class_id == 0) {
-				CSPLOG(DEBUG, ARCHIVE) << "loading Link with no path and no object";
+				CSPLOG(Prio_DEBUG, Cat_ARCHIVE) << "loading Link with no path and no object";
 			} else {
 				Object *pobj = data_archive->_createObject(class_id);
 				assert(pobj);
-				CSPLOG(DEBUG, ARCHIVE) << "loading inline object " << pobj->getClassName();
+				CSPLOG(Prio_DEBUG, Cat_ARCHIVE) << "loading inline object " << pobj->getClassName();
 				pobj->serialize(reader);
 				// start reference counting before postCreate!
 				LinkCore link(path, pobj);
@@ -82,7 +82,7 @@ LinkCore LinkCore::_serialize(Reader &reader, DataArchive* &data_archive) {
 				return link;
 			}
 		} else {
-			CSPLOG(DEBUG, ARCHIVE) << "loading linked object" << (arc->_loadAll() ? "loadall" : "!loadall");
+			CSPLOG(Prio_DEBUG, Cat_ARCHIVE) << "loading linked object" << (arc->_loadAll() ? "loadall" : "!loadall");
 			if (!arc->_loadAll()) data_archive = 0;
 		}
 	}
@@ -103,7 +103,7 @@ void LinkCore::_serialize(Writer &writer) const {
 			// however, required links cannot be null+none.  this restriction is enforced
 			// by specialized validation classes in ObjectInterface.h.  here we just log
 			// a debug message (although this is probably not very useful).
-			CSPLOG(DEBUG, ARCHIVE) << "attempt to save Link with no path and no object";
+			CSPLOG(Prio_DEBUG, Cat_ARCHIVE) << "attempt to save Link with no path and no object";
 			hasht class_hash = 0;
 			writer << class_hash;
 		} else {
@@ -118,7 +118,7 @@ LinkCore LinkCore::_internal_load(DataArchive* archive, ObjectID path) {
 	assert(archive != 0);
 	if (path == 0) path = _path;
 	if (path == 0) return LinkCore();
-	CSPLOG(DEBUG, ARCHIVE) << "loading LinkCore from " << path << " " << _path;
+	CSPLOG(Prio_DEBUG, Cat_ARCHIVE) << "loading LinkCore from " << path << " " << _path;
 	Path _p(path);
 	LinkCore _ppb;
 	/*
@@ -140,7 +140,7 @@ LinkCore LinkCore::_internal_load(DataArchive* archive, ObjectID path) {
 	*/
 	assert(_ppb.valid());
 	Object *obj = _ppb._reference;
-	CSPLOG(DEBUG, ARCHIVE) << "loaded " << obj->getClassName() << " @ " << obj;
+	CSPLOG(Prio_DEBUG, Cat_ARCHIVE) << "loaded " << obj->getClassName() << " @ " << obj;
 	return _ppb;
 }
 

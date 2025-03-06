@@ -119,7 +119,7 @@ void PhysicsModel::postCreate() {
 		dynamics = getChild(i);
 		if (dynamics.valid()) {
 			addDynamics(dynamics);
-			CSPLOG(DEBUG, OBJECT) << "PhysicsModel::postCreate() adding dynamics: " << dynamics->getClassName();
+			CSPLOG(Prio_DEBUG, Cat_OBJECT) << "PhysicsModel::postCreate() adding dynamics: " << dynamics->getClassName();
 		}
 	}
 }
@@ -197,7 +197,7 @@ void PhysicsModel::f(double x, numeric::Vectord const &y, numeric::Vectord& dydt
 			m_ForcesBody += force_body;
 			m_MomentsBody += moment_body;
 		} else {
-			CSPLOG(ERROR, OBJECT) << "PhysicsModel: overflow in dynamics class '" << (*bd)->getClassName() << "'";
+			CSPLOG(Prio_ERROR, Cat_OBJECT) << "PhysicsModel: overflow in dynamics class '" << (*bd)->getClassName() << "'";
 			std::cout << "PhysicsModel: overflow in dynamics class '" << (*bd)->getClassName() << "'\n";
 			std::cout << "(f,m) = (" << force_body << ", " << moment_body <<")\n";
 		}

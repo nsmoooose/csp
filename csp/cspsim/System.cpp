@@ -67,10 +67,10 @@ void System::postCreate() {
 	 * as child nodes and clear m_Subsystems to eliminate the extra set
 	 * of references.
 	 */
-	CSPLOG(DEBUG, OBJECT) << "System::postCreate() " << getClassName() << ", adding " << m_Subsystems.size() << " subsystems.";
+	CSPLOG(Prio_DEBUG, Cat_OBJECT) << "System::postCreate() " << getClassName() << ", adding " << m_Subsystems.size() << " subsystems.";
 	Link<System>::vector::iterator iter = m_Subsystems.begin();
 	for (; iter != m_Subsystems.end(); ++iter) {
-		CSPLOG(DEBUG, OBJECT) << "System::addChild() " << (*iter)->getClassName();
+		CSPLOG(Prio_DEBUG, Cat_OBJECT) << "System::addChild() " << (*iter)->getClassName();
 		addChild(iter->get());
 	}
 	m_Subsystems.clear();
@@ -78,7 +78,7 @@ void System::postCreate() {
 
 bool System::addChild(SystemNode *node) {
 	if (!SystemNode::addChild(node)) {
-		CSPLOG(ERROR, OBJECT) << "SystemNode::addChild() failed.";
+		CSPLOG(Prio_ERROR, Cat_OBJECT) << "SystemNode::addChild() failed.";
 		return false;
 	}
 	return true;
@@ -90,7 +90,7 @@ void System::onDetachSceneModel(SceneModel*) { }
 
 SoundSample const *System::getSoundSample(std::string const &name) const {
 	if (!m_ResourceBundle) {
-		CSPLOG(ERROR, OBJECT) << "No resource bundle in system " << getClassName() << " for sound " << name;
+		CSPLOG(Prio_ERROR, Cat_OBJECT) << "No resource bundle in system " << getClassName() << " for sound " << name;
 		return 0;
 	}
 	return m_ResourceBundle->getSoundSample(name);
@@ -110,7 +110,7 @@ SoundEffect *System::addSoundEffect(std::string const &name, SoundEffect::Mode m
 		case SoundEffect::EXTERNAL:
 			return SoundEffect::ExternalSound(sample, model);
 		default:
-			CSPLOG(ERROR, AUDIO) << "Unknown sound effect mode " << mode;
+			CSPLOG(Prio_ERROR, Cat_AUDIO) << "Unknown sound effect mode " << mode;
 	}
 	return 0;
 }

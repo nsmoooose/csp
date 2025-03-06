@@ -238,7 +238,7 @@ DemeterLatticeDrawableLoadListener::DemeterLatticeDrawableLoadListener() : m_pLa
 void DemeterLatticeDrawableLoadListener::TerrainLoaded(Terrain* pTerrain) {
 	int x,y;
 	pTerrain->GetLatticePosition(x,y);
-	CSPLOG(INFO, TERRAIN) << "Terrain at " << x << "," << y << " loaded!";
+	CSPLOG(csp::Prio_INFO, csp::Cat_TERRAIN) << "Terrain at " << x << "," << y << " loaded!";
 
 	m_pLatticeDrawable->addTerrain(pTerrain);
 	// We could do application-specific actions here, such as loading
@@ -248,7 +248,7 @@ void DemeterLatticeDrawableLoadListener::TerrainLoaded(Terrain* pTerrain) {
 void DemeterLatticeDrawableLoadListener::TerrainUnloading(Terrain* pTerrain) {
 	int x,y;
 	pTerrain->GetLatticePosition(x,y);
-	CSPLOG(INFO, TERRAIN) << "Terrain at " << x << "," << y << " unloading!";
+	CSPLOG(csp::Prio_INFO, csp::Cat_TERRAIN) << "Terrain at " << x << "," << y << " unloading!";
 	m_pLatticeDrawable->removeTerrain(pTerrain);
 	// We could do application-specific actions here, such as unloading
 	// application objects for this region of the world

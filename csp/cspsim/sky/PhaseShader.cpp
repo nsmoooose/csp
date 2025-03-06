@@ -57,9 +57,9 @@ public:
 			if (node && node->getUpdateCallback() == this) {
 				node->setUpdateCallback(0);
 				double elapsed = get_realtime() - m_StartTime;
-				CSPLOG(DEBUG, SCENE) << "Imposter phase shading complete after " << m_FrameCount << " frames, " << int(m_UpdateTime * 1000.0) << " over " << int(elapsed * 1000.0) << " ms";
+				CSPLOG(Prio_DEBUG, Cat_SCENE) << "Imposter phase shading complete after " << m_FrameCount << " frames, " << int(m_UpdateTime * 1000.0) << " over " << int(elapsed * 1000.0) << " ms";
 			} else {
-				CSPLOG(ERROR, SCENE) << "Unable to remove phase shader callback";
+				CSPLOG(Prio_ERROR, Cat_SCENE) << "Unable to remove phase shader callback";
 			}
 		}
 	}

@@ -161,7 +161,7 @@ Vector3 Atmosphere::getWind(Vector3 const &p) const {
 	wind.y() += m_WindAltY[idx]*(1.0-f) + m_WindAltY[idx+1]*f;
 	wind *= m_WindScale * m_GustModulation;
 	if (wind.length() > 100.0) {  // XXX remove me
-		CSPLOG(WARNING, PHYSICS) << "strong wind! " << m_WindScale << " " << m_GustModulation << " " << wind;
+		CSPLOG(Prio_WARNING, Cat_PHYSICS) << "strong wind! " << m_WindScale << " " << m_GustModulation << " " << wind;
 	}
 	return wind;
 }
@@ -177,7 +177,7 @@ Vector3 Atmosphere::getTurbulence(Vector3 const &p, double dist) const {
 	idx = std::max(0, static_cast<int>(dist * 0.1)) % 1000;
 	const Vector3 turbulence(a * m_TurbulenceX[idx], a * m_TurbulenceY[idx], a * m_TurbulenceZ[idx]);
 	if (turbulence.length() > 100.0) {  // XXX remove me
-		CSPLOG(WARNING, PHYSICS) << "strong turbulence! " << a << " " << turbulence << " " << m_TurbulenceX[idx] << " " << idx << " " << dist << " " << m_TurbulenceBlend;
+		CSPLOG(Prio_WARNING, Cat_PHYSICS) << "strong turbulence! " << a << " " << turbulence << " " << m_TurbulenceX[idx] << " " << idx << " " << dist << " " << m_TurbulenceBlend;
 	}
 	return turbulence;
 }

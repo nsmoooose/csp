@@ -156,17 +156,17 @@ protected:
 		object->setAttitude(Quat(0.0, 0.0, sqrt(0.5), sqrt(0.5)));
 		object->setAngularVelocity(Vector3(1, 0, 0));
 
-		CSPLOG(DEBUG, PHYSICS) << "initial: " << *object;
+		CSPLOG(Prio_DEBUG, Cat_PHYSICS) << "initial: " << *object;
 
 		// PI seconds
 		for (int i = 0; i < 1000; ++i) {
 			physics->doSimStep(M_PI / 1000.0);
 			if ((i % 10) == 0) {
-				CSPLOG(DEBUG, PHYSICS) << i << "(" << (i * 180.0 / 1000) << "): " << *object;
+				CSPLOG(Prio_DEBUG, Cat_PHYSICS) << i << "(" << (i * 180.0 / 1000) << "): " << *object;
 			}
 		}
 
-		CSPLOG(DEBUG, PHYSICS) << "final: " << *object;
+		CSPLOG(Prio_DEBUG, Cat_PHYSICS) << "final: " << *object;
 
 		CSP_EXPECT_EQ(0.0, vdiff(object->position(), Vector3::ZERO));
 		CSP_EXPECT_EQ(0.0, vdiff(object->velocity(), Vector3::ZERO));
@@ -178,17 +178,17 @@ protected:
 		object->setVelocity(Vector3(1, 0, 0));
 		object->setAngularVelocity(Vector3(0, 0, 1));
 
-		CSPLOG(DEBUG, PHYSICS) << "initial: " << *object;
+		CSPLOG(Prio_DEBUG, Cat_PHYSICS) << "initial: " << *object;
 
 		// 10 seconds @ 100 Hz
 		for (int i = 0; i < 1000; ++i) {
 			physics->doSimStep(0.01);
 			if ((i % 10) == 0) {
-				CSPLOG(DEBUG, PHYSICS) << i << "(" << (i * 0.01) << "): " << *object;
+				CSPLOG(Prio_DEBUG, Cat_PHYSICS) << i << "(" << (i * 0.01) << "): " << *object;
 			}
 		}
 
-		CSPLOG(DEBUG, PHYSICS) << "final: " << *object;
+		CSPLOG(Prio_DEBUG, Cat_PHYSICS) << "final: " << *object;
 
 		CSP_EXPECT_GT(0.0001, vdiff(object->position(), Vector3(10.0, 0.0, 0.0)));
 		CSP_EXPECT_GT(0.0001, vdiff(object->velocity(), Vector3(1.0, 0.0, 0.0)));
@@ -200,17 +200,17 @@ protected:
 		object->setInertia(Matrix3(0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0));
 		object->setAngularVelocity(Vector3(1, 1, 0).normalized());
 
-		CSPLOG(DEBUG, PHYSICS) << "initial: " << *object;
+		CSPLOG(Prio_DEBUG, Cat_PHYSICS) << "initial: " << *object;
 
 		// PI seconds @ 100 Hz
 		for (int i = 0; i < 1000; ++i) {
 			physics->doSimStep(M_PI / 1000.0);
 			if ((i % 10) == 0) {
-				CSPLOG(DEBUG, PHYSICS) << i << "(" << (i * 180.0 * 0.001) << "): " << *object;
+				CSPLOG(Prio_DEBUG, Cat_PHYSICS) << i << "(" << (i * 180.0 * 0.001) << "): " << *object;
 			}
 		}
 
-		CSPLOG(DEBUG, PHYSICS) << "final: " << *object;
+		CSPLOG(Prio_DEBUG, Cat_PHYSICS) << "final: " << *object;
 
 		CSP_EXPECT_GT(0.0001, vdiff(object->position(), Vector3::ZERO));
 		CSP_EXPECT_GT(0.0001, vdiff(object->velocity(), Vector3::ZERO));
@@ -224,17 +224,17 @@ protected:
 		object->setInertia(Matrix3(0.1, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0));
 		object->setAngularVelocity(Vector3(1, 1, 0).normalized());
 
-		CSPLOG(DEBUG, PHYSICS) << "initial: " << *object;
+		CSPLOG(Prio_DEBUG, Cat_PHYSICS) << "initial: " << *object;
 
 		// PI seconds @ 100 Hz
 		for (int i = 0; i < 1000; ++i) {
 			physics->doSimStep(M_PI / 1000.0);
 			if ((i % 10) == 0) {
-				CSPLOG(DEBUG, PHYSICS) << i << "(" << (i * 180.0 * 0.001) << "): " << *object;
+				CSPLOG(Prio_DEBUG, Cat_PHYSICS) << i << "(" << (i * 180.0 * 0.001) << "): " << *object;
 			}
 		}
 
-		CSPLOG(DEBUG, PHYSICS) << "final: " << *object;
+		CSPLOG(Prio_DEBUG, Cat_PHYSICS) << "final: " << *object;
 
 		CSP_EXPECT_GT(0.0001, vdiff(object->position(), Vector3::ZERO));
 		CSP_EXPECT_GT(0.0001, vdiff(object->velocity(), Vector3::ZERO));
@@ -249,17 +249,17 @@ protected:
 		object->setPosition(Vector3(1, 1, 1));
 		object->setVelocity(Vector3(2, 0, 0));
 
-		CSPLOG(DEBUG, PHYSICS) << "initial: " << *object;
+		CSPLOG(Prio_DEBUG, Cat_PHYSICS) << "initial: " << *object;
 
 		// 10 seconds @ 100 Hz
 		for (int i = 0; i < 1000; ++i) {
 			physics->doSimStep(10.0 / 1000.0);
 			if ((i % 10) == 0) {
-				CSPLOG(DEBUG, PHYSICS) << i << "(" << (i * 10.0 * 0.001) << "): " << *object;
+				CSPLOG(Prio_DEBUG, Cat_PHYSICS) << i << "(" << (i * 10.0 * 0.001) << "): " << *object;
 			}
 		}
 
-		CSPLOG(DEBUG, PHYSICS) << "final: " << *object;
+		CSPLOG(Prio_DEBUG, Cat_PHYSICS) << "final: " << *object;
 
 		CSP_EXPECT_GT(0.0001, vdiff(object->position(), Vector3(21.0, 1.0, 51)));
 		CSP_EXPECT_GT(0.0001, vdiff(object->velocity(), Vector3(2, 0, 10)));
@@ -276,18 +276,18 @@ protected:
 		object->setVelocity(Vector3(0, 2, 0));
 		object->setAngularVelocity(Vector3(0, 0, 4));
 
-		CSPLOG(DEBUG, PHYSICS) << "initial: " << *object;
+		CSPLOG(Prio_DEBUG, Cat_PHYSICS) << "initial: " << *object;
 
 		// 5/32 PI seconds @ 100 Hz
 		for (int i = 0; i < 1000; ++i) {
 			//physics->doSimStep(5 * M_PI / 32 / 1000.0);
 			physics->doSimStep(5 * M_PI / 16 / 1000.0);
 			if ((i % 10) == 0) {
-				CSPLOG(DEBUG, PHYSICS) << i << "(" << (i * 225.0 * 0.001) << "): " << *object;
+				CSPLOG(Prio_DEBUG, Cat_PHYSICS) << i << "(" << (i * 225.0 * 0.001) << "): " << *object;
 			}
 		}
 
-		CSPLOG(DEBUG, PHYSICS) << "final: " << *object;
+		CSPLOG(Prio_DEBUG, Cat_PHYSICS) << "final: " << *object;
 
 		CSP_EXPECT_GT(0.0001, vdiff(object->position(), 0.5 * Vector3(-1, -1, 0).normalized()));
 		CSP_EXPECT_GT(0.0001, vdiff(object->velocity(), 2.0 * Vector3(1, -1, 0).normalized()));

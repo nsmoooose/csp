@@ -118,7 +118,6 @@ public:
 	FormatArg(unsigned x): x_type(TYPE_UINT) { x_val.ui = x; }
 	FormatArg(int64_t x): x_type(TYPE_INT64) { x_val.i64 = x; }
 	FormatArg(uint64_t x): x_type(TYPE_UINT64) { x_val.ui64 = x; }
-	FormatArg(unsigned long long int x): x_type(TYPE_UINT64) { x_val.ui64 = x; }
 	FormatArg(char x): x_type(TYPE_CHAR) { x_val.c = x; }
 	FormatArg(double x): x_type(TYPE_DOUBLE) { x_val.d = x; }
 	FormatArg(const char *x): x_type(TYPE_STRING), x_len(-1) { x_val.s = x; }

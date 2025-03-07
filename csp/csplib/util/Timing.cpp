@@ -58,7 +58,7 @@ namespace csp {
 	double getSecondsSinceUnixEpoch() {
 		FILETIME filetime;
 		GetSystemTimeAsFileTime(&filetime);
-		uint64_t date_time = (static_cast<uint64>(filetime.dwHighDateTime) << 32) | static_cast<uint64>(filetime.dwLowDateTime);
+		uint64_t date_time = (static_cast<uint64_t>(filetime.dwHighDateTime) << 32) | static_cast<uint64_t>(filetime.dwLowDateTime);
 		// convert from hectonanoseconds since 1601-01-01T00:00:00Z to milliseconds since 1970-01-01T00:00:00Z
 		return 1e-7 * (date_time - 116444736000000000ULL);
 	}
@@ -72,7 +72,7 @@ namespace csp {
 	static double calibration_interval = 10.0;
 
 	inline uint64_t cvt_filetime(FILETIME const &x) {
-		return (static_cast<uint64>(x.dwHighDateTime) << 32) | static_cast<uint64>(x.dwLowDateTime);
+		return (static_cast<uint64_t>(x.dwHighDateTime) << 32) | static_cast<uint64_t>(x.dwLowDateTime);
 	}
 
 	inline uint64_t getPerformanceFrequency() {
@@ -80,7 +80,7 @@ namespace csp {
 		if (!QueryPerformanceFrequency(&frequency)) {
 			throw TimerError("QueryPerformanceFrequency failed");
 		}
-		return static_cast<uint64>(frequency.QuadPart);
+		return static_cast<uint64_t>(frequency.QuadPart);
 	}
 
 	inline uint64_t getPerformanceCounter() {
@@ -88,7 +88,7 @@ namespace csp {
 		if (!QueryPerformanceCounter(&counter)) {
 			throw TimerError("QueryPerformanceCounter failed");
 		}
-		return static_cast<uint64>(counter.QuadPart);
+		return static_cast<uint64_t>(counter.QuadPart);
 	}
 
 	void calibrateRealTime() {

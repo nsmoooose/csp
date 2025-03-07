@@ -68,8 +68,6 @@ class PkgConfig:
         self._label = label
 
     def configure(self, conf):
-        if util.IsWindows(conf.env):
-            return 1
         return conf.CheckPkgConfig(self._package, version=self._version, lib_name=self._label)
 
 

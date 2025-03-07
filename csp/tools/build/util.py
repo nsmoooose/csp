@@ -54,7 +54,7 @@ def CompareVersions(a, b):
 
 
 def IsWindows(env):
-    return env['PLATFORM'].startswith('win')
+    return env['PLATFORM'].startswith('mingw')
 
 
 def SimpleCommand(cmd, msg):

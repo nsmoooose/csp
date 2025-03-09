@@ -1,3 +1,4 @@
+#include <boost/asio.hpp>
 #include <csp/csplib/data/Archive.h>
 
 namespace csp {

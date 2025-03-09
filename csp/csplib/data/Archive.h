@@ -27,12 +27,19 @@
 #include <csp/csplib/util/Exception.h>
 #include <csp/csplib/util/HashUtility.h>
 
-#include <boost/asio.hpp>
 #include <string>
 #include <vector>
 #include <cstdlib>
 #include <cstdio>
 #include <cassert>
+
+namespace boost {
+	namespace asio {
+		namespace ip {
+			class address;
+		}
+	}
+}
 
 namespace csp {
 

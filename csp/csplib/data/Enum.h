@@ -294,7 +294,7 @@ friend class EnumLink;
 	///
 	/// @param idx1 The lower index (inclusive).
 	/// @param idx2 The upper index (inclusive).
-	inline const std::vector<EnumLink> __range(int idx1, int idx2) const;
+	inline const std::vector<EnumLink> __enum_range(int idx1, int idx2) const;
 
 	void __checkIndex(int idx) const {
 		assert(__core.valid() && __core->validIndex(idx));
@@ -654,7 +654,7 @@ inline EnumLink Enumeration::operator[](int value) const { return makeEnum(getIn
 
 inline EnumLink Enumeration::operator[](std::string const &token) const { return makeEnum(getIndexByToken(token)); }
 
-inline const std::vector<EnumLink> Enumeration::__range(int idx1, int idx2) const {
+inline const std::vector<EnumLink> Enumeration::__enum_range(int idx1, int idx2) const {
 	assert(__core.valid());
 	std::vector<EnumLink> v;
 	if (idx2 >= idx1) {
@@ -668,15 +668,15 @@ inline const std::vector<EnumLink> Enumeration::__range(int idx1, int idx2) cons
 
 inline const std::vector<EnumLink> Enumeration::range(EnumLink const &a, EnumLink const &b) const {
 	if (a.__E != *this || b.__E != *this) throw EnumTypeError();
-	return __range(a.getIndex(), b.getIndex());
+	return __enum_range(a.getIndex(), b.getIndex());
 }
 
 inline const std::vector<EnumLink> Enumeration::range(std::string const &a, std::string const &b) const {
-	return __range(getIndexByToken(a), getIndexByToken(b));
+	return __enum_range(getIndexByToken(a), getIndexByToken(b));
 }
 
 inline const std::vector<EnumLink> Enumeration::range(int a, int b) const {
-	return __range(getIndexByValue(a), getIndexByValue(b));
+	return __enum_range(getIndexByValue(a), getIndexByValue(b));
 }
 
 inline const std::vector<EnumLink> Enumeration::each() const {

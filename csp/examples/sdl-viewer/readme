@@ -8,7 +8,6 @@ This example application must be run from the CSP root directory in order to fin
 Set the required paths:
 
 set WORKING_DIRECTORY=%cd%
-set PATH=%PATH%;%CSPDEVPACK%\bin
 set PATH=%PATH%;%WORKING_DIRECTORY%\csplib\.bin\;%WORKING_DIRECTORY%\cspsim\.bin;%WORKING_DIRECTORY%\cspwf\.bin
 set PATH=%PATH%;%WORKING_DIRECTORY%\modules\demeter\.bin
 

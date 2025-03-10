@@ -23,23 +23,11 @@ dir = os.path.abspath(__path__[0])
 
 def _configureModules():
     if sys.platform.startswith('win') or os.name == 'nt':
-        # if CSPDEVPACK is defined in the environment, add the devpack bin
-        # directory to the execution path.  this ensures that devpack libraries
-        # will be found before other (potentially incompatible) versions of the
-        # same libraries.  note that windows is currently the only system with
-        # a devpack.
         path = [
             os.path.join(dir, 'csplib', '.bin'),
             os.path.join(dir, 'cspsim', '.bin'),
             os.path.join(dir, 'cspwf', '.bin'),
         ]
-        devpack = os.environ.get('CSPDEVPACK')
-        if devpack:
-            bin = os.path.join(devpack, 'bin')
-            if not os.path.exists(bin):
-                # (usr/bin is deprecated)
-                bin = os.path.join(devpack, 'usr', 'bin')
-            path.append(bin)
         if 'PATH' in os.environ:
             path.append(os.environ.get('PATH'))
         os.environ['PATH'] = os.pathsep.join(path)

@@ -44,16 +44,13 @@ namespace csp {
  *  mask such that a node is only enabled for update traversals (UPDATE_ONLY)
  *  that occur in the near scene graph (NEAR).
  */
-class SceneMasks {
-public:
-	typedef enum {
-		UPDATE_ONLY = 0x0001,
-		CULL_ONLY = 0x0002,
-		NORMAL = 0x0003,
-		LABELS = 0x0100,
-		NEAR = 0x200,
-		FAR = 0x400
-	} NodeMask;
-};
+typedef enum {
+	SCENEMASK_UPDATE_ONLY = 0x0001,
+	SCENEMASK_CULL_ONLY = 0x0002,
+	SCENEMASK_NORMAL = 0x0003,
+	SCENEMASK_LABELS = 0x0100,
+	SCENEMASK_NEAR = 0x200,
+	SCENEMASK_FAR = 0x400
+} NodeMask;
 
 } // namespace csp

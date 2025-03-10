@@ -256,7 +256,7 @@ SceneModel::SceneModel(Ref<ObjectModel> const & model) {
 	label->getOrCreateStateSet()->setAttributeAndModes(depth, osg::StateAttribute::OFF);
 	label->getOrCreateStateSet()->setMode(GL_LIGHTING, osg::StateAttribute::OFF);
 	label->addDrawable(m_Label.get());
-	label->setNodeMask(SceneMasks::LABELS);
+	label->setNodeMask(SCENEMASK_LABELS);
 
 	m_PositionTransform = new osg::PositionAttitudeTransform;
 	m_AttitudeTransform = new osg::PositionAttitudeTransform;

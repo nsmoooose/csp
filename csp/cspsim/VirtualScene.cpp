@@ -408,24 +408,24 @@ osg::Camera *VirtualScene::makeSceneCamera(unsigned mask) {
 	camera->setReferenceFrame(osg::Transform::ABSOLUTE_RF);
 	camera->setComputeNearFarMode(osgUtil::CullVisitor::DO_NOT_COMPUTE_NEAR_FAR);
 	camera->setCullingMode(osgUtil::CullVisitor::ENABLE_ALL_CULLING); // Why don't use the default ?
-	camera->setCullMask(SceneMasks::CULL_ONLY | SceneMasks::NORMAL | mask);
-	// TODO: this was done on the old osgUtil::SceneView: sv->getUpdateVisitor()->setTraversalMask(SceneMasks::UPDATE_ONLY | SceneMasks::NORMAL | mask);
+	camera->setCullMask(SCENEMASK_CULL_ONLY | SCENEMASK_NORMAL | mask);
+	// TODO: this was done on the old osgUtil::SceneView: sv->getUpdateVisitor()->setTraversalMask(SCENEMASK_UPDATE_ONLY | SCENEMASK_NORMAL | mask);
 	m_VirtualSceneGroup->addChild(camera);
 	return camera;
 }
 
 void VirtualScene::createVeryFarView() {
-	m_VeryFarCamera = makeSceneCamera(SceneMasks::FAR);
+	m_VeryFarCamera = makeSceneCamera(SCENEMASK_FAR);
 	m_VeryFarGroup = new osg::Group;
 	m_VeryFarGroup->setName("very_far_group");
 	m_VeryFarCamera->addChild(m_VeryFarGroup.get());
 }
 
 void VirtualScene::createFarView() {
-	m_TerrainCamera = makeSceneCamera(SceneMasks::FAR); // TODO: remove this temporary hack (see below)
+	m_TerrainCamera = makeSceneCamera(SCENEMASK_FAR); // TODO: remove this temporary hack (see below)
 	m_TerrainCamera->setClearMask(GL_DEPTH_BUFFER_BIT);
 
-	m_FarCamera = makeSceneCamera(SceneMasks::FAR);
+	m_FarCamera = makeSceneCamera(SCENEMASK_FAR);
 	m_FarCamera->setClearMask(GL_DEPTH_BUFFER_BIT);
 	m_FarGroup = new osg::Group;
 	m_FarGroup->setName("far_group");
@@ -433,7 +433,7 @@ void VirtualScene::createFarView() {
 }
 
 void VirtualScene::createNearView() {
-	m_NearCamera = makeSceneCamera(SceneMasks::NEAR);
+	m_NearCamera = makeSceneCamera(SCENEMASK_NEAR);
 	m_NearCamera->setClearMask(GL_DEPTH_BUFFER_BIT);
 	// TODO: this was done on the old osgUtil::SceneView: m_NearView->setImpostorsActive(false); // Inherited by the CullVisitor
 	m_NearGroup = new osg::Group;
@@ -915,12 +915,12 @@ void VirtualScene::setTerrain(Ref<TerrainObject> terrain) {
 
 void VirtualScene::setLabels(bool show) {
 	unsigned int currentMask = m_FarCamera->getCullMask();
-	unsigned int newMask = (currentMask & ~SceneMasks::LABELS) | (show ? SceneMasks::LABELS : 0);
+	unsigned int newMask = (currentMask & ~SCENEMASK_LABELS) | (show ? SCENEMASK_LABELS : 0);
 	m_FarCamera->setCullMask(newMask);
 }
 
 bool VirtualScene::getLabels() const {
-	return (m_FarCamera->getCullMask() & SceneMasks::LABELS) != 0;
+	return (m_FarCamera->getCullMask() & SCENEMASK_LABELS) != 0;
 }
 
 bool VirtualScene::pick(int x, int y) {

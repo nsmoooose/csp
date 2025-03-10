@@ -216,7 +216,7 @@ build.PythonSharedLibrary(env,
         'util/PythonSignals.h',
         'util/PythonSwig.h'
     ],
-    deps = ['csplib'],
+    deps = ['csplib', 'python'],
     aliases = ['all', 'csplib'])
 
 

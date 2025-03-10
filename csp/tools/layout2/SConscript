@@ -55,5 +55,5 @@ build.PythonSharedLibrary(env,
         'cpp/XmlNode.cpp',
         'cpp/XmlNode.h',
     ],
-    deps = ['osg', 'csplib', 'cspsim'],
+    deps = ['osg', 'csplib', 'cspsim', 'python'],
     aliases = ['layout2', 'all'])

@@ -437,7 +437,7 @@ build.SharedLibrary(expenv,
 build.PythonSharedLibrary(env,
     name = 'cspsim_module',
     sources = ['cspsim.i'],
-    deps = ['cspsim'],
+    deps = ['cspsim', 'python'],
     aliases = ['all', 'cspsim'])
 
 

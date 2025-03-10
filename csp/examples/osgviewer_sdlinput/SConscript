@@ -27,5 +27,5 @@ build.PythonSharedLibrary(env,
         'main.cpp',
         'main.h',
     ],
-    deps = ['osg', 'sdl'],
+    deps = ['osg', 'sdl', 'python'],
     aliases = ['examples', 'osgviewer_sdlinput'])

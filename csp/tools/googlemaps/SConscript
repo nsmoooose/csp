@@ -33,5 +33,5 @@ build.PythonSharedLibrary(env,
         'cpp/Pixel.cpp',
         'cpp/Pixel.h',
     ],
-    deps = ['osg', 'csplib', 'cspsim'],
+    deps = ['osg', 'csplib', 'cspsim', 'python'],
     aliases = ['googlemaps', 'all'])

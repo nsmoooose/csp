@@ -723,7 +723,7 @@ void NetworkInterface::initialize(NetworkNode const &local_node, bool isServer, 
 	assert(!m_Initialized);
 	m_Initialized = true;
 	m_LastUpdate = -1.0;
-	m_Socket.reset(new DatagramReceiveSocket(getIOContext(), local_node.getAddress(), local_node.getPort()));
+	m_Socket.reset(new DatagramReceiveSocket(local_node.getAddress(), local_node.getPort()));
 	m_LocalNode.reset(new NetworkNode(local_node));
 	assert(incoming_bw > 0 && outgoing_bw > 0);
 	m_IncomingBandwidth = incoming_bw;

@@ -40,17 +40,7 @@ NetworkNode::NetworkNode(boost::asio::ip::address addr, unsigned short port) {
 }
 
 NetworkNode::NetworkNode(std::string const &hostname, unsigned short port) {
-	try {
-		boost::asio::ip::tcp::resolver resolver(getIOContext());
-		auto result = resolver.resolve(hostname, std::to_string(port));
-		for (const auto& entry : result) {
-			m_addr = entry.endpoint().address();
-			break;
-		}
-	}
-	catch (const boost::system::system_error& e) {
-		throw NetworkException(e.what());
-	}
+	m_addr = resolveByHostname(hostname, port);
 	m_port = port;
 }
 
@@ -72,18 +62,7 @@ boost::asio::ip::address const &NetworkNode::getAddress() const {
 }
 
 std::string NetworkNode::getHostname() const {
-	try {
-		boost::asio::ip::tcp::resolver resolver(getIOContext());
-		auto endpoints = resolver.resolve(boost::asio::ip::tcp::endpoint(m_addr, 0));
-		for (const auto& endpoint : endpoints) {
-			return endpoint.host_name();
-			break;
-		}
-		return "";
-	}
-	catch (const boost::system::system_error& e) {
-		return "";
-	}
+	return getHostnameByAddress(m_addr);
 }
 
 } // namespace csp

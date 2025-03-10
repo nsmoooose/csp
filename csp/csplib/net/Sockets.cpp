@@ -2,10 +2,39 @@
 
 namespace csp {
 
-boost::asio::io_context &getIOContext() {
+static boost::asio::io_context &getIOContext() {
 	static boost::asio::io_context io_context;
 	return io_context;
 }
+
+boost::asio::ip::address resolveByHostname(const std::string &hostname, unsigned short port) {
+	try {
+		boost::asio::ip::tcp::resolver resolver(getIOContext());
+		auto result = resolver.resolve(hostname, std::to_string(port));
+		for (const auto& entry : result) {
+			return entry.endpoint().address();
+		}
+	}
+	catch (const boost::system::system_error& e) {
+		throw NetworkException(e.what());
+	}
+	throw NetworkException("Failed to resolve host");
+}
+
+std::string getHostnameByAddress(const boost::asio::ip::address &address) {
+	try {
+		boost::asio::ip::tcp::resolver resolver(getIOContext());
+		auto endpoints = resolver.resolve(boost::asio::ip::tcp::endpoint(address, 0));
+		for (const auto& endpoint : endpoints) {
+			return endpoint.host_name();
+		}
+		return "";
+	}
+	catch (const boost::system::system_error& e) {
+		return "";
+	}
+}
+
 
 static bool waitFor(
 	boost::asio::ip::udp::socket &socket,
@@ -40,8 +69,8 @@ static bool waitFor(
 	return true;
 }
 
-DatagramReceiveSocket::DatagramReceiveSocket(boost::asio::io_context &context, const boost::asio::ip::address &host, unsigned short port) :
-	m_socket(context), m_endpoint(host, port) {
+DatagramReceiveSocket::DatagramReceiveSocket(const boost::asio::ip::address &host, unsigned short port) :
+	m_socket(getIOContext()), m_endpoint(host, port) {
 	m_socket.open(boost::asio::ip::udp::v4());
 	m_socket.bind(m_endpoint);
 }
@@ -122,7 +151,7 @@ bool DatagramReceiveSocket::isPendingReceive(timeout_t timeout) {
 	return waitFor(m_socket, boost::asio::socket_base::wait_read, timeout);
 }
 
-DatagramTransmitSocket::DatagramTransmitSocket(boost::asio::io_context &context) : m_socket(context) {
+DatagramTransmitSocket::DatagramTransmitSocket() : m_socket(getIOContext()) {
 }
 
 void DatagramTransmitSocket::connect(const boost::asio::ip::address &host, unsigned short port) {

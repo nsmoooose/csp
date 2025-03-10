@@ -35,7 +35,9 @@ CSP_EXCEPTION(NetworkException)
 
 typedef int timeout_t;
 
-CSPLIB_EXPORT boost::asio::io_context &getIOContext();
+CSPLIB_EXPORT boost::asio::ip::address resolveByHostname(const std::string &hostname, unsigned short port);
+
+CSPLIB_EXPORT std::string getHostnameByAddress(const boost::asio::ip::address &address);
 
 /** Minimal wrapper for boost::asio socket.
  *
@@ -43,7 +45,7 @@ CSPLIB_EXPORT boost::asio::io_context &getIOContext();
  */
 class CSPLIB_EXPORT DatagramReceiveSocket {
 public:
-	DatagramReceiveSocket(boost::asio::io_context &context, const boost::asio::ip::address &host, unsigned short port);
+	DatagramReceiveSocket(const boost::asio::ip::address &host, unsigned short port);
 
 	void connect(const boost::asio::ip::address &host, unsigned short port);
 
@@ -72,7 +74,7 @@ private:
  */
 class CSPLIB_EXPORT DatagramTransmitSocket {
 public:
-	DatagramTransmitSocket(boost::asio::io_context &context);
+	DatagramTransmitSocket();
 
 	void connect(const boost::asio::ip::address &host, unsigned short port);
 

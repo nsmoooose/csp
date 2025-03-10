@@ -202,7 +202,7 @@ void PeerInfo::updateBandwidth(double incoming, double outgoing) {
 
 void PeerInfo::setNode(NetworkNode const &node, double incoming, double outgoing) {
 	m_node = node;
-	m_socket.reset(new DatagramTransmitSocket(getIOContext()));
+	m_socket.reset(new DatagramTransmitSocket());
 	m_socket->connect(node.getAddress(), node.getPort());
 	m_total_peer_incoming_bandwidth = incoming;
 	m_total_peer_outgoing_bandwidth = outgoing;

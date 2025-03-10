@@ -60,6 +60,7 @@ build.ExternalLibrary(
 build.ExternalLibrary(
     name = 'sound',
     config = [
+        build.UnixLibConfig(lib='openalpp'),
         build.PkgConfig(package='freealut', version='0.2'),
         build.PkgConfig(package='vorbisfile', version='1.1.0'),
     ])

@@ -145,8 +145,8 @@ Ref<Window> createWindow() {
 }
 
 int main(int, char**) {
-	log().setCategories(cLogCategory_ALL);
-	log().setPriority(cLogPriority_DEBUG);
+	log().setCategories(Cat_ALL);
+	log().setPriority(Prio_DEBUG);
 
 	// Make sure that the windowing framework can external files.
 	// For example fonts.

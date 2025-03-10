@@ -49,8 +49,8 @@ if ok:
 	import cLoader
 	import Object
 
-	#csp.csplib.log().setCategories(csp.csplib.cLogCategory_ALL)
-	#csp.csplib.log().setPriority(csp.csplib.cLogPriority_ERROR)
+	#csp.csplib.log().setCategories(csp.csplib.Cat_ALL)
+	#csp.csplib.log().setPriority(csp.csplib.Prio_ERROR)
 
 	# Load the CSP interface registry.
 	reg = csp.csplib.InterfaceRegistry.getInterfaceRegistry()

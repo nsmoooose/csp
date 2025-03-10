@@ -241,7 +241,7 @@ def setLogCategory(categories):
             cat = class_name[1:]
             invert = 1
         try:
-            catmask = getattr(csp.csplib, "cLogCategory_" + cat.upper())
+            catmask = getattr(csp.csplib, "Cat_" + cat.upper())
             if invert:
                 mask = mask & ~catmask
             else:
@@ -257,7 +257,7 @@ def parseLogPriority(priority):
     try:
         logpri = int(priority)
     except ValueError:
-        logpri = getattr(csp.csplib, "cLogPriority_" + priority.upper(), None)
+        logpri = getattr(csp.csplib, "Prio_" + priority.upper(), None)
     if logpri is None:
         fail('Unknown log priority %s' % priority)
     return logpri

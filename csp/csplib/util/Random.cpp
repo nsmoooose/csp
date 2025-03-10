@@ -163,4 +163,9 @@ double BoxMueller(RandomNumberGeneratorInterface &_gen, double _mean, double _si
 
 random::Taus2 g_Random;
 
+// Force template instantiation.
+template class RandomDistribution<rd::Gauss>;
+template class RandomNumberGenerator<rng::MT19937>;
+template class RandomNumberGenerator<rng::Taus2>;
+
 } // namespace csp

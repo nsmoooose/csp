@@ -119,6 +119,10 @@ needed build tools::
   pacman -S ucrt64/mingw-w64-ucrt-x86_64-SDL
   pacman -S ucrt64/mingw-w64-ucrt-x86_64-SDL_image
 
+  ucrt64/mingw-w64-ucrt-x86_64-pyinstaller
+
+  mingw-w64-ucrt-x86_64-toolchain
+
   ? change this one to the correct one. This has the right lib
   ? as a dependency.
   pacman -S ucrt64/mingw-w64-ucrt-x86_64-python-pip
@@ -143,3 +147,7 @@ Build::
   ccmake --install-prefix=/ucrt64 .
   ninja
   ninja install
+
+
+To update all packages
+pacman -Syu

@@ -89,11 +89,15 @@ build.ExternalLibrary(
 # TODO check if boost_system is needed on linux
 # TODO check if -mt is also present in Linux.
 
+boost_suffix = ""
+if is_windows:
+    boost_suffix = "-mt"
+
 build.ExternalLibrary(
     name = 'boost',
     config = [
         # build.UnixLibConfig(lib='libboost_system', label='boost system'),
-        build.UnixLibConfig(lib='libboost_filesystem-mt', label='boost filesystem'),
+        build.UnixLibConfig(lib='libboost_filesystem' + boost_suffix, label='boost filesystem'),
     ])
 
 build.ExternalLibrary(

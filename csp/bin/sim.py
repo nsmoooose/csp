@@ -209,10 +209,9 @@ def loadExtensionModules():
     for module in modules:
         module_path = os.path.join(csp.dir, 'modules', module, '.bin', prefix + module) + extension
 
-        # for windows demos, the modules are instead placed in the current directory.
-        # TODO move them to ../modules/*.dll?
-        if not os.path.exists(module_path):
-            module_path = prefix + os.path.join(module) + extension
+        # for windows demos, the modules are instead placed in the _internal directory that pyinstaller.
+        if getattr(sys, 'frozen', False):
+            module_path = os.path.join("_internal",  prefix + module + extension)
         if not csp.csplib.ModuleLoader.load(module_path):
             fail('Unable to load required extension module "%s"' % module)
 
